@@ -1,38 +1,64 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '../../../lib/supabase'
 
 export default function Pembayaran() {
-  const [warga, setWarga] = useState('')
+  const [wargaList, setWargaList] = useState([])
+  const [wargaId, setWargaId] = useState('')
   const [jumlah, setJumlah] = useState('')
   const [bulan, setBulan] = useState('')
 
+  useEffect(() => {
+    fetchWarga()
+  }, [])
+
+  const fetchWarga = async () => {
+    const { data } = await supabase.from('warga').select('*')
+    setWargaList(data)
+  }
+
   const simpan = async () => {
     await supabase.from('pembayaran').insert({
-      warga_id: warga,
-      jumlah_bayar: jumlah,
-      jumlah_bulan: bulan,
+      warga_id: wargaId,
+      jumlah_bayar: parseInt(jumlah),
+      jumlah_bulan: parseInt(bulan),
       tahun: new Date().getFullYear(),
       tanggal: new Date()
     })
-    alert('Tersimpan')
+
+    alert('Pembayaran tersimpan')
   }
 
   return (
-    <div>
+    <div style={{ padding: 20 }}>
       <h2>Input Pembayaran</h2>
-      <input placeholder="Warga ID" onChange={e => setWarga(e.target.value)} />
-      <input placeholder="Jumlah Bayar" onChange={e => setJumlah(e.target.value)} />
-      <input placeholder="Jumlah Bulan" onChange={e => setBulan(e.target.value)} />
+
+      <select onChange={(e) => setWargaId(e.target.value)}>
+        <option>Pilih Warga</option>
+        {wargaList.map((w) => (
+          <option key={w.id} value={w.id}>
+            {w.nama} - {w.blok}
+          </option>
+        ))}
+      </select>
+
+      <br /><br />
+
+      <input
+        placeholder="Jumlah Bayar"
+        onChange={(e) => setJumlah(e.target.value)}
+      />
+
+      <br /><br />
+
+      <input
+        placeholder="Jumlah Bulan"
+        onChange={(e) => setBulan(e.target.value)}
+      />
+
+      <br /><br />
+
       <button onClick={simpan}>Simpan</button>
     </div>
   )
-}
-
-const uploadNota = async (file) => {
-  const { data } = await supabase.storage
-    .from('nota')
-    .upload(`nota-${Date.now()}`, file)
-
-  return data.path
 }
