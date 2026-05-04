@@ -55,10 +55,7 @@ export default function WargaPage() {
     window.location.href = '/'
   }
 
-  const totalBulan = pembayaran.reduce(
-    (acc, p) => acc + (p.jumlah_bulan || 0),
-    0
-  )
+  // ===================== DATA =====================
 
   const bulanList = [
     { id: 1, nama: 'Jan' },
@@ -75,36 +72,57 @@ export default function WargaPage() {
     { id: 12, nama: 'Des' }
   ]
 
-  const getStatusBulanan = () => {
-    let paidMonths = []
-
-    pembayaran.forEach(p => {
-      if (p.bulan_dibayar) {
-        paidMonths = [...paidMonths, ...p.bulan_dibayar]
-      }
-    })
-
-    return bulanList.map(b => ({
-      id: b.id,
-      nama: b.nama,
-      isPaid: paidMonths.includes(b.id)
-    }))
-  }
-
-  const formatRupiah = (angka) => {
-    return new Intl.NumberFormat('id-ID').format(angka)
-  }
+  const totalBulan = pembayaran.reduce(
+    (acc, p) => acc + (p.jumlah_bulan || 0),
+    0
+  )
 
   const totalBayar = pembayaran.reduce(
     (acc, p) => acc + (p.jumlah_bayar || 0),
     0
   )
 
+  // ===================== LOGIC =====================
+
+  const getStatusBulanan = () => {
+    const paidMonths = [
+      ...new Set(
+        pembayaran.flatMap(p => p.bulan_dibayar || [])
+      )
+    ]
+
+    return bulanList.map(b => ({
+      ...b,
+      isPaid: paidMonths.includes(b.id)
+    }))
+  }
+
+  const getLastPaidMonth = () => {
+    const allMonths = pembayaran.flatMap(p => p.bulan_dibayar || [])
+    return allMonths.length ? Math.max(...allMonths) : null
+  }
+
+  const getNamaBulan = (ids) => {
+    return ids
+      .map(id => bulanList.find(b => b.id === id)?.nama)
+      .join(', ')
+  }
+
+  const formatRupiah = (angka) => {
+    return new Intl.NumberFormat('id-ID').format(angka)
+  }
+
+  const status = totalBulan >= 12 ? 'LUNAS' : 'MENUNGGAK'
+  const lastMonth = getLastPaidMonth()
+
+  // ===================== UI =====================
+
   return (
     <div style={{ padding: 20 }}>
+      {/* NAV */}
       <div style={{ marginBottom: 20 }}>
-        <a href="/admin/dashboard">Dashboard</a> |
-        <a href="/admin/pembayaran">Pembayaran</a> |
+        <a href="/admin/dashboard">Dashboard</a> |{' '}
+        <a href="/admin/pembayaran">Pembayaran</a> |{' '}
         <a href="/admin/pengeluaran">Pengeluaran</a>
       </div>
 
@@ -112,22 +130,39 @@ export default function WargaPage() {
 
       <button onClick={logout}>Logout</button>
 
+      {/* INFO WARGA */}
       {warga && (
         <>
-          <p>{warga.nama}</p>
+          <p><b>{warga.nama}</b></p>
           <p>{warga.blok}</p>
-
-          <h3>Status</h3>
-          <p>Total Bayar: Rp {formatRupiah(totalBulan * 50000)}</p>
-          <p>Sisa: {12 - totalBulan} bulan</p>
         </>
       )}
 
+      {/* RINGKASAN */}
+      <h3>Ringkasan</h3>
+      <p>Total Bayar: Rp {formatRupiah(totalBayar)}</p>
+      <p>Sudah Bayar: {totalBulan} bulan</p>
+      <p>Tunggakan: {12 - totalBulan} bulan</p>
+
+      <p>
+        Status:
+        <span style={{
+          padding: '4px 10px',
+          background: totalBulan >= 12 ? '#28a745' : '#dc3545',
+          color: 'white',
+          borderRadius: 6,
+          marginLeft: 10
+        }}>
+          {status}
+        </span>
+      </p>
+
+      {/* STATUS BULANAN */}
       <h3>Status Bulanan</h3>
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))',
         gap: 10
       }}>
         {getStatusBulanan().map((b) => (
@@ -136,10 +171,15 @@ export default function WargaPage() {
             style={{
               padding: 12,
               borderRadius: 10,
-              background: b.isPaid ? '#d4edda' : '#f8d7da',
-              border: b.isPaid ? '1px solid #28a745' : '1px solid #dc3545',
+              background: b.isPaid
+                ? (b.id === lastMonth ? '#a3e4b5' : '#d4edda')
+                : '#f8d7da',
+              border: b.id === lastMonth
+                ? '2px solid #155724'
+                : (b.isPaid ? '1px solid #28a745' : '1px solid #dc3545'),
               textAlign: 'center',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              transition: '0.2s'
             }}
           >
             <div>{b.nama}</div>
@@ -150,11 +190,7 @@ export default function WargaPage() {
         ))}
       </div>
 
-      <h3>Ringkasan</h3>
-      <p>Total Bayar: Rp {formatRupiah(totalBayar)}</p>
-      <p>Sudah Bayar: {formatRupiah(totalBulan)} bulan</p>
-      <p>Tunggakan: {12 - totalBulan} bulan</p>
-
+      {/* RIWAYAT */}
       <h3>Riwayat Pembayaran</h3>
 
       <table border="1" cellPadding="5">
@@ -170,7 +206,7 @@ export default function WargaPage() {
           {pembayaran.map((p, i) => (
             <tr key={i}>
               <td>{new Date(p.tanggal).toLocaleDateString()}</td>
-              <td>{(p.bulan_dibayar || []).join(', ')}</td>
+              <td>{getNamaBulan(p.bulan_dibayar || [])}</td>
               <td>Rp {formatRupiah(p.jumlah_bayar)}</td>
             </tr>
           ))}
