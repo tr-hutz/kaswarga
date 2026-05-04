@@ -66,19 +66,15 @@ export default function WargaPage() {
   ]
 
   const getStatusBulanan = () => {
-    let hasil = []
-    let total = 0
+    let paidMonths = []
 
-    for (let i = 0; i < 12; i++) {
-      if (total < totalBulan) {
-        hasil.push(true)
-        total++
-      } else {
-        hasil.push(false)
+    pembayaran.forEach(p => {
+      if (p.bulan_dibayar) {
+        paidMonths = [...paidMonths, ...p.bulan_dibayar]
       }
-    }
+    })
 
-    return hasil
+    return bulanList.map(b => paidMonths.includes(b.id))
   }
 
   const formatRupiah = (angka) => {
