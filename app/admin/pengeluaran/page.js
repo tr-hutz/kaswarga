@@ -39,9 +39,15 @@ export default function Pengeluaran() {
     alert('Pengeluaran tersimpan')
   }
 
+  const logout = async () => {
+    await supabase.auth.signOut()
+    window.location.href = '/'
+  }
+
   return (
     <div style={{ padding: 20 }}>
       <h2>Input Pengeluaran</h2>
+      <button onClick={logout}>Logout</button>
 
       <input
         placeholder="Kategori (keamanan, kebersihan, dll)"

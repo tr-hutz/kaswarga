@@ -29,9 +29,15 @@ export default function Pembayaran() {
     alert('Pembayaran tersimpan')
   }
 
+  const logout = async () => {
+    await supabase.auth.signOut()
+    window.location.href = '/'
+  }
+
   return (
     <div style={{ padding: 20 }}>
       <h2>Input Pembayaran</h2>
+      <button onClick={logout}>Logout</button>
 
       <select onChange={(e) => setWargaId(e.target.value)}>
         <option>Pilih Warga</option>
