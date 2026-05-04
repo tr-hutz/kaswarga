@@ -61,8 +61,18 @@ export default function WargaPage() {
   )
 
   const bulanList = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-    'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+    { id: 1, nama: 'Jan' },
+    { id: 2, nama: 'Feb' },
+    { id: 3, nama: 'Mar' },
+    { id: 4, nama: 'Apr' },
+    { id: 5, nama: 'Mei' },
+    { id: 6, nama: 'Jun' },
+    { id: 7, nama: 'Jul' },
+    { id: 8, nama: 'Agu' },
+    { id: 9, nama: 'Sep' },
+    { id: 10, nama: 'Okt' },
+    { id: 11, nama: 'Nov' },
+    { id: 12, nama: 'Des' }
   ]
 
   const getStatusBulanan = () => {
@@ -74,12 +84,21 @@ export default function WargaPage() {
       }
     })
 
-    return bulanList.map(b => paidMonths.includes(b.id))
+    return bulanList.map(b => ({
+      id: b.id,
+      nama: b.nama,
+      isPaid: paidMonths.includes(b.id)
+    }))
   }
 
   const formatRupiah = (angka) => {
     return new Intl.NumberFormat('id-ID').format(angka)
   }
+
+  const totalBayar = pembayaran.reduce(
+    (acc, p) => acc + (p.jumlah_bayar || 0),
+    0
+  )
 
   return (
     <div style={{ padding: 20 }}>
@@ -106,13 +125,57 @@ export default function WargaPage() {
 
       <h3>Status Bulanan</h3>
 
-      <ul>
-        {getStatusBulanan().map((status, i) => (
-          <li key={i}>
-            {bulanList[i]} - {status ? '✅' : '❌'}
-          </li>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gap: 10
+      }}>
+        {getStatusBulanan().map((b) => (
+          <div
+            key={b.id}
+            style={{
+              padding: 12,
+              borderRadius: 10,
+              background: b.isPaid ? '#d4edda' : '#f8d7da',
+              border: b.isPaid ? '1px solid #28a745' : '1px solid #dc3545',
+              textAlign: 'center',
+              fontWeight: 'bold'
+            }}
+          >
+            <div>{b.nama}</div>
+            <div style={{ fontSize: 20 }}>
+              {b.isPaid ? '✔️' : '❌'}
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
+
+      <h3>Ringkasan</h3>
+      <p>Total Bayar: Rp {formatRupiah(totalBayar)}</p>
+      <p>Sudah Bayar: {formatRupiah(totalBulan)} bulan</p>
+      <p>Tunggakan: {12 - totalBulan} bulan</p>
+
+      <h3>Riwayat Pembayaran</h3>
+
+      <table border="1" cellPadding="5">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Bulan</th>
+            <th>Jumlah</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {pembayaran.map((p, i) => (
+            <tr key={i}>
+              <td>{new Date(p.tanggal).toLocaleDateString()}</td>
+              <td>{(p.bulan_dibayar || []).join(', ')}</td>
+              <td>Rp {formatRupiah(p.jumlah_bayar)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
