@@ -1,8 +1,21 @@
 'use client'
-import { useState } from 'react'
-import { supabase } from '../../../lib/supabase'
+import { useEffect, useState } from 'react'
+import { getUserRole } from '../../../lib/getUserRole'
 
 export default function Pengeluaran() {
+  useEffect(() => {
+    checkAccess()
+  }, [])
+
+  const checkAccess = async () => {
+    const role = await getUserRole()
+
+    if (role !== 'admin') {
+      alert('Akses ditolak')
+      window.location.href = '/warga'
+    }
+  }
+
   const [kategori, setKategori] = useState('')
   const [nominal, setNominal] = useState('')
   const [deskripsi, setDeskripsi] = useState('')

@@ -5,7 +5,6 @@ import { supabase } from '../lib/supabase'
 export default function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     checkUser()
@@ -23,7 +22,7 @@ export default function AuthPage() {
       .from('users')
       .select('*')
       .eq('id', userId)
-      .single()
+      .maybeSingle()
 
     if (data?.role === 'admin') {
       window.location.href = '/admin/pembayaran'
@@ -33,36 +32,27 @@ export default function AuthPage() {
   }
 
   const register = async () => {
-    setLoading(true)
-
     const { data, error } = await supabase.auth.signUp({
-      email: email.trim(),
+      email: email.trim().toLowerCase(),
       password
     })
 
-    setLoading(false)
-
     if (error) return alert(error.message)
 
-    alert('User berhasil dibuat, sekarang login')
-
-    // ⚠️ penting: insert ke tabel users
     await supabase.from('users').insert({
       id: data.user.id,
       nama: email,
       role: 'warga'
     })
+
+    alert('Register sukses')
   }
 
   const login = async () => {
-    setLoading(true)
-
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
+      email: email.trim().toLowerCase(),
       password
     })
-
-    setLoading(false)
 
     if (error) return alert(error.message)
 
@@ -71,10 +61,9 @@ export default function AuthPage() {
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>KasWarga Login</h2>
+      <h2>KasWarga</h2>
 
       <input
-        type="email"
         placeholder="Email"
         onChange={(e) => setEmail(e.target.value)}
       />
@@ -89,13 +78,8 @@ export default function AuthPage() {
 
       <br /><br />
 
-      <button onClick={login} disabled={loading}>
-        Login
-      </button>
-
-      <button onClick={register} disabled={loading}>
-        Register
-      </button>
+      <button onClick={login}>Login</button>
+      <button onClick={register}>Register</button>
     </div>
   )
 }

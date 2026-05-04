@@ -1,16 +1,26 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../../lib/supabase'
+import { getUserRole } from '../../../lib/getUserRole'
 
 export default function Pembayaran() {
+  useEffect(() => {
+    checkAccess()
+  }, [])
+
   const [wargaList, setWargaList] = useState([])
   const [wargaId, setWargaId] = useState('')
   const [jumlah, setJumlah] = useState('')
   const [bulan, setBulan] = useState('')
 
-  useEffect(() => {
-    fetchWarga()
-  }, [])
+  const checkAccess = async () => {
+    const role = await getUserRole()
+
+    if (role !== 'admin') {
+      alert('Akses ditolak')
+      window.location.href = '/warga'
+    }
+  }
 
   const fetchWarga = async () => {
     const { data } = await supabase.from('warga').select('*')

@@ -3,44 +3,42 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 
 export default function WargaPage() {
-  const [user, setUser] = useState(null)
   const [warga, setWarga] = useState(null)
   const [pembayaran, setPembayaran] = useState([])
 
   useEffect(() => {
-    getUser()
+    init()
   }, [])
 
-  const getUser = async () => {
+  const init = async () => {
     const { data } = await supabase.auth.getUser()
-    const currentUser = data.user
+    if (!data.user) return
 
-    setUser(currentUser)
-
-    if (currentUser) {
-      fetchWarga(currentUser.email)
-    }
+    fetchWarga(data.user.email)
   }
 
   const fetchWarga = async (email) => {
+    const cleanEmail = email.trim().toLowerCase()
+
     const { data, error } = await supabase
       .from('warga')
       .select('*')
-      .eq('email', email)
-      .maybeSingle()
+      .ilike('email', cleanEmail)
 
     if (error) {
       console.log(error)
       return
     }
 
-    if (!data) {
-      console.log('Warga tidak ditemukan')
+    if (!data || data.length === 0) {
+      console.log('Warga tidak ditemukan:', cleanEmail)
       return
     }
 
-    setWarga(data)
-    fetchPembayaran(data.id)
+    const wargaData = data[0]
+    setWarga(wargaData)
+
+    fetchPembayaran(wargaData.id)
   }
 
   const fetchPembayaran = async (wargaId) => {
@@ -49,40 +47,35 @@ export default function WargaPage() {
       .select('*')
       .eq('warga_id', wargaId)
 
-    setPembayaran(data)
+    setPembayaran(data || [])
   }
-
-  const totalBulan = pembayaran.reduce((acc, p) => acc + (p.jumlah_bulan || 0), 0)
 
   const logout = async () => {
     await supabase.auth.signOut()
     window.location.href = '/'
   }
 
+  const totalBulan = pembayaran.reduce(
+    (acc, p) => acc + (p.jumlah_bulan || 0),
+    0
+  )
+
   return (
     <div style={{ padding: 20 }}>
       <h2>Halaman Warga</h2>
+
       <button onClick={logout}>Logout</button>
 
       {warga && (
         <>
-          <p>Nama: {warga.nama}</p>
-          <p>Blok: {warga.blok}</p>
+          <p>{warga.nama}</p>
+          <p>{warga.blok}</p>
 
-          <h3>Status Iuran</h3>
+          <h3>Status</h3>
           <p>Sudah bayar: {totalBulan} bulan</p>
           <p>Sisa: {12 - totalBulan} bulan</p>
         </>
       )}
-
-      <h3>Riwayat Pembayaran</h3>
-      <ul>
-        {pembayaran.map((p) => (
-          <li key={p.id}>
-            {p.tanggal} - {p.jumlah_bayar} ({p.jumlah_bulan} bulan)
-          </li>
-        ))}
-      </ul>
     </div>
   )
 }
