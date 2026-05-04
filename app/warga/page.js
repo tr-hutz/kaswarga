@@ -60,8 +60,39 @@ export default function WargaPage() {
     0
   )
 
+  const bulanList = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+    'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+  ]
+
+  const getStatusBulanan = () => {
+    let hasil = []
+    let total = 0
+
+    for (let i = 0; i < 12; i++) {
+      if (total < totalBulan) {
+        hasil.push(true)
+        total++
+      } else {
+        hasil.push(false)
+      }
+    }
+
+    return hasil
+  }
+
+  const formatRupiah = (angka) => {
+    return new Intl.NumberFormat('id-ID').format(angka)
+  }
+
   return (
     <div style={{ padding: 20 }}>
+      <div style={{ marginBottom: 20 }}>
+        <a href="/admin/dashboard">Dashboard</a> |
+        <a href="/admin/pembayaran">Pembayaran</a> |
+        <a href="/admin/pengeluaran">Pengeluaran</a>
+      </div>
+
       <h2>Halaman Warga</h2>
 
       <button onClick={logout}>Logout</button>
@@ -72,10 +103,20 @@ export default function WargaPage() {
           <p>{warga.blok}</p>
 
           <h3>Status</h3>
-          <p>Sudah bayar: {totalBulan} bulan</p>
+          <p>Total Bayar: Rp {formatRupiah(totalBulan * 50000)}</p>
           <p>Sisa: {12 - totalBulan} bulan</p>
         </>
       )}
+
+      <h3>Status Bulanan</h3>
+
+      <ul>
+        {getStatusBulanan().map((status, i) => (
+          <li key={i}>
+            {bulanList[i]} - {status ? '✅' : '❌'}
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

@@ -59,6 +59,12 @@ export default function Pengeluaran() {
 
   return (
     <div style={{ padding: 20 }}>
+      <div style={{ marginBottom: 20 }}>
+        <a href="/admin/dashboard">Dashboard</a> |
+        <a href="/admin/pembayaran">Pembayaran</a> |
+        <a href="/admin/pengeluaran">Pengeluaran</a>
+      </div>
+
       <h2>Input Pengeluaran</h2>
       <button onClick={logout}>Logout</button>
 
