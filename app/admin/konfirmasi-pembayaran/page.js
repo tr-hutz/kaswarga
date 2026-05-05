@@ -7,24 +7,48 @@ import { formatRupiah } from '../../../lib/utils'
 
 export default function RequestPage() {
   const [data, setData] = useState([])
+  const [loadingId, setLoadingId] = useState(null)
 
   useEffect(() => {
     fetchRequest()
   }, [])
 
   const fetchRequest = async () => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('konfirmasi_pembayaran')
-      .select('*')
+      .select('*, warga (nama, blok, no_rumah)')
       .eq('status', 'pending')
       .order('created_at', { ascending: false })
+
+    if (error) {
+      console.log('ERROR fetching konfirmasi pembayaran')
+      return
+    }
 
     setData(data || [])
   }
 
   const approve = async (req) => {
-    // insert ke pembayaran
-    await supabase.from('pembayaran').insert({
+    setLoadingId(req.id)
+
+    // get lock
+    const { data: locked, error } = await supabase
+      .from('konfirmasi_pembayaran')
+      .update({ status: 'processing' })
+      .eq('id', req.id)
+      .eq('status', 'pending')
+      .select()
+
+    if (!locked || locked.length === 0) {
+      alert('Konfirmasi sudah diproses admin/bendahara lain')
+      return
+    }
+
+    // delay for simulation
+    await new Promise(r => setTimeout(r, 2000))
+
+    // insert 
+    const { error: insertError } = await supabase.from('pembayaran').insert({
       warga_id: req.warga_id,
       jumlah_bayar: req.jumlah_bayar,
       jumlah_bulan: req.jumlah_bulan,
@@ -33,22 +57,51 @@ export default function RequestPage() {
       tanggal: new Date()
     })
 
-    // update status
-    await supabase
-      .from('konfirmasi_pembayaran')
+    if (insertError) {
+      console.log(insertError)
+
+      // rollback status
+      await supabase.from('konfirmasi_pembayaran')
+        .update({ status: 'pending' })
+        .eq('id', r.id)
+
+      alert('Gagal approve')
+      setLoadingId(null)
+      return
+    }
+
+    // final status
+    await supabase.from('konfirmasi_pembayaran')
       .update({ status: 'approved' })
       .eq('id', req.id)
 
     fetchRequest()
+    setLoadingId(null)
   }
 
-  const reject = async (id) => {
+  const reject = async (req) => {
+    setLoadingId(req.id)
+    // lock
+    const { data: locked } = await supabase.from('konfirmasi_pembayaran')
+      .update({ status: 'processing' })
+      .eq('id', req.id)
+      .eq('status', 'pending')
+      .select()
+
+    if (!locked || locked.length === 0) {
+      alert('Sudah diproses admin/bendahara lain')
+      setLoadingId(null)
+      return
+    }
+
+    // reject
     await supabase
       .from('konfirmasi_pembayaran')
       .update({ status: 'rejected' })
-      .eq('id', id)
+      .eq('id', req.id)
 
     fetchRequest()
+    setLoadingId(null)
   }
 
   return (
@@ -60,18 +113,28 @@ export default function RequestPage() {
 
       {data.map(r => (
         <Card key={r.id}>
-          <p><b>Warga ID:</b> {r.warga_id}</p>
+          <p><b>Warga:</b> {r.warga?.nama || '-'} | {r.warga?.blok || '-'} # {r.warga?.no_rumah || '-'}</p>
           <p><b>Tahun:</b> {r.tahun}</p>
           <p><b>Bulan:</b> {r.bulan_dibayar.join(', ')}</p>
           <p><b>Jumlah:</b> Rp {formatRupiah(r.jumlah_bayar)}</p>
 
           <div className="flex gap-2 mt-3">
-            <Button onClick={() => approve(r)}>
+            <Button
+              disabled={loadingId === r.id && (<span className="text-xs text-blue-500 ml-2">
+                Sedang diproses...
+              </span>)}
+              onClick={() => {
+                approve(r)
+              }}
+            >
               Approve
             </Button>
 
             <Button
-              onClick={() => reject(r.id)}
+              disabled={loadingId === r.id && (<span className="text-xs text-blue-500 ml-2">
+                Sedang diproses...
+              </span>)}
+              onClick={() => reject(r)}
               className="bg-red-500"
             >
               Reject
