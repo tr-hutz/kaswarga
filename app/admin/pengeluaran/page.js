@@ -1,102 +1,46 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { getUserRole } from '../../../lib/getUserRole'
+import { useState } from 'react'
+import { supabase } from '../../../lib/supabase'
+import Card from '../../../components/Card'
+import Input from '../../../components/Input'
+import Button from '../../../components/Button'
 
-export default function Pengeluaran() {
-  useEffect(() => {
-    checkAccess()
-  }, [])
-
-  const checkAccess = async () => {
-    const role = await getUserRole()
-
-    if (role !== 'admin') {
-      alert('Akses ditolak')
-      window.location.href = '/warga'
-    }
-  }
-
-  const [kategori, setKategori] = useState('')
-  const [nominal, setNominal] = useState('')
-  const [deskripsi, setDeskripsi] = useState('')
-  const [file, setFile] = useState(null)
-
-  const uploadNota = async () => {
-    if (!file) return null
-
-    const fileName = `nota-${Date.now()}-${file.name}`
-
-    const { data, error } = await supabase.storage
-      .from('nota')
-      .upload(fileName, file)
-
-    if (error) {
-      alert('Upload gagal')
-      return null
-    }
-
-    return data.path
-  }
+export default function PengeluaranPage() {
+  const [keterangan, setKeterangan] = useState('')
+  const [jumlah, setJumlah] = useState('')
 
   const simpan = async () => {
-    const notaPath = await uploadNota()
-
     await supabase.from('pengeluaran').insert({
-      tanggal: new Date(),
-      kategori,
-      nominal: parseInt(nominal),
-      deskripsi,
-      nota_url: notaPath
+      keterangan,
+      jumlah: parseInt(jumlah),
+      tanggal: new Date()
     })
 
-    alert('Pengeluaran tersimpan')
-  }
-
-  const logout = async () => {
-    await supabase.auth.signOut()
-    window.location.href = '/'
+    alert('Berhasil')
+    setKeterangan('')
+    setJumlah('')
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <div style={{ marginBottom: 20 }}>
-        <a href="/admin/dashboard">Dashboard</a> |
-        <a href="/admin/pembayaran">Pembayaran</a> |
-        <a href="/admin/pengeluaran">Pengeluaran</a>
-      </div>
+    <Card>
+      <h2 className="font-bold mb-3">Pengeluaran</h2>
 
-      <h2>Input Pengeluaran</h2>
-      <button onClick={logout}>Logout</button>
-
-      <input
-        placeholder="Kategori (keamanan, kebersihan, dll)"
-        onChange={(e) => setKategori(e.target.value)}
+      <Input
+        placeholder="Keterangan"
+        value={keterangan}
+        onChange={(e) => setKeterangan(e.target.value)}
       />
 
-      <br /><br />
-
-      <input
-        placeholder="Nominal"
-        onChange={(e) => setNominal(e.target.value)}
+      <Input
+        type="number"
+        placeholder="Jumlah"
+        value={jumlah}
+        onChange={(e) => setJumlah(e.target.value)}
       />
 
-      <br /><br />
-
-      <input
-        placeholder="Deskripsi"
-        onChange={(e) => setDeskripsi(e.target.value)}
-      />
-
-      <br /><br />
-
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files[0])}
-      />
-
-      <br /><br />
-
-      <button onClick={simpan}>Simpan</button>
-    </div>
+      <Button onClick={simpan} className="mt-3 w-full bg-red-500">
+        Simpan
+      </Button>
+    </Card>
   )
 }

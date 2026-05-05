@@ -1,10 +1,19 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { bulanList, formatRupiah, logout } from '../../lib/utils'
+import Card from '../../components/Card'
+import Button from '../../components/Button'
+import Navbar from '../../components/Navbar'
 
 export default function WargaPage() {
   const [warga, setWarga] = useState(null)
   const [pembayaran, setPembayaran] = useState([])
+  const [requestList, setRequestList] = useState([])
+  const [selectedBulan, setSelectedBulan] = useState([])
+
+  const currentYear = new Date().getFullYear()
+  const [tahun, setTahun] = useState(currentYear)
 
   useEffect(() => {
     init()
@@ -18,27 +27,18 @@ export default function WargaPage() {
   }
 
   const fetchWarga = async (email) => {
-    const cleanEmail = email.trim().toLowerCase()
-
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('warga')
       .select('*')
-      .ilike('email', cleanEmail)
+      .ilike('email', email)
 
-    if (error) {
-      console.log(error)
-      return
-    }
+    if (!data || data.length === 0) return
 
-    if (!data || data.length === 0) {
-      console.log('Warga tidak ditemukan:', cleanEmail)
-      return
-    }
+    const w = data[0]
+    setWarga(w)
 
-    const wargaData = data[0]
-    setWarga(wargaData)
-
-    fetchPembayaran(wargaData.id)
+    fetchPembayaran(w.id)
+    fetchRequest(w.id)
   }
 
   const fetchPembayaran = async (wargaId) => {
@@ -49,28 +49,6 @@ export default function WargaPage() {
 
     setPembayaran(data || [])
   }
-
-  const logout = async () => {
-    await supabase.auth.signOut()
-    window.location.href = '/'
-  }
-
-  // ===================== DATA =====================
-
-  const bulanList = [
-    { id: 1, nama: 'Jan' },
-    { id: 2, nama: 'Feb' },
-    { id: 3, nama: 'Mar' },
-    { id: 4, nama: 'Apr' },
-    { id: 5, nama: 'Mei' },
-    { id: 6, nama: 'Jun' },
-    { id: 7, nama: 'Jul' },
-    { id: 8, nama: 'Agu' },
-    { id: 9, nama: 'Sep' },
-    { id: 10, nama: 'Okt' },
-    { id: 11, nama: 'Nov' },
-    { id: 12, nama: 'Des' }
-  ]
 
   const totalBulan = pembayaran.reduce(
     (acc, p) => acc + (p.jumlah_bulan || 0),
@@ -102,40 +80,73 @@ export default function WargaPage() {
     return allMonths.length ? Math.max(...allMonths) : null
   }
 
-  const getNamaBulan = (ids) => {
-    return ids
-      .map(id => bulanList.find(b => b.id === id)?.nama)
-      .join(', ')
+  const fetchRequest = async (wargaId) => {
+    const { data } = await supabase
+      .from('konfirmasi_pembayaran')
+      .select('*')
+      .eq('warga_id', wargaId)
+
+    setRequestList(data || [])
   }
 
-  const formatRupiah = (angka) => {
-    return new Intl.NumberFormat('id-ID').format(angka)
+  // 🔒 anti double payment
+  const getBlockedMonths = () => {
+    const paid = pembayaran
+      .filter(p => p.tahun === tahun)
+      .flatMap(p => p.bulan_dibayar || [])
+
+    const pending = requestList
+      .filter(r => r.status === 'pending' && r.tahun === tahun)
+      .flatMap(r => r.bulan_dibayar || [])
+
+    return [...new Set([...paid, ...pending])]
+  }
+
+  const toggleBulan = (id) => {
+    if (selectedBulan.includes(id)) {
+      setSelectedBulan(selectedBulan.filter(b => b !== id))
+    } else {
+      setSelectedBulan([...selectedBulan, id])
+    }
   }
 
   const status = totalBulan >= 12 ? 'LUNAS' : 'MENUNGGAK'
   const lastMonth = getLastPaidMonth()
 
-  // ===================== UI =====================
+  const requestPembayaran = async () => {
+    if (selectedBulan.length === 0) return alert('Pilih bulan')
+
+    const { error } = await supabase
+      .from('konfirmasi_pembayaran')
+      .insert({
+        warga_id: warga.id,
+        bulan_dibayar: selectedBulan,
+        jumlah_bulan: selectedBulan.length,
+        jumlah_bayar: selectedBulan.length * 50000,
+        tahun
+      })
+
+    if (error) {
+      alert(error.message)
+      return
+    }
+
+    alert('Request dikirim')
+    setSelectedBulan([])
+    fetchRequest(warga.id)
+  }
+
+  const blockedMonths = getBlockedMonths()
 
   return (
-    <div style={{ padding: 20 }}>
-      {/* NAV */}
-      <div style={{ marginBottom: 20 }}>
-        <a href="/admin/dashboard">Dashboard</a> |{' '}
-        <a href="/admin/pembayaran">Pembayaran</a> |{' '}
-        <a href="/admin/pengeluaran">Pengeluaran</a>
-      </div>
+    <div className="p-4 max-w-3xl mx-auto">
 
-      <h2>Halaman Warga</h2>
+      <h2 className="text-xl font-bold mb-3">Halaman Warga</h2>
 
-      <button onClick={logout}>Logout</button>
-
-      {/* INFO WARGA */}
       {warga && (
-        <>
-          <p><b>{warga.nama}</b></p>
-          <p>{warga.blok}</p>
-        </>
+        <p className="mb-3">
+          {warga.nama} - {warga.blok}
+        </p>
       )}
 
       {/* RINGKASAN */}
@@ -190,28 +201,54 @@ export default function WargaPage() {
         ))}
       </div>
 
-      {/* RIWAYAT */}
-      <h3>Riwayat Pembayaran</h3>
+      <Card>
+        <h3 className="font-bold mb-2">Ajukan Pembayaran</h3>
 
-      <table border="1" cellPadding="5">
-        <thead>
-          <tr>
-            <th>Tanggal</th>
-            <th>Bulan</th>
-            <th>Jumlah</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {pembayaran.map((p, i) => (
-            <tr key={i}>
-              <td>{new Date(p.tanggal).toLocaleDateString()}</td>
-              <td>{getNamaBulan(p.bulan_dibayar || [])}</td>
-              <td>Rp {formatRupiah(p.jumlah_bayar)}</td>
-            </tr>
+        {/* TAHUN */}
+        <select
+          value={tahun}
+          onChange={(e) => setTahun(parseInt(e.target.value))}
+          className="border p-2 rounded mb-3"
+        >
+          {[currentYear - 1, currentYear, currentYear + 1].map(y => (
+            <option key={y} value={y}>{y}</option>
           ))}
-        </tbody>
-      </table>
+        </select>
+
+        {/* BULAN */}
+        <div className="grid grid-cols-4 gap-2">
+          {bulanList.map(b => {
+            const isBlocked = blockedMonths.includes(b.id)
+
+            return (
+              <div
+                key={b.id}
+                onClick={() => !isBlocked && toggleBulan(b.id)}
+                className={`
+                  p-2 text-center border rounded
+                  ${isBlocked
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : selectedBulan.includes(b.id)
+                      ? 'bg-green-200 cursor-pointer'
+                      : 'bg-white cursor-pointer'
+                  }
+                `}
+              >
+                {b.nama}
+              </div>
+            )
+          })}
+        </div>
+
+        <p className="mt-3">
+          Total: Rp {formatRupiah(selectedBulan.length * 50000)}
+        </p>
+
+        <Button onClick={requestPembayaran} className="mt-3 w-full">
+          Ajukan
+        </Button>
+      </Card>
+
     </div>
   )
 }

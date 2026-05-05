@@ -1,85 +1,74 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import Button from '../components/Button'
+import Input from '../components/Input'
 import { supabase } from '../lib/supabase'
 
-export default function AuthPage() {
+export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-
-  useEffect(() => {
-    checkUser()
-  }, [])
-
-  const checkUser = async () => {
-    const { data } = await supabase.auth.getUser()
-    if (data.user) {
-      handleRedirect(data.user.id)
-    }
-  }
-
-  const handleRedirect = async (userId) => {
-    const { data } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle()
-
-    if (data?.role === 'admin') {
-      window.location.href = '/admin/pembayaran'
-    } else {
-      window.location.href = '/warga'
-    }
-  }
-
-  const register = async () => {
-    const { data, error } = await supabase.auth.signUp({
-      email: email.trim().toLowerCase(),
-      password
-    })
-
-    if (error) return alert(error.message)
-
-    await supabase.from('users').insert({
-      id: data.user.id,
-      nama: email,
-      role: 'warga'
-    })
-
-    alert('Register sukses')
-  }
+  const [loading, setLoading] = useState(false)
 
   const login = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
+    if (!email || !password) {
+      return alert('Isi email & password')
+    }
+
+    setLoading(true)
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
       password
     })
 
-    if (error) return alert(error.message)
+    setLoading(false)
 
-    handleRedirect(data.user.id)
+    if (error) {
+      alert(error.message)
+      return
+    }
+
+    window.location.href = '/warga'
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>KasWarga</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
 
-      <input
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <div className="bg-white shadow-lg rounded-xl p-6 w-full max-w-sm">
 
-      <br /><br />
+        <h1 className="text-xl font-bold mb-4 text-center">
+          Login Warga
+        </h1>
 
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <div className="space-y-3">
 
-      <br /><br />
+          <Input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-      <button onClick={login}>Login</button>
-      <button onClick={register}>Register</button>
+          <Input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <Button
+            onClick={login}
+            disabled={loading}
+          >
+            {loading ? 'Loading...' : 'Login'}
+          </Button>
+
+        </div>
+
+        <p className="text-xs text-gray-500 mt-4 text-center">
+          Sistem Iuran Warga
+        </p>
+      </div>
     </div>
   )
 }
