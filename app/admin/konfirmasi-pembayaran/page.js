@@ -11,6 +11,22 @@ export default function RequestPage() {
 
   useEffect(() => {
     fetchRequest()
+
+    const channel = supabase.channel('konfirmasi-channel')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'konfirmasi_pembayaran'
+      }, (payload) => {
+        console.log('Realtime: ', payload)
+
+        // reload data
+        fetchRequest()
+      }).subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   const fetchRequest = async () => {
