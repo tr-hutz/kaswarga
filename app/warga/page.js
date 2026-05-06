@@ -1,10 +1,12 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { bulanList, formatRupiah, logout } from '../../lib/utils'
+import { bulanList, formatBulan, formatRupiah, logout } from '../../lib/utils'
 import Card from '../../components/Card'
 import Button from '../../components/Button'
 import Navbar from '../../components/Navbar'
+import useNotification from '../../lib/useNotification'
+import Toast from '../../components/Toast'
 
 export default function WargaPage() {
   const [warga, setWarga] = useState(null)
@@ -14,6 +16,9 @@ export default function WargaPage() {
 
   const currentYear = new Date().getFullYear()
   const [tahun, setTahun] = useState(currentYear)
+
+  const { message, show } = useNotification()
+  const [notifData, setNotifData] = useState(null)
 
   useEffect(() => {
     init()
@@ -38,7 +43,37 @@ export default function WargaPage() {
     setWarga(w)
 
     fetchPembayaran(w.id)
-    fetchRequest(w.id)
+    // fetchRequest(w.id)
+    // realtime subscribe for current tenant
+    const channel = supabase.channel('konfirmasi-channel')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'konfirmasi_pembayaran',
+        filter: `warga_id=eq.${w.id}`
+      }, (payload) => {
+        console.log('Realtime changes WARGA: ', payload)
+
+        const data = payload.new
+        const status = data.status
+        const bulan = formatBulan(data.bulan_dibayar)
+        const tahun = data.tahun
+
+        setNotifData(payload.new)
+
+        if (status === 'approved') {
+          show(`Pembayaran ${bulan} ${tahun} disetujui`)
+          fetchPembayaran(w.id)
+        }
+
+        if (status === 'rejected') {
+          show(`Pembayaran ${bulan} ${tahun} ditolak`)
+        }
+      }).subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }
 
   const fetchPembayaran = async (wargaId) => {
@@ -140,6 +175,8 @@ export default function WargaPage() {
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
+
+      <Toast message={message} />
 
       <h2 className="text-xl font-bold mb-3">Halaman Warga</h2>
 

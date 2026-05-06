@@ -8,6 +8,7 @@ export default function Navbar() {
 
   useEffect(() => {
     init()
+    fetchPending
   }, [])
 
   const init = async () => {
@@ -18,6 +19,16 @@ export default function Navbar() {
   const logout = async () => {
     await supabase.auth.signOut()
     window.location.href = '/'
+  }
+
+  const [pendingCount, setPendingCount] = useState(0)
+  const fetchPending = async () => {
+    const { count } = await supabase
+      .from('konfirmasi_pembayaran')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'pending')
+
+    setPendingCount(count || 0)
   }
 
   if (!user) return null
@@ -37,7 +48,12 @@ export default function Navbar() {
         {isAdmin && (
           <>
             <a href="/admin/pembayaran">Pembayaran</a>
-            <a href="/admin/konfirmasi-pembayaran">Konfirmasi Pembayaran</a>
+            <a href="/admin/konfirmasi-pembayaran" className="relative">
+              Konfirmasi Pembayaran {pendingCount > 0 && (<span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-1 rounded">
+                {pendingCount}
+              </span>
+              )}
+            </a>
             <a href="/admin/pengeluaran">Pengeluaran</a>
           </>
         )}

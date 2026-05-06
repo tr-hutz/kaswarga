@@ -3,7 +3,9 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../../lib/supabase'
 import Card from '../../../components/Card'
 import Button from '../../../components/Button'
+import Toast from '../../../components/Toast'
 import { formatRupiah } from '../../../lib/utils'
+import useNotification from '../../../lib/useNotification'
 
 export default function RequestPage() {
   const [data, setData] = useState([])
@@ -20,6 +22,10 @@ export default function RequestPage() {
       }, (payload) => {
         console.log('Realtime: ', payload)
 
+        if (payload.eventType === 'INSERT') {
+          show('Ada permintaan konfirmasi pembayaran baru')
+        }
+
         // reload data
         fetchRequest()
       }).subscribe()
@@ -28,6 +34,8 @@ export default function RequestPage() {
       supabase.removeChannel(channel)
     }
   }, [])
+
+  const { message, show } = useNotification()
 
   const fetchRequest = async () => {
     const { data, error } = await supabase
@@ -124,6 +132,8 @@ export default function RequestPage() {
     <div className="p-4 max-w-3xl mx-auto">
 
       <h2 className="text-xl font-bold mb-4">Approval Pembayaran</h2>
+
+      <Toast message={message} />
 
       {data.length === 0 && <p>Tidak ada request</p>}
 
