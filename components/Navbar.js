@@ -55,6 +55,15 @@ export default function Navbar() {
               )}
             </a>
             <a href="/admin/pengeluaran">Pengeluaran</a>
+
+            <button
+              onClick={() => {
+                window.open(`/api/laporan?tahun=2026`, '_blank')
+              }}
+              className="bg-green-600 text-white px-4 py-2 rounded"
+            >
+              Download Laporan PDF
+            </button>
           </>
         )}
 
