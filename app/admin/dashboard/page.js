@@ -22,7 +22,7 @@ export default function DashboardPage() {
       .select('nominal')
 
     const masuk = (pembayaran || []).reduce((a, b) => a + (b.jumlah_bayar || 0), 0)
-    const keluar = (pengeluaran || []).reduce((a, b) => a + (b.jumlah || 0), 0)
+    const keluar = (pengeluaran || []).reduce((a, b) => a + (b.nominal || 0), 0)
 
     setTotalMasuk(masuk)
     setTotalKeluar(keluar)
