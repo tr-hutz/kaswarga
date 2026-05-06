@@ -1,5 +1,5 @@
 'use client'
-import { Pie } from 'react-chartjs-2'
+import { Doughnut } from 'react-chartjs-2'
 
 export default function PiePengeluaran({ data }) {
   const kategoriMap = {}
@@ -31,7 +31,7 @@ export default function PiePengeluaran({ data }) {
       <h3 className="mb-2 font-semibold">
         Pengeluaran per Kategori
       </h3>
-      <Pie data={chartData} />
+      <Doughnut data={chartData} />
     </div>
   )
 }
