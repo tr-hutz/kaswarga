@@ -55,6 +55,7 @@ export default function Navbar() {
               )}
             </a>
             <a href="/admin/pengeluaran">Pengeluaran</a>
+            <a href="/admin/profil">Profil</a>
 
             <button
               onClick={() => {
