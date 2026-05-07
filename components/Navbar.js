@@ -47,6 +47,7 @@ export default function Navbar() {
         {/* Admin only */}
         {isAdmin && (
           <>
+            <a href="/admin/warga">Data Warga</a>
             <a href="/admin/pembayaran">Pembayaran</a>
             <a href="/admin/konfirmasi-pembayaran" className="relative">
               Konfirmasi Pembayaran {pendingCount > 0 && (<span className="absolute -top-2 -right-3 bg-red-500 text-white text-xs px-1 rounded">
