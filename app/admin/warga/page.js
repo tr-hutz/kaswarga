@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../../lib/supabase'
 import Input from '../../../components/Input'
 import Button from '../../../components/Button'
+import * as XLSX from 'xlsx'
+import { validateImportWarga } from '../../../lib/import/validateWarga'
 
 export default function WargaPage() {
   const [data, setData] = useState([])
@@ -11,7 +13,7 @@ export default function WargaPage() {
 
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(25)
+  const [limit, setLimit] = useState(10)
   const [total, setTotal] = useState(0)
 
   const [showForm, setShowForm] = useState(false)
@@ -137,6 +139,26 @@ export default function WargaPage() {
     a.click()
   }
 
+  // ===== EXPORT EXCEL =====
+  const exportExcel = () => {
+    // mapping data
+    const rows = data.map(w => ({
+      Nama: w.nama,
+      Blok: w.blok,
+      Nomor_Rumah: w.no_rumah,
+      Email: w.email
+    }))
+    // buat worksheet
+    const ws = XLSX.utils.json_to_sheet(rows)
+    // optional: lebar kolom 
+    ws['!cols'] = [{ wch: 30 }, { wch: 10 }, { wch: 15 }]
+    // workbook 
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Data Warga')
+    // download
+    XLSX.writeFile(wb, 'data-warga.xlsx')
+  }
+
   // ===== IMPORT CSV =====
   const importCSV = async (e) => {
     const file = e.target.files[0]
@@ -148,109 +170,163 @@ export default function WargaPage() {
     try {
       const text = await file.text()
 
-      const rows = text
-        .split('\n')
-        .map(r => r.trim())
-        .filter(Boolean)
-
-      if (rows.length <= 1) {
-        alert('CSV kosong')
-        return
-      }
-
-      const body = rows.slice(1)
-
-      const inserts = []
-      const seen = new Set()
-
-      // ===== VALIDASI FILE =====
-      setImportMessage('Validasi file...')
-
-      for (let i = 0; i < body.length; i++) {
-        const line = body[i]
-
-        const [nama, blok, no_rumah, email] = line
-          .split(',')
-          .map(v => v?.trim())
-
-        const rowNumber = i + 2
-
-        if (!nama || !blok || !no_rumah || !email) {
-          alert(`Baris ${rowNumber}: ada field kosong`)
-          return
+      const rows = text.split('\n').slice(1).map(r => {
+        const [nama, blok, no_rumah, email] = r.split(',')
+        return {
+          nama, blok, no_rumah, email
         }
+      })
 
-        const key = `${blok}-${no_rumah}-${email}`
-
-        if (seen.has(key)) {
-          alert(`Baris ${rowNumber}: duplicate (${key})`)
-          return
-        }
-
-        seen.add(key)
-
-        inserts.push({
-          nama,
-          blok,
-          no_rumah,
-          email
-        })
-      }
-
-      // ===== FETCH SEKALI =====
+      // fetch existing sekali
       setImportMessage('Memeriksa duplicate database...')
-
       const { data: existing } = await supabase
         .from('warga')
         .select('blok, no_rumah, email')
 
-      const existingSet = new Set(
-        (existing || []).map(
-          x => `${x.blok}-${x.no_rumah}-${x.email}`
-        )
-      )
+      // ===== VALIDASI =====
+      const result = validateImportWarga(rows, existing || [])
 
-      const konflik = inserts.filter(x =>
-        existingSet.has(`${x.blok}-${x.no_rumah}-${x.email}`)
-      )
-
-      if (konflik.length > 0) {
-        alert(
-          `Import dibatalkan.\nDuplicate ditemukan:\n` +
-          konflik
-            .map(x => `${x.blok}-${x.no_rumah}-${x.email}`)
-            .join('\n')
-        )
+      if (!result.success) {
+        alert(result.message)
         return
       }
 
       // ===== BULK INSERT =====
-      setImportMessage(`Mengimport ${inserts.length} data...`)
+      setImportMessage(`Mengimport ${result.inserts.length} warga...`)
 
       const { error } = await supabase
         .from('warga')
-        .insert(inserts)
-
+        .insert(result.inserts)
       if (error) {
         alert('Import gagal')
-        console.error(error)
+        return
+      }
+      alert(`Berhasil import ${result.inserts.length} warga`)
+      fetchWarga()
+    } catch (err) {
+      console.error(err)
+      alert('Gagal import CSV')
+    } finally {
+      setImporting(false)
+      setImportMessage('')
+    }
+  }
+
+  // ===== IMPORT EXCEL =====
+  const importExcel = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    setImporting(true)
+    setImportMessage('Membaca file Excel...')
+
+    try {
+      // ===== BACA FILE =====
+      const buffer = await file.arrayBuffer()
+
+      const workbook = XLSX.read(buffer, {
+        type: 'array'
+      })
+
+      let allRows = []
+
+      // ===== LOOP SEMUA SHEET =====
+      for (const sheetName of workbook.SheetNames) {
+
+        setImportMessage(`Memproses sheet: ${sheetName}`)
+
+        const sheet = workbook.Sheets[sheetName]
+
+        const rows = XLSX.utils.sheet_to_json(sheet, {
+          defval: ''
+        })
+
+        // normalisasi row
+        const normalized = rows.map(row => ({
+          nama: row.nama,
+          blok: row.blok,
+          no_rumah: row.no_rumah,
+          email: row.email
+        }))
+
+        allRows.push(...normalized)
+      }
+
+      // ===== FETCH EXISTING SEKALI =====
+      setImportMessage('Memeriksa duplicate database...')
+
+      const { data: existing } = await supabase
+        .from('warga')
+        .select('blok, no_rumah')
+
+      // ===== VALIDASI =====
+      const result = validateImportWarga(allRows, existing || [])
+
+      if (!result.success) {
+        alert(result.message)
         return
       }
 
-      alert(`Berhasil import ${inserts.length} warga`)
+      // ===== BULK INSERT =====
+      setImportMessage(`Mengimport ${result.inserts.length} warga...`)
+
+      const { error } = await supabase
+        .from('warga')
+        .insert(result.inserts)
+
+      if (error) {
+        console.error(error)
+        alert('Import gagal')
+        return
+      }
+
+      alert(`Berhasil import ${result.inserts.length} warga`)
 
       fetchWarga()
 
     } catch (err) {
       console.error(err)
-      alert('Terjadi kesalahan saat import')
+      alert(
+        'Terjadi kesalahan saat membaca Excel'
+      )
+
     } finally {
       setImporting(false)
       setImportMessage('')
+
+      // reset input file
       e.target.value = ''
     }
   }
 
+  const downloadTemplate = () => {
+    const rows = [
+      {
+        nama: 'Budi',
+        blok: 'A',
+        no_rumah: '12',
+        email: 'budi@email.com'
+      },
+      {
+        nama: 'Siti',
+        blok: 'B',
+        no_rumah: '7',
+        email: 'siti@email.com'
+      }
+    ]
+
+    const ws = XLSX.utils.json_to_sheet(rows)
+
+    const wb = XLSX.utils.book_new()
+
+    XLSX.utils.book_append_sheet(
+      wb,
+      ws,
+      'Warga'
+    )
+
+    XLSX.writeFile(wb, 'template-warga.xlsx')
+  }
 
   if (loading) return <p>Loading...</p>
 
@@ -259,26 +335,24 @@ export default function WargaPage() {
       <h1 className="text-xl font-bold mb-4">Data Warga</h1>
 
       {/* ACTION BAR */}
-      <div className="flex gap-2 mb-3">
-        <Input
-          placeholder="Cari..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-
+      <div className="flex gap-2 mb-3 flex-wrap">
+        <Input placeholder="Cari..." value={search} onChange={(e) => setSearch(e.target.value)} />
         <Button onClick={() => setShowForm(true)}>+ Tambah</Button>
-        <Button onClick={exportCSV}>Export</Button>
-
+        <Button onClick={exportCSV}>Export CSV</Button>
+        <Button onClick={exportExcel}>Export Excel</Button>
+        <Button onClick={downloadTemplate}>Template Excel</Button>
+        {/* IMPORT CSV */}
         <label className="cursor-pointer">
-          <span className="px-3 py-2 bg-gray-200 rounded">Import</span>
-          <input type="file" hidden onChange={importCSV} />
+          <span className="px-3 py-2 bg-gray-200 rounded text-sm">Import CSV</span>
+          <input type="file" hidden accept=".csv" onChange={importCSV} />
         </label>
-
-        <select
-          value={limit}
-          onChange={(e) => setLimit(Number(e.target.value))}
-          className="border px-2"
-        >
+        {/* IMPORT EXCEL */}
+        <label className="cursor-pointer">
+          <span className="px-3 py-2 bg-green-200 rounded text-sm">Import Excel</span>
+          <input type="file" hidden accept=".xlsx,.xls" onChange={importExcel} />
+        </label>
+        {/* LIMIT */}
+        <select value={limit} onChange={(e) => setLimit(Number(e.target.value))} className="border px-2 rounded" >
           <option value={10}>10</option>
           <option value={25}>25</option>
           <option value={50}>50</option>
@@ -301,7 +375,7 @@ export default function WargaPage() {
         <tbody>
           {data
             .filter(w =>
-              `${w.nama} ${w.blok} ${w.no_rumah}`
+              `${w.nama} ${w.blok} ${w.no_rumah} `
                 .toLowerCase()
                 .includes(search.toLowerCase())
             )
@@ -353,7 +427,13 @@ export default function WargaPage() {
         </div>
       )}
 
-      {importing && (<div className="mb-3 border rounded p-3 bg-blue-50"> <p className="text-sm font-medium"> {importMessage} </p> <div className="w-full bg-gray-200 rounded h-2 mt-2 overflow-hidden"> <div className="bg-blue-500 h-2 animate-pulse w-full" /> </div> </div>)}
+      {importing && (<div className="mb-3 border rounded p-3 bg-blue-50">
+        <p className="text-sm font-medium"> {importMessage} </p>
+        <div className="w-full bg-gray-200 rounded h-2 mt-2 overflow-hidden">
+          <div className="bg-blue-500 h-2 animate-pulse w-full" />
+        </div>
+      </div>)
+      }
     </div>
   )
 }
