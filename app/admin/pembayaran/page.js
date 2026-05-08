@@ -417,8 +417,8 @@ export default function PembayaranPage() {
                 </td>
 
                 <td className="p-2 text-right">
-                  <button onClick={() => handleEdit(x)}>Edit</button>{' '}
-                  <button onClick={() => handleDelete(x)}>Hapus</button>
+                  <Button onClick={() => handleEdit(x)}>Edit</Button>{' '}
+                  <Button onClick={() => handleDelete(x)}>Hapus</Button>
                 </td>
               </tr>
 

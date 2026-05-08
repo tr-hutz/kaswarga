@@ -579,7 +579,7 @@ export default function PengeluaranPage() {
               </th>
 
               <th className="
-                p-2 text-center
+                p-2 text-right
               ">
                 Aksi
               </th>
@@ -626,8 +626,7 @@ export default function PengeluaranPage() {
                 ">
 
                   <div className="
-                    flex gap-2
-                    justify-center
+                    p-2 text-right
                   ">
 
                     <Button
@@ -637,7 +636,7 @@ export default function PengeluaranPage() {
                     >
                       Edit
                     </Button>
-
+                    {' '}
                     <Button
                       onClick={() =>
                         handleDelete(x.id)

@@ -361,39 +361,44 @@ export default function WargaPage() {
       </div>
 
       {/* TABLE */}
-      <table className="w-full border text-sm">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="p-2 text-left">Nama</th>
-            <th className="p-2 text-left">Blok</th>
-            <th className="p-2 text-left">No Rumah</th>
-            <th className="p-2 text-left">Email</th>
-            <th className="p-2 text-right">Aksi</th>
-          </tr>
-        </thead>
+      <div className="
+      border rounded
+      overflow-auto
+      ">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-2 text-left">Nama</th>
+              <th className="p-2 text-left">Blok</th>
+              <th className="p-2 text-left">No Rumah</th>
+              <th className="p-2 text-left">Email</th>
+              <th className="p-2 text-right">Aksi</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {data
-            .filter(w =>
-              `${w.nama} ${w.blok} ${w.no_rumah} `
-                .toLowerCase()
-                .includes(search.toLowerCase())
-            )
-            .map(w => (
-              <tr key={w.id} className="border-t">
-                <td className="p-2">{w.nama}</td>
-                <td className="p-2">{w.blok}</td>
-                <td className="p-2">{w.no_rumah}</td>
-                <td className="p-2">{w.email}</td>
+          <tbody>
+            {data
+              .filter(w =>
+                `${w.nama} ${w.blok} ${w.no_rumah} `
+                  .toLowerCase()
+                  .includes(search.toLowerCase())
+              )
+              .map(w => (
+                <tr key={w.id} className="border-t">
+                  <td className="p-2">{w.nama}</td>
+                  <td className="p-2">{w.blok}</td>
+                  <td className="p-2">{w.no_rumah}</td>
+                  <td className="p-2">{w.email}</td>
 
-                <td className="p-2 text-right">
-                  <button onClick={() => handleEdit(w)}>Edit</button>{' '}
-                  <button onClick={() => handleDelete(w)}>Hapus</button>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+                  <td className="p-2 text-right">
+                    <Button onClick={() => handleEdit(w)}>Edit</Button>{' '}
+                    <Button onClick={() => handleDelete(w)}>Hapus</Button>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* PAGINATION */}
       <div className="flex justify-between mt-3">

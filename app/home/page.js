@@ -1,17 +1,27 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import { supabase } from '../../lib/supabase'
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react'
 
-import Card from '../../components/Card'
-import Button from '../../components/Button'
+import { supabase } from '@/lib/supabase'
+
+import Card from '@/components/Card'
+import Button from '@/components/Button'
 
 import {
   bulanList,
   formatRupiah
-} from '../../lib/utils'
+} from '@/lib/utils'
 
 export default function BerandaPage() {
+
+  // =========================
+  // CONSTANT
+  // =========================
 
   const currentYear =
     new Date().getFullYear()
@@ -26,6 +36,13 @@ export default function BerandaPage() {
   ]
 
   // =========================
+  // REFS
+  // =========================
+
+  const fileInputRef =
+    useRef(null)
+
+  // =========================
   // STATE
   // =========================
 
@@ -35,46 +52,72 @@ export default function BerandaPage() {
   const [submitting, setSubmitting] =
     useState(false)
 
-  const [user, setUser] =
-    useState(null)
-
   const [wargaId, setWargaId] =
     useState(null)
 
   const [profil, setProfil] =
     useState(null)
 
-  // ===== SUMMARY YEAR =====
+  // =========================
+  // SUMMARY TAB
+  // =========================
+
   const [
     summaryYear,
     setSummaryYear
   ] = useState(currentYear)
 
-  // ===== PAYMENT YEAR =====
-  const [
-    paymentYear,
-    setPaymentYear
-  ] = useState(currentYear)
-
-  // ===== SUMMARY DATA =====
   const [
     summaryPaidMonths,
     setSummaryPaidMonths
   ] = useState([])
 
-  // ===== PAYMENT DATA =====
+  const [
+    summaryPendingMonths,
+    setSummaryPendingMonths
+  ] = useState([])
+
+  const [
+    summaryRejectedMonths,
+    setSummaryRejectedMonths
+  ] = useState([])
+
+  // =========================
+  // PAYMENT FORM
+  // =========================
+
+  const [
+    paymentYear,
+    setPaymentYear
+  ] = useState(currentYear)
+
   const [
     paymentPaidMonths,
     setPaymentPaidMonths
   ] = useState([])
 
+  const [
+    paymentPendingMonths,
+    setPaymentPendingMonths
+  ] = useState([])
+
+  const [
+    paymentRejectedMonths,
+    setPaymentRejectedMonths
+  ] = useState([])
+
+  // =========================
+  // FORM
+  // =========================
+
   const [fullYear, setFullYear] =
     useState(false)
 
-  const [form, setForm] = useState({
-    bulan_dibayar: [],
-    bukti: null
-  })
+  const [form, setForm] =
+    useState({
+      bulan_dibayar: [],
+      bukti: null
+    })
 
   // =========================
   // INIT
@@ -88,16 +131,13 @@ export default function BerandaPage() {
 
     setLoading(true)
 
-    // auth
     const {
       data: { user }
     } = await supabase.auth.getUser()
 
     if (!user) return
 
-    setUser(user)
-
-    // profil
+    // profil rt
     const { data: profilData } =
       await supabase
         .from('profil_rt')
@@ -130,8 +170,12 @@ export default function BerandaPage() {
     if (!wargaId) return
 
     fetchSummaryPayments()
+    fetchSummaryStatus()
 
-  }, [summaryYear, wargaId])
+  }, [
+    summaryYear,
+    wargaId
+  ])
 
   const fetchSummaryPayments =
     async () => {
@@ -152,6 +196,53 @@ export default function BerandaPage() {
       setSummaryPaidMonths(months)
     }
 
+  const fetchSummaryStatus =
+    async () => {
+
+      const {
+        data: konfirmasi
+      } = await supabase
+        .from('konfirmasi_pembayaran')
+        .select(`
+        bulan_dibayar,
+        status
+      `)
+        .eq('warga_id', wargaId)
+        .eq('tahun', summaryYear)
+
+      const pending = []
+      const rejected = []
+
+        ; (konfirmasi || []).forEach(
+          item => {
+
+            if (
+              item.status === 'pending'
+            ) {
+              pending.push(
+                ...(item.bulan_dibayar || [])
+              )
+            }
+
+            if (
+              item.status === 'rejected'
+            ) {
+              rejected.push(
+                ...(item.bulan_dibayar || [])
+              )
+            }
+          }
+        )
+
+      setSummaryPendingMonths(
+        pending
+      )
+
+      setSummaryRejectedMonths(
+        rejected
+      )
+    }
+
   // =========================
   // FETCH PAYMENT STATUS
   // =========================
@@ -162,25 +253,74 @@ export default function BerandaPage() {
 
     fetchPaymentStatus()
 
-  }, [paymentYear, wargaId])
+  }, [
+    paymentYear,
+    wargaId
+  ])
 
   const fetchPaymentStatus =
     async () => {
 
-      const { data } =
-        await supabase
-          .from('pembayaran')
-          .select('bulan_dibayar')
-          .eq('warga_id', wargaId)
-          .eq('tahun', paymentYear)
+      // approved
+      const {
+        data: pembayaran
+      } = await supabase
+        .from('pembayaran')
+        .select('bulan_dibayar')
+        .eq('warga_id', wargaId)
+        .eq('tahun', paymentYear)
 
-      const months =
-        (data || [])
+      const paid =
+        (pembayaran || [])
           .flatMap(
             x => x.bulan_dibayar || []
           )
 
-      setPaymentPaidMonths(months)
+      setPaymentPaidMonths(paid)
+
+      // pending / rejected
+      const {
+        data: konfirmasi
+      } = await supabase
+        .from('konfirmasi_pembayaran')
+        .select(`
+        bulan_dibayar,
+        status
+      `)
+        .eq('warga_id', wargaId)
+        .eq('tahun', paymentYear)
+
+      const pending = []
+      const rejected = []
+
+        ; (konfirmasi || []).forEach(
+          item => {
+
+            if (
+              item.status === 'pending'
+            ) {
+              pending.push(
+                ...(item.bulan_dibayar || [])
+              )
+            }
+
+            if (
+              item.status === 'rejected'
+            ) {
+              rejected.push(
+                ...(item.bulan_dibayar || [])
+              )
+            }
+          }
+        )
+
+      setPaymentPendingMonths(
+        pending
+      )
+
+      setPaymentRejectedMonths(
+        rejected
+      )
     }
 
   // =========================
@@ -190,8 +330,9 @@ export default function BerandaPage() {
   const tunggakanMonths =
     useMemo(() => {
 
-      // hanya hitung tahun berjalan
-      if (summaryYear !== currentYear) {
+      if (
+        summaryYear !== currentYear
+      ) {
         return []
       }
 
@@ -203,9 +344,13 @@ export default function BerandaPage() {
         i++
       ) {
 
-        if (
-          !summaryPaidMonths.includes(i)
-        ) {
+        const paid =
+          summaryPaidMonths.includes(i)
+
+        const pending =
+          summaryPendingMonths.includes(i)
+
+        if (!paid && !pending) {
           result.push(i)
         }
       }
@@ -214,14 +359,16 @@ export default function BerandaPage() {
 
     }, [
       summaryPaidMonths,
+      summaryPendingMonths,
       summaryYear
     ])
 
   const upcomingMonths =
     useMemo(() => {
 
-      // hanya tahun berjalan
-      if (summaryYear !== currentYear) {
+      if (
+        summaryYear !== currentYear
+      ) {
         return []
       }
 
@@ -233,9 +380,13 @@ export default function BerandaPage() {
         i++
       ) {
 
-        if (
-          !summaryPaidMonths.includes(i)
-        ) {
+        const paid =
+          summaryPaidMonths.includes(i)
+
+        const pending =
+          summaryPendingMonths.includes(i)
+
+        if (!paid && !pending) {
           result.push(i)
         }
       }
@@ -244,6 +395,7 @@ export default function BerandaPage() {
 
     }, [
       summaryPaidMonths,
+      summaryPendingMonths,
       summaryYear
     ])
 
@@ -253,9 +405,16 @@ export default function BerandaPage() {
 
   const toggleMonth = (id) => {
 
-    // sudah dibayar
+    // approved
     if (
       paymentPaidMonths.includes(id)
+    ) {
+      return
+    }
+
+    // pending
+    if (
+      paymentPendingMonths.includes(id)
     ) {
       return
     }
@@ -309,6 +468,10 @@ export default function BerandaPage() {
         .filter(id =>
           !paymentPaidMonths.includes(id)
         )
+        .filter(id =>
+          !paymentPendingMonths
+            .includes(id)
+        )
 
     setForm({
       ...form,
@@ -346,6 +509,32 @@ export default function BerandaPage() {
 
     if (!file) return
 
+    // size
+    if (
+      file.size > 5_000_000
+    ) {
+      alert(
+        'Ukuran file maksimal 5MB'
+      )
+      return
+    }
+
+    // type
+    const allowed = [
+      'image/jpeg',
+      'image/png',
+      'application/pdf'
+    ]
+
+    if (
+      !allowed.includes(file.type)
+    ) {
+      alert(
+        'Format file tidak didukung'
+      )
+      return
+    }
+
     setForm({
       ...form,
       bukti: file
@@ -374,10 +563,14 @@ export default function BerandaPage() {
 
     setSubmitting(true)
 
-    // upload
-    const fileName =
-      `${paymentYear}/${wargaId}/${Date.now()}-${form.bukti.name}`
+    // filename
+    const fileName = `
+      ${paymentYear}/
+      ${wargaId}/
+      ${Date.now()}-${form.bukti.name}
+    `
 
+    // upload
     const {
       error: uploadError
     } = await supabase.storage
@@ -405,7 +598,7 @@ export default function BerandaPage() {
       .from('bukti-pembayaran')
       .getPublicUrl(fileName)
 
-    // insert konfirmasi
+    // insert
     const { error } =
       await supabase
         .from(
@@ -413,11 +606,11 @@ export default function BerandaPage() {
         )
         .insert([{
           warga_id: wargaId,
+          tahun: paymentYear,
           bulan_dibayar:
             form.bulan_dibayar,
           jumlah_bulan: form.bulan_dibayar.length,
           jumlah_bayar: form.bulan_dibayar.length * profil?.iuran_per_bulan,
-          tahun: paymentYear,
           bukti_url:
             publicUrlData.publicUrl,
           status: 'pending'
@@ -429,7 +622,9 @@ export default function BerandaPage() {
 
       console.error(error)
 
-      alert('Gagal submit')
+      alert(
+        'Gagal mengirim pembayaran'
+      )
 
       return
     }
@@ -438,6 +633,10 @@ export default function BerandaPage() {
       'Konfirmasi pembayaran berhasil dikirim'
     )
 
+    // refresh
+    fetchPaymentStatus()
+    fetchSummaryStatus()
+
     // reset
     setForm({
       bulan_dibayar: [],
@@ -445,6 +644,11 @@ export default function BerandaPage() {
     })
 
     setFullYear(false)
+
+    // reset native input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
   }
 
   // =========================
@@ -475,7 +679,7 @@ export default function BerandaPage() {
 
       </div>
 
-      {/* TAHUN SUMMARY */}
+      {/* TABS */}
       <div className="
         flex gap-2 flex-wrap
       ">
@@ -671,17 +875,27 @@ export default function BerandaPage() {
               summaryPaidMonths
                 .includes(b.id)
 
+            const pending =
+              summaryPendingMonths
+                .includes(b.id)
+
+            const rejected =
+              summaryRejectedMonths
+                .includes(b.id)
+
             const overdue =
               summaryYear === currentYear &&
               b.id <= currentMonth &&
-              !paid
+              !paid &&
+              !pending
 
             return (
 
               <div
                 key={b.id}
                 className={`
-                  rounded-xl border p-4
+                  rounded-xl
+                  border p-4
                   text-center
 
                   ${paid
@@ -689,15 +903,25 @@ export default function BerandaPage() {
                         bg-green-50
                         border-green-300
                       `
-                    : overdue
+                    : pending
                       ? `
-                          bg-red-50
-                          border-red-300
+                          bg-yellow-50
+                          border-yellow-300
                         `
-                      : `
-                          bg-gray-50
-                          border-gray-200
-                        `
+                      : rejected
+                        ? `
+                            bg-red-50
+                            border-red-300
+                          `
+                        : overdue
+                          ? `
+                              bg-red-50
+                              border-red-300
+                            `
+                          : `
+                              bg-gray-50
+                              border-gray-200
+                            `
                   }
                 `}
               >
@@ -715,9 +939,13 @@ export default function BerandaPage() {
                   {
                     paid
                       ? 'Lunas'
-                      : overdue
-                        ? 'Tunggak'
-                        : 'Belum'
+                      : pending
+                        ? 'Menunggu'
+                        : rejected
+                          ? 'Ditolak'
+                          : overdue
+                            ? 'Tunggak'
+                            : 'Belum'
                   }
 
                 </div>
@@ -731,20 +959,20 @@ export default function BerandaPage() {
 
       </Card>
 
-      {/* FORM */}
+      {/* FORM AJUKAN PEMBAYARAN */}
       <Card>
 
         <div className="mb-4">
 
           <h2 className="
-            text-lg font-bold
-          ">
+      text-lg font-bold
+    ">
             Ajukan Pembayaran
           </h2>
 
           <p className="
-            text-sm text-gray-500
-          ">
+      text-sm text-gray-500
+    ">
             Pilih bulan yang ingin dibayar
           </p>
 
@@ -755,21 +983,21 @@ export default function BerandaPage() {
           className="space-y-5"
         >
 
-          {/* ACTION HEADER */}
+          {/* HEADER ACTION */}
           <div className="
-            flex flex-col
-            md:flex-row
-            md:items-center
-            md:justify-between
-            gap-3
-          ">
+      flex flex-col
+      md:flex-row
+      md:items-center
+      md:justify-between
+      gap-3
+    ">
 
-            {/* PAYMENT YEAR */}
+            {/* TAHUN */}
             <div>
 
               <label className="
-                text-sm text-gray-500
-              ">
+          text-sm text-gray-500
+        ">
                 Periode Tahun
               </label>
 
@@ -777,16 +1005,14 @@ export default function BerandaPage() {
                 value={paymentYear}
                 onChange={(e) =>
                   setPaymentYear(
-                    Number(
-                      e.target.value
-                    )
+                    Number(e.target.value)
                   )
                 }
                 className="
-                  border rounded-lg
-                  px-3 py-2
-                  w-full mt-1
-                "
+            border rounded-lg
+            px-3 py-2
+            w-full mt-1
+          "
               >
 
                 {tahunOptions.map(t => (
@@ -808,8 +1034,8 @@ export default function BerandaPage() {
             <div>
 
               <label className="
-                text-sm text-gray-500
-              ">
+          text-sm text-gray-500
+        ">
                 Pembayaran
               </label>
 
@@ -817,21 +1043,21 @@ export default function BerandaPage() {
                 type="button"
                 onClick={toggleFullYear}
                 className={`
-                  block mt-1
-                  px-4 py-2 rounded-lg
-                  border transition
+            block mt-1
+            px-4 py-2 rounded-lg
+            border transition
 
-                  ${fullYear
+            ${fullYear
                     ? `
-                        bg-green-500
-                        text-white
-                        border-green-500
-                      `
+                  bg-green-500
+                  text-white
+                  border-green-500
+                `
                     : `
-                        bg-white
-                      `
+                  bg-white
+                `
                   }
-                `}
+          `}
               >
 
                 Disetahunkan
@@ -846,19 +1072,19 @@ export default function BerandaPage() {
           <div>
 
             <label className="
-              text-sm text-gray-500
-            ">
+        text-sm text-gray-500
+      ">
               Pilih Bulan
             </label>
 
             <div className="
-              grid
-              grid-cols-2
-              sm:grid-cols-3
-              md:grid-cols-4
-              xl:grid-cols-6
-              gap-3 mt-3
-            ">
+        grid
+        grid-cols-2
+        sm:grid-cols-3
+        md:grid-cols-4
+        xl:grid-cols-6
+        gap-3 mt-3
+      ">
 
               {bulanList.map(b => {
 
@@ -870,40 +1096,88 @@ export default function BerandaPage() {
                   paymentPaidMonths
                     .includes(b.id)
 
+                const pending =
+                  paymentPendingMonths
+                    .includes(b.id)
+
+                const rejected =
+                  paymentRejectedMonths
+                    .includes(b.id)
+
                 return (
 
                   <button
                     key={b.id}
                     type="button"
-                    disabled={paid}
+                    disabled={
+                      paid || pending
+                    }
                     onClick={() =>
                       toggleMonth(b.id)
                     }
                     className={`
-                      rounded-xl border p-3
-                      text-sm transition
+                rounded-xl
+                border p-3
+                text-sm transition
 
-                      ${paid
+                ${paid
                         ? `
-                            bg-green-100
-                            border-green-300
-                            text-green-700
-                            cursor-not-allowed
-                          `
-                        : selected
+                      bg-green-100
+                      border-green-300
+                      text-green-700
+                      cursor-not-allowed
+                    `
+                        : pending
                           ? `
-                              bg-blue-500
-                              text-white
-                              border-blue-500
-                            `
-                          : `
-                              bg-white
-                            `
+                        bg-yellow-100
+                        border-yellow-300
+                        text-yellow-700
+                        cursor-not-allowed
+                      `
+                          : rejected
+                            ? `
+                          bg-red-100
+                          border-red-300
+                          text-red-700
+                          hover:bg-red-50
+                        `
+                            : selected
+                              ? `
+                            bg-blue-500
+                            text-white
+                            border-blue-500
+                          `
+                              : `
+                            bg-white
+                            hover:bg-gray-50
+                          `
                       }
-                    `}
+              `}
                   >
 
-                    {b.nama}
+                    {/* BULAN */}
+                    <div>
+                      {b.nama}
+                    </div>
+
+                    {/* STATUS */}
+                    <div className="
+                text-xs mt-1
+              ">
+
+                      {
+                        paid
+                          ? 'Lunas'
+                          : pending
+                            ? 'Menunggu'
+                            : rejected
+                              ? 'Ditolak'
+                              : selected
+                                ? 'Dipilih'
+                                : 'Belum'
+                      }
+
+                    </div>
 
                   </button>
 
@@ -916,14 +1190,14 @@ export default function BerandaPage() {
 
           {/* TOTAL */}
           <div className="
-            rounded-xl border
-            bg-gray-50 p-4
-          ">
+      rounded-xl border
+      bg-gray-50 p-4
+    ">
 
             <div className="
-              flex justify-between
-              text-sm
-            ">
+        flex justify-between
+        text-sm
+      ">
 
               <span>
                 Total Pembayaran
@@ -937,7 +1211,7 @@ export default function BerandaPage() {
                 {' '}bulan ×{' '}
                 {
                   formatRupiah(
-                    profil?.iuran_per_bulan || 0
+                    profil?.nominal_iuran || 0
                   )
                 }
 
@@ -946,18 +1220,16 @@ export default function BerandaPage() {
             </div>
 
             <div className="
-              flex justify-between
-              mt-2 font-bold
-            ">
+        flex justify-between
+        mt-2 font-bold
+      ">
 
               <span>Total</span>
 
               <span>
 
                 Rp {
-                  formatRupiah(
-                    totalBayar
-                  )
+                  formatRupiah(totalBayar)
                 }
 
               </span>
@@ -970,28 +1242,28 @@ export default function BerandaPage() {
           <div>
 
             <label className="
-              text-sm text-gray-500
-            ">
+        text-sm text-gray-500
+      ">
               Upload Bukti Pembayaran
             </label>
 
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/*,.pdf"
-              name="bukti-file"
               onChange={handleFile}
               className="
-                border rounded-lg
-                w-full p-2 mt-1
-              "
+          border rounded-lg
+          w-full p-2 mt-1
+        "
             />
 
           </div>
 
           {/* ACTION */}
           <div className="
-            flex justify-end
-          ">
+      flex justify-end
+    ">
 
             <Button
               type="submit"
