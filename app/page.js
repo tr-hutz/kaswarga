@@ -28,7 +28,7 @@ export default function LoginPage() {
       return
     }
 
-    window.location.href = '/warga'
+    window.location.href = '/home'
   }
 
   return (
@@ -66,7 +66,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-xs text-gray-500 mt-4 text-center">
-          Sistem Iuran Warga
+          KasWargi
         </p>
       </div>
     </div>

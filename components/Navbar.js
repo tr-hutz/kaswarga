@@ -42,6 +42,7 @@ export default function Navbar() {
       <div className="flex gap-4 text-sm">
 
         {/* Semua user */}
+        <a href="/home">Home</a>
         <a href="/admin/dashboard">Dashboard</a>
 
         {/* Admin only */}
