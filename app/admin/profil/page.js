@@ -14,7 +14,7 @@ export default function ProfilPage() {
     nama_perumahan: '',
     nama_rt: '',
     alamat: '',
-    iuran_per_bulan: '',
+    nominal_iuran: '',
     nama_ketua: '',
     nama_bendahara: '',
     nama_bank: '',
@@ -136,7 +136,7 @@ export default function ProfilPage() {
         <Input
           label="Iuran Per Bulan"
           name="iuranPerBulan"
-          value={form.iuran_per_bulan}
+          value={form.nominal_iuran}
           onChange={handleChange}
         />
 
