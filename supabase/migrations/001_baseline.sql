@@ -1,137 +1,237 @@
 -- profil rt
-create table profil_rt(id UUID primary key default gen_random_uuid(),
-                       nama_rt TEXT,
-                       nama_perumahan TEXT,
-                       alamat TEXT,
-                       iuran_per_bulan numeric,
-                       nama_ketua TEXT,
-                       nama_bendahara TEXT, 
-                       nama_bank TEXT,
-                       nomor_rekening TEXT,
-                       nama_rekening TEXT,
-                       logo_url TEXT,
-                       created_at TIMESTAMP default Now());
--- tabel warga
-create table warga(id UUID primary key default gen_random_uuid(),
-                   nama TEXT not null,
-                   blok TEXT,
-                   no_rumah TEXT,
-                   email TEXT,
-                   created_at TIMESTAMP default Now());
--- tabel user (login)
-create type user_role as ENUM ('admin',
-'bendahara',
-'warga');
+create table rt
+(
 
-create table users(id UUID primary key,
-                   nama TEXT,
-                   role TEXT check (role in ('admin', 'bendahara', 'warga')),
-                   warga_id UUID references warga(id),
-                   created_at TIMESTAMP default Now());
+    id             uuid primary key
+                                 default gen_random_uuid(),
+
+    /*
+     |--------------------------------------------------------------------------
+     | IDENTITAS RT
+     |--------------------------------------------------------------------------
+     */
+    nama           text not null,
+    kode           text unique,
+    alamat         text,
+    kota           text,
+    provinsi       text,
+    kode_pos       text,
+
+    email          text,
+    telepon        text,
+
+    nominal_iuran  numeric
+                        not null default 0,
+
+    nama_bank      text,
+    nomor_rekening text,
+    atas_nama      text,
+    qris_url       text,
+    logo_url       text,
+
+    aktif          boolean
+                                 default true,
+
+    created_at     timestamp
+                                 default now(),
+
+    updated_at     timestamp
+                                 default now()
+);
+
+-- tabel warga
+create table warga
+(
+
+    id         uuid primary key
+        default gen_random_uuid(),
+
+    rt_id      uuid
+                    not null
+        references rt (id),
+    nama       text not null,
+    blok       text,
+    no_rumah   text,
+    email      text,
+    no_hp      text,
+    aktif      boolean,
+    created_at timestamp
+        default now()
+
+);
+-- tabel user (login)
+create table users
+(
+    id         uuid primary key,
+    nama       text,
+    email      text,
+    created_at timestamp
+        default now()
+);
+
+create type user_role as enum (
+  'admin',
+  'bendahara',
+  'warga'
+);
+
+create table user_membership
+(
+    id         uuid primary key
+        default gen_random_uuid(),
+    user_id    uuid
+        not null
+        references users (id),
+    rt_id      uuid
+        not null
+        references rt (id),
+
+    warga_id   uuid
+        references warga (id),
+    role       user_role
+        not null,
+    created_at timestamp
+        default now(),
+    unique (user_id, rt_id)
+);
 
 -- tabel konfirmasi pembayaran
-create table konfirmasi_pembayaran (
-  id uuid primary key default gen_random_uuid(),
+create table konfirmasi_pembayaran
+(
+    id               uuid primary key   default gen_random_uuid(),
 
-  warga_id uuid not null
-    references warga(id)
-    on
-delete
-	cascade,
-	tahun integer not null,
-	total_bayar bigint not null,
-	status text not null default 'pending',
-	bukti_url text,
-	created_at timestamp not null
-    default now()
+    warga_id         uuid      not null references warga (id) on delete cascade,
+    rt_id            uuid      not null references rt (id) on delete cascade,
+    tahun            integer   not null,
+    total_bayar      bigint    not null,
+    status           text      not null default 'pending',
+    bukti_url        text,
+    alasan_penolakan text,
+    created_at       timestamp not null
+                                        default now()
 );
 -- detail konfirmasi (normalisasi)
-create table detail_konfirmasi_pembayaran (
-  id uuid primary key default gen_random_uuid(),
+create table detail_konfirmasi_pembayaran
+(
+    id            uuid primary key default gen_random_uuid(),
 
-  konfirmasi_id uuid not null
-    references konfirmasi_pembayaran(id)
-    on
-delete
-	cascade,
-	warga_id uuid not null
-    references warga(id)
-    on
-	delete
-		cascade,
-		tahun integer not null,
-		bulan integer not null,
-		nominal bigint not null,
-		created_at timestamp not null
-    default now(),
-		constraint detail_konfirmasi_bulan_check
-  check (
-    bulan between 1 and 12
-  ),
-		constraint detail_konfirmasi_unique
-  unique (
-    warga_id,
-		tahun,
-		bulan
-  )
+    konfirmasi_id uuid      not null
+        references konfirmasi_pembayaran (id)
+            on
+                delete
+                cascade,
+    warga_id      uuid      not null
+        references warga (id)
+            on
+                delete
+                cascade,
+    tahun         integer   not null,
+    bulan         integer   not null,
+    nominal       bigint    not null,
+    created_at    timestamp not null
+                                   default now(),
+    constraint detail_konfirmasi_bulan_check
+        check (
+            bulan between 1 and 12
+            ),
+    constraint detail_konfirmasi_unique
+        unique (
+                warga_id,
+                tahun,
+                bulan
+            )
 );
 -- tabel pembayaran (kas masuk)
-create table pembayaran (
-  id uuid primary key default gen_random_uuid(),
+create table pembayaran
+(
+    id           uuid primary key default gen_random_uuid(),
 
-  warga_id uuid not null
-    references warga(id)
-    on
-delete
-	cascade,
-	tahun integer not null,
-	tanggal timestamp not null
-    default now(),
-	jumlah_bayar bigint not null,
-	metode text,
-	keterangan text,
-	created_at timestamp not null
-    default now()
+    warga_id     uuid      not null references warga (id) on delete cascade,
+
+    rt_id        uuid      not null references rt (id) on delete cascade,
+
+    tahun        integer   not null,
+    tanggal      timestamp not null
+                                  default now(),
+    jumlah_bayar bigint    not null,
+    metode       text,
+    keterangan   text,
+    created_at   timestamp not null
+                                  default now()
 );
 -- detail (normalisasi)
-create table detail_pembayaran (
-  id uuid primary key default gen_random_uuid(),
+create table detail_pembayaran
+(
+    id            uuid primary key default gen_random_uuid(),
 
-  pembayaran_id uuid not null
-    references pembayaran(id)
-    on
-delete
-	cascade,
-	warga_id uuid not null
-    references warga(id)
-    on
-	delete
-		cascade,
-		tahun integer not null,
-		bulan integer not null,
-		nominal bigint not null,
-		created_at timestamp not null
-    default now(),
-		constraint detail_bulan_check
-  check (
-    bulan between 1 and 12
-  ),
-		constraint detail_nominal_check
-  check (
-    nominal >= 0
-  ),
-		constraint detail_unique_bulan
-  unique (
-    warga_id,
-		tahun,
-		bulan
-  )
+    pembayaran_id uuid      not null
+        references pembayaran (id)
+            on
+                delete
+                cascade,
+    warga_id      uuid      not null
+        references warga (id)
+            on
+                delete
+                cascade,
+    tahun         integer   not null,
+    bulan         integer   not null,
+    nominal       bigint    not null,
+    created_at    timestamp not null
+                                   default now(),
+    constraint detail_bulan_check
+        check (
+            bulan between 1 and 12
+            ),
+    constraint detail_nominal_check
+        check (
+            nominal >= 0
+            ),
+    constraint detail_unique_bulan
+        unique (
+                warga_id,
+                tahun,
+                bulan
+            )
 );
 -- tabel pengeluaran (kas keluar)
-create table pengeluaran(id UUID primary key default gen_random_uuid(),
-                         tanggal DATE,
-                         kategori TEXT,
-                         nominal INTEGER,
-                         deskripsi TEXT,
-                         nota_url TEXT,
-                         created_at TIMESTAMP default Now());
+create table pengeluaran
+(
+    id         UUID primary key default gen_random_uuid(),
+    rt_id      uuid not null
+        references rt (id)
+            on
+                delete
+                cascade,
+    tanggal    DATE,
+    kategori   TEXT,
+    nominal    INTEGER,
+    deskripsi  TEXT,
+    nota_url   TEXT,
+    aktif      BOOL             DEFAULT TRUE,
+    created_at TIMESTAMP        default Now()
+);
+
+create table kas_ledger
+(
+    id            uuid primary key
+                                       default gen_random_uuid(),
+
+    rt_id         uuid        not null,
+    jenis         varchar(20)
+                              not null,
+
+    sumber        varchar(50) not null,
+    referensi_id  uuid,
+    tanggal       timestamp   not null default now(),
+    deskripsi     text,
+    nominal       bigint      not null default 0,
+
+    saldo_setelah bigint      not null default 0,
+
+    created_by    uuid,
+    created_at    timestamp
+                                       default now(),
+
+    aktif         boolean              default true
+);

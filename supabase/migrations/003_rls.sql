@@ -16,9 +16,16 @@ on "public"."users"
 to public
 using (true);
 
--- Profile
-create policy "Allow read profile_rt"
-on "public"."profil_rt"
+create policy "membership_select_own"
+on user_membership
+for select
+using (
+  user_id = auth.uid()
+);
+
+-- rt
+create policy "Allow read rt"
+on "public"."rt"
 to public
 using (true);
 

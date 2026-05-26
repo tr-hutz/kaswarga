@@ -68,13 +68,15 @@ end if;
 	into
 	pembayaran (
     warga_id,
-	tahun,
-	jumlah_bayar,
-	tanggal,
-	created_at
+    rt_id,
+    tahun,
+    jumlah_bayar,
+    tanggal,
+    created_at
   )
 values (
     v_konfirmasi.warga_id,
+    v_konfirmasi.rt_id,
     v_konfirmasi.tahun,
     v_konfirmasi.total_bayar,
     now(),
@@ -94,11 +96,11 @@ values (
 	into
 	detail_pembayaran (
     pembayaran_id,
-	warga_id,
-	tahun,
-	bulan,
-	nominal,
-	created_at
+	  warga_id,
+    tahun,
+    bulan,
+    nominal,
+    created_at
   )
   select
 	v_pembayaran_id,
@@ -244,7 +246,7 @@ to authenticated;
 | Perubahan:
 | ✅ insert detail_pembayaran
 | ✅ anti duplicate bulan per warga
-| ✅ nominal mengikuti profil_rt
+| ✅ nominal mengikuti rt
 | ✅ field pengeluaran disesuaikan
 | ✅ reset detail pembayaran
 |
@@ -262,21 +264,21 @@ declare
 
   v_warga_id uuid;
 
-v_pembayaran_id uuid;
+  v_pembayaran_id uuid;
 
-v_jumlah_bulan int;
+  v_jumlah_bulan int;
 
-v_nominal_iuran bigint;
+  v_rt RECORD;
 
-v_jumlah_bayar bigint;
+  v_jumlah_bayar bigint;
 
-v_total_masuk bigint := 0;
+  v_total_masuk bigint := 0;
 
-v_target_pengeluaran bigint;
+  v_target_pengeluaran bigint;
 
-v_current_pengeluaran bigint := 0;
+  v_current_pengeluaran bigint := 0;
 
-v_kategori text[] := array[
+  v_kategori text[] := array[
     'sosial',
     'operasional',
     'kebersihan',
@@ -284,7 +286,7 @@ v_kategori text[] := array[
     'kegiatan'
   ];
 
-v_deskripsi text[] := array[
+  v_deskripsi text[] := array[
     'Bantuan warga sakit',
     'Pembelian alat kebersihan',
     'Konsumsi rapat',
@@ -292,13 +294,13 @@ v_deskripsi text[] := array[
     'Honor keamanan'
   ];
 
-v_bulan int;
+  v_bulan int;
 
-v_selected_bulan int[] := '{}';
+  v_selected_bulan int[] := '{}';
 
-v_random_bulan int;
+  v_random_bulan int;
 
-v_tanggal timestamp;
+  v_tanggal timestamp;
 
 begin
 
@@ -309,16 +311,17 @@ begin
    */
 
   select
-	nominal_iuran
+	id,
+  nominal_iuran
   into
-	v_nominal_iuran
+	v_rt
 from
-	profil_rt
+	rt
 limit 1;
 
-if v_nominal_iuran is null then
+if v_rt.nominal_iuran is null then
     RAISE exception
-      'Nominal iuran pada profil_rt belum diatur';
+      'Nominal iuran pada rt belum diatur';
 end if;
 
 /*
@@ -428,7 +431,7 @@ end LOOP;
      */
 v_jumlah_bayar :=
       v_jumlah_bulan
-      * v_nominal_iuran;
+      * v_rt.nominal_iuran;
 
 /*
      * RANDOM TANGGAL
@@ -447,13 +450,15 @@ v_tanggal :=
 	into
 	pembayaran (
       warga_id,
-	tahun,
-	jumlah_bayar,
-	tanggal,
-	created_at
+      rt_id,
+      tahun,
+      jumlah_bayar,
+      tanggal,
+      created_at
     )
 values (
       v_warga_id,
+        v_rt.id,
       p_tahun,
       v_jumlah_bayar,
       v_tanggal,
@@ -469,22 +474,19 @@ values (
 FOREACH v_bulan in array v_selected_bulan
     LOOP
 
-      insert
-	into
-	detail_pembayaran (
+      insert into detail_pembayaran (
         pembayaran_id,
-	warga_id,
-	tahun,
-	bulan,
-	nominal,
-	created_at
-      )
-values (
+        warga_id,
+        tahun,
+        bulan,
+        nominal,
+        created_at
+      ) values (
         v_pembayaran_id,
         v_warga_id,
         p_tahun,
         v_bulan,
-        v_nominal_iuran,
+        v_rt.nominal_iuran,
         now()
       );
 end LOOP;
@@ -523,7 +525,7 @@ WHILE
     v_jumlah_bayar :=
       (
         floor(random() * 5) + 1
-      ) * v_nominal_iuran;
+      ) * v_rt.nominal_iuran;
 
 EXIT
 when (
@@ -534,13 +536,14 @@ when (
 insert
 	into
 	pengeluaran (
-      kategori,
-	deskripsi,
-	nominal,
-	tanggal,
-	created_at
-    )
-values (
+    rt_id,
+    kategori,
+    deskripsi,
+    nominal,
+    tanggal,
+    created_at
+  ) values (
+    v_rt.id,
       v_kategori[
         floor(random() * 5) + 1
       ],

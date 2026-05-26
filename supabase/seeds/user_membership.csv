@@ -1,0 +1,11 @@
+id,user_id,rt_id,warga_id,role,created_at
+dddddddd-dddd-dddd-dddd-ddddddddddd1,cccccccc-cccc-cccc-cccc-ccccccccccc1,11111111-1111-1111-1111-111111111111,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1,admin,2026-01-04 08:00:00
+dddddddd-dddd-dddd-dddd-ddddddddddd2,cccccccc-cccc-cccc-cccc-ccccccccccc2,11111111-1111-1111-1111-111111111111,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb2,warga,2026-01-04 08:00:00
+dddddddd-dddd-dddd-dddd-ddddddddddd3,cccccccc-cccc-cccc-cccc-ccccccccccc3,22222222-2222-2222-2222-222222222222,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb3,bendahara,2026-01-04 08:00:00
+dddddddd-dddd-dddd-dddd-ddddddddddd4,cccccccc-cccc-cccc-cccc-ccccccccccc4,22222222-2222-2222-2222-222222222222,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb4,warga,2026-01-04 08:00:00
+dddddddd-dddd-dddd-dddd-ddddddddddd5,cccccccc-cccc-cccc-cccc-ccccccccccc5,33333333-3333-3333-3333-333333333333,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb5,admin,2026-01-04 08:00:00
+dddddddd-dddd-dddd-dddd-ddddddddddd6,cccccccc-cccc-cccc-cccc-ccccccccccc6,33333333-3333-3333-3333-333333333333,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb6,warga,2026-01-04 08:00:00
+dddddddd-dddd-dddd-dddd-ddddddddddd7,cccccccc-cccc-cccc-cccc-ccccccccccc7,44444444-4444-4444-4444-444444444444,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb7,bendahara,2026-01-04 08:00:00
+dddddddd-dddd-dddd-dddd-ddddddddddd8,cccccccc-cccc-cccc-cccc-ccccccccccc8,44444444-4444-4444-4444-444444444444,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb8,warga,2026-01-04 08:00:00
+dddddddd-dddd-dddd-dddd-ddddddddddd9,cccccccc-cccc-cccc-cccc-ccccccccccc9,55555555-5555-5555-5555-555555555555,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb9,admin,2026-01-04 08:00:00
+dddddddd-dddd-dddd-dddd-dddddddddd10,cccccccc-cccc-cccc-cccc-cccccccccc10,55555555-5555-5555-5555-555555555555,bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb10,warga,2026-01-04 08:00:00

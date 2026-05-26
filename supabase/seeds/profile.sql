@@ -3,7 +3,7 @@ insert into profil_rt (
   nama_rt,
   nama_perumahan,
   alamat,
-  iuran_per_bulan,
+  nominal_iuran,
   nama_ketua,
   nama_bendahara,
   nama_bank,

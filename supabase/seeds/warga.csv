@@ -1,0 +1,11 @@
+id,rt_id,nama,blok,no_rumah,email,created_at
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb1,11111111-1111-1111-1111-111111111111,Budi Santoso,A,01,budi@example.com,2026-01-02 08:00:00
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb2,11111111-1111-1111-1111-111111111111,Siti Aminah,A,02,siti@example.com,2026-01-02 08:00:00
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb3,22222222-2222-2222-2222-222222222222,Andi Wijaya,B,01,andi@example.com,2026-01-02 08:00:00
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb4,22222222-2222-2222-2222-222222222222,Rina Marlina,B,02,rina@example.com,2026-01-02 08:00:00
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb5,33333333-3333-3333-3333-333333333333,Dedi Kurniawan,C,01,dedi@example.com,2026-01-02 08:00:00
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb6,33333333-3333-3333-3333-333333333333,Maya Sari,C,02,maya@example.com,2026-01-02 08:00:00
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb7,44444444-4444-4444-4444-444444444444,Fajar Nugraha,D,01,fajar@example.com,2026-01-02 08:00:00
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb8,44444444-4444-4444-4444-444444444444,Lina Fitriani,D,02,lina@example.com,2026-01-02 08:00:00
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbb9,55555555-5555-5555-5555-555555555555,Rudi Hartono,E,01,rudi@example.com,2026-01-02 08:00:00
+bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb10,55555555-5555-5555-5555-555555555555,Nina Oktavia,E,02,nina@example.com,2026-01-02 08:00:00
