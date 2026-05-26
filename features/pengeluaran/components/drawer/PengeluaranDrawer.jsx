@@ -22,11 +22,13 @@ export default function PengeluaranDrawer({
             className="
         fixed
         inset-0
+        bg-black/20
         z-50
-        bg-black/30
         flex
         justify-end
       "
+
+            onClick={onClose}
         >
 
             <div

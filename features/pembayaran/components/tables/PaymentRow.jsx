@@ -2,6 +2,7 @@
 
 import PaymentStatusBadge
     from './PaymentStatusBadge'
+import {formatRupiah} from "../../../../lib/utils";
 
 export default function PaymentRow({
 
@@ -62,10 +63,10 @@ export default function PaymentRow({
                     py-4
                 "
             >
-                Rp {
-                Number(
+                {
+                formatRupiah(
                     row.totalBayar || 0
-                ).toLocaleString('id-ID')
+                )
             }
             </td>
 

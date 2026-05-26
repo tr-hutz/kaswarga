@@ -1,6 +1,8 @@
 'use client'
 
 
+import {formatRupiah} from "../../../../lib/utils";
+
 export default function PengeluaranRow({
 
                                            row,
@@ -42,7 +44,7 @@ export default function PengeluaranRow({
           font-medium
         "
             >
-                Rp {row.nominal}
+                {formatRupiah(row.nominal || 0)}
             </td>
 
             <td

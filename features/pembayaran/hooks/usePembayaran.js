@@ -44,36 +44,42 @@ export function usePembayaran() {
         setRows
     ] = useState([])
 
-    async function loadData() {
-
-        setLoading(true)
-
-        try {
-
-            const data =
-                await getKonfirmasiPembayaran({
-
-                    tahun: year,
-                    status,
-                    search
-
-                })
-
-            setRows(data)
-
-        } catch (err) {
-
-            console.error(err)
-
-        } finally {
-
-            setLoading(false)
-        }
-    }
-
     useEffect(() => {
 
+        let mounted = true
+
         loadData()
+
+        return () => {
+            mounted = false
+        }
+
+        async function loadData() {
+
+            setLoading(true)
+
+            try {
+
+                const data =
+                    await getKonfirmasiPembayaran({
+
+                        tahun: year,
+                        status,
+                        search
+
+                    })
+
+                setRows(data)
+
+            } catch (err) {
+
+                console.error(err)
+
+            } finally {
+
+                setLoading(false)
+            }
+        }
 
     }, [
         year,

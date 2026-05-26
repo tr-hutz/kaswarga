@@ -28,16 +28,19 @@ export default function LedgerDrawer({
                 justify-end
                 bg-black/30
             "
+
+            onClick={onClose}
         >
 
             <div
                 className="
                     w-full
                     max-w-lg
-                    h-full
                     bg-white
-                    shadow-2xl
+                    h-full
                     overflow-y-auto
+                    p-6
+                    shadow-2xl
                 "
             >
 

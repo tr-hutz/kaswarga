@@ -16,6 +16,7 @@ import {
 
 import ExportButtons
     from './components/exports/ExportButtons'
+import PaymentToolbar from "./components/tables/PaymentToolbar";
 
 export default function PembayaranView({
 
@@ -153,7 +154,7 @@ export default function PembayaranView({
 
                 </div>
 
-                <ExportButtons
+                <PaymentToolbar
                     rows={rows}
                 />
             </div>

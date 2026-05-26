@@ -16,3 +16,6 @@ add table notifications;
 -- warga
 alter publication supabase_realtime
 add table warga;
+-- activity
+alter publication supabase_realtime
+add table activity_logs;

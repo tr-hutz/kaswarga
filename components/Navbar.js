@@ -22,6 +22,7 @@ import {
   ShelvingUnit,
   LogOut,
   Vibrate,
+  Activity,
 } from 'lucide-react'
 
 import {
@@ -223,6 +224,17 @@ export default function Navbar() {
       label: 'Notifikasi',
       href: '/notification',
       icon: Vibrate,
+      roles: [
+        'admin',
+        'bendahara',
+        'warga'
+      ]
+    },
+
+    {
+      label: 'Aktivitas',
+      href: '/activity',
+      icon: Activity,
       roles: [
         'admin',
         'bendahara',

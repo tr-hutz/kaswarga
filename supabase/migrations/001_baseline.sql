@@ -272,3 +272,36 @@ create table notifications
     created_at     timestamp
         default now()
 );
+
+create table activity_logs
+(
+
+    id          uuid primary key
+        default gen_random_uuid(),
+
+    rt_id       uuid not null
+        references rt (id)
+            on delete cascade,
+
+    actor_id    uuid,
+
+    actor_name  text,
+
+    action      varchar(100)
+                     not null,
+
+    entity_type varchar(50)
+                     not null,
+
+    entity_id   uuid,
+
+    description text,
+
+    visibility varchar(50)
+        default 'internal',
+
+    metadata    jsonb,
+
+    created_at  timestamp
+        default now()
+);

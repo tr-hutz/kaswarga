@@ -98,3 +98,16 @@ to authenticated
 with check (
   true
 );
+
+-- Activity
+create policy "Allow read activity"
+on "public"."activity_logs"
+for select
+using (true);
+
+create policy "Enable insert in activity_log for authenticated users only"
+on "public"."activity_logs"
+to authenticated
+with check (
+  true
+);

@@ -56,12 +56,12 @@ export default function LedgerContainer() {
      |-------------------------------------------------------------
      */
 
-    // useLedgerRealtime({
-    //
-    //     onReload:
-    //     refresh
-    //
-    // })
+    useLedgerRealtime({
+
+        onReload:
+        refresh
+
+    })
 
     /*
      |-------------------------------------------------------------
