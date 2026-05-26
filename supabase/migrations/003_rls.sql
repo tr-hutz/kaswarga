@@ -73,7 +73,7 @@ on "public"."pengeluaran"
 to public
 using (true);
 
--- Kas Ledger
+-- Ledger
 create policy "Allow read ledger"
 on "public"."ledger"
 to public
@@ -81,6 +81,19 @@ using (true);
 
 create policy "Enable insert for authenticated users only"
 on "public"."ledger"
+to authenticated
+with check (
+  true
+);
+
+-- Notification
+create policy "Allow read notifications"
+on "public"."notifications"
+for select
+using (true);
+
+create policy "Enable insert in notification for authenticated users only"
+on "public"."notifications"
 to authenticated
 with check (
   true

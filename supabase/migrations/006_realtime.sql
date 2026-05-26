@@ -1,0 +1,18 @@
+-- konfirmasi_pembayaran
+alter publication supabase_realtime
+add table konfirmasi_pembayaran;
+-- pembayaran
+alter publication supabase_realtime
+add table pembayaran;
+-- pengeluaran
+alter publication supabase_realtime
+add table pengeluaran;
+-- ledger
+alter publication supabase_realtime
+add table ledger;
+-- notifications
+alter publication supabase_realtime
+add table notifications;
+-- warga
+alter publication supabase_realtime
+add table warga;

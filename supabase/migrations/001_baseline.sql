@@ -212,7 +212,7 @@ create table pengeluaran
     created_at TIMESTAMP        default Now()
 );
 
--- tabel pengeluaran (kas keluar)
+-- tabel ledger (pencatatan uang masuk - keluar)
 create table ledger
 (
     id            uuid primary key
@@ -238,4 +238,37 @@ create table ledger
                                        default now(),
 
     aktif         boolean              default true
+);
+
+-- table notifications
+create table notifications
+(
+    id             uuid primary key
+        default gen_random_uuid(),
+
+    rt_id          uuid not null
+        references rt (id)
+            on delete cascade,
+
+    type           varchar(50)
+                        not null,
+
+    title          text
+                        not null,
+
+    message        text,
+
+    entity_type    varchar(50),
+
+    entity_id      uuid,
+
+    target_role    varchar(50),
+
+    target_user_id uuid,
+
+    is_read        boolean
+        default false,
+
+    created_at     timestamp
+        default now()
 );

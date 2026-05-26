@@ -20,7 +20,8 @@ import {
   Wallet,
   Receipt,
   ShelvingUnit,
-  LogOut
+  LogOut,
+  Vibrate,
 } from 'lucide-react'
 
 import {
@@ -215,6 +216,17 @@ export default function Navbar() {
       roles: [
         'admin',
         'bendahara'
+      ]
+    },
+
+    {
+      label: 'Notifikasi',
+      href: '/notification',
+      icon: Vibrate,
+      roles: [
+        'admin',
+        'bendahara',
+        'warga'
       ]
     }
 
