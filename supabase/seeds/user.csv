@@ -1,11 +1,11 @@
-id,nama,email,created_at
-cccccccc-cccc-cccc-cccc-ccccccccccc1,Budi Santoso,budi@example.com,2026-01-03 08:00:00
-cccccccc-cccc-cccc-cccc-ccccccccccc2,Siti Aminah,siti@example.com,2026-01-03 08:00:00
-cccccccc-cccc-cccc-cccc-ccccccccccc3,Andi Wijaya,andi@example.com,2026-01-03 08:00:00
-cccccccc-cccc-cccc-cccc-ccccccccccc4,Rina Marlina,rina@example.com,2026-01-03 08:00:00
-cccccccc-cccc-cccc-cccc-ccccccccccc5,Dedi Kurniawan,dedi@example.com,2026-01-03 08:00:00
-cccccccc-cccc-cccc-cccc-ccccccccccc6,Maya Sari,maya@example.com,2026-01-03 08:00:00
-cccccccc-cccc-cccc-cccc-ccccccccccc7,Fajar Nugraha,fajar@example.com,2026-01-03 08:00:00
-cccccccc-cccc-cccc-cccc-ccccccccccc8,Lina Fitriani,lina@example.com,2026-01-03 08:00:00
-cccccccc-cccc-cccc-cccc-ccccccccccc9,Rudi Hartono,rudi@example.com,2026-01-03 08:00:00
-cccccccc-cccc-cccc-cccc-cccccccccc10,Nina Oktavia,nina@example.com,2026-01-03 08:00:00
+id,nama,email,no_hp,aktif,created_at
+cccccccc-cccc-cccc-cccc-ccccccccccc1,Budi Santoso,budi@example.com,081200001111,true,2026-01-03 08:00:00
+cccccccc-cccc-cccc-cccc-ccccccccccc2,Siti Aminah,siti@example.com,081200001112,true,2026-01-03 08:00:00
+cccccccc-cccc-cccc-cccc-ccccccccccc3,Andi Wijaya,andi@example.com,081200001113,true,2026-01-03 08:00:00
+cccccccc-cccc-cccc-cccc-ccccccccccc4,Rina Marlina,rina@example.com,081200001114,true,2026-01-03 08:00:00
+cccccccc-cccc-cccc-cccc-ccccccccccc5,Dedi Kurniawan,dedi@example.com,081200001115,true,2026-01-03 08:00:00
+cccccccc-cccc-cccc-cccc-ccccccccccc6,Maya Sari,maya@example.com,081200001116,true,2026-01-03 08:00:00
+cccccccc-cccc-cccc-cccc-ccccccccccc7,Fajar Nugraha,fajar@example.com,081200001117,true,2026-01-03 08:00:00
+cccccccc-cccc-cccc-cccc-ccccccccccc8,Lina Fitriani,lina@example.com,081200001118,true,2026-01-03 08:00:00
+cccccccc-cccc-cccc-cccc-ccccccccccc9,Rudi Hartono,rudi@example.com,081200001119,true,2026-01-03 08:00:00
+cccccccc-cccc-cccc-cccc-cccccccccc10,Nina Oktavia,nina@example.com,081200001120,true,2026-01-03 08:00:00
