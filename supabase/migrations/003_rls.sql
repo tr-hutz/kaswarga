@@ -72,3 +72,16 @@ create policy "Allow read pengeluaran"
 on "public"."pengeluaran"
 to public
 using (true);
+
+-- Kas Ledger
+create policy "Allow read ledger"
+on "public"."ledger"
+to public
+using (true);
+
+create policy "Enable insert for authenticated users only"
+on "public"."ledger"
+to authenticated
+with check (
+  true
+);

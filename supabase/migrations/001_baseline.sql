@@ -212,12 +212,16 @@ create table pengeluaran
     created_at TIMESTAMP        default Now()
 );
 
-create table kas_ledger
+-- tabel pengeluaran (kas keluar)
+create table ledger
 (
     id            uuid primary key
                                        default gen_random_uuid(),
 
-    rt_id         uuid        not null,
+    rt_id         uuid        not null references rt (id)
+        on
+            delete
+            restrict,
     jenis         varchar(20)
                               not null,
 

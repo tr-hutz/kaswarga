@@ -123,11 +123,23 @@ where
 
   update
 	konfirmasi_pembayaran
-set
+  set
 	status = 'approved',
 	approved_at = now()
-where
+  where
 	id = p_konfirmasi_id;
+
+  perform insert_ledger(
+    v_rt_id,
+    'pemasukan',
+    'pembayaran',
+    v_pembayaran_id,
+    now(),
+    'Pembayaran iuran warga',
+    v_total_bayar,
+    v_user_id
+  );
+
 end;
 
 $$;
@@ -570,3 +582,150 @@ end LOOP;
 end;
 
 $$;
+
+
+/*
+   |--------------------------------------------------------------------------
+   | GET LAST SALDO
+   |--------------------------------------------------------------------------
+   */
+
+create or replace function get_last_saldo(
+    p_rt_id uuid
+)
+
+returns bigint
+
+language plpgsql
+
+as $$
+
+declare
+
+v_saldo bigint;
+
+begin
+
+select
+    saldo_setelah
+
+into v_saldo
+
+from ledger
+
+where rt_id = p_rt_id
+
+order by tanggal desc
+
+    limit 1;
+
+return coalesce(
+        v_saldo,
+        0
+       );
+
+end;
+
+$$;
+
+
+/*
+   |--------------------------------------------------------------------------
+   | INSERT KAS LEDGER
+   |--------------------------------------------------------------------------
+   */
+
+create or replace function insert_ledger(
+    p_rt_id uuid,
+    p_jenis varchar,
+    p_sumber varchar,
+    p_referensi_id uuid,
+    p_tanggal timestamp,
+    p_deskripsi text,
+    p_nominal bigint,
+    p_created_by uuid
+)
+
+returns uuid
+
+language plpgsql
+
+as $$
+
+declare
+    v_last_saldo bigint;
+    v_new_saldo bigint;
+
+    v_id uuid;
+
+begin
+
+    v_last_saldo :=
+        get_last_saldo(
+            p_rt_id
+        );
+
+    if p_jenis = 'pemasukan' then
+
+        v_new_saldo :=
+            v_last_saldo +
+            p_nominal;
+
+else
+
+        v_new_saldo :=
+            v_last_saldo -
+            p_nominal;
+
+end if;
+
+insert into ledger (
+
+    rt_id,
+
+    jenis,
+    sumber,
+
+    referensi_id,
+
+    tanggal,
+
+    deskripsi,
+
+    nominal,
+
+    saldo_setelah,
+
+    created_by
+
+)
+
+values (
+
+           p_rt_id,
+
+           p_jenis,
+           p_sumber,
+
+           p_referensi_id,
+
+           p_tanggal,
+
+           p_deskripsi,
+
+           p_nominal,
+
+           v_new_saldo,
+
+           p_created_by
+       )
+
+    returning id
+into v_id;
+
+return v_id;
+
+end;
+
+$$;
+

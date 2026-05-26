@@ -45,12 +45,12 @@ alter table konfirmasi_pembayaran
 -- for reason of rejected
 alter table konfirmasi_pembayaran
     add column alasan_penolakan text;
--- for kas_ledger
-create index idx_kas_ledger_rt
-    on kas_ledger(rt_id);
-create index idx_kas_ledger_tanggal
-    on kas_ledger(tanggal);
-create index idx_kas_ledger_sumber
-    on kas_ledger(sumber);
-create index idx_kas_ledger_referensi
-    on kas_ledger(referensi_id);
+-- for ledger
+create index idx_ledger_rt
+    on ledger(rt_id);
+create index idx_ledger_tanggal
+    on ledger(tanggal);
+create index idx_ledger_sumber
+    on ledger(sumber);
+create index idx_ledger_referensi
+    on ledger(referensi_id);
