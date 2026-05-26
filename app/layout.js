@@ -1,19 +1,36 @@
 import './globals.css'
-import Navbar from '../components/Navbar'
 
-export default function RootLayout({ children }) {
+import AppLayout
+  from '../components/layout/AppLayout'
+
+export const metadata = {
+
+  title:
+    'Kas Wargi',
+
+  description:
+    'Sistem Iuran Warga'
+
+}
+
+export default function RootLayout({
+  children
+}) {
+
   return (
-    <html>
+
+    <html lang="id">
+
       <body>
 
-        {/* Navbar global */}
-        <Navbar />
+        <AppLayout>
 
-        <div className="p-4 max-w-4xl mx-auto">
           {children}
-        </div>
+
+        </AppLayout>
 
       </body>
+
     </html>
   )
 }
