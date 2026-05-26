@@ -19,6 +19,7 @@ import {
   Users,
   Wallet,
   Receipt,
+  ShelvingUnit,
   LogOut
 } from 'lucide-react'
 
@@ -201,6 +202,16 @@ export default function Navbar() {
       label: 'Pengeluaran',
       href: '/pengeluaran',
       icon: Receipt,
+      roles: [
+        'admin',
+        'bendahara'
+      ]
+    },
+
+    {
+      label: 'Ledger',
+      href: '/ledger',
+      icon: ShelvingUnit,
       roles: [
         'admin',
         'bendahara'
