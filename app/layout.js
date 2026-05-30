@@ -1,36 +1,39 @@
 import './globals.css'
 
-import AppLayout
-  from '../components/layout/AppLayout'
+import {
 
-export const metadata = {
+  AuthProvider
 
-  title:
-    'Kas Wargi',
+} from '../lib/auth/AuthProvider'
 
-  description:
-    'Sistem Iuran Warga'
+import AppShell
 
-}
+  from '../components/layout/AppShell'
 
 export default function RootLayout({
-  children
-}) {
+
+                                     children
+
+                                   }) {
 
   return (
 
-    <html lang="id">
+      <html lang="id">
 
       <body>
 
-        <AppLayout>
+      <AuthProvider>
+
+        <AppShell>
 
           {children}
 
-        </AppLayout>
+        </AppShell>
+
+      </AuthProvider>
 
       </body>
 
-    </html>
+      </html>
   )
 }

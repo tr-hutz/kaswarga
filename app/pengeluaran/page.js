@@ -1,9 +1,9 @@
-import PengeluaranFeature
-  from '@/features/pengeluaran'
+import PengeluaranContainer
+  from '../../features/pengeluaran/PengeluaranContainer'
 
 export default function Page() {
 
   return (
-      <PengeluaranFeature />
+      <PengeluaranContainer />
   )
 }

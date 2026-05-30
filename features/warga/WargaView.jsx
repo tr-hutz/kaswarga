@@ -12,9 +12,6 @@ import WargaDetailDrawer
 import WargaForm
     from './components/forms/WargaForm'
 
-import ExportButtons
-    from './components/exports/ExportButtons'
-
 export default function WargaView({
 
                                       /*
@@ -55,8 +52,8 @@ export default function WargaView({
                                       openEditForm,
                                       closeForm,
 
-                                      exportExcel,
-                                      exportCSV
+                                      exportCSV,
+                                      exportExcel
 
                                   }) {
 
@@ -64,7 +61,7 @@ export default function WargaView({
 
         <div
             className="
-        space-y-5
+        space-y-6
       "
         >
 
@@ -73,8 +70,6 @@ export default function WargaView({
           flex
           items-center
           justify-between
-          gap-3
-          flex-wrap
         "
             >
 
@@ -88,12 +83,9 @@ export default function WargaView({
                     status={status}
                     setStatus={setStatus}
 
-                />
+                    onExportCSV={() => exportCSV(data)}
+                    onExportExcel={() => exportExcel(data)}
 
-                <ExportButtons
-                    data={data}
-                    onExportExcel={exportExcel}
-                    onExportCSV={exportCSV}
                 />
 
             </div>

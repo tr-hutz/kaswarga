@@ -1,5 +1,7 @@
 'use client'
 
+import PageToolbar from "../../../../components/toolbar/PageToolbar";
+
 export default function WargaToolbar({
 
                                          onAdd,
@@ -8,129 +10,50 @@ export default function WargaToolbar({
                                          setSearch,
 
                                          status,
-                                         setStatus
+                                         setStatus,
+
+                                         onExportCSV,
+                                         onExportExcel
 
                                      }) {
 
     return (
 
-        <div
-            className="
-        flex
-        items-center
-        justify-between
-        gap-4
-        flex-wrap
-      "
-        >
+        <PageToolbar
 
-            <div>
+            title="Warga"
 
-                <h1
-                    className="
-            text-2xl
-            font-bold
-          "
-                >
-                    Warga
-                </h1>
+            subtitle="Manajemen data warga"
 
-                <p
-                    className="
-            text-sm
-            text-slate-500
-          "
-                >
-                    Manajemen data warga
-                </p>
+            onCreate={onAdd}
 
-            </div>
+            search={search}
+            setSearch={setSearch}
 
-            <div
-                className="
-          flex
-          items-center
-          gap-3
-          flex-wrap
-        "
-            >
+            searchPlaceholder="Cari nama warga..."
 
-                <input
+            filterValue={status}
+            setFilterValue={setStatus}
 
-                    value={search}
+            filterPlaceholder="Semua Status"
 
-                    onChange={e =>
-                        setSearch(
-                            e.target.value
-                        )
-                    }
+            filterOptions={[
 
-                    placeholder="
-            Cari nama warga
-          "
+                {
+                    label: 'Aktif',
+                    value: 'aktif'
+                },
 
-                    className="
-            border
-            rounded-xl
-            px-4
-            py-2
-            text-sm
-          "
-                />
+                {
+                    label: 'Nonaktif',
+                    value: 'nonaktif'
+                }
+            ]}
 
-                <select
+            onExportCSV={onExportCSV}
+            onExportExcel={onExportExcel}
 
-                    value={status}
+        />
 
-                    onChange={e =>
-                        setStatus(
-                            e.target.value
-                        )
-                    }
-
-                    className="
-            border
-            rounded-xl
-            px-4
-            py-2
-            text-sm
-          "
-                >
-
-                    <option value="aktif">
-                        Aktif
-                    </option>
-
-                    <option value="nonaktif">
-                        Nonaktif
-                    </option>
-
-                    <option value="all">
-                        Semua
-                    </option>
-
-                </select>
-
-                <button
-
-                    onClick={onAdd}
-
-                    className="
-            px-4
-            py-2
-            rounded-xl
-            bg-black
-            text-white
-            text-sm
-          "
-                >
-
-                    Tambah Warga
-
-                </button>
-
-            </div>
-
-        </div>
     )
 }

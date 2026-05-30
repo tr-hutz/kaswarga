@@ -24,10 +24,8 @@ export default function WargaContainer() {
      */
 
     const [
-
         search,
         setSearch
-
     ] = useState('')
 
     const [

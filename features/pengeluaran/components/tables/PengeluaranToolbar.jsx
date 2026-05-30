@@ -1,5 +1,7 @@
 'use client'
 
+import PageToolbar from "../../../../components/toolbar/PageToolbar";
+
 export default function PengeluaranToolbar({
 
                                                search,
@@ -17,130 +19,46 @@ export default function PengeluaranToolbar({
 
     return (
 
-        <div
-            className="
-        flex
-        items-center
-        justify-between
-        gap-3
-        flex-wrap
-      "
-        >
+        <PageToolbar
 
-            <div>
+            title="Pengeluaran"
 
-                <h1
-                    className="
-            text-2xl
-            font-bold
-          "
-                >
-                    Pengeluaran
-                </h1>
+            subtitle="Manajemen pengeluaran RT"
 
-                <p
-                    className="
-            text-sm
-            text-slate-500
-          "
-                >
-                    Manajemen pengeluaran kas
-                </p>
+            onCreate={onCreate}
 
-            </div>
+            search={search}
+            setSearch={setSearch}
 
-            <div
-                className="
-          flex
-          items-center
-          gap-3
-          flex-wrap
-        "
-            >
+            searchPlaceholder="Cari pengeluaran..."
 
-                <input
+            filterValue={kategori}
+            setFilterValue={setKategori}
 
-                    value={search}
+            filterPlaceholder="Semua Kategori"
 
-                    onChange={e =>
-                        setSearch(
-                            e.target.value
-                        )
-                    }
+            filterOptions={[
 
-                    placeholder="
-            Cari pengeluaran
-          "
+                {
+                    label: 'Operasional',
+                    value: 'operasional'
+                },
 
-                    className="
-            border
-            rounded-xl
-            px-4
-            py-2
-            text-sm
-          "
-                />
+                {
+                    label: 'Kebersihan',
+                    value: 'kebersihan'
+                },
 
-                <select
+                {
+                    label: 'Keamanan',
+                    value: 'keamanan'
+                }
+            ]}
 
-                    value={kategori}
+            onExportCSV={onExportCSV}
+            onExportExcel={onExportExcel}
 
-                    onChange={e =>
-                        setKategori(
-                            e.target.value
-                        )
-                    }
+        />
 
-                    className="
-            border
-            rounded-xl
-            px-4
-            py-2
-          "
-                >
-
-                    <option value="all">
-                        Semua Kategori
-                    </option>
-
-                    <option value="Operasional">
-                        Operasional
-                    </option>
-
-                    <option value="Keamanan">
-                        Keamanan
-                    </option>
-
-                    <option value="Kebersihan">
-                        Kebersihan
-                    </option>
-
-                    <option value="Perawatan">
-                        Perawatan
-                    </option>
-
-                </select>
-
-                <button
-
-                    onClick={onCreate}
-
-                    className="
-            px-4
-            py-2
-            rounded-xl
-            bg-black
-            text-white
-            text-sm
-          "
-                >
-
-                    Tambah Pengeluaran
-
-                </button>
-
-            </div>
-
-        </div>
     )
 }

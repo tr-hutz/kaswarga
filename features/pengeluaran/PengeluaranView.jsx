@@ -12,8 +12,6 @@ import PengeluaranDrawer
 import PengeluaranForm
     from './components/forms/PengeluaranForm'
 
-import ExportButtons from "./components/exports/ExportButtons";
-
 export default function PengeluaranView({
 
                                             /*
@@ -68,7 +66,7 @@ export default function PengeluaranView({
 
         <div
             className="
-        space-y-5
+        space-y-6
       "
         >
 
@@ -103,12 +101,6 @@ export default function PengeluaranView({
                 }
 
             />
-
-                <ExportButtons
-                    data={rows}
-                    onExportExcel={exportExcel}
-                    onExportCSV={exportCSV}
-                />
 
             </div>
 

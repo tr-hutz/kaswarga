@@ -14,8 +14,6 @@ import {
     useApprovalActions
 } from './hooks/useApprovalAction'
 
-import ExportButtons
-    from './components/exports/ExportButtons'
 import PaymentToolbar from "./components/tables/PaymentToolbar";
 
 export default function PembayaranView({
@@ -131,28 +129,6 @@ export default function PembayaranView({
         justify-between
     "
             >
-
-                <div>
-
-                    <h1
-                        className="
-                text-2xl
-                font-bold
-            "
-                    >
-                        Pembayaran
-                    </h1>
-
-                    <p
-                        className="
-                text-sm
-                text-slate-500
-            "
-                    >
-                        Riwayat pembayaran warga
-                    </p>
-
-                </div>
 
                 <PaymentToolbar
                     rows={rows}

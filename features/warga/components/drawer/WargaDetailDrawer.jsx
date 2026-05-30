@@ -1,5 +1,9 @@
 'use client'
 
+import {
+    X
+} from 'lucide-react'
+
 import WargaDetailSummary
     from '../detail/WargaDetailSummary'
 
@@ -31,6 +35,8 @@ export default function WargaDetailDrawer({
                 justify-end
                 bg-black/30
             "
+
+            onClick={onClose}
         >
 
             <div
@@ -65,12 +71,8 @@ export default function WargaDetailDrawer({
 
                     <button
                         onClick={onClose}
-                        className="
-                            text-sm
-                            text-slate-500
-                        "
                     >
-                        Tutup
+                        <X className="w-5 h-5" />
                     </button>
 
                 </div>
