@@ -20,7 +20,13 @@ import {
 
 } from '../../lib/auth/useAuth'
 
-import NotificationBar from "../../features/notification/components/NotificationBar";
+import NotificationBar from "../../features/notification/components/NotificationBar"
+
+import {
+
+    logActivity
+
+} from '../../lib/services/activity-logger'
 
 export default function Topbar({
 
@@ -49,6 +55,17 @@ export default function Topbar({
      */
 
     async function handleLogout() {
+
+        logActivity({
+            rtId:       membership?.rt?.id,
+            actorId:    membership?.user?.id,
+            actorName:  membership?.user?.nama,
+            action:     'LOGOUT',
+            entityType: 'auth',
+            entityId:   membership?.user?.id,
+            description: `${membership?.user?.nama} logged out`,
+            metadata:   { role }
+        })
 
         await supabase.auth.signOut()
 

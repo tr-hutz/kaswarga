@@ -20,6 +20,12 @@ import {
 
 } from '../supabase'
 
+import {
+
+    logActivity
+
+} from '../services/activity-logger'
+
 export const AuthContext =
 
     createContext(null)
@@ -64,8 +70,25 @@ export function AuthProvider({
         // Without this, an expired or stale token causes postgres_changes
         // events to be silently dropped (auth.uid() returns null server-side).
         const { data: { subscription } } =
-            supabase.auth.onAuthStateChange((_event, session) => {
+            supabase.auth.onAuthStateChange((event, session) => {
                 supabase.realtime.setAuth(session?.access_token ?? null)
+
+                if (event === 'SIGNED_IN') {
+                    getCurrentMembership()
+                        .then(m => {
+                            logActivity({
+                                rtId:       m?.rt?.id,
+                                actorId:    m?.user?.id,
+                                actorName:  m?.user?.nama,
+                                action:     'LOGIN',
+                                entityType: 'auth',
+                                entityId:   m?.user?.id,
+                                description: `${m?.user?.nama} logged in`,
+                                metadata:   { role: m?.role }
+                            })
+                        })
+                        .catch(() => {})
+                }
             })
 
         return () => subscription.unsubscribe()
