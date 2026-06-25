@@ -34,8 +34,8 @@ export function transformNotifications(
         entityId:
         item.entity_id,
 
-        isRead:
-            item.is_read || false,
+        is_read:
+            item.is_read ?? false,
 
         createdAt:
         item.created_at,

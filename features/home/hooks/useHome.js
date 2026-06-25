@@ -103,6 +103,21 @@ export function useHome() {
     setNominalIuran
   ] = useState(0)
 
+  const [
+    formApproved,
+    setFormApproved
+  ] = useState([])
+
+  const [
+    formPending,
+    setFormPending
+  ] = useState([])
+
+  const [
+    formRejected,
+    setFormRejected
+  ] = useState([])
+
   /*
    |--------------------------------------------------------------------------
    | LOAD DATA
@@ -179,6 +194,46 @@ export function useHome() {
     }
   }
 
+  async function loadFormData() {
+
+    if (!wargaId) return
+
+    try {
+
+      const [
+        approvedData,
+        pendingData,
+        rejectedData
+      ] = await Promise.all([
+
+        getApprovedPayments(
+          wargaId,
+          paymentYear
+        ),
+
+        getPendingPayments(
+          wargaId,
+          paymentYear
+        ),
+
+        getRejectedPayments(
+          wargaId,
+          paymentYear
+        )
+
+      ])
+
+      setFormApproved(approvedData)
+      setFormPending(pendingData)
+      setFormRejected(rejectedData)
+
+    } catch (err) {
+
+      console.error(err)
+
+    }
+  }
+
   /*
    |--------------------------------------------------------------------------
    | EFFECT
@@ -190,6 +245,12 @@ export function useHome() {
     loadData()
 
   }, [summaryYear])
+
+  useEffect(() => {
+
+    loadFormData()
+
+  }, [paymentYear, wargaId])
 
   /*
    |--------------------------------------------------------------------------
@@ -214,6 +275,25 @@ export function useHome() {
       approved,
       pending,
       rejected
+    ])
+
+  const formStatusMap =
+    useMemo(() => {
+
+      return buildStatusMap({
+
+        approved: formApproved,
+
+        pending: formPending,
+
+        rejected: formRejected
+
+      })
+
+    }, [
+      formApproved,
+      formPending,
+      formRejected
     ])
 
   /*
@@ -346,7 +426,11 @@ export function useHome() {
     selectedMonths,
     setSelectedMonths,
 
+    nominalIuran,
+
     statusMap,
+
+    formStatusMap,
 
     summary,
 

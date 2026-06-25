@@ -14,6 +14,12 @@ import {
 
 } from './getCurrentMembership'
 
+import {
+
+    supabase
+
+} from '../supabase'
+
 export const AuthContext =
 
     createContext(null)
@@ -53,6 +59,16 @@ export function AuthProvider({
     useEffect(() => {
 
         load()
+
+        // Keep Realtime auth token in sync with the current session.
+        // Without this, an expired or stale token causes postgres_changes
+        // events to be silently dropped (auth.uid() returns null server-side).
+        const { data: { subscription } } =
+            supabase.auth.onAuthStateChange((_event, session) => {
+                supabase.realtime.setAuth(session?.access_token ?? null)
+            })
+
+        return () => subscription.unsubscribe()
 
     }, [])
 

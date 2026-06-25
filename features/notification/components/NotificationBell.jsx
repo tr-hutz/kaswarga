@@ -1,14 +1,12 @@
 'use client'
 
 import {
-
     Bell
-
 } from 'lucide-react'
 
 export default function NotificationBell({
 
-                                             count = 0,
+                                             unreadCount = 0,
 
                                              onClick
 
@@ -22,43 +20,57 @@ export default function NotificationBell({
 
             className="
                 relative
+
+                p-2
+
+                rounded-lg
+
+                hover:bg-gray-100
             "
         >
 
-            <Bell
-                className="
-                    w-6
-                    h-6
-                "
-            />
+            <Bell size={20} />
 
             {
-
-                count > 0 && (
+                unreadCount > 0 && (
 
                     <span
                         className="
                             absolute
+
                             -top-1
                             -right-1
-                            w-5
-                            h-5
+
+                            min-w-[18px]
+                            h-[18px]
+
+                            px-1
+
                             rounded-full
+
                             bg-red-500
                             text-white
-                            text-xs
+
+                            text-[10px]
+
                             flex
                             items-center
                             justify-center
                         "
                     >
 
-                        {count}
+                        {
+                            unreadCount > 99
+                                ? '99+'
+                                : unreadCount
+                        }
 
                     </span>
+
                 )
             }
 
         </button>
+
     )
 }

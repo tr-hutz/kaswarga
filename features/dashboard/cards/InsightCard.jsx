@@ -1,8 +1,9 @@
 export default function InsightCard({
 
   title,
-
-  value
+  value,
+  subtitle,
+  valueColor = 'text-gray-900'
 
 }) {
 
@@ -27,14 +28,22 @@ export default function InsightCard({
       </div>
 
       <div
-        className="
-          text-3xl
+        className={`
+          text-2xl
           font-bold
           mt-2
-        "
+          leading-tight
+          ${valueColor}
+        `}
       >
         {value}
       </div>
+
+      {subtitle && (
+        <div className="text-xs text-gray-400 mt-1">
+          {subtitle}
+        </div>
+      )}
 
     </div>
   )

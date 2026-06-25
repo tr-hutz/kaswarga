@@ -14,7 +14,14 @@ export default function PembayaranContainer() {
 
     return (
         <PembayaranView
-            {...pembayaran}
+            search={pembayaran.search}
+            setSearch={pembayaran.setSearch}
+
+            kategori={pembayaran.status}
+            setKategori={pembayaran.setStatus}
+
+            rows={pembayaran.rows}
+            reloadData={pembayaran.loadData}
         />
     )
 }

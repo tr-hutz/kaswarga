@@ -32,10 +32,10 @@ create table rt
     aktif          boolean
                                  default true,
 
-    created_at     timestamp
+    created_at     timestamptz
                                  default now(),
 
-    updated_at     timestamp
+    updated_at     timestamptz
                                  default now()
 );
 
@@ -55,7 +55,7 @@ create table warga
     email      text,
     no_hp      text,
     aktif      boolean,
-    created_at timestamp
+    created_at timestamptz
         default now()
 
 );
@@ -65,7 +65,7 @@ create table users
     id         uuid primary key,
     nama       text,
     email      text,
-    created_at timestamp
+    created_at timestamptz
         default now()
 );
 
@@ -90,7 +90,7 @@ create table user_membership
         references warga (id),
     role       user_role
         not null,
-    created_at timestamp
+    created_at timestamptz
         default now(),
     unique (user_id, rt_id)
 );
@@ -106,8 +106,10 @@ create table konfirmasi_pembayaran
     total_bayar      bigint    not null,
     status           text      not null default 'pending',
     bukti_url        text,
+    approved_at      timestamptz,
+    rejected_at      timestamptz,
     alasan_penolakan text,
-    created_at       timestamp not null
+    created_at       timestamptz not null
                                         default now()
 );
 -- detail konfirmasi (normalisasi)
@@ -128,7 +130,7 @@ create table detail_konfirmasi_pembayaran
     tahun         integer   not null,
     bulan         integer   not null,
     nominal       bigint    not null,
-    created_at    timestamp not null
+    created_at    timestamptz not null
                                    default now(),
     constraint detail_konfirmasi_bulan_check
         check (
@@ -151,12 +153,12 @@ create table pembayaran
     rt_id        uuid      not null references rt (id) on delete cascade,
 
     tahun        integer   not null,
-    tanggal      timestamp not null
+    tanggal      timestamptz not null
                                   default now(),
     jumlah_bayar bigint    not null,
     metode       text,
     keterangan   text,
-    created_at   timestamp not null
+    created_at   timestamptz not null
                                   default now()
 );
 -- detail (normalisasi)
@@ -177,7 +179,7 @@ create table detail_pembayaran
     tahun         integer   not null,
     bulan         integer   not null,
     nominal       bigint    not null,
-    created_at    timestamp not null
+    created_at    timestamptz not null
                                    default now(),
     constraint detail_bulan_check
         check (
@@ -209,7 +211,7 @@ create table pengeluaran
     deskripsi  TEXT,
     nota_url   TEXT,
     aktif      BOOL             DEFAULT TRUE,
-    created_at TIMESTAMP        default Now()
+    created_at timestamptz        default Now()
 );
 
 -- tabel ledger (pencatatan uang masuk - keluar)
@@ -227,14 +229,14 @@ create table ledger
 
     sumber        varchar(50) not null,
     referensi_id  uuid,
-    tanggal       timestamp   not null default now(),
+    tanggal       timestamptz   not null default now(),
     deskripsi     text,
     nominal       bigint      not null default 0,
 
     saldo_setelah bigint      not null default 0,
 
     created_by    uuid,
-    created_at    timestamp
+    created_at    timestamptz
                                        default now(),
 
     aktif         boolean              default true
@@ -269,7 +271,7 @@ create table notifications
     is_read        boolean
         default false,
 
-    created_at     timestamp
+    created_at     timestamptz
         default now()
 );
 
@@ -302,6 +304,6 @@ create table activity_logs
 
     metadata    jsonb,
 
-    created_at  timestamp
+    created_at  timestamptz
         default now()
 );

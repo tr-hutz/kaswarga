@@ -1,10 +1,8 @@
 'use client'
 
 import {
-
-    useEffect
-
-} from 'react'
+    useKeyDown
+} from '../../../lib/hooks/useKeyDown'
 
 import {
 
@@ -15,52 +13,71 @@ import {
 import NotificationList
     from './NotificationList'
 
+import {
+    useRouter
+} from 'next/navigation'
+
+import {
+
+    markNotificationRead
+
+} from '../services/notification.service'
+
+import {
+
+    getNotificationLink
+
+} from '../utils/getNotificationLink'
+
 export default function NotificationDrawer({
 
                                                open,
 
                                                notifications = [],
 
-                                               onClose
+                                               onClose,
+
+                                               onRead
 
                                            }) {
 
-    /*
-     |---------------------------------------------------------
-     | ESC CLOSE
-     |---------------------------------------------------------
-     */
+    const router =
+        useRouter()
 
-    useEffect(() => {
+    async function handleClick(
+        notification
+    ) {
 
-        function handleKeyDown(e) {
+        try {
 
-            if (e.key === 'Escape') {
+            if (
+                !notification.is_read
+            ) {
 
-                onClose?.()
+                await markNotificationRead(
+                    notification.id
+                )
+
+                onRead?.()
             }
-        }
 
-        window.addEventListener(
+            onClose?.()
 
-            'keydown',
+            router.push(
 
-            handleKeyDown
-
-        )
-
-        return () => {
-
-            window.removeEventListener(
-
-                'keydown',
-
-                handleKeyDown
+                getNotificationLink(
+                    notification
+                )
 
             )
-        }
 
-    }, [])
+        } catch (err) {
+
+            console.error(err)
+        }
+    }
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open) {
         return null
@@ -148,6 +165,10 @@ export default function NotificationDrawer({
 
                         notifications={
                             notifications
+                        }
+
+                        onNotificationClick={
+                            handleClick
                         }
 
                     />

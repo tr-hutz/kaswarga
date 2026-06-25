@@ -12,9 +12,19 @@ import {
 
 } from '../../../lib/services/payment.service'
 
+import {
+    useToast
+} from '../../../components/ui/ToastProvider'
+
+import {
+    getErrorMessage
+} from '../../../lib/errors/supabase-errors'
+
 export function useApprovalActions({
                                        onSuccess
                                    } = {}) {
+
+    const { toast } = useToast()
 
     /*
      |-------------------------------------------------------------
@@ -45,10 +55,24 @@ export function useApprovalActions({
                 konfirmasiId
             )
 
+            toast({
+                message: 'Konfirmasi pembayaran berhasil disetujui.',
+                type: 'success'
+            })
+
             if (onSuccess) {
 
                 onSuccess()
             }
+
+        } catch (err) {
+
+            console.error(err)
+
+            toast({
+                message: getErrorMessage(err),
+                type: 'error'
+            })
 
         } finally {
 
@@ -76,10 +100,24 @@ export function useApprovalActions({
                 alasan
             )
 
+            toast({
+                message: 'Konfirmasi pembayaran berhasil ditolak.',
+                type: 'success'
+            })
+
             if (onSuccess) {
 
                 onSuccess()
             }
+
+        } catch (err) {
+
+            console.error(err)
+
+            toast({
+                message: getErrorMessage(err),
+                type: 'error'
+            })
 
         } finally {
 

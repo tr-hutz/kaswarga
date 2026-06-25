@@ -15,11 +15,31 @@ import {
 } from './hooks/useApprovalAction'
 
 import PaymentToolbar from "./components/tables/PaymentToolbar";
+import {exportToCSV, exportToExcel} from "../../lib/export/export-utils";
+
+import {
+    useDialog
+} from '../../components/ui/DialogProvider'
 
 export default function PembayaranView({
 
-                                           rows,
+                                           /*
+                                            |-------------------------------------------------------------
+                                            | FILTERS
+                                            |-------------------------------------------------------------
+                                            */
+                                           search,
+                                           setSearch,
 
+                                           kategori,
+                                           setKategori,
+
+                                           /*
+                                            |-------------------------------------------------------------
+                                            | DATA
+                                            |-------------------------------------------------------------
+                                            */
+                                           rows,
                                            reloadData
 
                                        }) {
@@ -47,6 +67,8 @@ export default function PembayaranView({
      | APPROVAL
      |-------------------------------------------------------------
      */
+
+    const { prompt } = useDialog()
 
     const {
 
@@ -95,9 +117,13 @@ export default function PembayaranView({
     ) {
 
         const alasan =
-            prompt(
-                'Masukkan alasan penolakan'
-            )
+            await prompt({
+                title: 'Tolak Pembayaran',
+                description: 'Berikan alasan penolakan untuk warga.',
+                placeholder: 'Masukkan alasan penolakan...',
+                confirmLabel: 'Tolak',
+                confirmClassName: 'bg-red-600 hover:bg-red-700 text-white'
+            })
 
         if (!alasan) {
             return
@@ -131,7 +157,15 @@ export default function PembayaranView({
             >
 
                 <PaymentToolbar
-                    rows={rows}
+
+                    search={search}
+                    setSearch={setSearch}
+
+                    kategori={kategori}
+                    setKategori={setKategori}
+
+                    onExportCSV={() => exportToCSV({data: rows, fileName: 'pembayaran.csv'})}
+                    onExportExcel={() => exportToExcel({data: rows, fileName: 'pembayaran.xlsx'})}
                 />
             </div>
 

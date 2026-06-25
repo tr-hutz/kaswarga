@@ -5,49 +5,63 @@ import NotificationItem
 
 export default function NotificationList({
 
-                                             notifications = []
+                                             notifications = [],
+
+                                             onNotificationClick
 
                                          }) {
 
-    return (
+    if (
+        notifications.length === 0
+    ) {
 
-        <div
-            className="
-                bg-white
-                rounded-2xl
-                border
-                shadow-xl
-                w-[380px]
-                max-h-[500px]
-                overflow-y-auto
-            "
-        >
+        return (
 
             <div
                 className="
-                    p-4
-                    border-b
-                    font-semibold
+                    p-6
+                    text-center
+                    text-gray-500
                 "
             >
-                Notifications
+
+                Tidak ada notifikasi
+
             </div>
+
+        )
+    }
+
+    return (
+
+        <div>
 
             {
 
-                notifications.map(item => (
+                notifications.map(
+                    notification => (
 
-                    <NotificationItem
+                        <NotificationItem
 
-                        key={item.id}
+                            key={
+                                notification.id
+                            }
 
-                        item={item}
+                            notification={
+                                notification
+                            }
 
-                    />
+                            onClick={
+                                onNotificationClick
+                            }
+                        />
 
-                ))
+                    )
+                )
+
             }
 
         </div>
+
     )
 }

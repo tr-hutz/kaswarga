@@ -1,57 +1,113 @@
 'use client'
 
-import NotificationBell
-    from './components/NotificationBell'
+import {
+    useMemo,
+    useState
+} from 'react'
 
-import NotificationDrawer
-    from './components/NotificationDrawer'
+import NotificationToolbar
+    from './components/NotificationToolbar'
 
-export default function NotificationsView({
+import NotificationList
+    from './components/NotificationList'
 
-                                              notifications = [],
+export default function NotificationView({
 
-                                              open,
-                                              setOpen
+                                             notifications,
+                                             onMarkAllRead
 
-                                          }) {
+                                         }) {
 
-    const unreadCount =
+    const [
+        search,
+        setSearch
+    ] = useState('')
 
-        notifications.filter(
-            item => !item.isRead
-        ).length
+    const [
+        filter,
+        setFilter
+    ] = useState('all')
+
+    const filtered =
+        useMemo(() => {
+
+            return notifications.filter(
+                item => {
+
+                    const matchSearch =
+
+                        (item.title || '')
+                            .toLowerCase()
+                            .includes(
+                                search.toLowerCase()
+                            )
+
+                        ||
+
+                        (item.message || '')
+                            .toLowerCase()
+                            .includes(
+                                search.toLowerCase()
+                            )
+
+                    const matchFilter =
+
+                        filter === 'all'
+
+                        ||
+
+                        (
+                            filter === 'unread'
+                            &&
+                            !item.is_read
+                        )
+
+                    return (
+                        matchSearch
+                        &&
+                        matchFilter
+                    )
+                }
+            )
+
+        }, [
+
+            notifications,
+            search,
+            filter
+
+        ])
 
     return (
 
-        <>
+        <div
+            className="
+                p-6
+                space-y-6
+            "
+        >
 
-            <NotificationBell
+            <NotificationToolbar
 
-                count={
-                    unreadCount
-                }
+                search={search}
+                setSearch={setSearch}
 
-                onClick={() =>
-                    setOpen(true)
-                }
+                filter={filter}
+                setFilter={setFilter}
+
+                onMarkAllRead={onMarkAllRead}
 
             />
 
-            <NotificationDrawer
-
-                open={open}
+            <NotificationList
 
                 notifications={
-                    notifications
-                }
-
-                onClose={() =>
-                    setOpen(false)
+                    filtered
                 }
 
             />
 
-        </>
+        </div>
 
     )
 }

@@ -5,13 +5,17 @@ import {
     useState
 } from 'react'
 
+import { useSearchParams } from 'next/navigation'
+
 import {
-    getKonfirmasiPembayaran,
-    approvePembayaran,
-    rejectPembayaran
+    getKonfirmasiPembayaran
 } from '../../../lib/services/payment.service'
 
+const VALID_STATUSES = ['pending', 'approved', 'rejected']
+
 export function usePembayaran() {
+
+    const searchParams = useSearchParams()
 
     const currentYear =
         new Date()
@@ -29,10 +33,22 @@ export function usePembayaran() {
         currentYear
     )
 
+    const urlStatus = searchParams.get('status')
+
     const [
         status,
         setStatus
-    ] = useState('pending')
+    ] = useState(
+        VALID_STATUSES.includes(urlStatus) ? urlStatus : 'pending'
+    )
+
+    // Sync filter when navigating to the page with a ?status= param
+    useEffect(() => {
+        const s = searchParams.get('status')
+        if (VALID_STATUSES.includes(s)) {
+            setStatus(s)
+        }
+    }, [searchParams])
 
     const [
         search,
@@ -46,40 +62,7 @@ export function usePembayaran() {
 
     useEffect(() => {
 
-        let mounted = true
-
         loadData()
-
-        return () => {
-            mounted = false
-        }
-
-        async function loadData() {
-
-            setLoading(true)
-
-            try {
-
-                const data =
-                    await getKonfirmasiPembayaran({
-
-                        tahun: year,
-                        status,
-                        search
-
-                    })
-
-                setRows(data)
-
-            } catch (err) {
-
-                console.error(err)
-
-            } finally {
-
-                setLoading(false)
-            }
-        }
 
     }, [
         year,
@@ -87,37 +70,30 @@ export function usePembayaran() {
         search
     ])
 
-    async function handleApprove(id) {
+    async function loadData() {
+
+        setLoading(true)
 
         try {
 
-            await approvePembayaran(id)
+            const data =
+                await getKonfirmasiPembayaran({
 
-            await loadData()
+                    tahun: year,
+                    status,
+                    search
+
+                })
+
+            setRows(data)
 
         } catch (err) {
 
             console.error(err)
-        }
-    }
 
-    async function handleReject(
-        id,
-        alasan
-    ) {
+        } finally {
 
-        try {
-
-            await rejectPembayaran(
-                id,
-                alasan
-            )
-
-            await loadData()
-
-        } catch (err) {
-
-            console.error(err)
+            setLoading(false)
         }
     }
 
@@ -135,8 +111,6 @@ export function usePembayaran() {
         setSearch,
 
         rows,
-
-        handleApprove,
-        handleReject
+        loadData
     }
 }

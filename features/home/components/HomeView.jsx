@@ -22,13 +22,15 @@ export default function HomeView({
   selectedMonths,
   setSelectedMonths,
 
-  setNominalIuran,
+  nominalIuran,
 
   submitPayment,
 
   submitting,
 
   statusMap,
+
+  formStatusMap,
 
   summary
 
@@ -159,7 +161,7 @@ export default function HomeView({
           setSelectedMonths
         }
 
-        nominalIuran={setNominalIuran}
+        nominalIuran={nominalIuran}
 
         onSubmit={
           submitPayment
@@ -170,7 +172,7 @@ export default function HomeView({
         }
 
         statusMap={
-          statusMap
+          formStatusMap
         }
 
       />

@@ -12,6 +12,9 @@ import LedgerDrawer
 import LedgerAnalytics
     from './components/analytics/LedgerAnalytics'
 
+import LedgerReport
+    from './components/LedgerReport'
+
 export default function LedgerView({
 
                                        /*
@@ -61,6 +64,8 @@ export default function LedgerView({
             <LedgerAnalytics
                 rows={rows}
             />
+
+            <LedgerReport />
 
             <LedgerToolbar
 

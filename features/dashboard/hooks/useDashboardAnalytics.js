@@ -43,6 +43,11 @@ export function useDashboardAnalytics() {
     setPaymentHealth
   ] = useState(null)
 
+  const [
+    financialInsight,
+    setFinancialInsight
+  ] = useState(null)
+
   /*
    |--------------------------------------------------------------------------
    | LOAD
@@ -134,6 +139,13 @@ export function useDashboardAnalytics() {
           paymentHealth
         )
 
+        setFinancialInsight({
+          saldo:      data.insight.saldoTerkini,
+          pemasukan:  data.insight.totalPemasukan,
+          pengeluaran: data.insight.totalPengeluaran,
+          tunggakan:  data.insight.totalTunggakan
+        })
+
       } catch (err) {
 
         console.error(
@@ -164,6 +176,7 @@ export function useDashboardAnalytics() {
     year,
     setYear,
     analytics,
-    paymentHealth
+    paymentHealth,
+    financialInsight
   }
 }

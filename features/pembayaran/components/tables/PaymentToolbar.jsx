@@ -7,6 +7,9 @@ export default function PaymentToolbar({
                                           search,
                                           setSearch,
 
+                                          kategori,
+                                          setKategori,
+
                                           onExportCSV,
                                           onExportExcel
 
@@ -25,13 +28,12 @@ export default function PaymentToolbar({
 
             searchPlaceholder="Cari pembayaran..."
 
-            // filterValue={kategori}
-            // setFilterValue={setKategori}
+            filterValue={kategori}
+            setFilterValue={setKategori}
 
             filterPlaceholder="Semua Kategori"
 
             filterOptions={[
-
                 {
                     label: 'Menunggu',
                     value: 'pending'

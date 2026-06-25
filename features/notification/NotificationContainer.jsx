@@ -1,64 +1,62 @@
 'use client'
 
 import {
-    useState
-} from 'react'
-
-import NotificationsView
-    from './NotificationView'
+    useAuth
+} from "../../lib/auth/useAuth";
 
 import {
     useNotifications
 } from './hooks/useNotifications'
 
+import NotificationView
+    from './NotificationView'
+
 import {
-    useNotificationRealtime
-} from './hooks/useNotificationRealtime'
+    markAllNotificationsRead
+} from './services/notification.service'
 
-export default function NotificationsContainer() {
-
-    const [
-
-        open,
-        setOpen
-
-    ] = useState(false)
+export default function NotificationContainer() {
 
     const {
+        membership
+    } = useAuth()
 
-        loading,
+    const {
         notifications,
         reload
-
     } = useNotifications()
 
-    useNotificationRealtime({
+    async function handleMarkAllRead() {
 
-        onReload:
-        reload
+        try {
 
-    })
+            await markAllNotificationsRead(
+
+                membership.user.id
+
+            )
+
+            await reload()
+
+        } catch (err) {
+
+            console.error(err)
+        }
+    }
 
     return (
 
-        <NotificationsView
-
-            loading={
-                loading
-            }
+        <NotificationView
 
             notifications={
                 notifications
             }
 
-            open={
-                open
-            }
-
-            setOpen={
-                setOpen
+            onMarkAllRead={
+                handleMarkAllRead
             }
 
         />
+
     )
 }

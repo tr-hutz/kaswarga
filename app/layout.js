@@ -10,6 +10,14 @@ import AppShell
 
   from '../components/layout/AppShell'
 
+import ToastProvider
+
+  from '../components/ui/ToastProvider'
+
+import DialogProvider
+
+  from '../components/ui/DialogProvider'
+
 export default function RootLayout({
 
                                      children
@@ -24,11 +32,19 @@ export default function RootLayout({
 
       <AuthProvider>
 
-        <AppShell>
+        <ToastProvider>
 
-          {children}
+        <DialogProvider>
 
-        </AppShell>
+          <AppShell>
+
+            {children}
+
+          </AppShell>
+
+        </DialogProvider>
+
+        </ToastProvider>
 
       </AuthProvider>
 

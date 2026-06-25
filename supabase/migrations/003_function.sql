@@ -11,70 +11,132 @@
 | 5. Update status approved
 |
 */
-create or REPLACE function approve_konfirmasi(
-  p_konfirmasi_id uuid
+create or replace function approve_konfirmasi(
+    p_konfirmasi_id uuid,
+    p_user_id uuid
 )
 returns void
 language plpgsql
 security definer
 as $$
-declare
 
-  v_konfirmasi RECORD;
-
-v_pembayaran_id uuid;
+declare v_konfirmasi  record;
+        v_warga        record;
+        v_pembayaran_id uuid;
+        v_nominal_iuran bigint;
+        v_jumlah_bulan  integer;
+        v_expected_total bigint;
+        v_bulan_str     text;
+        v_bulan_names   text[] := ARRAY[
+            'Januari','Februari','Maret','April','Mei','Juni',
+            'Juli','Agustus','September','Oktober','November','Desember'
+        ];
 
 begin
 
   /*
-   |--------------------------------------------------------------------------
-   | LOCK KONFIRMASI
-   |--------------------------------------------------------------------------
+  |--------------------------------------------------------------------------
+  | LOCK KONFIRMASI
+  |--------------------------------------------------------------------------
+  */
+
+  select *
+  into v_konfirmasi
+  from konfirmasi_pembayaran
+  where id = p_konfirmasi_id
+  for update;
+
+  /*
+  |--------------------------------------------------------------------------
+  | VALIDASI
+  |--------------------------------------------------------------------------
+  */
+  if not found then
+      RAISE EXCEPTION 'Konfirmasi pembayaran tidak ditemukan'
+        USING ERRCODE = 'KW001';
+  end if;
+
+  if v_konfirmasi.status != 'pending' then
+      RAISE EXCEPTION 'Konfirmasi sudah diproses'
+        USING ERRCODE = 'KW002';
+  end if;
+
+  select *
+  into v_warga
+  from user_membership
+  where warga_id = v_konfirmasi.warga_id;
+
+  /*
+  |--------------------------------------------------------------------------
+  | VALIDASI BULAN SUDAH DIBAYAR
+  |--------------------------------------------------------------------------
+  */
+
+  if exists (
+    select 1
+    from detail_pembayaran dp
+    join detail_konfirmasi_pembayaran dkp
+      on dkp.konfirmasi_id = p_konfirmasi_id
+    where dp.warga_id = v_konfirmasi.warga_id
+      and dp.tahun     = v_konfirmasi.tahun
+      and dp.bulan     = dkp.bulan
+  ) then
+    RAISE EXCEPTION 'Beberapa bulan yang dikonfirmasi sudah memiliki data pembayaran yang disetujui'
+      USING ERRCODE = 'KW003';
+  end if;
+
+  /*
+  |--------------------------------------------------------------------------
+  | VALIDASI TOTAL BAYAR
+  |--------------------------------------------------------------------------
+  */
+
+  select nominal_iuran
+  into v_nominal_iuran
+  from rt
+  where id = v_konfirmasi.rt_id;
+
+  select count(*)
+  into v_jumlah_bulan
+  from detail_konfirmasi_pembayaran
+  where konfirmasi_id = p_konfirmasi_id;
+
+  v_expected_total := v_nominal_iuran * v_jumlah_bulan;
+
+  if v_konfirmasi.total_bayar > v_expected_total then
+    RAISE EXCEPTION 'Total pembayaran (%) melebihi jumlah yang seharusnya (% x % bulan = %). Selisih: %',
+      v_konfirmasi.total_bayar,
+      v_nominal_iuran,
+      v_jumlah_bulan,
+      v_expected_total,
+      (v_konfirmasi.total_bayar - v_expected_total)
+      USING ERRCODE = 'KW004';
+  end if;
+
+  if v_konfirmasi.total_bayar < v_expected_total then
+    RAISE EXCEPTION 'Total pembayaran (%) kurang dari jumlah yang seharusnya (% x % bulan = %). Selisih: %',
+      v_konfirmasi.total_bayar,
+      v_nominal_iuran,
+      v_jumlah_bulan,
+      v_expected_total,
+      (v_expected_total - v_konfirmasi.total_bayar)
+      USING ERRCODE = 'KW005';
+  end if;
+
+  /*
+  |--------------------------------------------------------------------------
+  | INSERT HEADER PEMBAYARAN
+  |--------------------------------------------------------------------------
    */
 
-  select
-	*
-  into
-	v_konfirmasi
-from
-	konfirmasi_pembayaran
-where
-	id = p_konfirmasi_id
-  for
-update;
-	
-	/*
-   |--------------------------------------------------------------------------
-   | VALIDASI
-   |--------------------------------------------------------------------------
-   */
-	if not found then
-    RAISE exception
-      'Konfirmasi pembayaran tidak ditemukan';
-end if;
-
-if v_konfirmasi.status != 'pending' then
-    RAISE exception
-      'Konfirmasi sudah diproses';
-end if;
-
-/*
-   |--------------------------------------------------------------------------
-   | INSERT HEADER PEMBAYARAN
-   |--------------------------------------------------------------------------
-   */
-
-  insert
-	into
-	pembayaran (
+  insert into pembayaran (
     warga_id,
     rt_id,
     tahun,
     jumlah_bayar,
     tanggal,
     created_at
-  )
-values (
+  ) values (
     v_konfirmasi.warga_id,
     v_konfirmasi.rt_id,
     v_konfirmasi.tahun,
@@ -82,38 +144,33 @@ values (
     now(),
     now()
   )
-  RETURNING id
-  into
-	v_pembayaran_id;
+  RETURNING id into v_pembayaran_id;
 
-/*
-   |--------------------------------------------------------------------------
-   | COPY DETAIL BULAN
-   |--------------------------------------------------------------------------
-   */
+  /*
+  |--------------------------------------------------------------------------
+  | COPY DETAIL BULAN
+  |--------------------------------------------------------------------------
+  */
 
-  insert
-	into
-	detail_pembayaran (
+  insert into
+    detail_pembayaran (
     pembayaran_id,
-	  warga_id,
+    warga_id,
     tahun,
     bulan,
     nominal,
     created_at
-  )
-  select
-	v_pembayaran_id,
-	d.warga_id,
-	d.tahun,
-	d.bulan,
-	d.nominal,
-	now()
-from
-	detail_konfirmasi_pembayaran d
-where
-	d.konfirmasi_id =
-    p_konfirmasi_id;
+  ) select
+    v_pembayaran_id,
+    d.warga_id,
+    d.tahun,
+    d.bulan,
+    d.nominal,
+    now()
+  from
+    detail_konfirmasi_pembayaran d
+  where
+    d.konfirmasi_id = p_konfirmasi_id;
 
 /*
    |--------------------------------------------------------------------------
@@ -122,23 +179,52 @@ where
    */
 
   update
-	konfirmasi_pembayaran
+    konfirmasi_pembayaran
   set
-	status = 'approved',
-	approved_at = now()
+    status = 'approved',
+    approved_at = now()
   where
-	id = p_konfirmasi_id;
+    id = p_konfirmasi_id;
 
   perform insert_ledger(
-    v_rt_id,
+    v_konfirmasi.rt_id,
     'pemasukan',
     'pembayaran',
     v_pembayaran_id,
     now(),
     'Pembayaran iuran warga',
-    v_total_bayar,
-    v_user_id
+    v_konfirmasi.total_bayar,
+    p_user_id
   );
+
+   /*
+   |--------------------------------------------------------------------------
+   | INSERT NOTIFICATION
+   |--------------------------------------------------------------------------
+   */
+
+  select string_agg(v_bulan_names[bulan], ', ' order by bulan)
+  into v_bulan_str
+  from detail_konfirmasi_pembayaran
+  where konfirmasi_id = p_konfirmasi_id;
+
+    insert into notifications (
+      rt_id,
+      type,
+      title,
+      message,
+      entity_type,
+      entity_id,
+      target_user_id
+    ) values (
+      v_konfirmasi.rt_id,
+      'payment_approved',
+      'Pembayaran Disetujui',
+      'Pembayaran iuran ' || v_bulan_str || ' ' || v_konfirmasi.tahun || ' telah disetujui',
+      'konfirmasi_pembayaran',
+      v_konfirmasi.id,
+      v_warga.user_id
+    );
 
 end;
 
@@ -159,15 +245,20 @@ $$;
 
 create or REPLACE function reject_konfirmasi(
   p_konfirmasi_id uuid,
-  p_alasan text default null
+  p_alasan text,
+  p_user_id uuid
 )
 returns void
 language plpgsql
 security definer
 as $$
-declare
-
-  v_konfirmasi RECORD;
+declare v_konfirmasi  record;
+        v_warga       record;
+        v_bulan_str   text;
+        v_bulan_names text[] := ARRAY[
+            'Januari','Februari','Maret','April','Mei','Juni',
+            'Juli','Agustus','September','Oktober','November','Desember'
+        ];
 
 begin
 
@@ -177,33 +268,35 @@ begin
    |--------------------------------------------------------------------------
    */
 
-  select
-	*
-  into
+  select * into
 	v_konfirmasi
-from
+  from
 	konfirmasi_pembayaran
-where
+  where
 	id = p_konfirmasi_id
-  for
-update;
+  for update;
+
+  select *
+  into v_warga
+  from user_membership
+  where warga_id = v_konfirmasi.warga_id;
 	
-	/*
+   /*
    |--------------------------------------------------------------------------
    | VALIDASI
    |--------------------------------------------------------------------------
    */
 	if not found then
-    RAISE exception
-      'Konfirmasi pembayaran tidak ditemukan';
-end if;
+      RAISE EXCEPTION 'Konfirmasi pembayaran tidak ditemukan'
+        USING ERRCODE = 'KW001';
+    end if;
 
-if v_konfirmasi.status != 'pending' then
-    RAISE exception
-      'Konfirmasi sudah diproses';
-end if;
+    if v_konfirmasi.status != 'pending' then
+        RAISE EXCEPTION 'Konfirmasi sudah diproses'
+          USING ERRCODE = 'KW002';
+    end if;
 
-/*
+   /*
    |--------------------------------------------------------------------------
    | UPDATE STATUS
    |--------------------------------------------------------------------------
@@ -211,36 +304,71 @@ end if;
 
   update
 	konfirmasi_pembayaran
-set
+  set
 	status = 'rejected',
 	rejected_at = now(),
 	alasan_penolakan = p_alasan
-where
+  where
 	id = p_konfirmasi_id;
+
+   /*
+   |--------------------------------------------------------------------------
+   | INSERT NOTIFICATION
+   |--------------------------------------------------------------------------
+   */
+
+  select string_agg(v_bulan_names[bulan], ', ' order by bulan)
+  into v_bulan_str
+  from detail_konfirmasi_pembayaran
+  where konfirmasi_id = p_konfirmasi_id;
+
+    insert into notifications (
+      rt_id,
+      type,
+      title,
+      message,
+      entity_type,
+      entity_id,
+      target_user_id
+    ) values (
+      v_konfirmasi.rt_id,
+      'payment_rejected',
+      'Pembayaran Ditolak',
+      'Pembayaran iuran ' || v_bulan_str || ' ' || v_konfirmasi.tahun || ' ditolak' ||
+        case when p_alasan is not null and p_alasan != ''
+             then '. Alasan: ' || p_alasan
+             else ''
+        end,
+      'konfirmasi_pembayaran',
+      v_konfirmasi.id,
+      v_warga.user_id
+    );
+
 end;
 
 $$;
+
 -- Access permission
 revoke all
 on
-function approve_konfirmasi(uuid)
+function approve_konfirmasi(uuid, uuid)
 from
 PUBLIC;
 
 revoke all
 on
-function reject_konfirmasi(uuid, text)
+function reject_konfirmasi(uuid, text, uuid)
 from
 PUBLIC;
 
 grant execute
 on
-function approve_konfirmasi(uuid)
+function approve_konfirmasi(uuid, uuid)
 to authenticated;
 
 grant execute
 on
-function reject_konfirmasi(uuid, text)
+function reject_konfirmasi(uuid, text, uuid)
 to authenticated;
 
 -- utilities
@@ -593,36 +721,25 @@ $$;
 create or replace function get_last_saldo(
     p_rt_id uuid
 )
-
 returns bigint
 
 language plpgsql
 
 as $$
 
-declare
-
-v_saldo bigint;
+declare v_saldo bigint;
 
 begin
 
 select
     saldo_setelah
-
 into v_saldo
-
 from ledger
-
 where rt_id = p_rt_id
-
 order by tanggal desc
-
     limit 1;
 
-return coalesce(
-        v_saldo,
-        0
-       );
+return coalesce(v_saldo, 0);
 
 end;
 
@@ -640,7 +757,7 @@ create or replace function insert_ledger(
     p_jenis varchar,
     p_sumber varchar,
     p_referensi_id uuid,
-    p_tanggal timestamp,
+    p_tanggal timestamptz,
     p_deskripsi text,
     p_nominal bigint,
     p_created_by uuid
@@ -680,47 +797,27 @@ else
 end if;
 
 insert into ledger (
-
     rt_id,
-
     jenis,
     sumber,
-
     referensi_id,
-
     tanggal,
-
     deskripsi,
-
     nominal,
-
     saldo_setelah,
-
     created_by
-
-)
-
-values (
-
+) values (
            p_rt_id,
-
            p_jenis,
            p_sumber,
-
            p_referensi_id,
-
            p_tanggal,
-
            p_deskripsi,
-
            p_nominal,
-
            v_new_saldo,
-
            p_created_by
        )
-
-    returning id
+returning id
 into v_id;
 
 return v_id;

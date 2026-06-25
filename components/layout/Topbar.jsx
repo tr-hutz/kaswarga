@@ -20,6 +20,8 @@ import {
 
 } from '../../lib/auth/useAuth'
 
+import NotificationBar from "../../features/notification/components/NotificationBar";
+
 export default function Topbar({
 
                                    mobileOpen,
@@ -155,6 +157,8 @@ export default function Topbar({
                         gap-3
                     "
                 >
+
+                    <NotificationBar />
 
                     <div
                         className="

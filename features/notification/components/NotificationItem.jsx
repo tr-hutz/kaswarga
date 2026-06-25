@@ -1,87 +1,195 @@
 'use client'
 
+import {
+
+    Bell,
+    CheckCircle,
+    XCircle,
+    Wallet,
+    Activity
+
+} from 'lucide-react'
+
+import {
+    formatRelativeDate
+} from "../../../lib/utils";
+
 export default function NotificationItem({
 
-                                             item
+                                             notification,
+
+                                             onClick
 
                                          }) {
 
+    function getIcon() {
+
+        switch (
+            notification.type
+            ) {
+
+            case 'payment_submitted':
+
+                return (
+                    <Wallet
+                        size={18}
+                    />
+                )
+
+            case 'payment_approved':
+
+                return (
+                    <CheckCircle
+                        size={18}
+                    />
+                )
+
+            case 'payment_rejected':
+
+                return (
+                    <XCircle
+                        size={18}
+                    />
+                )
+
+            case 'activity':
+
+                return (
+                    <Activity
+                        size={18}
+                    />
+                )
+
+            default:
+
+                return (
+                    <Bell
+                        size={18}
+                    />
+                )
+        }
+    }
+
     return (
 
-        <div
-            className="
-                p-4
+        <button
+
+            type="button"
+
+            onClick={() =>
+                onClick?.(
+                    notification
+                )
+            }
+
+            className={`
+                w-full
+                text-left
+                px-4
+                py-3
                 border-b
-                hover:bg-slate-50
-                cursor-pointer
+                hover:bg-gray-50
                 transition
-            "
+
+                ${!notification.is_read
+                ? 'bg-blue-50'
+                : ''
+            }
+            `}
         >
 
             <div
                 className="
                     flex
-                    items-start
                     gap-3
                 "
             >
 
-                {
-
-                    !item.isRead && (
-
-                        <div
-                            className="
-                                w-2
-                                h-2
-                                rounded-full
-                                bg-blue-500
-                                mt-2
-                                shrink-0
-                            "
-                        />
-                    )
-                }
+                <div
+                    className="
+                        mt-1
+                        text-gray-500
+                    "
+                >
+                    {getIcon()}
+                </div>
 
                 <div
                     className="
                         flex-1
+                        min-w-0
                     "
                 >
 
-                    <p
+                    <div
                         className="
-                            text-sm
-                            font-semibold
+                            flex
+                            items-center
+                            justify-between
+                            gap-2
                         "
                     >
-                        {item.title}
-                    </p>
 
-                    <p
+                        <div
+                            className="
+                                font-medium
+                                truncate
+                            "
+                        >
+                            {
+                                notification.title
+                            }
+                        </div>
+
+                        {
+                            !notification.is_read && (
+
+                                <div
+                                    className="
+                                        w-2
+                                        h-2
+                                        rounded-full
+                                        bg-blue-600
+                                        shrink-0
+                                    "
+                                />
+
+                            )
+                        }
+
+                    </div>
+
+                    <div
                         className="
                             text-sm
-                            text-slate-600
+                            text-gray-600
                             mt-1
                         "
                     >
-                        {item.message}
-                    </p>
+                        {
+                            notification.message
+                        }
+                    </div>
 
-                    <p
+                    <div
                         className="
                             text-xs
-                            text-slate-400
+                            text-gray-400
                             mt-2
                         "
                     >
-                        {item.timeLabel}
-                    </p>
+                        {
+                            formatRelativeDate(
+                                notification.created_at
+                            )
+                        }
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+        </button>
+
     )
 }

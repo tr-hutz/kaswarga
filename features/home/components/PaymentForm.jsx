@@ -26,6 +26,14 @@ export default function PaymentForm({
           month => month.id
       )
 
+  const PAYABLE_MONTHS =
+      ALL_MONTHS.filter(
+          id => {
+              const s = statusMap?.[id]
+              return s !== 'approved' && s !== 'pending'
+          }
+      )
+
   const [
     selectedMonths,
     setSelectedMonths
@@ -99,7 +107,8 @@ export default function PaymentForm({
 
     const isAllSelected =
 
-        ALL_MONTHS.every(
+        PAYABLE_MONTHS.length > 0 &&
+        PAYABLE_MONTHS.every(
             month =>
                 selectedMonths.includes(
                     month
@@ -116,12 +125,12 @@ export default function PaymentForm({
     /*
      |--------------------------------------------------------------------------
      | jika belum lengkap
-     | -> pilih semua
+     | -> pilih semua yang bisa dibayar
      |--------------------------------------------------------------------------
      */
 
     setSelectedMonths(
-        ALL_MONTHS
+        PAYABLE_MONTHS
     )
   }
 
@@ -297,7 +306,8 @@ export default function PaymentForm({
       transition-all
 
       ${
-                selectedMonths.length === 12
+                PAYABLE_MONTHS.length > 0 &&
+                PAYABLE_MONTHS.every(m => selectedMonths.includes(m))
                     ? `
             bg-blue-600
             text-white
@@ -331,6 +341,13 @@ export default function PaymentForm({
 
         {MONTHS.map(month => {
 
+          const status =
+              statusMap?.[month.id]
+
+          const isDisabled =
+              status === 'approved' ||
+              status === 'pending'
+
           const isSelected =
               selectedMonths.includes(
                   month.id
@@ -341,6 +358,7 @@ export default function PaymentForm({
               <button
                   key={month.id}
                   type="button"
+                  disabled={isDisabled}
 
                   onClick={() =>
                       handleToggleMonth(
@@ -356,7 +374,16 @@ export default function PaymentForm({
           transition-all
 
           ${
-                      isSelected
+                      isDisabled
+
+                          ? `
+                bg-slate-100
+                text-slate-400
+                border-slate-200
+                cursor-not-allowed
+              `
+
+                          : isSelected
 
                           ? `
                 bg-blue-600
@@ -386,12 +413,12 @@ export default function PaymentForm({
             opacity-80
           "
                 >
-                  Rp
-                  {' '}
-                  {nominalIuran
-                      ?.toLocaleString(
-                          'id-ID'
-                      )}
+                  {isDisabled
+                      ? status === 'approved'
+                          ? 'Lunas'
+                          : 'Menunggu'
+                      : `Rp ${nominalIuran?.toLocaleString('id-ID')}`
+                  }
                 </div>
 
               </button>

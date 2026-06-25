@@ -3,14 +3,26 @@
 import InsightCard
   from '../cards/InsightCard'
 
-import PaymentHealthCard
-  from '../cards/PaymentHealthCard'
-
 import CashflowChart
   from '../charts/CashflowChart'
 
 import MonthlyCollectionChart
   from '../charts/MonthlyCollectionChart'
+
+import {
+  formatRupiah
+} from '../../../lib/utils'
+
+function SectionLabel({ title, subtitle }) {
+  return (
+    <div>
+      <h2 className="text-base font-semibold text-gray-800">{title}</h2>
+      {subtitle && (
+        <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>
+      )}
+    </div>
+  )
+}
 
 export default function DashboardView({
 
@@ -21,26 +33,29 @@ export default function DashboardView({
 
   analytics,
 
-  paymentHealth
+  paymentHealth,
+
+  financialInsight
 
 }) {
 
   if (
     loading ||
     !analytics ||
-    !paymentHealth
+    !paymentHealth ||
+    !financialInsight
   ) {
 
     return (
-      <div>
-        Loading...
+      <div className="text-sm text-gray-400 p-6">
+        Memuat data...
       </div>
     )
   }
 
   return (
 
-    <div className="space-y-6">
+    <div className="space-y-8">
 
       {/* HEADER */}
 
@@ -58,7 +73,7 @@ export default function DashboardView({
             font-bold
           "
         >
-          Dashboard Analytics
+          Dashboard
         </h1>
 
         <select
@@ -75,6 +90,7 @@ export default function DashboardView({
             rounded-lg
             px-3
             py-2
+            text-sm
           "
         >
 
@@ -97,55 +113,108 @@ export default function DashboardView({
 
       </div>
 
-      {/* INSIGHT */}
+      {/* STATUS IURAN WARGA */}
 
-      <div
-        className="
-          grid
-          grid-cols-2
-          xl:grid-cols-5
-          gap-4
-        "
-      >
+      <div className="space-y-3">
 
-        <InsightCard
-          title="Total Warga"
-          value={
-            paymentHealth.totalWarga
-          }
+        <SectionLabel
+          title="Status Iuran Warga"
+          subtitle="Rekap kepatuhan pembayaran iuran bulanan"
         />
 
-        <InsightCard
-          title="Lunas"
-          value={
-            paymentHealth.lunas
-          }
-        />
+        <div
+          className="
+            grid
+            grid-cols-2
+            xl:grid-cols-5
+            gap-4
+          "
+        >
 
-        <InsightCard
-          title="Hampir Lunas"
-          value={
-            paymentHealth.hampirLunas
-          }
-        />
+          <InsightCard
+            title="Total Warga"
+            value={paymentHealth.totalWarga}
+          />
 
-        <InsightCard
-          title="Menunggak"
-          value={
-            paymentHealth.menunggak
-          }
-        />
+          <InsightCard
+            title="Lunas"
+            value={paymentHealth.lunas}
+            valueColor="text-green-600"
+          />
 
-        <InsightCard
-          title="Belum Bayar"
-          value={
-            paymentHealth.belumBayar
-          }
-        />
+          <InsightCard
+            title="Hampir Lunas"
+            value={paymentHealth.hampirLunas}
+            valueColor="text-yellow-600"
+          />
+
+          <InsightCard
+            title="Menunggak"
+            value={paymentHealth.menunggak}
+            valueColor="text-orange-600"
+          />
+
+          <InsightCard
+            title="Belum Bayar"
+            value={paymentHealth.belumBayar}
+            valueColor="text-red-600"
+          />
+
+        </div>
 
       </div>
 
-      {/* CHART */}
+      {/* KEUANGAN RT */}
+
+      <div className="space-y-3">
+
+        <SectionLabel
+          title="Keuangan RT"
+          subtitle={`Ringkasan arus kas tahun ${year}`}
+        />
+
+        <div
+          className="
+            grid
+            grid-cols-2
+            xl:grid-cols-4
+            gap-4
+          "
+        >
+
+          <InsightCard
+            title="Saldo Saat Ini"
+            value={formatRupiah(financialInsight.saldo)}
+            subtitle="saldo berjalan"
+            valueColor="text-blue-700"
+          />
+
+          <InsightCard
+            title="Pemasukan"
+            value={formatRupiah(financialInsight.pemasukan)}
+            subtitle="tahun ini"
+            valueColor="text-green-600"
+          />
+
+          <InsightCard
+            title="Pengeluaran"
+            value={formatRupiah(financialInsight.pengeluaran)}
+            subtitle="tahun ini"
+            valueColor="text-orange-600"
+          />
+
+          <InsightCard
+            title="Tunggakan"
+            value={formatRupiah(financialInsight.tunggakan)}
+            subtitle="perlu ditagih"
+            valueColor="text-red-600"
+          />
+
+        </div>
+
+      </div>
+
+      {/* CHARTS */}
 
       <div
         className="
@@ -157,24 +226,14 @@ export default function DashboardView({
       >
 
         <CashflowChart
-          data={
-            analytics.cashflow
-          }
+          data={analytics.cashflow}
         />
 
         <MonthlyCollectionChart
-          data={
-            analytics.collection
-          }
+          data={analytics.collection}
         />
 
       </div>
-
-      {/* HEALTH */}
-
-      <PaymentHealthCard
-        data={paymentHealth}
-      />
 
     </div>
   )

@@ -13,6 +13,8 @@ add table ledger;
 -- notifications
 alter publication supabase_realtime
 add table notifications;
+alter table notifications
+replica identity full;
 -- warga
 alter publication supabase_realtime
 add table warga;

@@ -98,6 +98,7 @@ export default function PageToolbar({
                 "
             >
 
+                { onCreate !== undefined &&
                 <button
                     onClick={onCreate}
                     className="
@@ -120,7 +121,7 @@ export default function PageToolbar({
 
                     <Plus size={20} />
 
-                </button>
+                </button> }
 
                 <div
                     className="

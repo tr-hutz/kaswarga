@@ -4,6 +4,10 @@ import {
     X
 } from 'lucide-react'
 
+import {
+    useKeyDown
+} from '../../../../lib/hooks/useKeyDown'
+
 export default function LedgerDrawer({
 
                                          open,
@@ -12,6 +16,8 @@ export default function LedgerDrawer({
                                          onClose
 
                                      }) {
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open || !row) {
         return null

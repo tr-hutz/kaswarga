@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '../../../lib/supabase'
-import { bulanList, formatBulan, formatAccounting } from '../../../lib/utils'
+import { supabase } from '../../../../lib/supabase'
+import { bulanList, formatBulan, formatAccounting } from '../../../../lib/utils'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
+
+const maskAccountNumber = (num) => {
+  if (!num) return '-'
+  const s = String(num)
+  if (s.length <= 4) return s
+  return 'x'.repeat(s.length - 4) + s.slice(-4)
+}
 
 const groupByBulan = (rows = []) => {
   const map = {}
@@ -20,6 +27,26 @@ export async function GET(req) {
   const start = `${tahun}-01-01`
   const end = `${parseInt(tahun) + 1}-01-01`
 
+  const { data: profil } = await supabase
+    .from('rt')
+    .select('*')
+    .limit(1)
+    .single()
+
+  const { data: members } = await supabase
+    .from('user_membership')
+    .select('role, user:users(nama)')
+    .eq('rt_id', profil?.id)
+    .in('role', ['admin', 'bendahara'])
+
+  const namaKetua =
+    members?.find(m => m.role === 'admin')
+      ?.user?.nama || '-'
+
+  const namaBendahara =
+    members?.find(m => m.role === 'bendahara')
+      ?.user?.nama || '-'
+
   const { data: pemasukan } = await supabase
     .from('pembayaran')
     .select(`*, warga(nama, blok, no_rumah)`)
@@ -31,12 +58,6 @@ export async function GET(req) {
     .select('*')
     .gte('tanggal', start)
     .lt('tanggal', end)
-
-  const { data: profil } = await supabase
-    .from('profil_rt')
-    .select('*')
-    .limit(1)
-    .single()
 
   const totalMasuk = (pemasukan || []).reduce((a, b) => a + (b.jumlah_bayar || 0), 0)
   const totalKeluar = (pengeluaran || []).reduce((a, b) => a + (b.nominal || 0), 0)
@@ -52,7 +73,7 @@ export async function GET(req) {
   const MARGIN_BOTTOM = 70
   const leftX = 50
   const rightX = page.getWidth() - 260
-  const COL_RIGHT = 700 // kolom angka kanan
+  const COL_RIGHT = page.getWidth() - leftX
 
   // ===== logo =====
   let logoImage = null
@@ -100,7 +121,6 @@ export async function GET(req) {
   const drawHeader = () => {
     const topY = y
 
-    // kiri
     page.drawText('LAPORAN KAS WARGA', {
       x: leftX, y: topY, size: 16, font: bold
     })
@@ -108,7 +128,6 @@ export async function GET(req) {
       x: leftX, y: topY - 18, size: 11, font
     })
 
-    // kanan
     if (logoImage) {
       page.drawImage(logoImage, {
         x: rightX,
@@ -120,10 +139,10 @@ export async function GET(req) {
 
     const infoX = rightX + 50
 
-    page.drawText(profil?.nama_perumahan || '-', {
+    page.drawText(profil?.nama || '-', {
       x: infoX, y: topY, size: 12, font: bold
     })
-    page.drawText(`RT ${profil?.nama_rt || '-'}`, {
+    page.drawText(`RT ${profil?.kode || '-'}`, {
       x: infoX, y: topY - 15, size: 10, font
     })
     page.drawText(profil?.alamat || '-', {
@@ -137,7 +156,6 @@ export async function GET(req) {
   const drawSummary = () => {
     const sY = y
 
-    // kiri
     page.drawText('RINGKASAN KAS', {
       x: leftX, y: sY, size: 12, font: bold
     })
@@ -151,19 +169,17 @@ export async function GET(req) {
     page.drawText('Saldo', { x: leftX, y: sY - 48, size: 10, font: bold })
     drawTextRight(formatAccounting(saldo), 300, sY - 48, 10, true)
 
-    // kanan
     page.drawText('INFORMASI REKENING', {
       x: rightX, y: sY, size: 12, font: bold
     })
-    page.drawText(`Bank : ${profil?.nama_bank || '-'}`, {
-      x: rightX, y: sY - 16, size: 10, font
-    })
-    page.drawText(`No Rek : ${profil?.nomor_rekening || '-'}`, {
-      x: rightX, y: sY - 32, size: 10, font
-    })
-    page.drawText(`a.n : ${profil?.nama_rekening || '-'}`, {
-      x: rightX, y: sY - 48, size: 10, font
-    })
+    page.drawText('Bank', { x: rightX, y: sY - 16, size: 10, font })
+    drawTextRight(profil?.nama_bank || '-', COL_RIGHT, sY - 16)
+
+    page.drawText('No. Rek', { x: rightX, y: sY - 32, size: 10, font })
+    drawTextRight(maskAccountNumber(profil?.nomor_rekening), COL_RIGHT, sY - 32)
+
+    page.drawText('A.n', { x: rightX, y: sY - 48, size: 10, font })
+    drawTextRight(profil?.atas_nama || '-', COL_RIGHT, sY - 48)
 
     y -= 70
     drawDivider(y + 10)
@@ -190,27 +206,16 @@ export async function GET(req) {
           (sum, r) => sum + (r.jumlah_bayar || 0), 0
         )
 
-        // ===== HEADER BULAN + TOTAL =====
         ensureSpace(24)
 
         const headerY = y
 
         page.drawText(`— ${bulanNama}`, {
-          x: leftX,
-          y,
-          size: 11,
-          font: bold
+          x: leftX, y, size: 11, font: bold
         })
 
-        drawTextRight(
-          formatAccounting(totalBulan),
-          COL_RIGHT,
-          y,
-          11,
-          true
-        )
+        drawTextRight(formatAccounting(totalBulan), COL_RIGHT, y, 11, true)
 
-        // ===== GARIS DIVIDER DI BAWAH HEADER BULAN =====
         page.drawLine({
           start: { x: leftX, y: headerY - 3 },
           end: { x: COL_RIGHT, y: headerY - 3 },
@@ -219,50 +224,22 @@ export async function GET(req) {
 
         y = headerY - 18
 
-        // ===== ROWS =====
         rows.forEach(p => {
           if (y < MARGIN_BOTTOM) {
             newPage()
-
-            // redraw header bulan
-            page.drawText(`— ${bulanNama}`, {
-              x: leftX,
-              y,
-              size: 11,
-              font: bold
-            })
-
-            drawTextRight(
-              formatAccounting(totalBulan),
-              COL_RIGHT,
-              y,
-              11,
-              true
-            )
-
+            page.drawText(`— ${bulanNama}`, { x: leftX, y, size: 11, font: bold })
+            drawTextRight(formatAccounting(totalBulan), COL_RIGHT, y, 11, true)
             y -= 16
           }
 
           const tgl = new Date(p.tanggal).getDate()
-
           page.drawText(String(tgl), { x: 50, y, size: 9, font })
-
           page.drawText(
             `${p.warga?.nama || '-'} (${p.warga?.blok || '-'}-${p.warga?.no_rumah || '-'})`,
             { x: 90, y, size: 9, font }
           )
-
-          page.drawText(
-            formatBulan(p.bulan_dibayar),
-            { x: 320, y, size: 9, font }
-          )
-
-          drawTextRight(
-            formatAccounting(p.jumlah_bayar),
-            COL_RIGHT,
-            y
-          )
-
+          page.drawText(formatBulan(p.bulan_dibayar), { x: 320, y, size: 9, font })
+          drawTextRight(formatAccounting(p.jumlah_bayar), COL_RIGHT, y)
           y -= 14
         })
 
@@ -295,19 +272,10 @@ export async function GET(req) {
         const headerY = y
 
         page.drawText(`— ${bulanNama}`, {
-          x: leftX,
-          y,
-          size: 11,
-          font: bold
+          x: leftX, y, size: 11, font: bold
         })
 
-        drawTextRight(
-          formatAccounting(totalBulan),
-          COL_RIGHT,
-          y,
-          11,
-          true
-        )
+        drawTextRight(formatAccounting(totalBulan), COL_RIGHT, y, 11, true)
 
         page.drawLine({
           start: { x: leftX, y: headerY - 3 },
@@ -320,37 +288,16 @@ export async function GET(req) {
         rows.forEach(p => {
           if (y < MARGIN_BOTTOM) {
             newPage()
-
-            page.drawText(`— ${bulanNama}`, {
-              x: leftX,
-              y,
-              size: 11,
-              font: bold
-            })
-
-            drawTextRight(
-              formatAccounting(totalBulan),
-              COL_RIGHT,
-              y,
-              11,
-              true
-            )
-
+            page.drawText(`— ${bulanNama}`, { x: leftX, y, size: 11, font: bold })
+            drawTextRight(formatAccounting(totalBulan), COL_RIGHT, y, 11, true)
             y -= 16
           }
 
           const tgl = new Date(p.tanggal).getDate()
-
           page.drawText(String(tgl), { x: 50, y, size: 9, font })
           page.drawText(p.kategori || '-', { x: 90, y, size: 9, font })
           page.drawText(p.deskripsi || '-', { x: 260, y, size: 9, font })
-
-          drawTextRight(
-            formatAccounting(p.nominal),
-            COL_RIGHT,
-            y
-          )
-
+          drawTextRight(formatAccounting(p.nominal), COL_RIGHT, y)
           y -= 14
         })
 
@@ -370,36 +317,25 @@ export async function GET(req) {
     const today = new Date().toLocaleDateString('id-ID')
 
     page.drawText(`Tanggal: ${today}`, {
-      x: rightSign,
-      y: yTtd + 10,
-      size: 9,
-      font
+      x: rightSign, y: yTtd + 10, size: 9, font
     })
 
-    // Ketua
     page.drawText('Ketua RT', { x: leftSign, y: yTtd, size: 10, font })
     page.drawLine({
       start: { x: leftSign, y: yTtd - 70 },
       end: { x: leftSign + 160, y: yTtd - 70 }
     })
-    page.drawText(profil?.nama_ketua || '-', {
-      x: leftSign,
-      y: yTtd - 90,
-      size: 10,
-      font: bold
+    page.drawText(namaKetua, {
+      x: leftSign, y: yTtd - 90, size: 10, font: bold
     })
 
-    // Bendahara
     page.drawText('Bendahara', { x: rightSign, y: yTtd, size: 10, font })
     page.drawLine({
       start: { x: rightSign, y: yTtd - 70 },
       end: { x: rightSign + 160, y: yTtd - 70 }
     })
-    page.drawText(profil?.nama_bendahara || '-', {
-      x: rightSign,
-      y: yTtd - 90,
-      size: 10,
-      font: bold
+    page.drawText(namaBendahara, {
+      x: rightSign, y: yTtd - 90, size: 10, font: bold
     })
 
     y -= 120
@@ -428,10 +364,17 @@ export async function GET(req) {
 
   const pdfBytes = await pdfDoc.save()
 
+  const rtSlug = (profil?.kode || profil?.nama || 'rt')
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+
+  const filename = `laporan-kas-${tahun}-${rtSlug}.pdf`
+
   return new NextResponse(pdfBytes, {
     headers: {
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename=laporan-${tahun}.pdf`
+      'Content-Disposition': `attachment; filename="${filename}"`
     }
   })
 }

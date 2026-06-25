@@ -1,7 +1,8 @@
 'use client'
 
 import {
-    useEffect
+    useEffect,
+    useRef
 } from 'react'
 
 import {
@@ -9,19 +10,27 @@ import {
 } from '../../../lib/supabase'
 
 export function useNotificationRealtime({
-
-                                            onReload
-
+                                            user_id,
+                                            onReload,
+                                            onNew
                                         }) {
 
+    const onReloadRef = useRef(onReload)
+    const onNewRef    = useRef(onNew)
+    onReloadRef.current = onReload
+    onNewRef.current    = onNew
+
     useEffect(() => {
+        if (!user_id) {
+            return
+        }
 
         const channel =
 
             supabase
 
                 .channel(
-                    'notifications-realtime'
+                    `notifications-user-${user_id}`
                 )
 
                 .on(
@@ -34,18 +43,24 @@ export function useNotificationRealtime({
 
                         schema: 'public',
 
-                        table: 'notifications'
+                        table: 'notifications',
+
+                        filter: `target_user_id=eq.${user_id}`
 
                     },
 
-                    () => {
+                    (payload) => {
 
-                        onReload?.()
+                        onReloadRef.current?.()
+                        onNewRef.current?.(payload.new)
                     }
 
                 )
 
-                .subscribe()
+                .subscribe((status, err) => {
+                    console.log('[Realtime] notifications status:', status)
+                    if (err) console.error('[Realtime] subscription error', err)
+                })
 
         return () => {
 
@@ -54,5 +69,5 @@ export function useNotificationRealtime({
             )
         }
 
-    }, [])
+    }, [user_id])
 }

@@ -15,6 +15,10 @@ import PaymentProofPreview
 import ApprovalActionBar
     from '../approval/ApprovalActionBar'
 
+import {
+    useKeyDown
+} from '../../../../lib/hooks/useKeyDown'
+
 export default function PaymentDetailDrawer({
 
                                                 open,
@@ -30,6 +34,8 @@ export default function PaymentDetailDrawer({
                                                 loading
 
                                             }) {
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open || !payment) {
         return null

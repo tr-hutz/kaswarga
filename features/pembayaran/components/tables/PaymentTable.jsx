@@ -95,9 +95,7 @@ export default function PaymentTable({
                 <tbody>
 
                 {
-                    rows
-                        .filter(Boolean)
-                        .map(row => (
+                    rows.map(row => (
 
                             <PaymentRow
                                 key={row.id}
