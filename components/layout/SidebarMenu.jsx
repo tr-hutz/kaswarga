@@ -65,6 +65,11 @@ export default function SidebarMenu({
 
         NAVIGATION.filter(item => {
 
+            if (item.hideForRoles?.includes(role)) {
+
+                return false
+            }
+
             if (!item.permission) {
 
                 return true
