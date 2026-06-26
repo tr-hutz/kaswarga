@@ -2,15 +2,24 @@
 
 import {
 
-  useState
+  useState,
+  useEffect
 
 } from 'react'
+
+import { usePathname, useRouter } from 'next/navigation'
 
 import Topbar        from './Topbar'
 import Sidebar       from './Sidebar'
 import MobileOverlay from './MobileOverlay'
 
 import { useAuth } from '../../lib/auth/useAuth'
+
+const PUBLIC_PATHS = ['/login', '/daftar', '/aktivasi']
+
+function isPublicPath(pathname) {
+  return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
+}
 
 export default function AppShell({
 
@@ -19,8 +28,16 @@ export default function AppShell({
                                  }) {
 
   const { membership, loading } = useAuth()
+  const pathname                = usePathname()
+  const router                  = useRouter()
 
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  useEffect(() => {
+    if (!loading && !membership && !isPublicPath(pathname)) {
+      router.replace('/login')
+    }
+  }, [loading, membership, pathname])
 
   /*
    |-------------------------------------------------------------
@@ -83,7 +100,8 @@ export default function AppShell({
    */
 
   if (!membership) {
-    return <>{children}</>
+    if (isPublicPath(pathname)) return <>{children}</>
+    return null
   }
 
   /*
