@@ -1,15 +1,6 @@
 /*
 |--------------------------------------------------------------------------
-| ADD NEW ROLES TO ENUM
-|--------------------------------------------------------------------------
-*/
-
-alter type user_role add value if not exists 'super_admin';
-alter type user_role add value if not exists 'ketua';
-
-/*
-|--------------------------------------------------------------------------
-| SYSTEM RT (virtual RT for super_admin, undeleteable)
+| SYSTEM RT (virtual RT for super_admin, undeletable)
 |--------------------------------------------------------------------------
 */
 

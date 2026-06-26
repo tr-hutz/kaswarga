@@ -1,8 +1,7 @@
 'use client'
 
-import {
-  LogIn
-} from 'lucide-react'
+import Link from 'next/link'
+import { LogIn } from 'lucide-react'
 
 export default function LoginView({
 
@@ -233,6 +232,13 @@ export default function LoginView({
           </button>
 
         </form>
+
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Belum punya akun?{' '}
+          <Link href="/daftar" className="text-blue-600 hover:underline font-medium">
+            Daftar
+          </Link>
+        </p>
 
       </div>
 

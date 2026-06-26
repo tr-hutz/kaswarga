@@ -45,6 +45,8 @@ export default function WargaContainer() {
 
         data,
         loading,
+        pendingRequests,
+        pendingLoading,
         refresh
 
     } = useWargaData({
@@ -78,6 +80,10 @@ export default function WargaContainer() {
             loading={loading}
 
             refresh={refresh}
+
+            pendingRequests={pendingRequests}
+
+            pendingLoading={pendingLoading}
 
             /*
              |-----------------------------------------------------------

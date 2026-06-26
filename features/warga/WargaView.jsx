@@ -12,6 +12,9 @@ import WargaDetailDrawer
 import WargaForm
     from './components/forms/WargaForm'
 
+import WargaPendingRequests
+    from './components/WargaPendingRequests'
+
 export default function WargaView({
 
                                       /*
@@ -22,6 +25,9 @@ export default function WargaView({
                                       data,
                                       loading,
                                       refresh,
+
+                                      pendingRequests,
+                                      pendingLoading,
 
                                       /*
                                        |---------------------------------------------------------------
@@ -64,6 +70,12 @@ export default function WargaView({
         space-y-6
       "
         >
+
+            <WargaPendingRequests
+                requests={pendingRequests}
+                loading={pendingLoading}
+                onAction={refresh}
+            />
 
             <div
                 className="

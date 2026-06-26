@@ -1,113 +1,64 @@
 'use client'
 
-import {
+import { useEffect, useState } from 'react'
+import { getWarga }            from '../../../lib/services/warga.service'
+import { supabase }            from '../../../lib/supabase'
+import { useAuth }             from '../../../lib/auth/useAuth'
 
-    useEffect,
-    useState
+export function useWargaData({ search = '', status = 'aktif' } = {}) {
 
-} from 'react'
+    const { membership } = useAuth()
 
-import {
+    const [loading,         setLoading]         = useState(true)
+    const [data,            setData]            = useState([])
+    const [pendingRequests, setPendingRequests] = useState([])
+    const [pendingLoading,  setPendingLoading]  = useState(true)
 
-    getWarga
-
-} from '../../../lib/services/warga.service'
-
-export function useWargaData({
-
-                                 search = '',
-                                 status = 'aktif'
-
-                             } = {}) {
-
-    /*
-     |-------------------------------------------------------------
-     | STATE
-     |-------------------------------------------------------------
-     */
-
-    const [
-
-        loading,
-        setLoading
-
-    ] = useState(true)
-
-    const [
-
-        data,
-        setData
-
-    ] = useState([])
-
-    /*
-     |-------------------------------------------------------------
-     | LOAD
-     |-------------------------------------------------------------
-     */
+    useEffect(() => { loadData() }, [search, status])
 
     useEffect(() => {
-
-        loadData()
-
-    }, [
-
-        search,
-        status
-
-    ])
-
-    /*
-     |-------------------------------------------------------------
-     | LOAD DATA
-     |-------------------------------------------------------------
-     */
+        if (membership?.rt?.id) loadPending()
+    }, [membership?.rt?.id])
 
     async function loadData() {
-
         setLoading(true)
-
         try {
-
-            const result =
-                await getWarga({
-
-                    search,
-                    status
-
-                })
-
-            setData(
-                result || []
-            )
-
+            const result = await getWarga({ search, status })
+            setData(result || [])
         } catch (err) {
-
-            console.error(
-                '[WARGA]',
-                err
-            )
-
+            console.error('[WARGA]', err)
         } finally {
-
             setLoading(false)
         }
     }
 
-    /*
-     |-------------------------------------------------------------
-     | RETURN
-     |-------------------------------------------------------------
-     */
+    async function loadPending() {
+        if (!membership?.rt?.id) return
+        setPendingLoading(true)
+        try {
+            const { data: rows, error } = await supabase
+                .from('registration_requests')
+                .select('*')
+                .eq('type', 'warga')
+                .eq('status', 'pending')
+                .eq('rt_id', membership.rt.id)
+                .order('created_at', { ascending: false })
+            if (error) throw error
+            setPendingRequests(rows || [])
+        } catch (err) {
+            console.error('[WARGA] pending:', err)
+        } finally {
+            setPendingLoading(false)
+        }
+    }
+
+    function refresh() { loadData(); loadPending() }
 
     return {
-
         loading,
-
         data,
-
-        refresh:
-        loadData
-
+        pendingRequests,
+        pendingLoading,
+        refresh
     }
 }

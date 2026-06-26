@@ -76,18 +76,25 @@ export function AuthProvider({
                 if (event === 'SIGNED_IN') {
                     getCurrentMembership()
                         .then(m => {
-                            logActivity({
-                                rtId:       m?.rt?.id,
-                                actorId:    m?.user?.id,
-                                actorName:  m?.user?.nama,
-                                action:     'LOGIN',
-                                entityType: 'auth',
-                                entityId:   m?.user?.id,
-                                description: `${m?.user?.nama} logged in`,
-                                metadata:   { role: m?.role }
-                            })
+                            setMembership(m)
+                            if (m?.status === 'active' && m?.rt?.id) {
+                                logActivity({
+                                    rtId:        m.rt.id,
+                                    actorId:     m.user?.id,
+                                    actorName:   m.user?.nama,
+                                    action:      'LOGIN',
+                                    entityType:  'auth',
+                                    entityId:    m.user?.id,
+                                    description: `${m.user?.nama} logged in`,
+                                    metadata:    { role: m.role }
+                                })
+                            }
                         })
                         .catch(() => {})
+                }
+
+                if (event === 'SIGNED_OUT') {
+                    setMembership(null)
                 }
             })
 
@@ -107,12 +114,9 @@ export function AuthProvider({
 
         } catch (err) {
 
-            console.error(
-
-                '[AUTH PROVIDER]',
-
-                err
-            )
+            if (err?.message !== 'Unauthorized') {
+                console.error('[AUTH PROVIDER]', err)
+            }
 
         } finally {
 

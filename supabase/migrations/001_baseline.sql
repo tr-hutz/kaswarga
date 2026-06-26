@@ -70,8 +70,10 @@ create table users
 );
 
 create type user_role as enum (
+  'super_admin',
   'admin',
   'bendahara',
+  'ketua',
   'warga'
 );
 

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 const EMPTY = {
     nama: '', kode: '', alamat: '', kota: '', provinsi: '', kodePos: '',
-    email: '', telepon: '', nominalIuran: '', namaBank: '', nomorRekening: '', atasNama: ''
+    email: '', telepon: '', nominalIuran: ''
 }
 
 export default function RtForm({ open, onClose, rt, onSubmit }) {
@@ -19,18 +19,15 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
         if (!rt) { setForm(EMPTY); return }
 
         setForm({
-            nama:          rt.nama           || '',
-            kode:          rt.kode           || '',
-            alamat:        rt.alamat         || '',
-            kota:          rt.kota           || '',
-            provinsi:      rt.provinsi       || '',
-            kodePos:       rt.kode_pos       || '',
-            email:         rt.email          || '',
-            telepon:       rt.telepon        || '',
-            nominalIuran:  rt.nominal_iuran  ?? '',
-            namaBank:      rt.nama_bank      || '',
-            nomorRekening: rt.nomor_rekening || '',
-            atasNama:      rt.atas_nama      || ''
+            nama:         rt.nama          || '',
+            kode:         rt.kode          || '',
+            alamat:       rt.alamat        || '',
+            kota:         rt.kota          || '',
+            provinsi:     rt.provinsi      || '',
+            kodePos:      rt.kode_pos      || '',
+            email:        rt.email         || '',
+            telepon:      rt.telepon       || '',
+            nominalIuran: rt.nominal_iuran ?? ''
         })
 
     }, [rt])
@@ -152,42 +149,6 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
                             placeholder="021-1234567"
                             value={form.telepon}
                             onChange={e => set('telepon', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
-                        />
-                    </div>
-
-                    <div className="col-span-2 pt-1">
-                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                            Informasi Rekening
-                        </p>
-                    </div>
-
-                    <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Nama Bank</label>
-                        <input
-                            placeholder="BCA"
-                            value={form.namaBank}
-                            onChange={e => set('namaBank', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Nomor Rekening</label>
-                        <input
-                            placeholder="1234567890"
-                            value={form.nomorRekening}
-                            onChange={e => set('nomorRekening', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
-                        />
-                    </div>
-
-                    <div className="col-span-2">
-                        <label className="text-xs text-gray-500 mb-1 block">Atas Nama</label>
-                        <input
-                            placeholder="Ketua RT 001"
-                            value={form.atasNama}
-                            onChange={e => set('atasNama', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </div>

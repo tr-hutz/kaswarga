@@ -1,13 +1,17 @@
 'use client'
 
-import { Plus } from 'lucide-react'
-import RtTable        from './components/RtTable'
-import RtForm         from './components/RtForm'
-import RtDeleteConfirm from './components/RtDeleteConfirm'
+import { Plus }           from 'lucide-react'
+import RtTable            from './components/RtTable'
+import RtForm             from './components/RtForm'
+import RtDeleteConfirm    from './components/RtDeleteConfirm'
+import RtPendingRequests  from './components/RtPendingRequests'
 
 export default function RtView({
     data,
     loading,
+    pendingRequests,
+    pendingLoading,
+    refresh,
     selected,
     formOpen,
     openCreate,
@@ -40,6 +44,13 @@ export default function RtView({
                     Tambah RT
                 </button>
             </div>
+
+            {/* Pending RT Registrations */}
+            <RtPendingRequests
+                requests={pendingRequests}
+                loading={pendingLoading}
+                onAction={refresh}
+            />
 
             {/* Table */}
             <RtTable
