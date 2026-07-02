@@ -89,11 +89,6 @@ export function useHome() {
   ] = useState(currentYear)
 
   const [
-    selectedMonths,
-    setSelectedMonths
-  ] = useState([])
-
-  const [
     wargaId,
     setWargaId
   ] = useState(null)
@@ -382,14 +377,6 @@ export function useHome() {
            |--------------------------------------------------------------------------
            */
 
-          setSelectedMonths([])
-
-          /*
-           |--------------------------------------------------------------------------
-           | reload data
-           |--------------------------------------------------------------------------
-           */
-
           await loadData()
 
         } catch (err) {
@@ -422,9 +409,6 @@ export function useHome() {
 
     paymentYear,
     setPaymentYear,
-
-    selectedMonths,
-    setSelectedMonths,
 
     nominalIuran,
 

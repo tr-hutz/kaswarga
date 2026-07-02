@@ -19,9 +19,6 @@ export default function HomeView({
   paymentYear,
   setPaymentYear,
 
-  selectedMonths,
-  setSelectedMonths,
-
   nominalIuran,
 
   submitPayment,
@@ -144,37 +141,12 @@ export default function HomeView({
       {/* AJUKAN PEMBAYARAN */}
 
       <PaymentForm
-
-        paymentYear={
-          paymentYear
-        }
-
-        setPaymentYear={
-          setPaymentYear
-        }
-
-        selectedMonths={
-          selectedMonths
-        }
-
-        setSelectedMonths={
-          setSelectedMonths
-        }
-
+        paymentYear={paymentYear}
+        setPaymentYear={setPaymentYear}
         nominalIuran={nominalIuran}
-
-        onSubmit={
-          submitPayment
-        }
-
-        loading={
-          submitting
-        }
-
-        statusMap={
-          formStatusMap
-        }
-
+        onSubmit={submitPayment}
+        loading={submitting}
+        statusMap={formStatusMap}
       />
 
       {/* LOADING */}
