@@ -1,15 +1,12 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { getAllRt }   from '@/lib/services/rt.service'
-import { supabase }   from '@/lib/supabase'
+import { getAllRt }                          from '@/lib/services/rt.service'
 
 export function useRtData() {
 
-    const [data,            setData]            = useState([])
-    const [loading,         setLoading]         = useState(true)
-    const [pendingRequests, setPendingRequests] = useState([])
-    const [pendingLoading,  setPendingLoading]  = useState(true)
+    const [data,    setData]    = useState([])
+    const [loading, setLoading] = useState(true)
 
     const load = useCallback(async () => {
         setLoading(true)
@@ -23,27 +20,9 @@ export function useRtData() {
         }
     }, [])
 
-    const loadPending = useCallback(async () => {
-        setPendingLoading(true)
-        try {
-            const { data: rows, error } = await supabase
-                .from('registration_requests')
-                .select('*')
-                .eq('type', 'rt')
-                .eq('status', 'pending')
-                .order('created_at', { ascending: false })
-            if (error) throw error
-            setPendingRequests(rows || [])
-        } catch (err) {
-            console.error('[useRtData] pending:', err)
-        } finally {
-            setPendingLoading(false)
-        }
-    }, [])
+    useEffect(() => { load() }, [load])
 
-    useEffect(() => { load(); loadPending() }, [load, loadPending])
+    function refresh() { load() }
 
-    function refresh() { load(); loadPending() }
-
-    return { data, loading, pendingRequests, pendingLoading, refresh }
+    return { data, loading, refresh }
 }

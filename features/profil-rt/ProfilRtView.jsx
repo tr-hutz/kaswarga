@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { formatRupiah } from '@/lib/utils'
+import ImageUpload from './components/ImageUpload'
 
 const EMPTY = {
     nama: '', kode: '', alamat: '', kota: '', provinsi: '', kodePos: '',
@@ -218,27 +219,23 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
 
                 </div>
 
-                <SectionTitle>Tautan</SectionTitle>
+                <SectionTitle>Aset Media</SectionTitle>
 
-                <div className="grid grid-cols-1 gap-4">
+                <div className="grid grid-cols-2 gap-4">
 
-                    <Field label="URL QRIS (gambar)">
-                        <input
-                            value={form.qrisUrl}
-                            onChange={e => set('qrisUrl', e.target.value)}
-                            placeholder="https://..."
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
-                        />
-                    </Field>
+                    <ImageUpload
+                        label="Logo RT"
+                        currentUrl={form.logoUrl}
+                        storagePath={`${rt?.id}/logo`}
+                        onUploaded={url => set('logoUrl', url)}
+                    />
 
-                    <Field label="URL Logo RT">
-                        <input
-                            value={form.logoUrl}
-                            onChange={e => set('logoUrl', e.target.value)}
-                            placeholder="https://..."
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
-                        />
-                    </Field>
+                    <ImageUpload
+                        label="QRIS"
+                        currentUrl={form.qrisUrl}
+                        storagePath={`${rt?.id}/qris`}
+                        onUploaded={url => set('qrisUrl', url)}
+                    />
 
                 </div>
 
