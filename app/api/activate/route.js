@@ -55,35 +55,112 @@ export async function POST(req) {
             }, { status: 410 })
         }
 
-        // Ensure user row exists in public.users
+        // Resolve display name from registration request
+        const regReq     = invite.registration_request
+        const nameByRole = {
+            ketua:     regReq?.nama_ketua,
+            admin:     regReq?.nama_admin,
+            bendahara: regReq?.nama_bendahara,
+            warga:     regReq?.nama_warga,
+        }
+        const namaUser = nameByRole[invite.role] || user.user_metadata?.full_name || user.email.split('@')[0]
+
+        // Remove any stale users row from a previously deleted auth account with the same
+        // email. Supabase auth enforces unique emails, so if a different ID owns this email
+        // it must be from a deleted account and is safe to cascade-delete.
+        try {
+            await supabaseAdmin
+                .from('users')
+                .delete()
+                .eq('email', user.email)
+                .neq('id', user.id)
+        } catch (_) {}
+
+        // Ensure user row exists in public.users with the name from the registration request
         await supabaseAdmin.from('users').upsert({
             id:    user.id,
             email: user.email,
-            nama:  user.user_metadata?.full_name || user.email.split('@')[0]
+            nama:  namaUser
         }, { onConflict: 'id' })
 
-        // Check for existing membership (idempotent)
-        const { data: existing } = await supabaseAdmin
+        // Check for existing membership (idempotent).
+        // Use .is() for null rt_id to avoid .eq(null) being interpreted as IS NULL,
+        // which would falsely match super_admin rows that have rt_id = NULL.
+        const membershipQuery = supabaseAdmin
             .from('user_membership')
             .select('id')
             .eq('user_id', user.id)
-            .eq('rt_id', invite.rt_id)
-            .maybeSingle()
+
+        const { data: existing } = await (
+            invite.rt_id
+                ? membershipQuery.eq('rt_id', invite.rt_id)
+                : membershipQuery.is('rt_id', null)
+        ).maybeSingle()
 
         if (existing) {
             return NextResponse.json({ error: 'Already activated', code: 'ALREADY_ACTIVATED' }, { status: 409 })
+        }
+
+        // Create warga row for the activated user (only when linked to an RT).
+        // Reuse an existing row if this email is already registered in the RT
+        // (can happen after re-invites or manual backfills).
+        let wargaId = null
+        if (invite.rt_id) {
+            const { data: existingWarga } = await supabaseAdmin
+                .from('warga')
+                .select('id')
+                .eq('rt_id', invite.rt_id)
+                .eq('email', user.email)
+                .maybeSingle()
+
+            if (existingWarga) {
+                wargaId = existingWarga.id
+            } else {
+                const wargaData = {
+                    rt_id: invite.rt_id,
+                    nama:  namaUser,
+                    email: user.email,
+                }
+                if (invite.role === 'warga' && regReq) {
+                    wargaData.blok     = regReq.blok     || null
+                    wargaData.no_rumah = regReq.no_rumah || null
+                    wargaData.no_hp    = regReq.no_hp    || null
+                }
+                const { data: warga, error: wargaError } = await supabaseAdmin
+                    .from('warga')
+                    .insert(wargaData)
+                    .select('id')
+                    .single()
+                if (wargaError) {
+                    console.error('[activate] warga error:', wargaError)
+                    return NextResponse.json({ error: wargaError.message }, { status: 500 })
+                }
+                wargaId = warga.id
+            }
         }
 
         // Create membership
         const { error: memberError } = await supabaseAdmin
             .from('user_membership')
             .insert({
-                user_id: user.id,
-                rt_id:   invite.rt_id || null,
-                role:    invite.role
+                user_id:  user.id,
+                rt_id:    invite.rt_id || null,
+                role:     invite.role,
+                status:   'active',
+                warga_id: wargaId
             })
 
         if (memberError) {
+            // Unique constraint violation — membership already exists (race condition or stale check).
+            // Clean up the orphan warga row we just created and treat as already activated.
+            if (memberError.code === '23505') {
+                if (wargaId) {
+                    try {
+                        await supabaseAdmin.from('warga').delete().eq('id', wargaId)
+                    } catch (_) {}
+                }
+                return NextResponse.json({ error: 'Already activated', code: 'ALREADY_ACTIVATED' }, { status: 409 })
+            }
             console.error('[activate] membership error:', memberError)
             return NextResponse.json({ error: memberError.message }, { status: 500 })
         }
@@ -118,9 +195,10 @@ export async function POST(req) {
         }).catch(err => console.error('[activate] log error:', err))
 
         return NextResponse.json({
-            ok:     true,
-            role:   invite.role,
-            rtNama
+            ok:       true,
+            role:     invite.role,
+            rtNama,
+            namaUser
         })
 
     } catch (err) {
