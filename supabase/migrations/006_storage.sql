@@ -5,6 +5,23 @@
  * =============================================================================
  */
 
+/* ----------------------------------------------------------------------------
+ * rt-assets
+ * RT QRIS and logo.
+ * --------------------------------------------------------------------------- */
+insert into storage.buckets (
+    id, name, created_at, public,
+    avif_autodetection, file_size_limit, allowed_mime_types, type
+) values (
+             'rt-assets',
+             'rt-assets',
+             now(),
+             true,
+             false,
+             2097152,
+             array['image/jpeg', 'image/png', 'image/webp'],
+             'STANDARD'
+         );
 
 /* ----------------------------------------------------------------------------
  * bukti-pembayaran

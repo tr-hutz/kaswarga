@@ -41,6 +41,7 @@ create table rt (
     qris_url       text,
     logo_url       text,
     aktif          boolean     not null default true,
+    deleted_at     timestamptz,
     created_at     timestamptz not null default now(),
     updated_at     timestamptz not null default now()
 );
@@ -90,6 +91,8 @@ create table user_membership (
     rt_id      uuid        references rt (id) on delete cascade,
     warga_id   uuid        references warga (id) on delete set null,
     role       user_role   not null,
+    status     text        not null default 'active'
+                           check (status in ('active', 'deactivated')),
     created_at timestamptz not null default now(),
 
     unique (user_id, rt_id)

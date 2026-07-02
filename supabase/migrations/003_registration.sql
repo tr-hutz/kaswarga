@@ -13,10 +13,13 @@
  * Stores pending RT and Warga registration requests awaiting approval.
  *
  * For RT registrations:
- *   - email       = ketua's email (receives activation invite on approval)
- *   - email_admin = admin's email
+ *   - email           = ketua's email (receives activation invite on approval)
+ *   - nama_ketua      = ketua's full name
+ *   - email_admin     = admin's email
+ *   - nama_admin      = admin's full name
  *   - email_bendahara = bendahara's email
- *   - rt_data     = full RT form data as JSON (nama, kode, alamat, etc.)
+ *   - nama_bendahara  = bendahara's full name
+ *   - rt_data         = full RT form data as JSON (nama, kode, alamat, etc.)
  *
  * For Warga registrations:
  *   - email   = warga's email
@@ -32,17 +35,21 @@ create table registration_requests (
     status           text        not null default 'pending'
                                  check (status in ('pending', 'approved', 'rejected', 'expired')),
 
-    -- Requestor identity
-    nama             text        not null,
-    email            text        not null,
-
     -- RT registration fields
     rt_kode          text,
     rt_data          jsonb,
+    nama_ketua       text,
+    email_ketua      text,
+    nama_admin       text,
     email_admin      text,
     email_bendahara  text,
+    nama_bendahara   text,
 
     -- Warga registration fields
+    -- Requestor identity (null for RT registrations)
+    nama_warga       text,
+    email_warga      text,
+
     blok             text,
     no_rumah         text,
     no_hp            text,
@@ -83,3 +90,109 @@ create table activation_invites (
     resend_count            integer     not null default 0,
     created_at              timestamptz not null default now()
 );
+
+/*
+ * =============================================================================
+ * REGISTRATION_NOTIFICATIONS
+ * Trigger-based activity logging and in-app notifications for new registration
+ * requests. Runs as security definer to bypass RLS on activity_logs and
+ * notifications, which only allow authenticated inserts — registrants are
+ * unauthenticated (anon) at submission time.
+ * =============================================================================
+ */
+
+create or replace function notify_on_new_registration()
+returns trigger
+language plpgsql
+security definer
+as $$
+declare
+v_user record;
+begin
+
+    /* ---------------------------------------------------------------------- */
+    /* RT REGISTRATION                                                          */
+    /* ---------------------------------------------------------------------- */
+
+    if new.type = 'rt' then
+
+        insert into activity_logs (
+            rt_id, actor_id, actor_name, action,
+            entity_type, entity_id, description, metadata
+        ) values (
+            '00000000-0000-0000-0000-000000000001',
+            null,
+            new.rt_data->>'nama',
+            'SUBMIT_RT_REGISTRATION',
+            'registration_requests',
+            new.id,
+            'New RT registration request submitted: "' || (new.rt_data->>'nama') || '"',
+            jsonb_build_object('rt_kode', new.rt_kode, 'email_ketua', new.email_ketua)
+        );
+
+for v_user in
+select user_id from user_membership where role = 'super_admin'
+    loop
+insert into notifications (
+    rt_id, type, title, message,
+    entity_type, entity_id, target_user_id
+) values (
+    '00000000-0000-0000-0000-000000000001',
+    'registration',
+    'New RT Registration Request',
+    'RT "' || (new.rt_data->>'nama') || '" (' || coalesce(new.rt_kode, '-') || ') submitted a registration request.',
+    'registration_requests',
+    new.id,
+    v_user.user_id
+    );
+end loop;
+
+    /* ---------------------------------------------------------------------- */
+    /* WARGA REGISTRATION                                                       */
+    /* ---------------------------------------------------------------------- */
+
+    elsif new.type = 'warga' and new.rt_id is not null then
+
+        insert into activity_logs (
+            rt_id, actor_id, actor_name, action,
+            entity_type, entity_id, description, metadata
+        ) values (
+            new.rt_id,
+            null,
+            new.nama_warga,
+            'SUBMIT_WARGA_REGISTRATION',
+            'registration_requests',
+            new.id,
+            'New warga registration request submitted: "' || new.nama_warga || '"',
+            jsonb_build_object('email', new.email_warga, 'rt_kode', new.rt_kode)
+        );
+
+for v_user in
+select user_id from user_membership
+where  rt_id = new.rt_id
+  and    role  in ('ketua', 'admin')
+    loop
+insert into notifications (
+    rt_id, type, title, message,
+    entity_type, entity_id, target_user_id
+) values (
+    new.rt_id,
+    'registration',
+    'New Warga Registration Request',
+    '"' || new.nama_warga || '" has submitted a request to join your RT.',
+    'registration_requests',
+    new.id,
+    v_user.user_id
+    );
+end loop;
+
+end if;
+
+return new;
+end;
+$$;
+
+
+create trigger registration_notify_trigger
+    after insert on registration_requests
+    for each row execute function notify_on_new_registration();

@@ -279,3 +279,24 @@ create policy "activation_invites: authenticated can insert"
 create policy "activation_invites: authenticated can update"
     on activation_invites for update to authenticated
     using (true);
+
+/* ----------------------------------------------------------------------------
+ * Storage policies
+ * --------------------------------------------------------------------------- */
+
+create policy "rt-assets: public read"
+    on storage.objects for select to public
+    using (bucket_id = 'rt-assets');
+
+create policy "rt-assets: authenticated upload"
+    on storage.objects for insert
+    to authenticated
+    with check (bucket_id = 'rt-assets');
+
+create policy "rt-assets: authenticated update"
+    on storage.objects for update to authenticated
+    using (bucket_id = 'rt-assets');
+
+create policy "rt-assets: authenticated delete"
+    on storage.objects for delete to authenticated
+    using (bucket_id = 'rt-assets');

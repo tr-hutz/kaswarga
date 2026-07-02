@@ -16,3 +16,12 @@ alter publication supabase_realtime add table activity_logs;
 -- complete row (including is_read) on the client side.
 alter publication supabase_realtime add table notifications;
 alter table notifications replica identity full;
+
+/*
+ * =============================================================================
+ * Realtime for registration_requests so the super_admin
+ * sidebar badge and registration management page update live when a new
+ * RT registration is submitted.
+ * =============================================================================
+ */
+alter publication supabase_realtime add table registration_requests;
