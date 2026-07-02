@@ -1,122 +1,98 @@
 'use client'
 
-import {
+import { useState, useEffect } from 'react'
+import { usePathname }         from 'next/navigation'
+import SidebarMenuItem         from './SidebarMenuItem'
+import { NAVIGATION }          from '../../lib/navigation/navigation-config'
+import { hasPermission }       from '../../lib/permissions/permissions'
+import { useAuth }             from '../../lib/auth/useAuth'
+import { supabase }            from '../../lib/supabase'
 
-    usePathname
+export default function SidebarMenu({ onClose }) {
 
-} from 'next/navigation'
+    const pathname = usePathname()
+    const { role, membership } = useAuth()
 
-import SidebarMenuItem
+    const [pendingRtCount,    setPendingRtCount]    = useState(0)
+    const [pendingWargaCount, setPendingWargaCount] = useState(0)
 
-    from './SidebarMenuItem'
+    useEffect(() => {
+        if (role !== 'super_admin') return
 
-import {
+        function fetchCount() {
+            supabase
+                .from('registration_requests')
+                .select('*', { count: 'exact', head: true })
+                .eq('type', 'rt')
+                .eq('status', 'pending')
+                .then(({ count }) => setPendingRtCount(count || 0))
+        }
 
-    NAVIGATION
+        fetchCount()
 
-} from '../../lib/navigation/navigation-config'
+        const channel = supabase
+            .channel('sidebar-rt-pending-count')
+            .on('postgres_changes', {
+                event:  '*',
+                schema: 'public',
+                table:  'registration_requests',
+                filter: 'type=eq.rt',
+            }, fetchCount)
+            .subscribe()
 
-import {
+        return () => { supabase.removeChannel(channel) }
+    }, [role])
 
-    hasPermission
+    useEffect(() => {
+        const rtId = membership?.rt?.id
+        if (!rtId || !['ketua', 'admin'].includes(role)) return
 
-} from '../../lib/permissions/permissions'
+        function fetchCount() {
+            supabase
+                .from('registration_requests')
+                .select('*', { count: 'exact', head: true })
+                .eq('type', 'warga')
+                .eq('status', 'pending')
+                .eq('rt_id', rtId)
+                .then(({ count }) => setPendingWargaCount(count || 0))
+        }
 
-import {
+        fetchCount()
 
-    useAuth
+        const channel = supabase
+            .channel('sidebar-warga-pending-count')
+            .on('postgres_changes', {
+                event:  '*',
+                schema: 'public',
+                table:  'registration_requests',
+                filter: 'type=eq.warga',
+            }, fetchCount)
+            .subscribe()
 
-} from '../../lib/auth/useAuth'
+        return () => { supabase.removeChannel(channel) }
+    }, [role, membership?.rt?.id])
 
-export default function SidebarMenu({
-
-                                        onClose
-
-                                    }) {
-
-    /*
-     |-------------------------------------------------------------
-     | PATHNAME
-     |-------------------------------------------------------------
-     */
-
-    const pathname =
-        usePathname()
-
-    /*
-     |-------------------------------------------------------------
-     | AUTH
-     |-------------------------------------------------------------
-     */
-
-    const {
-
-        role
-
-    } = useAuth()
-
-    /*
-     |-------------------------------------------------------------
-     | FILTERED MENUS
-     |-------------------------------------------------------------
-     */
-
-    const filteredMenus =
-
-        NAVIGATION.filter(item => {
-
-            if (item.hideForRoles?.includes(role)) {
-
-                return false
-            }
-
-            if (!item.permission) {
-
-                return true
-            }
-
-            return hasPermission(
-
-                role,
-
-                item.permission
-            )
-        })
+    const filteredMenus = NAVIGATION.filter(item => {
+        if (item.hideForRoles?.includes(role)) return false
+        if (!item.permission) return true
+        return hasPermission(role, item.permission)
+    })
 
     return (
-
-        <nav
-            className="
-                p-4
-                space-y-2
-            "
-        >
-
-            {
-
-                filteredMenus.map(item => (
-
-                    <SidebarMenuItem
-
-                        key={item.href}
-
-                        item={item}
-
-                        active={
-
-                            pathname ===
-                            item.href
-                        }
-
-                        onClick={
-                            onClose
-                        }
-
-                    />
-
-                ))
-            }
-
+        <nav className="p-4 space-y-2">
+            {filteredMenus.map(item => (
+                <SidebarMenuItem
+                    key={item.href}
+                    item={item}
+                    active={pathname === item.href}
+                    badge={
+                        item.href === '/rt/registrasi' ? pendingRtCount :
+                        item.href === '/warga'          ? pendingWargaCount :
+                        0
+                    }
+                    onClick={onClose}
+                />
+            ))}
         </nav>
     )
 }

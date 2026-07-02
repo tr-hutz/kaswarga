@@ -240,6 +240,13 @@ export default function LoginView({
           </Link>
         </p>
 
+        <p className="text-center text-sm text-gray-500 mt-2">
+          Punya undangan tapi link tidak valid?{' '}
+          <Link href="/aktivasi/minta-link" className="text-blue-600 hover:underline font-medium">
+            Minta link baru
+          </Link>
+        </p>
+
       </div>
 
     </div>

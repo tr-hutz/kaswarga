@@ -34,7 +34,16 @@ export default function AppShell({
   const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
-    if (!loading && !membership && !isPublicPath(pathname)) {
+    if (loading) return
+
+    // Redirect authenticated users away from /login based on role
+    if (membership && pathname === '/login') {
+      router.replace(membership.role === 'super_admin' ? '/rt' : '/')
+      return
+    }
+
+    // Redirect unauthenticated users to /login
+    if (!membership && !isPublicPath(pathname)) {
       router.replace('/login')
     }
   }, [loading, membership, pathname])
@@ -59,7 +68,7 @@ export default function AppShell({
    |-------------------------------------------------------------
    */
 
-  if (membership?.status === 'no_membership') {
+  if (membership?.status === 'no_membership' && !isPublicPath(pathname)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-8 text-center space-y-4">
