@@ -6,9 +6,11 @@ import RtRegistrationView                             from './RtRegistrationView
 
 const EMPTY = {
     nama: '', kode: '', nominalIuran: '', alamat: '', kota: '', provinsi: '',
-    kodePos: '', telepon: '', email: '',
+    kodePos: '', telepon: '',
     namaBank: '', nomorRekening: '', atasNama: '',
-    emailKetua: '', emailAdmin: '', emailBendahara: ''
+    namaKetua: '', emailKetua: '',
+    namaAdmin: '', emailAdmin: '',
+    namaBendahara: '', emailBendahara: ''
 }
 
 export default function RtRegistrationContainer() {
@@ -56,10 +58,11 @@ export default function RtRegistrationContainer() {
         setSubmitting(true)
         try {
             await submitRtRegistration({
-                nama:           form.nama,
-                email:          form.emailKetua,
+                namaKetua:      form.namaKetua,
                 emailKetua:     form.emailKetua,
+                namaAdmin:      form.namaAdmin,
                 emailAdmin:     form.emailAdmin,
+                namaBendahara:  form.namaBendahara  || null,
                 emailBendahara: form.emailBendahara || null,
                 rtData: {
                     nama:          form.nama,
@@ -70,7 +73,6 @@ export default function RtRegistrationContainer() {
                     provinsi:      form.provinsi,
                     kodePos:       form.kodePos,
                     telepon:       form.telepon,
-                    email:         form.email,
                     namaBank:      form.namaBank,
                     nomorRekening: form.nomorRekening,
                     atasNama:      form.atasNama

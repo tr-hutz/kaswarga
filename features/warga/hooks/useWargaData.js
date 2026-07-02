@@ -20,6 +20,23 @@ export function useWargaData({ search = '', status = 'aktif' } = {}) {
         if (membership?.rt?.id) loadPending()
     }, [membership?.rt?.id])
 
+    useEffect(() => {
+        const rtId = membership?.rt?.id
+        if (!rtId) return
+
+        const channel = supabase
+            .channel('warga-pending-requests')
+            .on('postgres_changes', {
+                event:  'INSERT',
+                schema: 'public',
+                table:  'registration_requests',
+                filter: `type=eq.warga`,
+            }, () => loadPending())
+            .subscribe()
+
+        return () => { supabase.removeChannel(channel) }
+    }, [membership?.rt?.id])
+
     async function loadData() {
         setLoading(true)
         try {

@@ -174,17 +174,6 @@ export default function RtRegistrationView({
                             </Field>
                         </div>
 
-                        <div className="col-span-2">
-                            <Field label="Email RT">
-                                <Input
-                                    type="email"
-                                    value={form.email}
-                                    onChange={v => set('email', v)}
-                                    placeholder="rt001@example.com"
-                                />
-                            </Field>
-                        </div>
-
                     </div>
                 </div>
 
@@ -243,34 +232,63 @@ export default function RtRegistrationView({
                         </p>
                     </div>
 
-                    <Field label="Email Ketua" required>
-                        <Input
-                            required
-                            type="email"
-                            value={form.emailKetua}
-                            onChange={v => set('emailKetua', v)}
-                            placeholder="ketua@example.com"
-                        />
-                    </Field>
+                    <div className="grid grid-cols-2 gap-4">
+                        <Field label="Nama Ketua" required>
+                            <Input
+                                required
+                                value={form.namaKetua}
+                                onChange={v => set('namaKetua', v)}
+                                placeholder="Budi Santoso"
+                            />
+                        </Field>
+                        <Field label="Email Ketua" required>
+                            <Input
+                                required
+                                type="email"
+                                value={form.emailKetua}
+                                onChange={v => set('emailKetua', v)}
+                                placeholder="ketua@example.com"
+                            />
+                        </Field>
+                    </div>
 
-                    <Field label="Email Admin" required>
-                        <Input
-                            required
-                            type="email"
-                            value={form.emailAdmin}
-                            onChange={v => set('emailAdmin', v)}
-                            placeholder="admin@example.com"
-                        />
-                    </Field>
+                    <div className="grid grid-cols-2 gap-4">
+                        <Field label="Nama Admin" required>
+                            <Input
+                                required
+                                value={form.namaAdmin}
+                                onChange={v => set('namaAdmin', v)}
+                                placeholder="Siti Rahayu"
+                            />
+                        </Field>
+                        <Field label="Email Admin" required>
+                            <Input
+                                required
+                                type="email"
+                                value={form.emailAdmin}
+                                onChange={v => set('emailAdmin', v)}
+                                placeholder="admin@example.com"
+                            />
+                        </Field>
+                    </div>
 
-                    <Field label="Email Bendahara">
-                        <Input
-                            type="email"
-                            value={form.emailBendahara}
-                            onChange={v => set('emailBendahara', v)}
-                            placeholder="bendahara@example.com (opsional)"
-                        />
-                    </Field>
+                    <div className="grid grid-cols-2 gap-4">
+                        <Field label="Nama Bendahara">
+                            <Input
+                                value={form.namaBendahara}
+                                onChange={v => set('namaBendahara', v)}
+                                placeholder="Ahmad Fauzi (opsional)"
+                            />
+                        </Field>
+                        <Field label="Email Bendahara">
+                            <Input
+                                type="email"
+                                value={form.emailBendahara}
+                                onChange={v => set('emailBendahara', v)}
+                                placeholder="bendahara@example.com (opsional)"
+                            />
+                        </Field>
+                    </div>
                 </div>
 
                 {error && (

@@ -1,13 +1,26 @@
 'use client'
 
-import { useState }                                          from 'react'
-import { ChevronDown, ChevronUp, Check, X, Building2, Copy, CheckCheck } from 'lucide-react'
-import { approveRtRegistration, rejectRtRegistration }       from '@/lib/services/approval.service'
-import { useAuth }                                           from '@/lib/auth/useAuth'
-import { useToast }                                          from '@/components/ui/ToastProvider'
-import { formatTanggal as formatDate }                        from '@/lib/utils'
+import { useState }                                               from 'react'
+import { ChevronDown, ChevronUp, Check, X, Copy, CheckCheck, Link2 } from 'lucide-react'
+import { approveRtRegistration, rejectRtRegistration }             from '@/lib/services/approval.service'
+import { useAuth }                                                  from '@/lib/auth/useAuth'
+import { useToast }                                                 from '@/components/ui/ToastProvider'
+import { formatTanggal as formatDate }                              from '@/lib/utils'
+import { supabase }                                                 from '@/lib/supabase'
 
 const IS_DEV = process.env.NODE_ENV === 'development'
+
+const STATUS_BADGE = {
+    pending:  'bg-amber-100 text-amber-700',
+    approved: 'bg-green-100 text-green-700',
+    rejected: 'bg-red-100 text-red-700',
+}
+
+const STATUS_LABEL = {
+    pending:  'Menunggu',
+    approved: 'Disetujui',
+    rejected: 'Ditolak',
+}
 
 function CopyButton({ text }) {
     const [copied, setCopied] = useState(false)
@@ -64,14 +77,25 @@ function DevLinksPanel({ links, onDismiss }) {
     )
 }
 
-function RequestCard({ req, onAction }) {
-    const [expanded,   setExpanded]   = useState(false)
-    const [processing, setProcessing] = useState(false)
-    const [devLinks,   setDevLinks]   = useState(null)
-    const { membership }              = useAuth()
-    const { toast }                   = useToast()
+export default function RegistrasiCard({ req, onAction }) {
+
+    const [expanded,      setExpanded]      = useState(false)
+    const [processing,    setProcessing]    = useState(false)
+    const [devLinks,      setDevLinks]      = useState(null)
+    const [postApproval,  setPostApproval]  = useState(false)
+    const [loadingLinks,  setLoadingLinks]  = useState(false)
+    const { membership }                    = useAuth()
+    const { toast }                         = useToast()
 
     const rtData = req.rt_data || {}
+
+    function dismissDevLinks() {
+        setDevLinks(null)
+        if (postApproval) {
+            setPostApproval(false)
+            onAction()
+        }
+    }
 
     async function handleApprove() {
         setProcessing(true)
@@ -79,8 +103,8 @@ function RequestCard({ req, onAction }) {
             const { inviteLinks } = await approveRtRegistration(req.id, membership)
             toast({ message: `RT "${rtData.nama}" berhasil disetujui dan diaktifkan.`, type: 'success' })
             if (IS_DEV && inviteLinks?.length) {
+                setPostApproval(true)
                 setDevLinks(inviteLinks)
-                // Don't call onAction yet — user must dismiss the dev links panel
             } else {
                 onAction()
             }
@@ -89,6 +113,38 @@ function RequestCard({ req, onAction }) {
             onAction()
         } finally {
             setProcessing(false)
+        }
+    }
+
+    async function handleViewLinks() {
+        setLoadingLinks(true)
+        try {
+            const { data: invites, error } = await supabase
+                .from('activation_invites')
+                .select('email, role')
+                .eq('registration_request_id', req.id)
+
+            if (error) throw error
+            if (!invites?.length) {
+                toast({ message: 'Tidak ada invite ditemukan untuk pendaftaran ini.', type: 'info' })
+                return
+            }
+
+            const links = await Promise.all(invites.map(async ({ email, role }) => {
+                const res = await fetch('/api/dev/invite-link', {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({ email, role, rtId: req.rt_id })
+                })
+                const body = await res.json()
+                return { email, role, link: body.link || null }
+            }))
+
+            setDevLinks(links)
+        } catch (err) {
+            toast({ message: err.message, type: 'error' })
+        } finally {
+            setLoadingLinks(false)
         }
     }
 
@@ -107,18 +163,24 @@ function RequestCard({ req, onAction }) {
     }
 
     return (
-        <div className="border rounded-xl overflow-hidden">
+        <div className="bg-white border rounded-xl overflow-hidden">
             <div className="flex items-start gap-3 p-4">
-                <div className="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
-                    <Building2 size={18} />
-                </div>
 
                 <div className="flex-1 min-w-0">
+
+                    {/* Header row */}
                     <div className="flex items-start justify-between gap-2">
-                        <div>
-                            <p className="font-medium text-sm">{rtData.nama}</p>
+                        <div className="min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <p className="font-medium text-sm">{rtData.nama}</p>
+                                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_BADGE[req.status] || STATUS_BADGE.pending}`}>
+                                    {STATUS_LABEL[req.status] || req.status}
+                                </span>
+                            </div>
                             <p className="text-xs text-gray-500 mt-0.5">
-                                {rtData.kode} &bull; {rtData.kota} &bull; {formatDate(req.created_at)}
+                                {rtData.kode && <span>{rtData.kode} &bull; </span>}
+                                {rtData.kota && <span>{rtData.kota} &bull; </span>}
+                                <span>{formatDate(req.created_at)}</span>
                             </p>
                         </div>
                         <button
@@ -130,20 +192,19 @@ function RequestCard({ req, onAction }) {
                         </button>
                     </div>
 
+                    {/* Expanded details */}
                     {expanded && (
                         <div className="mt-3 border-t pt-3 space-y-3 text-xs text-gray-600">
 
-                            {/* RT details */}
+                            {/* RT info */}
                             <div className="space-y-1">
-                                {(rtData.alamat || rtData.kota) && (
-                                    <p>{[rtData.alamat, rtData.kota, rtData.provinsi].filter(Boolean).join(', ')}</p>
-                                )}
+                                {rtData.alamat   && <p><span className="font-medium">Alamat:</span> {[rtData.alamat, rtData.kota, rtData.provinsi].filter(Boolean).join(', ')}</p>}
                                 {rtData.kodePos  && <p><span className="font-medium">Kode Pos:</span> {rtData.kodePos}</p>}
                                 {rtData.telepon  && <p><span className="font-medium">Telepon:</span> {rtData.telepon}</p>}
                             </div>
 
                             {/* Management */}
-                            <div className="space-y-1.5 border-t pt-2">
+                            <div className="space-y-2 border-t pt-2">
                                 {(req.nama_ketua || req.email_ketua) && (
                                     <div>
                                         <p className="font-medium text-gray-700">Ketua</p>
@@ -167,10 +228,24 @@ function RequestCard({ req, onAction }) {
                                 )}
                             </div>
 
+                            {/* Status info */}
+                            {req.status === 'approved' && req.approved_at && (
+                                <p className="border-t pt-2 text-green-600">
+                                    <span className="font-medium">Disetujui:</span> {formatDate(req.approved_at)}
+                                </p>
+                            )}
+                            {req.status === 'rejected' && (
+                                <div className="border-t pt-2 space-y-1 text-red-600">
+                                    {req.rejected_at      && <p><span className="font-medium">Ditolak:</span> {formatDate(req.rejected_at)}</p>}
+                                    {req.rejection_reason && <p><span className="font-medium">Alasan:</span> {req.rejection_reason}</p>}
+                                </div>
+                            )}
+
                         </div>
                     )}
 
-                    {!devLinks && (
+                    {/* Actions — pending only */}
+                    {req.status === 'pending' && !devLinks && (
                         <div className="flex gap-2 mt-3">
                             <button
                                 onClick={handleApprove}
@@ -191,44 +266,28 @@ function RequestCard({ req, onAction }) {
                         </div>
                     )}
 
-                    {devLinks && (
-                        <DevLinksPanel links={devLinks} onDismiss={onAction} />
+                    {/* Dev-only view links button for approved cards */}
+                    {IS_DEV && req.status === 'approved' && !devLinks && (
+                        <div className="mt-3">
+                            <button
+                                type="button"
+                                onClick={handleViewLinks}
+                                disabled={loadingLinks}
+                                className="flex items-center gap-1.5 text-xs border rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                            >
+                                <Link2 size={12} />
+                                {loadingLinks ? 'Memuat...' : 'Lihat Link Aktivasi'}
+                            </button>
+                        </div>
                     )}
+
+                    {/* Dev links panel */}
+                    {devLinks && (
+                        <DevLinksPanel links={devLinks} onDismiss={dismissDevLinks} />
+                    )}
+
                 </div>
             </div>
-        </div>
-    )
-}
-
-export default function RtPendingRequests({ requests, loading, onAction }) {
-    const [open, setOpen] = useState(true)
-
-    if (loading) return null
-    if (!requests || requests.length === 0) return null
-
-    return (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl overflow-hidden">
-            <button
-                type="button"
-                onClick={() => setOpen(o => !o)}
-                className="w-full flex items-center justify-between px-5 py-4 text-sm font-semibold text-amber-800"
-            >
-                <span>
-                    Permintaan Pendaftaran RT
-                    <span className="ml-2 bg-amber-200 text-amber-800 rounded-full px-2 py-0.5 text-xs font-medium">
-                        {requests.length}
-                    </span>
-                </span>
-                {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-            </button>
-
-            {open && (
-                <div className="px-4 pb-4 space-y-3">
-                    {requests.map(req => (
-                        <RequestCard key={req.id} req={req} onAction={onAction} />
-                    ))}
-                </div>
-            )}
         </div>
     )
 }
