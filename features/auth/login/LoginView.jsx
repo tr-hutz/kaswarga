@@ -77,7 +77,7 @@ export default function LoginView({
               font-bold
             "
           >
-            Login RT Digital
+            Login Kas Warga
           </h1>
 
           <p
