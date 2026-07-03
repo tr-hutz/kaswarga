@@ -1,7 +1,6 @@
 'use client'
 
 import { Pencil, Trash2 } from 'lucide-react'
-import { formatRupiah } from '@/lib/utils'
 
 export default function RtTable({ data, loading, onEdit, onDelete }) {
 
@@ -29,7 +28,6 @@ export default function RtTable({ data, loading, onEdit, onDelete }) {
                         <th className="px-4 py-3 text-left">Nama RT</th>
                         <th className="px-4 py-3 text-left">Kode</th>
                         <th className="px-4 py-3 text-left">Kota</th>
-                        <th className="px-4 py-3 text-right">Iuran / Bulan</th>
                         <th className="px-4 py-3 text-center">Status</th>
                         <th className="px-4 py-3 text-center">Aksi</th>
                     </tr>
@@ -40,7 +38,6 @@ export default function RtTable({ data, loading, onEdit, onDelete }) {
                             <td className="px-4 py-3 font-medium">{rt.nama}</td>
                             <td className="px-4 py-3 text-gray-500">{rt.kode || '-'}</td>
                             <td className="px-4 py-3 text-gray-500">{rt.kota || '-'}</td>
-                            <td className="px-4 py-3 text-right">{formatRupiah(rt.nominal_iuran)}</td>
                             <td className="px-4 py-3 text-center">
                                 <span className={`
                                     inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium

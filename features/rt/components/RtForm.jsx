@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 
 const EMPTY = {
-    nama: '', kode: '', alamat: '', kota: '', provinsi: '', kodePos: '',
-    email: '', telepon: '', nominalIuran: ''
+    nama: '', kode: '', alamat: '', kota: '', provinsi: '', kodePos: ''
 }
 
 export default function RtForm({ open, onClose, rt, onSubmit }) {
@@ -19,15 +18,12 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
         if (!rt) { setForm(EMPTY); return }
 
         setForm({
-            nama:         rt.nama          || '',
-            kode:         rt.kode          || '',
-            alamat:       rt.alamat        || '',
-            kota:         rt.kota          || '',
-            provinsi:     rt.provinsi      || '',
-            kodePos:      rt.kode_pos      || '',
-            email:        rt.email         || '',
-            telepon:      rt.telepon       || '',
-            nominalIuran: rt.nominal_iuran ?? ''
+            nama:     rt.nama      || '',
+            kode:     rt.kode      || '',
+            alamat:   rt.alamat    || '',
+            kota:     rt.kota      || '',
+            provinsi: rt.provinsi  || '',
+            kodePos:  rt.kode_pos  || ''
         })
 
     }, [rt])
@@ -40,7 +36,7 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
         e.preventDefault()
         setSaving(true)
         try {
-            await onSubmit({ ...form, nominalIuran: Number(form.nominalIuran) || 0 })
+            await onSubmit(form)
         } finally {
             setSaving(false)
         }
@@ -82,12 +78,11 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
                     </div>
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Iuran / Bulan (Rp)</label>
+                        <label className="text-xs text-gray-500 mb-1 block">Kode Pos</label>
                         <input
-                            type="number"
-                            placeholder="50000"
-                            value={form.nominalIuran}
-                            onChange={e => set('nominalIuran', e.target.value)}
+                            placeholder="12345"
+                            value={form.kodePos}
+                            onChange={e => set('kodePos', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </div>
@@ -118,37 +113,6 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
                             placeholder="DKI Jakarta"
                             value={form.provinsi}
                             onChange={e => set('provinsi', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Kode Pos</label>
-                        <input
-                            placeholder="12345"
-                            value={form.kodePos}
-                            onChange={e => set('kodePos', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Email</label>
-                        <input
-                            type="email"
-                            placeholder="rt001@example.com"
-                            value={form.email}
-                            onChange={e => set('email', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
-                        />
-                    </div>
-
-                    <div className="col-span-2">
-                        <label className="text-xs text-gray-500 mb-1 block">Telepon</label>
-                        <input
-                            placeholder="021-1234567"
-                            value={form.telepon}
-                            onChange={e => set('telepon', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </div>
