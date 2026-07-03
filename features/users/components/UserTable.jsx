@@ -18,7 +18,7 @@ const ROLE_COLORS = {
     warga:       'bg-gray-100 text-gray-600'
 }
 
-export default function UserTable({ data, loading, onEditRole, onRemoveMembership }) {
+export default function UserTable({ data, loading, currentUserId, onEditRole, onRemoveMembership }) {
 
     if (loading) {
         return (
@@ -65,6 +65,8 @@ export default function UserTable({ data, loading, onEditRole, onRemoveMembershi
                             )
                         }
 
+                        const isSelf = user.id === currentUserId
+
                         return memberships.map((m, idx) => (
                             <tr key={m.id} className="hover:bg-gray-50 transition-colors">
                                 {idx === 0 && (
@@ -89,22 +91,26 @@ export default function UserTable({ data, loading, onEditRole, onRemoveMembershi
                                     </span>
                                 </td>
                                 <td className="px-4 py-3">
-                                    <div className="flex items-center justify-center gap-2">
-                                        <button
-                                            onClick={() => onEditRole({ user, membership: m })}
-                                            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors"
-                                            title="Ubah Role"
-                                        >
-                                            <Pencil size={15} />
-                                        </button>
-                                        <button
-                                            onClick={() => onRemoveMembership(m)}
-                                            className="p-1.5 rounded-lg hover:bg-red-50 text-gray-500 hover:text-red-600 transition-colors"
-                                            title="Hapus Membership"
-                                        >
-                                            <Trash2 size={15} />
-                                        </button>
-                                    </div>
+                                    {isSelf ? (
+                                        <div className="text-center text-gray-300 text-xs">—</div>
+                                    ) : (
+                                        <div className="flex items-center justify-center gap-2">
+                                            <button
+                                                onClick={() => onEditRole({ user, membership: m })}
+                                                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors"
+                                                title="Ubah Role"
+                                            >
+                                                <Pencil size={15} />
+                                            </button>
+                                            <button
+                                                onClick={() => onRemoveMembership(m)}
+                                                className="p-1.5 rounded-lg hover:bg-red-50 text-gray-500 hover:text-red-600 transition-colors"
+                                                title="Hapus Membership"
+                                            >
+                                                <Trash2 size={15} />
+                                            </button>
+                                        </div>
+                                    )}
                                 </td>
                             </tr>
                         ))

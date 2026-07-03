@@ -7,6 +7,7 @@ import EditRoleForm from './components/EditRoleForm'
 export default function UsersView({
     data,
     loading,
+    currentUserId,
     editTarget,
     setEditTarget,
     delTarget,
@@ -32,6 +33,7 @@ export default function UsersView({
             <UserTable
                 data={data}
                 loading={loading}
+                currentUserId={currentUserId}
                 onEditRole={setEditTarget}
                 onRemoveMembership={setDelTarget}
             />
