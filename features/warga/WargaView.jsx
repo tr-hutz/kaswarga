@@ -15,6 +15,9 @@ import WargaForm
 import WargaPendingRequests
     from './components/WargaPendingRequests'
 
+import WargaImportModal
+    from './components/import/WargaImportModal'
+
 export default function WargaView({
 
                                       /*
@@ -59,7 +62,20 @@ export default function WargaView({
                                       closeForm,
 
                                       exportCSV,
-                                      exportExcel
+                                      exportExcel,
+
+                                      importOpen,
+                                      openImport,
+                                      closeImport,
+                                      rows: importRows,
+                                      fileName: importFileName,
+                                      fileRef: importFileRef,
+                                      importing,
+                                      error: importError,
+                                      handleFile,
+                                      handleImport,
+                                      downloadTemplate,
+                                      resetImport,
 
                                   }) {
 
@@ -97,6 +113,8 @@ export default function WargaView({
 
                     onExportCSV={() => exportCSV(data)}
                     onExportExcel={() => exportExcel(data)}
+
+                    onImport={openImport}
 
                 />
 
@@ -141,6 +159,20 @@ export default function WargaView({
                     refresh()
                 }}
 
+            />
+
+            <WargaImportModal
+                open={importOpen}
+                onClose={closeImport}
+                rows={importRows}
+                fileName={importFileName}
+                fileRef={importFileRef}
+                importing={importing}
+                error={importError}
+                onFile={handleFile}
+                onImport={handleImport}
+                onDownloadTemplate={downloadTemplate}
+                onReset={resetImport}
             />
 
         </div>

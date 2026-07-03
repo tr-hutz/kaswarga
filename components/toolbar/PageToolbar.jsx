@@ -1,8 +1,6 @@
 'use client'
 
-import {
-    Plus
-} from 'lucide-react'
+import { Plus, Upload } from 'lucide-react'
 
 import ToolbarSearch
     from './ToolbarSearch'
@@ -65,7 +63,9 @@ export default function PageToolbar({
                                          */
 
                                         onExportCSV,
-                                        onExportExcel
+                                        onExportExcel,
+
+                                        onImport
 
                                     }) {
 
@@ -194,6 +194,29 @@ export default function PageToolbar({
                         />
                     )
                 }
+
+                { onImport && (
+                    <button
+                        onClick={onImport}
+                        className="
+                            h-11
+                            px-4
+                            rounded-2xl
+                            border
+                            bg-white
+
+                            flex
+                            items-center
+                            gap-2
+
+                            hover:bg-gray-50
+                            transition
+                        "
+                    >
+                        <Upload size={16} />
+                        <span>Import</span>
+                    </button>
+                )}
 
                 <ToolbarExport
 

@@ -12,6 +12,8 @@ import {
     useWargaActions
 } from './hooks/useWargaActions'
 
+import { useToast } from '@/components/ui/ToastProvider'
+
 import WargaView
     from './WargaView'
 
@@ -33,7 +35,7 @@ export default function WargaContainer() {
         status,
         setStatus
 
-    ] = useState('aktif')
+    ] = useState('active')
 
     /*
      |---------------------------------------------------------------
@@ -62,8 +64,12 @@ export default function WargaContainer() {
      |---------------------------------------------------------------
      */
 
-    const actions =
-        useWargaActions()
+    const { toast } = useToast()
+
+    const actions = useWargaActions((inserted) => {
+        refresh()
+        toast({ message: `${inserted} data warga berhasil diimpor.`, type: 'success' })
+    })
 
     return (
 

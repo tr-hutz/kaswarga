@@ -11,7 +11,9 @@ import {
 
 } from '../services/warga-export-transform'
 
-export function useWargaActions() {
+import { useWargaImport } from './useWargaImport'
+
+export function useWargaActions(onImportSuccess) {
 
     /*
      |------------------------------------------------------------------
@@ -99,23 +101,21 @@ export function useWargaActions() {
      |------------------------------------------------------------------
      */
 
-    async function exportExcel(
-        data
-    ) {
-
-        await exportWargaToExcel(
-            data
-        )
+    async function exportExcel(data) {
+        await exportWargaToExcel(data)
     }
 
-    async function exportCSV(
-        data
-    ) {
-
-        await exportWargaToCSV(
-            data
-        )
+    async function exportCSV(data) {
+        await exportWargaToCSV(data)
     }
+
+    /*
+     |------------------------------------------------------------------
+     | IMPORT
+     |------------------------------------------------------------------
+     */
+
+    const importState = useWargaImport(onImportSuccess)
 
     /*
      |------------------------------------------------------------------
@@ -127,40 +127,18 @@ export function useWargaActions() {
 
         selectedWarga,
 
-        /*
-         |--------------------------------------------------------------
-         | DRAWER
-         |--------------------------------------------------------------
-         */
-
         drawerOpen,
-
         openDrawer,
-
         closeDrawer,
 
-        /*
-         |--------------------------------------------------------------
-         | FORM
-         |--------------------------------------------------------------
-         */
-
         formOpen,
-
         openCreateForm,
-
         openEditForm,
-
         closeForm,
 
-        /*
-         |--------------------------------------------------------------
-         | EXPORT
-         |--------------------------------------------------------------
-         */
-
         exportExcel,
+        exportCSV,
 
-        exportCSV
+        ...importState,
     }
 }
