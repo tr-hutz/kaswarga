@@ -19,9 +19,14 @@ import {
 
 } from '../services/pengeluaran-export-transform'
 
+import { usePengeluaranImport }    from './usePengeluaranImport'
+import { useApprovalPengeluaran } from './useApprovalPengeluaran'
+
 export function usePengeluaranActions({
 
-                                          onReload
+                                          onReload,
+                                          onImportSuccess,
+                                          onApprovalSuccess
 
                                       }) {
 
@@ -231,6 +236,36 @@ export function usePengeluaranActions({
 
     /*
      |-------------------------------------------------------------
+     | IMPORT
+     |-------------------------------------------------------------
+     */
+
+    const {
+        rows:      importRows,
+        ...restImport
+    } = usePengeluaranImport(onImportSuccess)
+
+    /*
+     |-------------------------------------------------------------
+     | APPROVAL
+     |-------------------------------------------------------------
+     */
+
+    const {
+        loading:    approvalLoading,
+        approve:    approvePengeluaran,
+        reject:     rejectPengeluaran,
+        approveAll: approveAllPengeluaran,
+    } = useApprovalPengeluaran({
+        onSuccess: () => {
+            closeDrawer()
+            onReload?.()
+            onApprovalSuccess?.()
+        }
+    })
+
+    /*
+     |-------------------------------------------------------------
      | RETURN
      |-------------------------------------------------------------
      */
@@ -281,6 +316,22 @@ export function usePengeluaranActions({
 
         exportCSV,
 
-        exportExcel
+        exportExcel,
+
+        /*
+         * import
+         */
+
+        importRows,
+        ...restImport,
+
+        /*
+         * approval
+         */
+
+        approvalLoading,
+        approvePengeluaran,
+        rejectPengeluaran,
+        approveAllPengeluaran,
     }
 }

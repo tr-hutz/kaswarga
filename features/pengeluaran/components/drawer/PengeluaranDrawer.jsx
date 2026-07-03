@@ -1,174 +1,132 @@
 'use client'
 
-import {
-    formatRupiah
-} from '../../../../lib/utils'
+import { formatRupiah } from '../../../../lib/utils'
+import PengeluaranStatusBadge   from '../tables/PengeluaranStatusBadge'
+import PengeluaranApprovalBar   from '../approval/PengeluaranApprovalBar'
 
 export default function PengeluaranDrawer({
+    open,
+    onClose,
+    row,
+    role,
+    onApprove,
+    onReject,
+    approvalLoading,
+}) {
 
-                                              open,
-                                              onClose,
-                                              row
+    if (!open || !row) return null
 
-                                          }) {
-
-    if (!open || !row) {
-        return null
-    }
+    const approvedAtLabel = row.approvedAt
+        ? new Date(row.approvedAt).toLocaleString('id-ID')
+        : null
 
     return (
-
         <div
-            className="
-        fixed
-        inset-0
-        bg-black/20
-        z-50
-        flex
-        justify-end
-      "
-
+            className="fixed inset-0 bg-black/20 z-50 flex justify-end"
             onClick={onClose}
         >
-
             <div
-                className="
-          bg-white
-          w-full
-          max-w-lg
-          h-full
-          overflow-y-auto
-          p-6
-        "
+                className="bg-white w-full max-w-lg h-full overflow-y-auto p-6 shadow-xl"
+                onClick={e => e.stopPropagation()}
             >
-
-                <div
-                    className="
-            flex
-            justify-between
-            items-center
-            mb-6
-          "
-                >
-
-                    <h2
-                        className="
-              text-xl
-              font-semibold
-            "
-                    >
-                        Detail Pengeluaran
-                    </h2>
-
-                    <button
-                        onClick={onClose}
-                    >
-                        ✕
-                    </button>
-
-                </div>
-
-                <div
-                    className="
-            space-y-4
-          "
-                >
-
-                    <Field
-                        label="Kategori"
-                        value={row.kategori}
-                    />
-
-                    <Field
-                        label="Deskripsi"
-                        value={row.deskripsi}
-                    />
-
-                    <Field
-                        label="Tanggal"
-                        value={row.tanggal}
-                    />
-
-                    <Field
-                        label="Nominal"
-                        value={`Rp ${formatRupiah(row.nominal)}`}
-                    />
-
-                </div>
-
-                {
-
-                    row.notaUrl && (
-
-                        <div
-                            className="
-                mt-6
-              "
+                {/* Header */}
+                <div className="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 className="text-xl font-semibold">Detail Pengeluaran</h2>
+                        {row.nomorBukti && (
+                            <p className="font-mono text-sm text-gray-500 mt-0.5">{row.nomorBukti}</p>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <PengeluaranStatusBadge status={row.status} />
+                        <button
+                            onClick={onClose}
+                            className="text-gray-400 hover:text-gray-600 text-xl leading-none"
                         >
+                            ✕
+                        </button>
+                    </div>
+                </div>
 
-                            <p
-                                className="
-                  text-sm
-                  text-slate-500
-                  mb-2
-                "
+                {/* Fields */}
+                <div className="space-y-4">
+
+                    <Field label="Tanggal"        value={row.tanggalLabel || row.tanggal} />
+                    <Field label="Kategori"       value={row.kategori || '—'} />
+                    <Field label="Nominal"        value={`Rp ${formatRupiah(row.nominal)}`} />
+
+                    {row.penerima && (
+                        <Field label="Mitra / Penerima" value={row.penerima} />
+                    )}
+
+                    {row.deskripsi && (
+                        <Field label="Deskripsi" value={row.deskripsi} />
+                    )}
+
+                </div>
+
+                {/* Approval / Rejection info */}
+                {row.status === 'approved' && approvedAtLabel && (
+                    <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-sm text-emerald-800">
+                        Disetujui pada {approvedAtLabel}
+                    </div>
+                )}
+
+                {row.status === 'rejected' && (
+                    <div className="mt-6 p-4 bg-red-50 rounded-xl border border-red-100 text-sm text-red-800 space-y-1">
+                        <p className="font-medium">Ditolak</p>
+                        {row.catatanPenolakan && (
+                            <p className="text-red-700">{row.catatanPenolakan}</p>
+                        )}
+                    </div>
+                )}
+
+                {/* Nota */}
+                {row.notaUrl && (
+                    <div className="mt-6">
+                        <p className="text-sm text-slate-500 mb-2">Nota</p>
+                        {row.notaUrl.endsWith('.pdf') ? (
+                            <a
+                                href={row.notaUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-blue-600 text-sm underline"
                             >
-                                Nota
-                            </p>
-
+                                Buka Nota (PDF)
+                            </a>
+                        ) : (
+                            // eslint-disable-next-line @next/next/no-img-element
                             <img
-
-                                src={
-                                    row.notaUrl
-                                }
-
+                                src={row.notaUrl}
                                 alt="Nota"
-
-                                className="
-                  rounded-xl
-                  border
-                "
+                                className="rounded-xl border w-full object-contain"
                             />
+                        )}
+                    </div>
+                )}
 
-                        </div>
-
-                    )
-                }
+                {/* Approval bar — ketua only, pending only */}
+                {role === 'ketua' && (
+                    <div className="mt-6">
+                        <PengeluaranApprovalBar
+                            row={row}
+                            onApprove={onApprove}
+                            onReject={onReject}
+                            loading={approvalLoading}
+                        />
+                    </div>
+                )}
 
             </div>
-
         </div>
     )
 }
 
-function Field({
-
-                   label,
-                   value
-
-               }) {
-
+function Field({ label, value }) {
     return (
-
         <div>
-
-            <p
-                className="
-          text-sm
-          text-slate-500
-        "
-            >
-                {label}
-            </p>
-
-            <p
-                className="
-          font-medium
-        "
-            >
-                {value}
-            </p>
-
+            <p className="text-sm text-slate-500">{label}</p>
+            <p className="font-medium">{value}</p>
         </div>
     )
 }

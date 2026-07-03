@@ -1,25 +1,22 @@
 'use client'
 
-import {
-    useState
-} from 'react'
+import { useState } from 'react'
 
-import PengeluaranView
-    from './PengeluaranView'
-
-import {
-    usePengeluaranData
-} from './hooks/usePengeluaranData'
-
-import {
-    usePengeluaranActions
-} from './hooks/usePengeluaranActions'
-
-import {
-    usePengeluaranRealtime
-} from './hooks/usePengeluaranRealtime'
+import PengeluaranView         from './PengeluaranView'
+import { usePengeluaranData }  from './hooks/usePengeluaranData'
+import { usePengeluaranActions } from './hooks/usePengeluaranActions'
+import { useToast }            from '@/components/ui/ToastProvider'
+import { useAuth }             from '@/lib/auth/useAuth'
 
 export default function PengeluaranContainer() {
+
+    /*
+     |-------------------------------------------------------------
+     | AUTH
+     |-------------------------------------------------------------
+     */
+
+    const { role } = useAuth()
 
     /*
      |-------------------------------------------------------------
@@ -27,15 +24,8 @@ export default function PengeluaranContainer() {
      |-------------------------------------------------------------
      */
 
-    const [
-        search,
-        setSearch
-    ] = useState('')
-
-    const [
-        kategori,
-        setKategori
-    ] = useState('all')
+    const [search,   setSearch]   = useState('')
+    const [kategori, setKategori] = useState('all')
 
     /*
      |-------------------------------------------------------------
@@ -43,31 +33,7 @@ export default function PengeluaranContainer() {
      |-------------------------------------------------------------
      */
 
-    const {
-
-        rows,
-        loading,
-        refresh
-
-    } = usePengeluaranData({
-
-        search,
-        kategori
-
-    })
-
-    /*
-     |-------------------------------------------------------------
-     | REALTIME
-     |-------------------------------------------------------------
-     */
-
-    // usePengeluaranRealtime({
-    //
-    //     onReload:
-    //     refresh
-    //
-    // })
+    const { rows, loading, refresh } = usePengeluaranData({ search, kategori })
 
     /*
      |-------------------------------------------------------------
@@ -75,13 +41,22 @@ export default function PengeluaranContainer() {
      |-------------------------------------------------------------
      */
 
-    const actions =
-        usePengeluaranActions({
+    const { toast } = useToast()
 
-            onReload:
-            refresh
+    const actions = usePengeluaranActions({
 
-        })
+        onReload: refresh,
+
+        onImportSuccess: (inserted) => {
+            refresh()
+            toast({ message: `${inserted} data pengeluaran berhasil diimpor.`, type: 'success' })
+        },
+
+        onApprovalSuccess: () => {
+            refresh()
+        },
+
+    })
 
     /*
      |-------------------------------------------------------------
@@ -90,33 +65,15 @@ export default function PengeluaranContainer() {
      */
 
     return (
-
         <PengeluaranView
-
-            /*
-             * filters
-             */
-
             search={search}
             setSearch={setSearch}
-
             kategori={kategori}
             setKategori={setKategori}
-
-            /*
-             * data
-             */
-
+            role={role}
             rows={rows}
             loading={loading}
-
-            /*
-             * actions
-             */
-
             {...actions}
-
         />
-
     )
 }
