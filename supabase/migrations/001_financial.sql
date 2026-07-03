@@ -83,15 +83,23 @@ create table detail_pembayaran (
  * --------------------------------------------------------------------------- */
 
 create table pengeluaran (
-    id         uuid        primary key default gen_random_uuid(),
-    rt_id      uuid        not null references rt (id) on delete cascade,
-    tanggal    date,
-    kategori   text,
-    nominal    integer,
-    deskripsi  text,
-    nota_url   text,
-    aktif      boolean     not null default true,
-    created_at timestamptz not null default now()
+
+    id           uuid        primary key default gen_random_uuid(),
+    rt_id        uuid        not null references rt (id) on delete cascade,
+    nomor_bukti  text,
+    tanggal      date,
+    kategori     text,
+    nominal      integer,
+    penerima     text,
+    deskripsi    text,
+    nota_url              text,
+    aktif                 boolean     not null default true,
+    status                text        not null default 'pending',
+    created_by            uuid,
+    approved_by           uuid,
+    approved_at           timestamptz,
+    catatan_penolakan     text,
+    created_at            timestamptz not null default now()
 );
 
 

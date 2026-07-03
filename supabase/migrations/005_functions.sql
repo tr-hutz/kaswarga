@@ -584,3 +584,222 @@ revoke all     on function get_last_saldo(uuid)                                 
 grant  execute on function populate_cashflow(int, int, int, numeric)                                       to service_role;
 grant  execute on function insert_ledger(uuid, varchar, varchar, uuid, timestamptz, text, bigint, uuid)    to service_role;
 grant  execute on function get_last_saldo(uuid)                                                            to authenticated;
+
+
+/* ----------------------------------------------------------------------------
+ * approve_pengeluaran
+ *
+ * Flow:
+ *   1. Lock the pengeluaran row
+ *   2. Validate status is still pending
+ *   3. Mark as approved with timestamp and approver
+ *   4. Append a ledger debit entry
+ *   5. Notify the expense creator
+ * --------------------------------------------------------------------------- */
+
+create or replace function approve_pengeluaran(
+    p_id      uuid,
+    p_user_id uuid
+)
+returns void
+language plpgsql
+security definer
+as $$
+declare
+    v_row record;
+begin
+    -- 1. Lock row
+    select * into v_row
+    from   pengeluaran
+    where  id = p_id
+    for update;
+
+    if not found then
+        raise exception 'Pengeluaran tidak ditemukan'
+            using errcode = 'KW020';
+    end if;
+
+    -- 2. Status check
+    if v_row.status != 'pending' then
+        raise exception 'Pengeluaran sudah diproses'
+            using errcode = 'KW021';
+    end if;
+
+    -- 3. Mark approved
+    update pengeluaran
+    set    status      = 'approved',
+           approved_by = p_user_id,
+           approved_at = now()
+    where  id = p_id;
+
+    -- 4. Ledger debit entry
+    perform insert_ledger(
+        v_row.rt_id,
+        'pengeluaran',
+        'pengeluaran',
+        p_id,
+        now(),
+        coalesce(v_row.deskripsi, 'Pengeluaran RT'),
+        v_row.nominal::bigint,
+        p_user_id
+    );
+
+    -- 5. Notify creator
+    if v_row.created_by is not null then
+        insert into notifications (
+            rt_id, type, title, message, entity_type, entity_id, target_user_id
+        ) values (
+            v_row.rt_id,
+            'expense_approved',
+            'Pengeluaran Disetujui',
+            'Pengeluaran ' || coalesce(v_row.nomor_bukti, '') || ' telah disetujui',
+            'pengeluaran',
+            p_id,
+            v_row.created_by
+        );
+    end if;
+end;
+$$;
+
+
+/* ----------------------------------------------------------------------------
+ * reject_pengeluaran
+ *
+ * Flow:
+ *   1. Lock the pengeluaran row
+ *   2. Validate status is still pending
+ *   3. Mark as rejected with reason
+ *   4. Notify the expense creator
+ * --------------------------------------------------------------------------- */
+
+create or replace function reject_pengeluaran(
+    p_id      uuid,
+    p_alasan  text,
+    p_user_id uuid
+)
+returns void
+language plpgsql
+security definer
+as $$
+declare
+    v_row record;
+begin
+    -- 1. Lock row
+    select * into v_row
+    from   pengeluaran
+    where  id = p_id
+    for update;
+
+    if not found then
+        raise exception 'Pengeluaran tidak ditemukan'
+            using errcode = 'KW020';
+    end if;
+
+    -- 2. Status check
+    if v_row.status != 'pending' then
+        raise exception 'Pengeluaran sudah diproses'
+            using errcode = 'KW021';
+    end if;
+
+    -- 3. Mark rejected
+    update pengeluaran
+    set    status             = 'rejected',
+           approved_by        = p_user_id,
+           catatan_penolakan  = p_alasan
+    where  id = p_id;
+
+    -- 4. Notify creator
+    if v_row.created_by is not null then
+        insert into notifications (
+            rt_id, type, title, message, entity_type, entity_id, target_user_id
+        ) values (
+            v_row.rt_id,
+            'expense_rejected',
+            'Pengeluaran Ditolak',
+            'Pengeluaran ' || coalesce(v_row.nomor_bukti, '') || ' ditolak' ||
+                case when p_alasan is not null and p_alasan != ''
+                     then '. Alasan: ' || p_alasan
+                     else ''
+                end,
+            'pengeluaran',
+            p_id,
+            v_row.created_by
+        );
+    end if;
+end;
+$$;
+
+revoke all     on function approve_pengeluaran(uuid, uuid)       from public;
+revoke all     on function reject_pengeluaran(uuid, text, uuid)  from public;
+grant  execute on function approve_pengeluaran(uuid, uuid)       to authenticated;
+grant  execute on function reject_pengeluaran(uuid, text, uuid)  to authenticated;
+
+
+/* ----------------------------------------------------------------------------
+ * approve_all_pending_pengeluaran
+ *
+ * Approves every pending pengeluaran for the given RT atomically.
+ * Returns the count of rows approved.
+ * --------------------------------------------------------------------------- */
+
+create or replace function approve_all_pending_pengeluaran(
+    p_rt_id   uuid,
+    p_user_id uuid
+)
+returns integer
+language plpgsql
+security definer
+as $$
+declare
+    v_row   record;
+    v_count integer := 0;
+begin
+    for v_row in
+        select *
+        from   pengeluaran
+        where  rt_id  = p_rt_id
+        and    status = 'pending'
+        and    aktif  = true
+        for update skip locked
+    loop
+        update pengeluaran
+        set    status      = 'approved',
+               approved_by = p_user_id,
+               approved_at = now()
+        where  id = v_row.id;
+
+        perform insert_ledger(
+            v_row.rt_id,
+            'pengeluaran',
+            'pengeluaran',
+            v_row.id,
+            coalesce(v_row.tanggal::timestamptz, now()),
+            coalesce(v_row.deskripsi, v_row.kategori, 'Pengeluaran'),
+            v_row.nominal::bigint,
+            p_user_id
+        );
+
+        if v_row.created_by is not null then
+            insert into notifications (
+                rt_id, type, title, message, entity_type, entity_id, target_user_id
+            ) values (
+                v_row.rt_id,
+                'expense_approved',
+                'Pengeluaran Disetujui',
+                'Pengeluaran ' || coalesce(v_row.nomor_bukti, '') ||
+                    ' sebesar Rp ' || v_row.nominal || ' telah disetujui.',
+                'pengeluaran',
+                v_row.id,
+                v_row.created_by
+            );
+        end if;
+
+        v_count := v_count + 1;
+    end loop;
+
+    return v_count;
+end;
+$$;
+
+revoke all     on function approve_all_pending_pengeluaran(uuid, uuid) from public;
+grant  execute on function approve_all_pending_pengeluaran(uuid, uuid) to authenticated;
