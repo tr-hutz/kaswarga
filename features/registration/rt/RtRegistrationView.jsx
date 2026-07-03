@@ -78,7 +78,7 @@ export default function RtRegistrationView({
 
                     <div className="grid grid-cols-2 gap-4">
 
-                        <div className="col-span-2">
+                        <div>
                             <Field label="Nama RT" required>
                                 <Input
                                     required
@@ -110,17 +110,6 @@ export default function RtRegistrationView({
                                         Generate
                                     </button>
                                 </div>
-                            </Field>
-                        </div>
-
-                        <div>
-                            <Field label="Iuran / Bulan (Rp)">
-                                <Input
-                                    type="number"
-                                    value={form.nominalIuran}
-                                    onChange={v => set('nominalIuran', v)}
-                                    placeholder="50000"
-                                />
                             </Field>
                         </div>
 
@@ -165,11 +154,12 @@ export default function RtRegistrationView({
                         </div>
 
                         <div>
-                            <Field label="Telepon">
+                            <Field label="Iuran / Bulan (Rp)">
                                 <Input
-                                    value={form.telepon}
-                                    onChange={v => set('telepon', v)}
-                                    placeholder="021-1234567"
+                                    type="number"
+                                    value={form.nominalIuran}
+                                    onChange={v => set('nominalIuran', v)}
+                                    placeholder="50000"
                                 />
                             </Field>
                         </div>

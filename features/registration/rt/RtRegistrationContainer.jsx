@@ -5,9 +5,8 @@ import { generateRtCode, submitRtRegistration }       from '@/lib/services/regis
 import RtRegistrationView                             from './RtRegistrationView'
 
 const EMPTY = {
-    nama: '', kode: '', nominalIuran: '', alamat: '', kota: '', provinsi: '',
-    kodePos: '', telepon: '',
-    namaBank: '', nomorRekening: '', atasNama: '',
+    nama: '', kode: '', alamat: '', kota: '', provinsi: '', kodePos: '',
+    nominalIuran: '', namaBank: '', nomorRekening: '', atasNama: '',
     namaKetua: '', emailKetua: '',
     namaAdmin: '', emailAdmin: '',
     namaBendahara: '', emailBendahara: ''
@@ -67,12 +66,11 @@ export default function RtRegistrationContainer() {
                 rtData: {
                     nama:          form.nama,
                     kode:          form.kode,
-                    nominalIuran:  Number(form.nominalIuran) || 0,
                     alamat:        form.alamat,
                     kota:          form.kota,
                     provinsi:      form.provinsi,
                     kodePos:       form.kodePos,
-                    telepon:       form.telepon,
+                    nominalIuran:  Number(form.nominalIuran) || 0,
                     namaBank:      form.namaBank,
                     nomorRekening: form.nomorRekening,
                     atasNama:      form.atasNama
