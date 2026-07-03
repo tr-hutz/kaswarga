@@ -13,7 +13,9 @@ export default function WargaToolbar({
                                          setStatus,
 
                                          onExportCSV,
-                                         onExportExcel
+                                         onExportExcel,
+
+                                         onImport
 
                                      }) {
 
@@ -41,17 +43,19 @@ export default function WargaToolbar({
 
                 {
                     label: 'Aktif',
-                    value: 'aktif'
+                    value: 'active'
                 },
 
                 {
                     label: 'Nonaktif',
-                    value: 'nonaktif'
+                    value: 'inactive'
                 }
             ]}
 
             onExportCSV={onExportCSV}
             onExportExcel={onExportExcel}
+
+            onImport={onImport}
 
         />
 

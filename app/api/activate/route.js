@@ -120,6 +120,7 @@ export async function POST(req) {
                     rt_id: invite.rt_id,
                     nama:  namaUser,
                     email: user.email,
+                    aktif: true,
                 }
                 if (invite.role === 'warga' && regReq) {
                     wargaData.blok     = regReq.blok     || null
