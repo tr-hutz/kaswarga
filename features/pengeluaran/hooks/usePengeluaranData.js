@@ -40,6 +40,7 @@ export function usePengeluaranData({
      |-------------------------------------------------------------
      */
 
+    /* eslint-disable react-hooks/exhaustive-deps */
     useEffect(() => {
 
         loadData()
@@ -50,6 +51,7 @@ export function usePengeluaranData({
         kategori
 
     ])
+    /* eslint-enable react-hooks/exhaustive-deps */
 
     /*
      |-------------------------------------------------------------

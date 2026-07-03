@@ -9,6 +9,9 @@ export function transformPengeluaran(
             id:
             item.id,
 
+            nomorBukti:
+            item.nomor_bukti,
+
             kategori:
             item.kategori,
 
@@ -19,6 +22,9 @@ export function transformPengeluaran(
                 Number(
                     item.nominal || 0
                 ),
+
+            penerima:
+            item.penerima,
 
             tanggal:
             item.tanggal,
@@ -32,6 +38,21 @@ export function transformPengeluaran(
 
             notaUrl:
             item.nota_url,
+
+            status:
+            item.status || 'pending',
+
+            createdBy:
+            item.created_by,
+
+            approvedBy:
+            item.approved_by,
+
+            approvedAt:
+            item.approved_at,
+
+            catatanPenolakan:
+            item.catatan_penolakan,
 
             aktif:
             item.aktif

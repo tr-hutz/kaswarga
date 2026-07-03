@@ -8,17 +8,26 @@ export async function exportPengeluaranExcel(
     const rows =
         data.map(item => ({
 
+            'Nomor Bukti':
+            item.nomorBukti || '',
+
             Tanggal:
             item.tanggalLabel,
 
             Kategori:
             item.kategori,
 
+            'Mitra / Penerima':
+            item.penerima || '',
+
             Deskripsi:
             item.deskripsi,
 
             Nominal:
-            item.nominal
+            item.nominal,
+
+            Status:
+            item.status || 'pending'
 
         }))
 
@@ -51,17 +60,26 @@ export async function exportPengeluaranCSV(
     const rows =
         data.map(item => ({
 
+            nomor_bukti:
+            item.nomorBukti || '',
+
             tanggal:
             item.tanggalLabel,
 
             kategori:
             item.kategori,
 
+            penerima:
+            item.penerima || '',
+
             deskripsi:
             item.deskripsi,
 
             nominal:
-            item.nominal
+            item.nominal,
+
+            status:
+            item.status || 'pending'
 
         }))
 
