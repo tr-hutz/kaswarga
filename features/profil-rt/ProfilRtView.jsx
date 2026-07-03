@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { formatRupiah } from '@/lib/utils'
+import { RefreshCw } from 'lucide-react'
+import { generateRtCode } from '@/lib/services/registration.service'
 import ImageUpload from './components/ImageUpload'
 
 const EMPTY = {
     nama: '', kode: '', alamat: '', kota: '', provinsi: '', kodePos: '',
-    email: '', telepon: '', nominalIuran: '', namaBank: '', nomorRekening: '',
+    nominalIuran: '', namaBank: '', nomorRekening: '',
     atasNama: '', qrisUrl: '', logoUrl: ''
 }
 
@@ -29,8 +30,9 @@ function SectionTitle({ children }) {
 
 export default function ProfilRtView({ rt, loading, saving, onSave }) {
 
-    const [form, setForm] = useState(EMPTY)
-    const [dirty, setDirty] = useState(false)
+    const [form,       setForm]       = useState(EMPTY)
+    const [dirty,      setDirty]      = useState(false)
+    const [generating, setGenerating] = useState(false)
 
     useEffect(() => {
 
@@ -43,8 +45,6 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
             kota:          rt.kota           || '',
             provinsi:      rt.provinsi       || '',
             kodePos:       rt.kode_pos       || '',
-            email:         rt.email          || '',
-            telepon:       rt.telepon        || '',
             nominalIuran:  rt.nominal_iuran  ?? '',
             namaBank:      rt.nama_bank      || '',
             nomorRekening: rt.nomor_rekening || '',
@@ -60,6 +60,18 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
     function set(key, val) {
         setForm(prev => ({ ...prev, [key]: val }))
         setDirty(true)
+    }
+
+    async function handleGenerateKode() {
+        setGenerating(true)
+        try {
+            const kode = await generateRtCode()
+            set('kode', kode)
+        } catch (err) {
+            console.error('[generateKode]', err)
+        } finally {
+            setGenerating(false)
+        }
     }
 
     function handleSubmit(e) {
@@ -105,12 +117,24 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                         </Field>
                     </div>
 
-                    <Field label="Kode">
-                        <input
-                            value={form.kode}
-                            onChange={e => set('kode', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
-                        />
+                    <Field label="Kode Unik RT">
+                        <div className="flex gap-2">
+                            <input
+                                value={form.kode}
+                                onChange={e => set('kode', e.target.value.toUpperCase())}
+                                className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                            />
+                            <button
+                                type="button"
+                                onClick={handleGenerateKode}
+                                disabled={generating}
+                                title="Generate kode unik"
+                                className="flex items-center gap-1 border rounded-xl px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
+                            >
+                                <RefreshCw size={13} className={generating ? 'animate-spin' : ''} />
+                                Generate
+                            </button>
+                        </div>
                     </Field>
 
                     <Field label="Iuran per Bulan (Rp)">
@@ -158,29 +182,6 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                         <input
                             value={form.kodePos}
                             onChange={e => set('kodePos', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
-                        />
-                    </Field>
-
-                </div>
-
-                <SectionTitle>Kontak</SectionTitle>
-
-                <div className="grid grid-cols-2 gap-4">
-
-                    <Field label="Email">
-                        <input
-                            type="email"
-                            value={form.email}
-                            onChange={e => set('email', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
-                        />
-                    </Field>
-
-                    <Field label="Telepon">
-                        <input
-                            value={form.telepon}
-                            onChange={e => set('telepon', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </Field>
