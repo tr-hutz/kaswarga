@@ -117,7 +117,7 @@ export default function Topbar({
                         }
 
                         className="
-                            xl:hidden
+                            lg:hidden
                         "
                     >
 

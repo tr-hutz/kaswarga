@@ -32,7 +32,7 @@ export default function Sidebar({
                 : '-translate-x-full'
             }
 
-                xl:translate-x-0
+                lg:translate-x-0
             `}
         >
 

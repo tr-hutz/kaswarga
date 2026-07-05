@@ -140,7 +140,7 @@ export default function AppShell({
 
         <main
             className="
-                xl:pl-72
+                lg:pl-72
                 min-h-screen
                 bg-slate-50
             "
