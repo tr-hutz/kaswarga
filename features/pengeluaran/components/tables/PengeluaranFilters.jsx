@@ -1,5 +1,7 @@
 'use client'
 
+import { usePengeluaranKategori } from '../../hooks/usePengeluaranKategori'
+
 export default function PengeluaranFilters({
 
                                                search,
@@ -9,6 +11,8 @@ export default function PengeluaranFilters({
                                                setKategori
 
                                            }) {
+
+    const { kategori: kategoriList } = usePengeluaranKategori()
 
     return (
 
@@ -66,21 +70,11 @@ export default function PengeluaranFilters({
                     Semua Kategori
                 </option>
 
-                <option value="Operasional">
-                    Operasional
-                </option>
-
-                <option value="Keamanan">
-                    Keamanan
-                </option>
-
-                <option value="Kebersihan">
-                    Kebersihan
-                </option>
-
-                <option value="Perawatan">
-                    Perawatan
-                </option>
+                {kategoriList.map(k => (
+                    <option key={k.id} value={k.nama}>
+                        {k.nama}
+                    </option>
+                ))}
 
             </select>
 

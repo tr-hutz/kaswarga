@@ -1,6 +1,7 @@
 'use client'
 
 import PageToolbar from '../../../../components/toolbar/PageToolbar'
+import { usePengeluaranKategori } from '../../hooks/usePengeluaranKategori'
 
 export default function PengeluaranToolbar({
     search,
@@ -19,6 +20,13 @@ export default function PengeluaranToolbar({
     onImport,
 }) {
 
+    const { kategori: kategoriList } = usePengeluaranKategori()
+
+    const filterOptions = kategoriList.map(k => ({
+        label: k.nama,
+        value: k.nama,
+    }))
+
     return (
         <div className="w-full space-y-3">
             <PageToolbar
@@ -34,11 +42,7 @@ export default function PengeluaranToolbar({
                 filterValue={kategori}
                 setFilterValue={setKategori}
                 filterPlaceholder="Semua Kategori"
-                filterOptions={[
-                    { label: 'Operasional', value: 'operasional' },
-                    { label: 'Kebersihan',  value: 'kebersihan'  },
-                    { label: 'Keamanan',    value: 'keamanan'    },
-                ]}
+                filterOptions={filterOptions}
 
                 onExportCSV={onExportCSV}
                 onExportExcel={onExportExcel}

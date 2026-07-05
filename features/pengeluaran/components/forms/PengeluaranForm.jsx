@@ -6,6 +6,7 @@ import { Loader2, RefreshCw } from 'lucide-react'
 import FileUpload from '@/components/ui/FileUpload'
 import { useAuth } from '@/lib/auth/useAuth'
 import { generateNomorBukti } from '@/lib/services/pengeluaran.service'
+import { usePengeluaranKategori } from '../../hooks/usePengeluaranKategori'
 
 export default function PengeluaranForm({
     open,
@@ -16,6 +17,7 @@ export default function PengeluaranForm({
 
     const { membership } = useAuth()
     const rtId = membership?.rt?.id
+    const { kategori: kategoriList } = usePengeluaranKategori()
 
     const [form, setForm] = useState(() => initialData ? {
         nomorBukti: initialData.nomorBukti || '',
@@ -131,12 +133,16 @@ export default function PengeluaranForm({
                         <label className="text-sm font-medium text-gray-700 block">
                             Kategori
                         </label>
-                        <input
+                        <select
                             value={form.kategori}
                             onChange={e => set('kategori', e.target.value)}
-                            placeholder="Operasional, Kebersihan, ..."
                             className="w-full border rounded-xl px-4 py-2 text-sm"
-                        />
+                        >
+                            <option value="">Pilih kategori</option>
+                            {kategoriList.map(k => (
+                                <option key={k.id} value={k.nama}>{k.nama}</option>
+                            ))}
+                        </select>
                     </div>
                 </div>
 
