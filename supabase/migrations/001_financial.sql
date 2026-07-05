@@ -76,6 +76,33 @@ create table detail_pembayaran (
     created_at    timestamptz not null default now()
 );
 
+/*
+ * =============================================================================
+ * Predefined expense categories for RT/RW financial management.
+ * =============================================================================
+ */
+
+create table pengeluaran_kategori (
+                                      id     serial      primary key,
+                                      nama   text        not null unique,
+                                      urutan smallint    not null default 0
+);
+
+insert into pengeluaran_kategori (nama, urutan) values
+                                                    ('Keamanan',             1),
+                                                    ('Kebersihan',           2),
+                                                    ('Perawatan Lingkungan', 3),
+                                                    ('Administrasi',         4),
+                                                    ('Operasional Pengurus', 5),
+                                                    ('Kegiatan Warga',       6),
+                                                    ('Sosial & Bantuan',     7),
+                                                    ('Utilitas',             8),
+                                                    ('Inventaris',           9),
+                                                    ('Biaya Bank',          10),
+                                                    ('Dana Darurat',        11),
+                                                    ('Lain-lain',           12)
+    on conflict (nama) do nothing;
+
 
 /* ----------------------------------------------------------------------------
  * TABLE: pengeluaran

@@ -180,7 +180,7 @@ declare
     v_rejected_target int;
 
     -- Expense category data (index 1–5)
-    v_kat_name text[]   := array['kebersihan','keamanan','operasional','sosial','kegiatan'];
+    v_kat_name text[]   := array['Keamanan', 'Kebersihan', 'Perawatan Lingkungan', 'Administrasi', 'Operasional Pengurus'];
     v_kat_min  int[]    := array[1, 4, 2, 3, 10];   -- × nominal_iuran, lower bound
     v_kat_max  int[]    := array[3, 8, 5, 8, 20];   -- × nominal_iuran, upper bound
     v_kat_desc text[]   := array[
