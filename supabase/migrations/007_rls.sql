@@ -284,6 +284,9 @@ create policy "activation_invites: authenticated can update"
  * Storage policies
  * --------------------------------------------------------------------------- */
 
+/*
+ * rt-assets
+ */
 create policy "rt-assets: public read"
     on storage.objects for select to public
     using (bucket_id = 'rt-assets');
@@ -300,3 +303,44 @@ create policy "rt-assets: authenticated update"
 create policy "rt-assets: authenticated delete"
     on storage.objects for delete to authenticated
     using (bucket_id = 'rt-assets');
+
+/*
+ * bukti-pembayaran
+ */
+
+create policy "bukti-pembayaran: public read"
+    on storage.objects for select to public
+    using (bucket_id = 'bukti-pembayaran');
+
+create policy "bukti-pembayaran: authenticated upload"
+    on storage.objects for insert to authenticated
+    with check (bucket_id = 'bukti-pembayaran');
+
+create policy "bukti-pembayaran: authenticated update"
+    on storage.objects for update to authenticated
+    using (bucket_id = 'bukti-pembayaran');
+
+create policy "bukti-pembayaran: authenticated delete"
+    on storage.objects for delete to authenticated
+    using (bucket_id = 'bukti-pembayaran');
+
+
+/*
+ * nota-pengeluaran
+*/
+
+create policy "nota-pengeluaran: public read"
+    on storage.objects for select to public
+    using (bucket_id = 'nota-pengeluaran');
+
+create policy "nota-pengeluaran: authenticated upload"
+    on storage.objects for insert to authenticated
+    with check (bucket_id = 'nota-pengeluaran');
+
+create policy "nota-pengeluaran: authenticated update"
+    on storage.objects for update to authenticated
+    using (bucket_id = 'nota-pengeluaran');
+
+create policy "nota-pengeluaran: authenticated delete"
+    on storage.objects for delete to authenticated
+    using (bucket_id = 'nota-pengeluaran');
