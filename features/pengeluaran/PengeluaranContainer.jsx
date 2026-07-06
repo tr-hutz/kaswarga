@@ -3,7 +3,8 @@
 import { useState } from 'react'
 
 import PengeluaranView         from './PengeluaranView'
-import { usePengeluaranData }  from './hooks/usePengeluaranData'
+import { usePengeluaranData }     from './hooks/usePengeluaranData'
+import { usePengeluaranRealtime } from './hooks/usePengeluaranRealtime'
 import { usePengeluaranActions } from './hooks/usePengeluaranActions'
 import { useToast }            from '@/components/ui/ToastProvider'
 import { useAuth }             from '@/lib/auth/useAuth'
@@ -34,6 +35,7 @@ export default function PengeluaranContainer() {
      */
 
     const { rows, loading, refresh } = usePengeluaranData({ search, kategori })
+    usePengeluaranRealtime({ onReload: refresh })
 
     /*
      |-------------------------------------------------------------
