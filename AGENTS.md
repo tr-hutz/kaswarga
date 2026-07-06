@@ -136,5 +136,5 @@ Example:
   comments, activity log messages, type names, constants, enums
 - UI strings are in Bahasa Indonesia (default locale)
 - Build i18n with next-intl from the start — no hardcoded UI strings
-- Domain terms follow the mapping in docs/GLOSSARY.md — always check it                                                                               
+- Domain terms follow the mapping in docs/development/GLOSSARY.md — always check it                                                                               
   before naming anything domain-related  
