@@ -4,9 +4,7 @@ import { useRef, useState } from 'react'
 import { File, Loader2, Paperclip, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
-const BUCKET = 'rt-assets'
-
-export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUploaded }) {
+export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUploaded, bucket = 'nota-pengeluaran' }) {
 
     const [fileLabel, setFileLabel] = useState(
         currentUrl
@@ -29,12 +27,12 @@ export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUp
             const path = `${pathPrefix}/${Date.now()}.${ext}`
 
             const { error: uploadError } = await supabase.storage
-                .from(BUCKET)
+                .from(bucket)
                 .upload(path, file, { upsert: true })
 
             if (uploadError) throw uploadError
 
-            const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
+            const { data } = supabase.storage.from(bucket).getPublicUrl(path)
 
             setFileLabel(file.name)
             onUploaded(data.publicUrl)
