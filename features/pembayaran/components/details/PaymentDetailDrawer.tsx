@@ -1,0 +1,152 @@
+﻿// @ts-nocheck
+'use client'
+
+import PaymentStatusBadge
+    from '../tables/PaymentStatusBadge'
+
+import PaymentDetailSummary
+    from './PaymentDetailSummary'
+
+import PaymentDetailMonths
+    from './PaymentDetailMonths'
+
+import PaymentProofPreview
+    from './PaymentProofPreview'
+
+import ApprovalActionBar
+    from '../approval/ApprovalActionBar'
+
+import {
+    useKeyDown
+} from '../../../../lib/hooks/useKeyDown'
+
+export default function PaymentDetailDrawer({
+
+                                                open,
+
+                                                payment,
+
+                                                onClose,
+
+                                                onApprove,
+
+                                                onReject,
+
+                                                loading
+
+                                            }) {
+
+    useKeyDown(open, { Escape: onClose })
+
+    if (!open || !payment) {
+        return null
+    }
+
+    return (
+
+        <div
+            className="
+                fixed
+                inset-0
+                z-50
+                flex
+                justify-end
+                bg-black/30
+            "
+        >
+
+            <div
+                className="
+                    w-full
+                    max-w-xl
+                    h-full
+                    bg-white
+                    overflow-y-auto
+                    shadow-2xl
+                    p-6
+                    space-y-6
+                "
+            >
+
+                {/* HEADER */}
+
+                <div
+                    className="
+                        flex
+                        items-start
+                        justify-between
+                    "
+                >
+
+                    <div>
+
+                        <h2
+                            className="
+                                text-xl
+                                font-bold
+                            "
+                        >
+                            Detail Pembayaran
+                        </h2>
+
+                        <p
+                            className="
+                                text-sm
+                                text-slate-500
+                            "
+                        >
+                            Review transaksi pembayaran warga
+                        </p>
+
+                    </div>
+
+                    <button
+                        onClick={onClose}
+                        className="
+                            text-slate-500
+                            hover:text-black
+                        "
+                    >
+                        ✕
+                    </button>
+
+                </div>
+
+                {/* STATUS */}
+
+                <PaymentStatusBadge
+                    status={payment.status}
+                />
+
+                {/* SUMMARY */}
+
+                <PaymentDetailSummary
+                    payment={payment}
+                />
+
+                {/* MONTHS */}
+
+                <PaymentDetailMonths
+                    details={payment.details}
+                />
+
+                {/* PROOF */}
+
+                <PaymentProofPreview
+                    url={payment.proofUrl}
+                />
+
+                {/* ACTION */}
+
+                <ApprovalActionBar
+                    payment={payment}
+                    onApprove={onApprove}
+                    onReject={onReject}
+                    loading={loading}
+                />
+
+            </div>
+
+        </div>
+    )
+}
