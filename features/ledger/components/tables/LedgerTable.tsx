@@ -3,6 +3,7 @@
 
 import LedgerRow
     from './LedgerRow'
+import { useTranslations } from 'next-intl'
 
 export default function LedgerTable({
 
@@ -12,6 +13,8 @@ export default function LedgerTable({
                                         onSelect
 
                                     }) {
+
+    const t = useTranslations('ledger')
 
     if (loading) {
 
@@ -26,7 +29,7 @@ export default function LedgerTable({
                     text-center
                 "
             >
-                Loading...
+                {t('table.loading')}
             </div>
         )
     }
@@ -58,23 +61,23 @@ export default function LedgerTable({
                 <tr>
 
                     <th className="p-4 text-left">
-                        Tanggal
+                        {t('table.date')}
                     </th>
 
                     <th className="p-4 text-left">
-                        Jenis
+                        {t('table.type')}
                     </th>
 
                     <th className="p-4 text-left">
-                        Deskripsi
+                        {t('table.description')}
                     </th>
 
                     <th className="p-4 text-right">
-                        Nominal
+                        {t('table.amount')}
                     </th>
 
                     <th className="p-4 text-right">
-                        Saldo
+                        {t('table.balance')}
                     </th>
 
                 </tr>

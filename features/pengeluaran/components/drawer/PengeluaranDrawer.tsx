@@ -4,6 +4,7 @@
 import { formatRupiah } from '../../../../lib/utils'
 import PengeluaranStatusBadge   from '../tables/PengeluaranStatusBadge'
 import PengeluaranApprovalBar   from '../approval/PengeluaranApprovalBar'
+import { useTranslations } from 'next-intl'
 
 export default function PengeluaranDrawer({
     open,
@@ -14,6 +15,8 @@ export default function PengeluaranDrawer({
     onReject,
     approvalLoading,
 }) {
+
+    const t = useTranslations('pengeluaran')
 
     if (!open || !row) return null
 
@@ -33,7 +36,7 @@ export default function PengeluaranDrawer({
                 {/* Header */}
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h2 className="text-xl font-semibold">Detail Pengeluaran</h2>
+                        <h2 className="text-xl font-semibold">{t('drawer.title')}</h2>
                         {row.receiptNumber && (
                             <p className="font-mono text-sm text-gray-500 mt-0.5">{row.receiptNumber}</p>
                         )}
@@ -52,16 +55,16 @@ export default function PengeluaranDrawer({
                 {/* Fields */}
                 <div className="space-y-4">
 
-                    <Field label="Tanggal"        value={row.dateLabel || row.date} />
-                    <Field label="Kategori"       value={row.category || '—'} />
-                    <Field label="Nominal"        value={`Rp ${formatRupiah(row.amount)}`} />
+                    <Field label={t('drawer.date')}      value={row.dateLabel || row.date} />
+                    <Field label={t('drawer.category')}  value={row.category || '—'} />
+                    <Field label={t('drawer.amount')}    value={`Rp ${formatRupiah(row.amount)}`} />
 
                     {row.recipient && (
-                        <Field label="Mitra / Penerima" value={row.recipient} />
+                        <Field label={t('drawer.recipient')} value={row.recipient} />
                     )}
 
                     {row.description && (
-                        <Field label="Deskripsi" value={row.description} />
+                        <Field label={t('drawer.description')} value={row.description} />
                     )}
 
                 </div>
@@ -69,13 +72,13 @@ export default function PengeluaranDrawer({
                 {/* Approval / Rejection info */}
                 {row.status === 'approved' && approvedAtLabel && (
                     <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-sm text-emerald-800">
-                        Disetujui pada {approvedAtLabel}
+                        {t('drawer.approvedAt', { date: approvedAtLabel })}
                     </div>
                 )}
 
                 {row.status === 'rejected' && (
                     <div className="mt-6 p-4 bg-red-50 rounded-xl border border-red-100 text-sm text-red-800 space-y-1">
-                        <p className="font-medium">Ditolak</p>
+                        <p className="font-medium">{t('drawer.rejected')}</p>
                         {row.rejectionNote && (
                             <p className="text-red-700">{row.rejectionNote}</p>
                         )}
@@ -85,7 +88,7 @@ export default function PengeluaranDrawer({
                 {/* Nota */}
                 {row.receiptUrl && (
                     <div className="mt-6">
-                        <p className="text-sm text-slate-500 mb-2">Nota</p>
+                        <p className="text-sm text-slate-500 mb-2">{t('drawer.receipt')}</p>
                         {row.receiptUrl.endsWith('.pdf') ? (
                             <a
                                 href={row.receiptUrl}
@@ -93,7 +96,7 @@ export default function PengeluaranDrawer({
                                 rel="noreferrer"
                                 className="text-blue-600 text-sm underline"
                             >
-                                Buka Nota (PDF)
+                                {t('drawer.receiptPdf')}
                             </a>
                         ) : (
                             // eslint-disable-next-line @next/next/no-img-element

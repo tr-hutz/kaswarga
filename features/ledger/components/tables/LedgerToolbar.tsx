@@ -5,6 +5,7 @@ import {
     Search,
     Download
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function LedgerToolbar({
 
@@ -15,6 +16,8 @@ export default function LedgerToolbar({
                                           onExportExcel
 
                                       }) {
+
+    const t = useTranslations('ledger')
 
     return (
 
@@ -62,9 +65,7 @@ export default function LedgerToolbar({
                         )
                     }
 
-                    placeholder="
-                        Cari transaksi...
-                    "
+                    placeholder={t('searchPlaceholder')}
 
                     className="
                         w-full

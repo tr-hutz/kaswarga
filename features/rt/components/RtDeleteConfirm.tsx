@@ -1,9 +1,12 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
 import { AlertTriangle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function RtDeleteConfirm({ rt, onConfirm, onCancel, loading }) {
+    const t  = useTranslations('rt')
+    const tc = useTranslations('common')
 
     if (!rt) return null
 
@@ -15,12 +18,11 @@ export default function RtDeleteConfirm({ rt, onConfirm, onCancel, loading }) {
                     <div className="p-2 bg-red-50 rounded-xl">
                         <AlertTriangle size={20} className="text-red-600" />
                     </div>
-                    <h2 className="text-base font-semibold">Hapus RT</h2>
+                    <h2 className="text-base font-semibold">{t('delete.title')}</h2>
                 </div>
 
                 <p className="text-sm text-gray-600">
-                    Apakah Anda yakin ingin menghapus <span className="font-medium">{rt.nama}</span>?
-                    Tindakan ini tidak dapat dibatalkan.
+                    {t('delete.message', { name: rt.nama })}
                 </p>
 
                 <div className="flex justify-end gap-2 pt-1">
@@ -28,14 +30,14 @@ export default function RtDeleteConfirm({ rt, onConfirm, onCancel, loading }) {
                         onClick={onCancel}
                         className="border rounded-xl px-4 py-2 text-sm"
                     >
-                        Batal
+                        {tc('actions.cancel')}
                     </button>
                     <button
                         onClick={onConfirm}
                         disabled={loading}
                         className="bg-red-600 text-white rounded-xl px-4 py-2 text-sm disabled:opacity-50"
                     >
-                        {loading ? 'Menghapus...' : 'Hapus'}
+                        {loading ? tc('states.deleting') : tc('actions.delete')}
                     </button>
                 </div>
 

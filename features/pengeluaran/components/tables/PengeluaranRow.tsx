@@ -3,6 +3,7 @@
 
 import { formatRupiah }          from '../../../../lib/utils'
 import PengeluaranStatusBadge    from './PengeluaranStatusBadge'
+import { useTranslations } from 'next-intl'
 
 export default function PengeluaranRow({
     row,
@@ -12,6 +13,7 @@ export default function PengeluaranRow({
     onDelete,
 }) {
 
+    const t = useTranslations('common')
     const canEdit = role === 'bendahara' && row.status === 'pending'
 
     return (
@@ -50,13 +52,13 @@ export default function PengeluaranRow({
                             onClick={e => { e.stopPropagation(); onEdit(row) }}
                             className="text-sm border px-3 py-1 rounded-lg"
                         >
-                            Edit
+                            {t('actions.edit')}
                         </button>
                         <button
                             onClick={e => { e.stopPropagation(); onDelete(row) }}
                             className="text-sm border px-3 py-1 rounded-lg text-red-600"
                         >
-                            Hapus
+                            {t('actions.delete')}
                         </button>
                     </div>
                 )}

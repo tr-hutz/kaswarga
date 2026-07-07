@@ -1,9 +1,14 @@
 ﻿// @ts-nocheck
+'use client'
+import { useTranslations } from 'next-intl'
+
 export default function PaymentSummary({
 
   summary
 
 }) {
+
+  const t = useTranslations('home')
 
   return (
 
@@ -23,7 +28,7 @@ export default function PaymentSummary({
         "
       >
         <div>
-          Sudah Bayar
+          {t('summary.paid')}
         </div>
 
         <div
@@ -44,7 +49,7 @@ export default function PaymentSummary({
         "
       >
         <div>
-          Tunggakan
+          {t('summary.arrears')}
         </div>
 
         <div
@@ -65,7 +70,7 @@ export default function PaymentSummary({
         "
       >
         <div>
-          Upcoming
+          {t('summary.upcoming')}
         </div>
 
         <div

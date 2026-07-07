@@ -2,6 +2,7 @@
 'use client'
 
 import PageToolbar from "../../../../components/toolbar/PageToolbar";
+import { useTranslations } from 'next-intl'
 
 export default function WargaToolbar({
 
@@ -20,35 +21,38 @@ export default function WargaToolbar({
 
                                      }) {
 
+    const t = useTranslations('warga')
+    const tc = useTranslations('common')
+
     return (
 
         <PageToolbar
 
-            title="Warga"
+            title={t('title')}
 
-            subtitle="Manajemen data warga"
+            subtitle={t('subtitle')}
 
             onCreate={onAdd}
 
             search={search}
             setSearch={setSearch}
 
-            searchPlaceholder="Cari nama warga..."
+            searchPlaceholder={t('searchPlaceholder')}
 
             filterValue={status}
             setFilterValue={setStatus}
 
-            filterPlaceholder="Semua Status"
+            filterPlaceholder={t('filterPlaceholder')}
 
             filterOptions={[
 
                 {
-                    label: 'Aktif',
+                    label: tc('status.active'),
                     value: 'active'
                 },
 
                 {
-                    label: 'Nonaktif',
+                    label: tc('status.inactive'),
                     value: 'inactive'
                 }
             ]}

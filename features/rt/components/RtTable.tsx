@@ -2,13 +2,17 @@
 'use client'
 
 import { Pencil, Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function RtTable({ data, loading, onEdit, onDelete }) {
+
+    const t = useTranslations('rt')
+    const tc = useTranslations('common')
 
     if (loading) {
         return (
             <div className="py-16 text-center text-sm text-gray-400">
-                Memuat data RT...
+                {t('table.loading')}
             </div>
         )
     }
@@ -16,7 +20,7 @@ export default function RtTable({ data, loading, onEdit, onDelete }) {
     if (!data?.length) {
         return (
             <div className="py-16 text-center text-sm text-gray-400">
-                Belum ada data RT.
+                {t('table.empty')}
             </div>
         )
     }
@@ -26,11 +30,11 @@ export default function RtTable({ data, loading, onEdit, onDelete }) {
             <table className="w-full text-sm">
                 <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
                     <tr>
-                        <th className="px-4 py-3 text-left">Nama RT</th>
-                        <th className="px-4 py-3 text-left">Kode</th>
-                        <th className="px-4 py-3 text-left">Kota</th>
-                        <th className="px-4 py-3 text-center">Status</th>
-                        <th className="px-4 py-3 text-center">Aksi</th>
+                        <th className="px-4 py-3 text-left">{t('table.name')}</th>
+                        <th className="px-4 py-3 text-left">{t('table.code')}</th>
+                        <th className="px-4 py-3 text-left">{t('table.city')}</th>
+                        <th className="px-4 py-3 text-center">{t('table.status')}</th>
+                        <th className="px-4 py-3 text-center">{t('table.actions')}</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -44,7 +48,7 @@ export default function RtTable({ data, loading, onEdit, onDelete }) {
                                     inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                                     ${rt.aktif ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}
                                 `}>
-                                    {rt.aktif ? 'Aktif' : 'Nonaktif'}
+                                    {rt.aktif ? tc('status.active') : tc('status.inactive')}
                                 </span>
                             </td>
                             <td className="px-4 py-3">

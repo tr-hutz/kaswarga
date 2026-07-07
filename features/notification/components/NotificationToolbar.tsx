@@ -4,6 +4,7 @@
 import {
     Search
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function NotificationToolbar({
 
@@ -18,6 +19,8 @@ export default function NotificationToolbar({
                                                 onMarkAllRead,
 
                                             }) {
+
+    const t = useTranslations('notification')
 
     return (
 
@@ -43,7 +46,7 @@ export default function NotificationToolbar({
                         font-semibold
                     "
                 >
-                    Notifikasi
+                    {t('title')}
                 </h1>
 
                 <p
@@ -52,7 +55,7 @@ export default function NotificationToolbar({
                         text-gray-500
                     "
                 >
-                    Riwayat notifikasi sistem
+                    {t('subtitle')}
                 </p>
 
             </div>
@@ -98,9 +101,7 @@ export default function NotificationToolbar({
                                 )
                         }
 
-                        placeholder="
-                            Cari notifikasi...
-                        "
+                        placeholder={t('searchPlaceholder')}
 
                         className="
                             h-10
@@ -139,13 +140,13 @@ export default function NotificationToolbar({
                     <option
                         value="all"
                     >
-                        Semua
+                        {t('filter.all')}
                     </option>
 
                     <option
                         value="unread"
                     >
-                        Belum Dibaca
+                        {t('filter.unread')}
                     </option>
 
                 </select>
@@ -170,7 +171,7 @@ export default function NotificationToolbar({
                     "
                 >
 
-                    Tandai Semua Dibaca
+                    {t('markAllRead')}
 
                 </button>
 

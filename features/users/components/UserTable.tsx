@@ -1,30 +1,24 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
 import { Pencil, Trash2 } from 'lucide-react'
-
-const ROLE_LABELS = {
-    super_admin: 'Super Admin',
-    ketua:       'Ketua',
-    admin:       'Admin',
-    bendahara:   'Bendahara',
-    warga:       'Warga'
-}
-
-const ROLE_COLORS = {
-    super_admin: 'bg-purple-50 text-purple-700',
-    ketua:       'bg-blue-50 text-blue-700',
-    admin:       'bg-indigo-50 text-indigo-700',
-    bendahara:   'bg-amber-50 text-amber-700',
-    warga:       'bg-gray-100 text-gray-600'
-}
+import { useTranslations } from 'next-intl'
 
 export default function UserTable({ data, loading, currentUserId, onEditRole, onRemoveMembership }) {
+    const t = useTranslations('users')
+
+    const ROLE_COLORS = {
+        super_admin: 'bg-purple-50 text-purple-700',
+        ketua:       'bg-blue-50 text-blue-700',
+        admin:       'bg-indigo-50 text-indigo-700',
+        bendahara:   'bg-amber-50 text-amber-700',
+        warga:       'bg-gray-100 text-gray-600'
+    }
 
     if (loading) {
         return (
             <div className="py-16 text-center text-sm text-gray-400">
-                Memuat data pengguna...
+                {t('table.loading')}
             </div>
         )
     }
@@ -32,7 +26,7 @@ export default function UserTable({ data, loading, currentUserId, onEditRole, on
     if (!data?.length) {
         return (
             <div className="py-16 text-center text-sm text-gray-400">
-                Belum ada data pengguna.
+                {t('table.empty')}
             </div>
         )
     }
@@ -42,11 +36,11 @@ export default function UserTable({ data, loading, currentUserId, onEditRole, on
             <table className="w-full text-sm">
                 <thead className="bg-gray-50 text-xs text-gray-500 uppercase">
                     <tr>
-                        <th className="px-4 py-3 text-left">Nama</th>
-                        <th className="px-4 py-3 text-left">Email</th>
-                        <th className="px-4 py-3 text-left">RT</th>
-                        <th className="px-4 py-3 text-left">Role</th>
-                        <th className="px-4 py-3 text-center">Aksi</th>
+                        <th className="px-4 py-3 text-left">{t('table.name')}</th>
+                        <th className="px-4 py-3 text-left">{t('table.email')}</th>
+                        <th className="px-4 py-3 text-left">{t('table.rt')}</th>
+                        <th className="px-4 py-3 text-left">{t('table.role')}</th>
+                        <th className="px-4 py-3 text-center">{t('table.actions')}</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -59,7 +53,7 @@ export default function UserTable({ data, loading, currentUserId, onEditRole, on
                                 <tr key={user.id} className="hover:bg-gray-50">
                                     <td className="px-4 py-3 font-medium">{user.nama || '-'}</td>
                                     <td className="px-4 py-3 text-gray-500">{user.email}</td>
-                                    <td className="px-4 py-3 text-gray-400 italic">Tanpa RT</td>
+                                    <td className="px-4 py-3 text-gray-400 italic">{t('table.noRt')}</td>
                                     <td className="px-4 py-3 text-gray-400 italic">-</td>
                                     <td className="px-4 py-3 text-center text-gray-400">-</td>
                                 </tr>
@@ -81,14 +75,14 @@ export default function UserTable({ data, loading, currentUserId, onEditRole, on
                                     </>
                                 )}
                                 <td className="px-4 py-3 text-gray-600">
-                                    {m.rt?.nama || <span className="italic text-gray-400">System</span>}
+                                    {m.rt?.nama || <span className="italic text-gray-400">{t('editRole.system')}</span>}
                                 </td>
                                 <td className="px-4 py-3">
                                     <span className={`
                                         inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                                         ${ROLE_COLORS[m.role] || 'bg-gray-100 text-gray-600'}
                                     `}>
-                                        {ROLE_LABELS[m.role] || m.role}
+                                        {t(`roles.${m.role}`) || m.role}
                                     </span>
                                 </td>
                                 <td className="px-4 py-3">
@@ -99,14 +93,14 @@ export default function UserTable({ data, loading, currentUserId, onEditRole, on
                                             <button
                                                 onClick={() => onEditRole({ user, membership: m })}
                                                 className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors"
-                                                title="Ubah Role"
+                                                title={t('editRole.title')}
                                             >
                                                 <Pencil size={15} />
                                             </button>
                                             <button
                                                 onClick={() => onRemoveMembership(m)}
                                                 className="p-1.5 rounded-lg hover:bg-red-50 text-gray-500 hover:text-red-600 transition-colors"
-                                                title="Hapus Membership"
+                                                title={t('removeMembership.title')}
                                             >
                                                 <Trash2 size={15} />
                                             </button>

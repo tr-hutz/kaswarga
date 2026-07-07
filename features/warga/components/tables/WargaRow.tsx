@@ -1,6 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
+import { useTranslations } from 'next-intl'
 import {
     deleteResident
 } from '@/lib/services/warga.service'
@@ -16,12 +17,12 @@ export default function WargaRow({
 
                                  }) {
 
+    const t  = useTranslations('warga')
+    const tc = useTranslations('common')
+
     async function handleDelete() {
 
-        const ok =
-            confirm(
-                'Nonaktifkan warga ini?'
-            )
+        const ok = confirm(t('row.deactivateConfirm'))
 
         if (!ok) {
             return
@@ -29,9 +30,7 @@ export default function WargaRow({
 
         try {
 
-            await deleteResident(
-                item.id
-            )
+            await deleteResident(item.id)
 
             refresh()
 
@@ -39,9 +38,7 @@ export default function WargaRow({
 
             console.error(err)
 
-            alert(
-                'Gagal menghapus warga'
-            )
+            alert(t('row.deleteFailed'))
         }
     }
 
@@ -82,8 +79,8 @@ export default function WargaRow({
 
                 {
                     item.active
-                        ? 'Aktif'
-                        : 'Nonaktif'
+                        ? tc('status.active')
+                        : tc('status.inactive')
                 }
 
             </td>
@@ -115,7 +112,7 @@ export default function WargaRow({
               rounded-lg
             "
                     >
-                        Edit
+                        {tc('actions.edit')}
                     </button>
 
                     <button
@@ -129,7 +126,7 @@ export default function WargaRow({
               text-red-600
             "
                     >
-                        Hapus
+                        {tc('actions.delete')}
                     </button>
 
                 </div>

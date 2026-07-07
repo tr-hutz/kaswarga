@@ -2,6 +2,7 @@
 'use client'
 
 import PageToolbar from "../../../../components/toolbar/PageToolbar";
+import { useTranslations } from 'next-intl'
 
 export default function PaymentToolbar({
 
@@ -16,37 +17,40 @@ export default function PaymentToolbar({
 
                                       }) {
 
+    const t = useTranslations('pembayaran')
+    const tc = useTranslations('common')
+
     return (
 
         <PageToolbar
 
-            title="Pembayaran"
+            title={t('title')}
 
-            subtitle="Riwayat pembayaran warga"
+            subtitle={t('subtitle')}
 
             search={search}
             setSearch={setSearch}
 
-            searchPlaceholder="Cari pembayaran..."
+            searchPlaceholder={t('searchPlaceholder')}
 
             filterValue={status}
             setFilterValue={setStatus}
 
-            filterPlaceholder="Semua Kategori"
+            filterPlaceholder={t('filterPlaceholder')}
 
             filterOptions={[
                 {
-                    label: 'Menunggu',
+                    label: tc('paymentStatus.pending'),
                     value: 'pending'
                 },
 
                 {
-                    label: 'Disetujui',
+                    label: tc('paymentStatus.approved'),
                     value: 'approved'
                 },
 
                 {
-                    label: 'Ditolak',
+                    label: tc('paymentStatus.rejected'),
                     value: 'rejected'
                 }
             ]}

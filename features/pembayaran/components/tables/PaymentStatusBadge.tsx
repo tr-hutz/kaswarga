@@ -1,41 +1,21 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
-import {
+import { useTranslations } from 'next-intl'
+import { getStatusClass } from '../../services/pembayaran-status'
 
-    getStatusLabel,
+export default function PaymentStatusBadge({ status }) {
+    const t = useTranslations('common')
 
-    getStatusClass
-
-} from '../../services/pembayaran-status'
-
-export default function PaymentStatusBadge({
-
-                                               status
-
-                                           }) {
+    const labelMap: Record<string, string> = {
+        approved: t('paymentStatus.approved'),
+        pending:  t('paymentStatus.pending'),
+        rejected: t('paymentStatus.rejected'),
+    }
 
     return (
-
-        <span
-            className={`
-                inline-flex
-                items-center
-                px-3
-                py-1
-                rounded-full
-                text-xs
-                font-medium
-                ${getStatusClass(status)}
-            `}
-        >
-
-            {
-                getStatusLabel(
-                    status
-                )
-            }
-
+        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(status)}`}>
+            {labelMap[status] ?? '-'}
         </span>
     )
 }

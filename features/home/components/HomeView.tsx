@@ -1,4 +1,6 @@
 ﻿// @ts-nocheck
+'use client'
+import { useTranslations } from 'next-intl'
 import PaymentSummary
   from './PaymentSummary'
 
@@ -34,6 +36,8 @@ export default function HomeView({
 
 }) {
 
+  const t = useTranslations('home')
+
   return (
 
     <div className="space-y-6">
@@ -54,7 +58,7 @@ export default function HomeView({
             font-bold
           "
         >
-          Beranda Warga
+          {t('title')}
         </h1>
 
         <select
@@ -155,7 +159,7 @@ export default function HomeView({
       {loading && (
 
         <div>
-          Loading...
+          {t('loading')}
         </div>
 
       )}

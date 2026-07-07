@@ -2,9 +2,11 @@
 'use client'
 
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 export default function SidebarMenuItem({ item, active, badge = 0, onClick }) {
 
+    const t = useTranslations('nav')
     const Icon = item.icon
 
     return (
@@ -28,7 +30,7 @@ export default function SidebarMenuItem({ item, active, badge = 0, onClick }) {
         >
             <Icon size={18} />
 
-            <span className="flex-1">{item.label}</span>
+            <span className="flex-1">{t(item.label)}</span>
 
             {badge > 0 && (
                 <span className="ml-auto bg-red-500 text-white text-xs font-medium rounded-full px-1.5 py-0.5 min-w-[18px] text-center leading-none">

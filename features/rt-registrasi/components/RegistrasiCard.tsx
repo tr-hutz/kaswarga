@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
 import { useState }                                               from 'react'
@@ -8,6 +8,7 @@ import { useAuth }                                                  from '@/lib/
 import { useToast }                                                 from '@/components/ui/ToastProvider'
 import { formatDate }                                               from '@/lib/utils'
 import { supabase }                                                 from '@/lib/supabase'
+import { useTranslations }                                          from 'next-intl'
 
 const IS_DEV = process.env.NODE_ENV === 'development'
 
@@ -15,12 +16,6 @@ const STATUS_BADGE = {
     pending:  'bg-amber-100 text-amber-700',
     approved: 'bg-green-100 text-green-700',
     rejected: 'bg-red-100 text-red-700',
-}
-
-const STATUS_LABEL = {
-    pending:  'Menunggu',
-    approved: 'Disetujui',
-    rejected: 'Ditolak',
 }
 
 function CopyButton({ text }) {
@@ -44,7 +39,7 @@ function CopyButton({ text }) {
     )
 }
 
-function DevLinksPanel({ links, onDismiss }) {
+function DevLinksPanel({ links, onDismiss, closeLabel }) {
     return (
         <div className="mt-3 border-t border-amber-200 pt-3 space-y-3">
             <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
@@ -72,7 +67,7 @@ function DevLinksPanel({ links, onDismiss }) {
                 onClick={onDismiss}
                 className="text-xs text-gray-500 hover:text-gray-700 hover:underline"
             >
-                Tutup
+                {closeLabel}
             </button>
         </div>
     )
@@ -87,6 +82,7 @@ export default function RegistrasiCard({ req, onAction }) {
     const [loadingLinks,  setLoadingLinks]  = useState(false)
     const { membership }                    = useAuth()
     const { toast }                         = useToast()
+    const t                                 = useTranslations('rtRegistrasi')
 
     const rtData = req.rt_data || {}
 
@@ -150,7 +146,7 @@ export default function RegistrasiCard({ req, onAction }) {
     }
 
     async function handleReject() {
-        if (!window.confirm('Tolak pendaftaran RT ini?')) return
+        if (!window.confirm(t('card.rejectConfirm'))) return
         setProcessing(true)
         try {
             await rejectRtRegistration(req.id, '', membership)
@@ -175,7 +171,7 @@ export default function RegistrasiCard({ req, onAction }) {
                             <div className="flex items-center gap-2 flex-wrap">
                                 <p className="font-medium text-sm">{rtData.nama}</p>
                                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_BADGE[req.status] || STATUS_BADGE.pending}`}>
-                                    {STATUS_LABEL[req.status] || req.status}
+                                    {t(`tabs.${req.status}`) || req.status}
                                 </span>
                             </div>
                             <p className="text-xs text-gray-500 mt-0.5">
@@ -199,30 +195,30 @@ export default function RegistrasiCard({ req, onAction }) {
 
                             {/* RT info */}
                             <div className="space-y-1">
-                                {rtData.alamat   && <p><span className="font-medium">Alamat:</span> {[rtData.alamat, rtData.kota, rtData.provinsi].filter(Boolean).join(', ')}</p>}
-                                {rtData.kodePos  && <p><span className="font-medium">Kode Pos:</span> {rtData.kodePos}</p>}
-                                {rtData.telepon  && <p><span className="font-medium">Telepon:</span> {rtData.telepon}</p>}
+                                {rtData.alamat   && <p><span className="font-medium">{t('card.address')}:</span> {[rtData.alamat, rtData.kota, rtData.provinsi].filter(Boolean).join(', ')}</p>}
+                                {rtData.kodePos  && <p><span className="font-medium">{t('card.postalCode')}:</span> {rtData.kodePos}</p>}
+                                {rtData.telepon  && <p><span className="font-medium">{t('card.phone')}:</span> {rtData.telepon}</p>}
                             </div>
 
                             {/* Management */}
                             <div className="space-y-2 border-t pt-2">
                                 {(req.nama_ketua || req.email_ketua) && (
                                     <div>
-                                        <p className="font-medium text-gray-700">Ketua</p>
+                                        <p className="font-medium text-gray-700">{t('card.roles.ketua')}</p>
                                         {req.nama_ketua  && <p>{req.nama_ketua}</p>}
                                         {req.email_ketua && <p className="text-gray-400">{req.email_ketua}</p>}
                                     </div>
                                 )}
                                 {(req.nama_admin || req.email_admin) && (
                                     <div>
-                                        <p className="font-medium text-gray-700">Admin</p>
+                                        <p className="font-medium text-gray-700">{t('card.roles.admin')}</p>
                                         {req.nama_admin  && <p>{req.nama_admin}</p>}
                                         {req.email_admin && <p className="text-gray-400">{req.email_admin}</p>}
                                     </div>
                                 )}
                                 {(req.nama_bendahara || req.email_bendahara) && (
                                     <div>
-                                        <p className="font-medium text-gray-700">Bendahara</p>
+                                        <p className="font-medium text-gray-700">{t('card.roles.bendahara')}</p>
                                         {req.nama_bendahara  && <p>{req.nama_bendahara}</p>}
                                         {req.email_bendahara && <p className="text-gray-400">{req.email_bendahara}</p>}
                                     </div>
@@ -232,13 +228,13 @@ export default function RegistrasiCard({ req, onAction }) {
                             {/* Status info */}
                             {req.status === 'approved' && req.approved_at && (
                                 <p className="border-t pt-2 text-green-600">
-                                    <span className="font-medium">Disetujui:</span> {formatDate(req.approved_at)}
+                                    <span className="font-medium">{t('card.approvedAt')}:</span> {formatDate(req.approved_at)}
                                 </p>
                             )}
                             {req.status === 'rejected' && (
                                 <div className="border-t pt-2 space-y-1 text-red-600">
-                                    {req.rejected_at      && <p><span className="font-medium">Ditolak:</span> {formatDate(req.rejected_at)}</p>}
-                                    {req.rejection_reason && <p><span className="font-medium">Alasan:</span> {req.rejection_reason}</p>}
+                                    {req.rejected_at      && <p><span className="font-medium">{t('card.rejectedAt')}:</span> {formatDate(req.rejected_at)}</p>}
+                                    {req.rejection_reason && <p><span className="font-medium">{t('card.reason')}:</span> {req.rejection_reason}</p>}
                                 </div>
                             )}
 
@@ -254,7 +250,7 @@ export default function RegistrasiCard({ req, onAction }) {
                                 className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                             >
                                 <Check size={12} />
-                                Setujui
+                                {t('card.approve')}
                             </button>
                             <button
                                 onClick={handleReject}
@@ -262,7 +258,7 @@ export default function RegistrasiCard({ req, onAction }) {
                                 className="flex items-center gap-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                             >
                                 <X size={12} />
-                                Tolak
+                                {t('card.reject')}
                             </button>
                         </div>
                     )}
@@ -277,14 +273,14 @@ export default function RegistrasiCard({ req, onAction }) {
                                 className="flex items-center gap-1.5 text-xs border rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                             >
                                 <Link2 size={12} />
-                                {loadingLinks ? 'Memuat...' : 'Lihat Link Aktivasi'}
+                                {loadingLinks ? t('card.loading') : t('card.viewLinks')}
                             </button>
                         </div>
                     )}
 
                     {/* Dev links panel */}
                     {devLinks && (
-                        <DevLinksPanel links={devLinks} onDismiss={dismissDevLinks} />
+                        <DevLinksPanel links={devLinks} onDismiss={dismissDevLinks} closeLabel={t('card.devClose')} />
                     )}
 
                 </div>

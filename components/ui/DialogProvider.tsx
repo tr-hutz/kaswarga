@@ -11,6 +11,7 @@ import {
 import {
     useKeyDown
 } from '../../lib/hooks/useKeyDown'
+import { useTranslations } from 'next-intl'
 
 const DialogContext = createContext(null)
 
@@ -22,6 +23,7 @@ export function useDialog() {
 
 export default function DialogProvider({ children }) {
 
+    const t = useTranslations('common')
     const resolverRef = useRef(null)
 
     const [state, setState] = useState({
@@ -178,7 +180,7 @@ export default function DialogProvider({ children }) {
                                     transition
                                 "
                             >
-                                Batal
+                                {t('actions.cancel')}
                             </button>
 
                             <button

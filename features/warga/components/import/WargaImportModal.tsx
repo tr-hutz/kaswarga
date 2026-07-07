@@ -1,6 +1,7 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
+import { useTranslations } from 'next-intl'
 import ImportModal from '@/components/import/ImportModal'
 
 const COLUMNS = [
@@ -9,18 +10,6 @@ const COLUMNS = [
     { key: 'no_rumah', label: 'No. Rumah' },
     { key: 'no_hp',    label: 'No HP' },
 ]
-
-const COLUMN_GUIDE = (
-    <>
-        <span className="font-mono bg-gray-100 px-1 rounded">nama</span> (wajib){' '}
-        &nbsp;·&nbsp;
-        <span className="font-mono bg-gray-100 px-1 rounded">blok</span>{' '}
-        &nbsp;·&nbsp;
-        <span className="font-mono bg-gray-100 px-1 rounded">no_rumah</span>{' '}
-        &nbsp;·&nbsp;
-        <span className="font-mono bg-gray-100 px-1 rounded">no_hp</span>
-    </>
-)
 
 export default function WargaImportModal({
     open,
@@ -35,14 +24,28 @@ export default function WargaImportModal({
     onDownloadTemplate,
     onReset,
 }) {
+    const t = useTranslations('warga')
+
+    const columnGuide = (
+        <>
+            <span className="font-mono bg-gray-100 px-1 rounded">nama</span> ({t('import.required')}){' '}
+            &nbsp;·&nbsp;
+            <span className="font-mono bg-gray-100 px-1 rounded">blok</span>{' '}
+            &nbsp;·&nbsp;
+            <span className="font-mono bg-gray-100 px-1 rounded">no_rumah</span>{' '}
+            &nbsp;·&nbsp;
+            <span className="font-mono bg-gray-100 px-1 rounded">no_hp</span>
+        </>
+    )
+
     return (
         <ImportModal
             open={open}
-            title="Import Data Warga"
+            title={t('import.title')}
             onClose={onClose}
             columns={COLUMNS}
             isValid={r => !!r.nama?.trim()}
-            columnGuideText={COLUMN_GUIDE}
+            columnGuideText={columnGuide}
             rows={rows}
             fileName={fileName}
             fileRef={fileRef}
@@ -52,7 +55,7 @@ export default function WargaImportModal({
             onImport={onImport}
             onDownloadTemplate={onDownloadTemplate}
             onReset={onReset}
-            importButtonLabel="Warga"
+            importButtonLabel={t('import.buttonLabel')}
         />
     )
 }

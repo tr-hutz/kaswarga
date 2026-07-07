@@ -2,6 +2,7 @@
 'use client'
 
 import { Plus, Upload } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import ToolbarSearch
     from './ToolbarSearch'
@@ -69,6 +70,8 @@ export default function PageToolbar({
                                         onImport
 
                                     }) {
+
+    const t = useTranslations('common')
 
     return (
 
@@ -215,7 +218,7 @@ export default function PageToolbar({
                         "
                     >
                         <Upload size={16} />
-                        <span>Import</span>
+                        <span>{t('actions.import')}</span>
                     </button>
                 )}
 

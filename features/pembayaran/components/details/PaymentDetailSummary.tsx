@@ -1,11 +1,15 @@
 ﻿// @ts-nocheck
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 export default function PaymentDetailSummary({
 
                                                  payment
 
                                              }) {
+
+    const t = useTranslations('pembayaran')
 
     if (!payment) {
         return null
@@ -29,7 +33,7 @@ export default function PaymentDetailSummary({
                         text-slate-500
                     "
                 >
-                    Nama Warga
+                    {t('detail.residentName')}
                 </p>
 
                 <p
@@ -50,7 +54,7 @@ export default function PaymentDetailSummary({
                         text-slate-500
                     "
                 >
-                    Rumah
+                    {t('detail.house')}
                 </p>
 
                 <p
@@ -58,7 +62,7 @@ export default function PaymentDetailSummary({
                         font-medium
                     "
                 >
-                    Blok {payment.block} / {payment.houseNumber}
+                    {t('detail.blockPrefix')} {payment.block} / {payment.houseNumber}
                 </p>
 
             </div>
@@ -71,7 +75,7 @@ export default function PaymentDetailSummary({
                         text-slate-500
                     "
                 >
-                    Tahun
+                    {t('detail.year')}
                 </p>
 
                 <p
@@ -92,7 +96,7 @@ export default function PaymentDetailSummary({
                         text-slate-500
                     "
                 >
-                    Total Bayar
+                    {t('detail.totalAmount')}
                 </p>
 
                 <p

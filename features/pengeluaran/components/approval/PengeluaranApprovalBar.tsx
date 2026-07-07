@@ -4,9 +4,12 @@
 import { useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import { isPending } from '../../services/pengeluaran-status'
+import { useTranslations } from 'next-intl'
 
 export default function PengeluaranApprovalBar({ row, onApprove, onReject, loading }) {
 
+    const t = useTranslations('pengeluaran')
+    const tc = useTranslations('common')
     const [rejectMode, setRejectMode] = useState(false)
     const [alasan,     setAlasan]     = useState('')
 
@@ -15,11 +18,11 @@ export default function PengeluaranApprovalBar({ row, onApprove, onReject, loadi
     if (rejectMode) {
         return (
             <div className="space-y-3 pt-4 border-t">
-                <p className="text-sm font-medium text-gray-700">Alasan penolakan</p>
+                <p className="text-sm font-medium text-gray-700">{t('approvalBar.rejectReason')}</p>
                 <textarea
                     value={alasan}
                     onChange={e => setAlasan(e.target.value)}
-                    placeholder="Tuliskan alasan penolakan (opsional)..."
+                    placeholder={t('approvalBar.rejectReasonPlaceholder')}
                     rows={3}
                     className="w-full border rounded-xl px-3 py-2 text-sm resize-none"
                 />
@@ -29,7 +32,7 @@ export default function PengeluaranApprovalBar({ row, onApprove, onReject, loadi
                         onClick={() => setRejectMode(false)}
                         className="flex-1 border rounded-xl px-4 py-2 text-sm"
                     >
-                        Batal
+                        {tc('actions.cancel')}
                     </button>
                     <button
                         type="button"
@@ -38,7 +41,7 @@ export default function PengeluaranApprovalBar({ row, onApprove, onReject, loadi
                         className="flex-1 bg-red-600 text-white rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                         {loading && <Loader2 size={14} className="animate-spin" />}
-                        Konfirmasi Tolak
+                        {t('approvalBar.confirmReject')}
                     </button>
                 </div>
             </div>
@@ -54,7 +57,7 @@ export default function PengeluaranApprovalBar({ row, onApprove, onReject, loadi
                 className="flex-1 bg-emerald-600 text-white rounded-xl px-4 py-3 font-medium hover:bg-emerald-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
             >
                 {loading && <Loader2 size={14} className="animate-spin" />}
-                Setujui
+                {tc('actions.approve')}
             </button>
             <button
                 type="button"
@@ -62,7 +65,7 @@ export default function PengeluaranApprovalBar({ row, onApprove, onReject, loadi
                 disabled={loading}
                 className="flex-1 bg-red-600 text-white rounded-xl px-4 py-3 font-medium hover:bg-red-700 transition disabled:opacity-50"
             >
-                Tolak
+                {tc('actions.reject')}
             </button>
         </div>
     )

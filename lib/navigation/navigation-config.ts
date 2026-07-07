@@ -34,21 +34,21 @@ export const NAVIGATION: NavItem[] = [
      */
 
     {
-        label: 'Kelola RT',
+        label: 'rt',
         href: '/rt',
         icon: Building2,
         permission: PERMISSIONS.MANAGE_RT
     },
 
     {
-        label: 'Pendaftaran RT',
+        label: 'rtRegistration',
         href: '/rt/registrasi',
         icon: ClipboardList,
         permission: PERMISSIONS.MANAGE_RT
     },
 
     {
-        label: 'Kelola Users',
+        label: 'users',
         href: '/users',
         icon: UserCog,
         permission: PERMISSIONS.MANAGE_USERS
@@ -61,7 +61,7 @@ export const NAVIGATION: NavItem[] = [
      */
 
     {
-        label: 'Beranda',
+        label: 'home',
         href: '/',
         icon: Home,
         permission: null,
@@ -69,7 +69,7 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
-        label: 'Dashboard',
+        label: 'dashboard',
         href: '/dashboard',
         icon: LayoutDashboard,
         permission: null,
@@ -77,56 +77,56 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
-        label: 'Warga',
+        label: 'warga',
         href: '/warga',
         icon: Users,
         permission: PERMISSIONS.VIEW_WARGA
     },
 
     {
-        label: 'Pembayaran',
+        label: 'pembayaran',
         href: '/pembayaran',
         icon: Wallet,
         permission: PERMISSIONS.VIEW_PEMBAYARAN
     },
 
     {
-        label: 'Pengeluaran',
+        label: 'pengeluaran',
         href: '/pengeluaran',
         icon: Receipt,
         permission: PERMISSIONS.VIEW_PENGELUARAN
     },
 
     {
-        label: 'Ledger',
+        label: 'ledger',
         href: '/ledger',
         icon: ShelvingUnit,
         permission: PERMISSIONS.VIEW_LEDGER
     },
 
     {
-        label: 'Notifikasi',
+        label: 'notification',
         href: '/notification',
         icon: Vibrate,
         permission: PERMISSIONS.VIEW_NOTIFICATIONS
     },
 
     {
-        label: 'Aktivitas',
+        label: 'activity',
         href: '/activity',
         icon: Activity,
         permission: PERMISSIONS.VIEW_ACTIVITY
     },
 
     {
-        label: 'Profil RT',
+        label: 'profilRt',
         href: '/profil-rt',
         icon: Settings,
         permission: PERMISSIONS.EDIT_RT_PROFILE
     },
 
     {
-        label: 'Ganti Password',
+        label: 'changePassword',
         href: '/ganti-password',
         icon: KeyRound,
         permission: null

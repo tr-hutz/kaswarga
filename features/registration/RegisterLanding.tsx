@@ -3,15 +3,16 @@
 
 import Link from 'next/link'
 import { Building2, Users } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function RegisterLanding() {
+    const t = useTranslations('registration')
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
             <div className="w-full max-w-md space-y-6">
 
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold">Daftar ke Kaswarga</h1>
-                    <p className="text-sm text-gray-500 mt-2">Pilih jenis pendaftaran</p>
+                    <h1 className="text-2xl font-bold">{t('landing.title')}</h1>
                 </div>
 
                 <div className="grid gap-4">
@@ -23,10 +24,7 @@ export default function RegisterLanding() {
                                     <Building2 size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="font-semibold">Daftarkan RT Baru</h2>
-                                    <p className="text-sm text-gray-500 mt-1">
-                                        Untuk RT yang belum terdaftar di Kaswarga. Pendaftaran akan diverifikasi oleh super admin.
-                                    </p>
+                                    <h2 className="font-semibold">{t('landing.asRt')}</h2>
                                 </div>
                             </div>
                         </div>
@@ -39,10 +37,7 @@ export default function RegisterLanding() {
                                     <Users size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="font-semibold">Daftar sebagai Warga</h2>
-                                    <p className="text-sm text-gray-500 mt-1">
-                                        Untuk warga yang ingin bergabung ke RT yang sudah terdaftar. Butuh kode RT dari pengurus.
-                                    </p>
+                                    <h2 className="font-semibold">{t('landing.asWarga')}</h2>
                                 </div>
                             </div>
                         </div>

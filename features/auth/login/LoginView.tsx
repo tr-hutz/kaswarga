@@ -3,6 +3,7 @@
 
 import Link from 'next/link'
 import { LogIn } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function LoginView({
 
@@ -19,6 +20,8 @@ export default function LoginView({
   handleSubmit
 
 }) {
+
+  const t = useTranslations('auth')
 
   return (
 
@@ -78,7 +81,7 @@ export default function LoginView({
               font-bold
             "
           >
-            Login Kas Warga
+            {t('title')}
           </h1>
 
           <p
@@ -88,7 +91,7 @@ export default function LoginView({
               mt-2
             "
           >
-            Masuk ke sistem iuran warga
+            {t('subtitle')}
           </p>
 
         </div>
@@ -140,7 +143,7 @@ export default function LoginView({
                 mb-2
               "
             >
-              Email
+              {t('email')}
             </label>
 
             <input
@@ -162,7 +165,7 @@ export default function LoginView({
                 focus:ring-2
                 focus:ring-blue-500
               "
-              placeholder="email@example.com"
+              placeholder={t('emailPlaceholder')}
             />
 
           </div>
@@ -179,7 +182,7 @@ export default function LoginView({
                 mb-2
               "
             >
-              Password
+              {t('password')}
             </label>
 
             <input
@@ -201,7 +204,7 @@ export default function LoginView({
                 focus:ring-2
                 focus:ring-blue-500
               "
-              placeholder="********"
+              placeholder={t('passwordPlaceholder')}
             />
 
           </div>
@@ -226,8 +229,8 @@ export default function LoginView({
 
             {
               loading
-                ? 'Loading...'
-                : 'Masuk'
+                ? t('loading')
+                : t('submit')
             }
 
           </button>
@@ -235,16 +238,16 @@ export default function LoginView({
         </form>
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          Belum punya akun?{' '}
+          {t('noAccount')}{' '}
           <Link href="/daftar" className="text-blue-600 hover:underline font-medium">
-            Daftar
+            {t('register')}
           </Link>
         </p>
 
         <p className="text-center text-sm text-gray-500 mt-2">
-          Punya undangan tapi link tidak valid?{' '}
+          {t('hasInvitation')}{' '}
           <Link href="/aktivasi/minta-link" className="text-blue-600 hover:underline font-medium">
-            Minta link baru
+            {t('requestNewLink')}
           </Link>
         </p>
 

@@ -1,6 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
+import { useTranslations } from 'next-intl'
 import {
 
     buildLedgerAnalytics
@@ -19,6 +20,7 @@ export default function LedgerAnalytics({
 
                                         }) {
 
+    const t = useTranslations('ledger')
     const analytics =
         buildLedgerAnalytics(
             rows
@@ -50,7 +52,7 @@ export default function LedgerAnalytics({
                         text-slate-500
                     "
                 >
-                    Total Pemasukan
+                    {t('analytics.income')}
                 </p>
 
                 <h2
@@ -84,7 +86,7 @@ export default function LedgerAnalytics({
                         text-slate-500
                     "
                 >
-                    Total Pengeluaran
+                    {t('analytics.expense')}
                 </p>
 
                 <h2
@@ -118,7 +120,7 @@ export default function LedgerAnalytics({
                         text-slate-500
                     "
                 >
-                    Saldo Akhir
+                    {t('analytics.balance')}
                 </p>
 
                 <h2

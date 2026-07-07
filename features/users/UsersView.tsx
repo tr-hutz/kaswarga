@@ -4,6 +4,7 @@
 import { AlertTriangle } from 'lucide-react'
 import UserTable   from './components/UserTable'
 import EditRoleForm from './components/EditRoleForm'
+import { useTranslations } from 'next-intl'
 
 export default function UsersView({
     data,
@@ -18,15 +19,18 @@ export default function UsersView({
     handleRemoveMembership
 }) {
 
+    const t = useTranslations('users')
+    const tc = useTranslations('common')
+
     return (
 
         <div className="space-y-6">
 
             {/* Header */}
             <div>
-                <h1 className="text-xl font-semibold">Kelola Pengguna</h1>
+                <h1 className="text-xl font-semibold">{t('title')}</h1>
                 <p className="text-sm text-gray-500 mt-0.5">
-                    Manajemen role dan keanggotaan pengguna
+                    {t('subtitle')}
                 </p>
             </div>
 
@@ -56,12 +60,11 @@ export default function UsersView({
                             <div className="p-2 bg-red-50 rounded-xl">
                                 <AlertTriangle size={20} className="text-red-600" />
                             </div>
-                            <h2 className="text-base font-semibold">Hapus Membership</h2>
+                            <h2 className="text-base font-semibold">{t('removeMembership.title')}</h2>
                         </div>
 
                         <p className="text-sm text-gray-600">
-                            Hapus akses ke RT <span className="font-medium">{delTarget.rt?.nama}</span>?
-                            Pengguna tidak akan bisa mengakses RT ini.
+                            {t('removeMembership.message', { rtName: delTarget.rt?.nama })}
                         </p>
 
                         <div className="flex justify-end gap-2 pt-1">
@@ -69,14 +72,14 @@ export default function UsersView({
                                 onClick={() => setDelTarget(null)}
                                 className="border rounded-xl px-4 py-2 text-sm"
                             >
-                                Batal
+                                {tc('actions.cancel')}
                             </button>
                             <button
                                 onClick={handleRemoveMembership}
                                 disabled={saving}
                                 className="bg-red-600 text-white rounded-xl px-4 py-2 text-sm disabled:opacity-50"
                             >
-                                {saving ? 'Menghapus...' : 'Hapus'}
+                                {saving ? t('removeMembership.deleting') : t('removeMembership.confirm')}
                             </button>
                         </div>
 

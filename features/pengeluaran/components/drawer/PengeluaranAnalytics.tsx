@@ -4,12 +4,15 @@
 import {
     formatRupiah
 } from '../../../../lib/utils'
+import { useTranslations } from 'next-intl'
 
 export default function PengeluaranAnalytics({
 
                                                  rows = []
 
                                              }) {
+
+    const t = useTranslations('pengeluaran')
 
     /*
      |-------------------------------------------------------------
@@ -85,7 +88,7 @@ export default function PengeluaranAnalytics({
         >
 
             <Card
-                title="Total Pengeluaran"
+                title={t('analytics.totalExpense')}
                 value={
                     formatRupiah(
                         totalExpense
@@ -94,7 +97,7 @@ export default function PengeluaranAnalytics({
             />
 
             <Card
-                title="Jumlah Transaksi"
+                title={t('analytics.totalTransactions')}
                 value={
                     rows.length
                 }
@@ -102,7 +105,7 @@ export default function PengeluaranAnalytics({
 
             <Card
 
-                title="Kategori Terbesar"
+                title={t('analytics.topCategory')}
 
                 value={
                     topCategory

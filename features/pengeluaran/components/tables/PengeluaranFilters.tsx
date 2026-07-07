@@ -2,6 +2,7 @@
 'use client'
 
 import { useExpenseCategories } from '../../hooks/usePengeluaranKategori'
+import { useTranslations } from 'next-intl'
 
 export default function PengeluaranFilters({
 
@@ -13,6 +14,7 @@ export default function PengeluaranFilters({
 
                                            }) {
 
+    const t = useTranslations('pengeluaran')
     const { categories } = useExpenseCategories()
 
     return (
@@ -35,9 +37,7 @@ export default function PengeluaranFilters({
                     )
                 }
 
-                placeholder="
-          Cari pengeluaran...
-        "
+                placeholder={t('searchPlaceholder')}
 
                 className="
           border
@@ -68,7 +68,7 @@ export default function PengeluaranFilters({
             >
 
                 <option value="all">
-                    Semua Kategori
+                    {t('filterPlaceholder')}
                 </option>
 
                 {categories.map(k => (

@@ -4,6 +4,7 @@
 import {
     X
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import WargaDetailSummary
     from '../detail/WargaDetailSummary'
@@ -20,6 +21,8 @@ export default function WargaDetailDrawer({
                                               onClose
 
                                           }) {
+
+    const t = useTranslations('warga')
 
     if (!open || !warga) {
         return null
@@ -67,7 +70,7 @@ export default function WargaDetailDrawer({
                             font-semibold
                         "
                     >
-                        Detail Warga
+                        {t('drawer.title')}
                     </h1>
 
                     <button

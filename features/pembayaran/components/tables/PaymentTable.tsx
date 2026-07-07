@@ -3,6 +3,7 @@
 
 import PaymentRow
     from './PaymentRow'
+import { useTranslations } from 'next-intl'
 
 export default function PaymentTable({
 
@@ -11,6 +12,8 @@ export default function PaymentTable({
                                          onSelect
 
                                      }) {
+
+    const t = useTranslations('pembayaran')
 
     return (
 
@@ -46,7 +49,7 @@ export default function PaymentTable({
                                 py-3
                             "
                     >
-                        Nama
+                        {t('table.name')}
                     </th>
 
                     <th
@@ -56,7 +59,7 @@ export default function PaymentTable({
                                 py-3
                             "
                     >
-                        Rumah
+                        {t('table.house')}
                     </th>
 
                     <th
@@ -66,7 +69,7 @@ export default function PaymentTable({
                                 py-3
                             "
                     >
-                        Bulan
+                        {t('table.month')}
                     </th>
 
                     <th
@@ -76,7 +79,7 @@ export default function PaymentTable({
                                 py-3
                             "
                     >
-                        Total
+                        {t('table.total')}
                     </th>
 
                     <th
@@ -86,7 +89,7 @@ export default function PaymentTable({
                                 py-3
                             "
                     >
-                        Status
+                        {t('table.status')}
                     </th>
 
                 </tr>

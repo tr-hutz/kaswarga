@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react'
 import { createResident, updateResident } from '@/lib/services/warga.service'
+import { useTranslations } from 'next-intl'
 
 const EMPTY = { name: '', block: '', houseNumber: '', phone: '' }
 
@@ -27,6 +28,9 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
         setForm(prev => ({ ...prev, [key]: val }))
     }
 
+    const t = useTranslations('warga')
+    const tc = useTranslations('common')
+
     async function handleSubmit(e) {
         e.preventDefault()
         setSaving(true)
@@ -39,7 +43,7 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
             onSuccess()
         } catch (err) {
             console.error(err)
-            alert('Gagal menyimpan warga')
+            alert(t('form.saveFailed'))
         } finally {
             setSaving(false)
         }
@@ -54,16 +58,16 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
                 className="bg-white rounded-2xl p-6 w-full max-w-lg space-y-4"
             >
                 <h2 className="text-lg font-semibold">
-                    {isEdit ? 'Edit Warga' : 'Tambah Warga'}
+                    {isEdit ? t('form.editTitle') : t('form.addTitle')}
                 </h2>
 
                 <div className="grid grid-cols-2 gap-3">
 
                     <div className="col-span-2">
-                        <label className="text-xs text-gray-500 mb-1 block">Nama Lengkap *</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('form.fullName')}</label>
                         <input
                             required
-                            placeholder="Nama sesuai KTP"
+                            placeholder={t('form.fullNamePlaceholder')}
                             value={form.name}
                             onChange={e => set('name', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
@@ -71,9 +75,9 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
                     </div>
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Blok / Jalan</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('form.block')}</label>
                         <input
-                            placeholder="Blok A / Jl. Kenanga"
+                            placeholder={t('form.blockPlaceholder')}
                             value={form.block}
                             onChange={e => set('block', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
@@ -81,9 +85,9 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
                     </div>
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Nomor Rumah</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('form.houseNumber')}</label>
                         <input
-                            placeholder="12"
+                            placeholder={t('form.houseNumberPlaceholder')}
                             value={form.houseNumber}
                             onChange={e => set('houseNumber', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
@@ -91,9 +95,9 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
                     </div>
 
                     <div className="col-span-2">
-                        <label className="text-xs text-gray-500 mb-1 block">Nomor Telepon</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('form.phone')}</label>
                         <input
-                            placeholder="08123456789"
+                            placeholder={t('form.phonePlaceholder')}
                             value={form.phone}
                             onChange={e => set('phone', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
@@ -108,14 +112,14 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
                         onClick={onClose}
                         className="border rounded-xl px-4 py-2 text-sm"
                     >
-                        Batal
+                        {tc('actions.cancel')}
                     </button>
                     <button
                         type="submit"
                         disabled={saving}
                         className="bg-black text-white rounded-xl px-4 py-2 text-sm disabled:opacity-50"
                     >
-                        {saving ? 'Menyimpan...' : 'Simpan'}
+                        {saving ? tc('states.saving') : tc('actions.save')}
                     </button>
                 </div>
             </form>

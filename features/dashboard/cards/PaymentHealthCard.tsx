@@ -1,62 +1,21 @@
-﻿// @ts-nocheck
-export default function PaymentHealthCard({
+// @ts-nocheck
+'use client'
 
-  data
+import { useTranslations } from 'next-intl'
 
-}) {
+export default function PaymentHealthCard({ data }) {
 
-  return (
+    const t = useTranslations('dashboard')
 
-    <div
-      className="
-        rounded-2xl
-        border
-        p-6
-      "
-    >
-
-      <h2
-        className="
-          text-lg
-          font-semibold
-          mb-4
-        "
-      >
-        Health Pembayaran
-      </h2>
-
-      <div
-        className="
-          space-y-3
-        "
-      >
-
-        <div>
-          Lunas:
-          {' '}
-          {data.paid}
+    return (
+        <div className="rounded-2xl border p-6">
+            <h2 className="text-lg font-semibold mb-4">{t('sections.paymentStatus')}</h2>
+            <div className="space-y-3">
+                <div>{t('cards.paid')}: {data.paid}</div>
+                <div>{t('cards.almostPaid')}: {data.almostPaid}</div>
+                <div>{t('cards.delinquent')}: {data.delinquent}</div>
+                <div>{t('cards.neverPaid')}: {data.neverPaid}</div>
+            </div>
         </div>
-
-        <div>
-          Hampir Lunas:
-          {' '}
-          {data.almostPaid}
-        </div>
-
-        <div>
-          Menunggak:
-          {' '}
-          {data.delinquent}
-        </div>
-
-        <div>
-          Belum Bayar:
-          {' '}
-          {data.neverPaid}
-        </div>
-
-      </div>
-
-    </div>
-  )
+    )
 }

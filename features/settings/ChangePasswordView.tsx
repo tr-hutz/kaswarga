@@ -3,6 +3,7 @@
 
 import { useState }   from 'react'
 import { Eye, EyeOff } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 function PasswordField({ label, value, onChange, placeholder }) {
 
@@ -35,14 +36,16 @@ function PasswordField({ label, value, onChange, placeholder }) {
 
 export default function ChangePasswordView({ form, set, saving, error, onSubmit }) {
 
+    const t = useTranslations('settings')
+
     return (
 
         <div className="space-y-6 max-w-md">
 
             <div>
-                <h1 className="text-xl font-semibold">Ganti Password</h1>
+                <h1 className="text-xl font-semibold">{t('title')}</h1>
                 <p className="text-sm text-gray-500 mt-0.5">
-                    Perbarui password akun Anda
+                    {t('subtitle')}
                 </p>
             </div>
 
@@ -52,17 +55,17 @@ export default function ChangePasswordView({ form, set, saving, error, onSubmit 
             >
 
                 <PasswordField
-                    label="Password Baru"
+                    label={t('newPassword')}
                     value={form.next}
                     onChange={val => set('next', val)}
-                    placeholder="Minimal 8 karakter"
+                    placeholder={t('newPasswordPlaceholder')}
                 />
 
                 <PasswordField
-                    label="Konfirmasi Password Baru"
+                    label={t('confirmPassword')}
                     value={form.confirm}
                     onChange={val => set('confirm', val)}
-                    placeholder="Ulangi password baru"
+                    placeholder={t('confirmPasswordPlaceholder')}
                 />
 
                 {error && (
@@ -75,7 +78,7 @@ export default function ChangePasswordView({ form, set, saving, error, onSubmit 
                         disabled={saving || !form.next || !form.confirm}
                         className="bg-black text-white rounded-xl px-6 py-2.5 text-sm disabled:opacity-40"
                     >
-                        {saving ? 'Menyimpan...' : 'Simpan Password'}
+                        {saving ? t('saving') : t('save')}
                     </button>
                 </div>
 

@@ -4,6 +4,7 @@
 import { useRef, useState } from 'react'
 import { ImageIcon, X } from 'lucide-react'
 import { MONTHS } from '../../../constants/months'
+import { useTranslations } from 'next-intl'
 
 /* -------------------------------------------------------------------------- */
 /* BuktiUpload — local-preview file picker, upload happens on form submit      */
@@ -11,6 +12,7 @@ import { MONTHS } from '../../../constants/months'
 
 function BuktiUpload({ file, onChange }) {
 
+    const t = useTranslations('home')
     const inputRef   = useRef(null)
     const previewUrl = file ? URL.createObjectURL(file) : null
 
@@ -26,7 +28,7 @@ function BuktiUpload({ file, onChange }) {
 
     return (
         <div className="space-y-1.5">
-            <p className="text-sm font-medium text-gray-700">Bukti Pembayaran</p>
+            <p className="text-sm font-medium text-gray-700">{t('bukti.label')}</p>
 
             <div
                 onClick={() => inputRef.current?.click()}
@@ -56,15 +58,15 @@ function BuktiUpload({ file, onChange }) {
                         </button>
                         <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition flex items-end justify-center opacity-0 hover:opacity-100 pb-2">
                             <span className="text-xs text-white bg-black/60 rounded-lg px-2 py-1">
-                                Ganti
+                                {t('bukti.change')}
                             </span>
                         </div>
                     </>
                 ) : (
                     <div className="flex flex-col items-center gap-1.5 text-gray-400 py-4">
                         <ImageIcon size={28} strokeWidth={1.5} />
-                        <p className="text-xs font-medium">Klik untuk upload bukti</p>
-                        <p className="text-[11px]">JPG, PNG · maks. 5 MB</p>
+                        <p className="text-xs font-medium">{t('bukti.clickUpload')}</p>
+                        <p className="text-[11px]">{t('bukti.format')}</p>
                     </div>
                 )}
             </div>
@@ -96,6 +98,8 @@ export default function PaymentForm({
     statusMap,
     monthlyFee
 }) {
+
+    const t = useTranslations('home')
 
     const ALL_MONTHS    = MONTHS.map(m => m.id)
     const PAYABLE_MONTHS = ALL_MONTHS.filter(id => {
@@ -149,7 +153,7 @@ export default function PaymentForm({
 
             {/* HEADER */}
             <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-                <h2 className="text-xl font-semibold">Ajukan Pembayaran</h2>
+                <h2 className="text-xl font-semibold">{t('payment.title')}</h2>
 
                 <div className="flex flex-wrap items-center gap-3">
                     <select
@@ -171,7 +175,7 @@ export default function PaymentForm({
                                 : 'bg-white hover:bg-slate-100'
                         }`}
                     >
-                        Disetahunkan
+                        {t('payment.annualized')}
                     </button>
                 </div>
             </div>
@@ -200,7 +204,7 @@ export default function PaymentForm({
                             <div className="font-semibold">{month.short}</div>
                             <div className="text-sm opacity-80">
                                 {isDisabled
-                                    ? status === 'approved' ? 'Lunas' : 'Menunggu'
+                                    ? status === 'approved' ? t('payment.monthPaid') : t('payment.monthPending')
                                     : `Rp ${(monthlyFee || 0).toLocaleString('id-ID')}`
                                 }
                             </div>
@@ -218,11 +222,11 @@ export default function PaymentForm({
                 {/* Summary */}
                 <div className="rounded-2xl border p-4 bg-slate-50 space-y-3">
                     <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Jumlah Bulan</span>
-                        <strong>{totalMonths} bulan</strong>
+                        <span className="text-gray-600">{t('payment.totalMonths')}</span>
+                        <strong>{totalMonths} {t('payment.monthsUnit')}</strong>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Total Iuran</span>
+                        <span className="text-gray-600">{t('payment.totalFee')}</span>
                         <strong>Rp {totalFee.toLocaleString('id-ID')}</strong>
                     </div>
                     <div className="pt-1">
@@ -231,7 +235,7 @@ export default function PaymentForm({
                             disabled={loading || selectedMonths.length === 0}
                             className="w-full rounded-xl bg-black text-white px-6 py-2.5 text-sm font-medium disabled:opacity-40 transition"
                         >
-                            {loading ? 'Mengirim...' : 'Ajukan Pembayaran'}
+                            {loading ? t('payment.submitting') : t('payment.submit')}
                         </button>
                     </div>
                 </div>

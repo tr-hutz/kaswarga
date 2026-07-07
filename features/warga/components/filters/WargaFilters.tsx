@@ -1,6 +1,8 @@
 ﻿// @ts-nocheck
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 export default function WargaFilters({
 
                                          search,
@@ -10,6 +12,9 @@ export default function WargaFilters({
                                          setStatus
 
                                      }) {
+
+    const t = useTranslations('warga')
+    const tc = useTranslations('common')
 
     return (
 
@@ -61,15 +66,15 @@ export default function WargaFilters({
             >
 
                 <option value="">
-                    Semua Status
+                    {t('filterPlaceholder')}
                 </option>
 
                 <option value="active">
-                    Aktif
+                    {tc('status.active')}
                 </option>
 
                 <option value="inactive">
-                    Nonaktif
+                    {tc('status.inactive')}
                 </option>
 
             </select>

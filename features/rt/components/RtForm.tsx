@@ -2,6 +2,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 const EMPTY = {
     name: '', code: '', address: '', city: '', province: '', postalCode: ''
@@ -43,6 +44,9 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
         }
     }
 
+    const t = useTranslations('rt')
+    const tc = useTranslations('common')
+
     if (!open) return null
 
     return (
@@ -52,16 +56,16 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
                 className="bg-white rounded-2xl p-6 w-full max-w-xl space-y-4 max-h-[90vh] overflow-y-auto"
             >
                 <h2 className="text-lg font-semibold">
-                    {isEdit ? 'Edit RT' : 'Tambah RT Baru'}
+                    {isEdit ? t('form.editTitle') : t('form.addTitle')}
                 </h2>
 
                 <div className="grid grid-cols-2 gap-3">
 
                     <div className="col-span-2">
-                        <label className="text-xs text-gray-500 mb-1 block">Nama RT *</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('form.name')}</label>
                         <input
                             required
-                            placeholder="RT 001 Perumahan Asri"
+                            placeholder={t('form.namePlaceholder')}
                             value={form.name}
                             onChange={e => set('name', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
@@ -69,9 +73,9 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
                     </div>
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Kode</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('form.code')}</label>
                         <input
-                            placeholder="RT001"
+                            placeholder={t('form.codePlaceholder')}
                             value={form.code}
                             onChange={e => set('code', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
@@ -79,9 +83,9 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
                     </div>
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Kode Pos</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('form.postalCode')}</label>
                         <input
-                            placeholder="12345"
+                            placeholder={t('form.postalCodePlaceholder')}
                             value={form.postalCode}
                             onChange={e => set('postalCode', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
@@ -89,9 +93,9 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
                     </div>
 
                     <div className="col-span-2">
-                        <label className="text-xs text-gray-500 mb-1 block">Alamat</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('form.address')}</label>
                         <input
-                            placeholder="Jl. Contoh No. 1"
+                            placeholder={t('form.addressPlaceholder')}
                             value={form.address}
                             onChange={e => set('address', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
@@ -99,9 +103,9 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
                     </div>
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Kota</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('form.city')}</label>
                         <input
-                            placeholder="Jakarta"
+                            placeholder={t('form.cityPlaceholder')}
                             value={form.city}
                             onChange={e => set('city', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
@@ -109,9 +113,9 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
                     </div>
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Provinsi</label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('form.province')}</label>
                         <input
-                            placeholder="DKI Jakarta"
+                            placeholder={t('form.provincePlaceholder')}
                             value={form.province}
                             onChange={e => set('province', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
@@ -126,14 +130,14 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
                         onClick={onClose}
                         className="border rounded-xl px-4 py-2 text-sm"
                     >
-                        Batal
+                        {tc('actions.cancel')}
                     </button>
                     <button
                         type="submit"
                         disabled={saving}
                         className="bg-black text-white rounded-xl px-4 py-2 text-sm disabled:opacity-50"
                     >
-                        {saving ? 'Menyimpan...' : 'Simpan'}
+                        {saving ? tc('states.saving') : tc('actions.save')}
                     </button>
                 </div>
             </form>

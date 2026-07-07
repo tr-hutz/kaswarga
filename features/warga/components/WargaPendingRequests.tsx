@@ -7,6 +7,7 @@ import { approveResidentRegistration, rejectResidentRegistration } from '@/lib/s
 import { useAuth }                                               from '@/lib/auth/useAuth'
 import { useToast }                                              from '@/components/ui/ToastProvider'
 import { formatDate }                                            from '@/lib/utils'
+import { useTranslations }                                       from 'next-intl'
 
 const IS_DEV = process.env.NODE_ENV === 'development'
 
@@ -36,12 +37,13 @@ function RequestRow({ req, onAction }) {
     const [devLink,    setDevLink]    = useState(null)
     const { membership }              = useAuth()
     const { toast }                   = useToast()
+    const t                           = useTranslations('warga.pending')
 
     async function handleApprove() {
         setProcessing(true)
         try {
             const { inviteLink } = await approveResidentRegistration(req.id, membership)
-            toast({ message: `Pendaftaran "${req.nama_warga}" disetujui. Link aktivasi dikirim.`, type: 'success' })
+            toast({ message: t('approvedToast', { name: req.nama_warga }), type: 'success' })
             if (IS_DEV && inviteLink) {
                 setDevLink(inviteLink)
                 // Don't call onAction yet — user must dismiss the dev link row
@@ -57,11 +59,11 @@ function RequestRow({ req, onAction }) {
     }
 
     async function handleReject() {
-        if (!window.confirm(`Tolak dan hapus pendaftaran "${req.nama_warga}"? Warga harus mendaftar ulang.`)) return
+        if (!window.confirm(t('rejectConfirm', { name: req.nama_warga }))) return
         setProcessing(true)
         try {
             await rejectResidentRegistration(req.id, membership)
-            toast({ message: 'Pendaftaran ditolak dan dihapus.', type: 'success' })
+            toast({ message: t('rejectedToast'), type: 'success' })
         } catch (err) {
             toast({ message: err.message, type: 'error' })
         } finally {
@@ -88,7 +90,7 @@ function RequestRow({ req, onAction }) {
                                 className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white rounded-lg px-2.5 py-1 text-xs font-medium disabled:opacity-50"
                             >
                                 <Check size={11} />
-                                Setujui
+                                {t('approve')}
                             </button>
                             <button
                                 onClick={handleReject}
@@ -96,11 +98,11 @@ function RequestRow({ req, onAction }) {
                                 className="flex items-center gap-1 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg px-2.5 py-1 text-xs font-medium disabled:opacity-50"
                             >
                                 <X size={11} />
-                                Tolak
+                                {t('reject')}
                             </button>
                         </div>
                     ) : (
-                        <span className="text-xs text-green-600 font-medium">Disetujui</span>
+                        <span className="text-xs text-green-600 font-medium">{t('approved')}</span>
                     )}
                 </td>
             </tr>
@@ -124,7 +126,7 @@ function RequestRow({ req, onAction }) {
                             onClick={onAction}
                             className="text-xs text-gray-500 hover:text-gray-700 hover:underline"
                         >
-                            Tutup
+                            {t('close')}
                         </button>
                     </td>
                 </tr>
@@ -135,6 +137,7 @@ function RequestRow({ req, onAction }) {
 
 export default function WargaPendingRequests({ requests, loading, onAction }) {
     const [open, setOpen] = useState(true)
+    const t = useTranslations('warga.pending')
 
     if (loading) return null
     if (!requests || requests.length === 0) return null
@@ -148,7 +151,7 @@ export default function WargaPendingRequests({ requests, loading, onAction }) {
             >
                 <span className="flex items-center gap-2">
                     <UserPlus size={16} />
-                    Permintaan Bergabung
+                    {t('title')}
                     <span className="bg-amber-200 text-amber-800 rounded-full px-2 py-0.5 text-xs font-medium">
                         {requests.length}
                     </span>
@@ -161,11 +164,11 @@ export default function WargaPendingRequests({ requests, loading, onAction }) {
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-amber-100/60 text-xs text-amber-700">
-                                <th className="px-4 py-2 font-medium">Nama</th>
-                                <th className="px-4 py-2 font-medium">Email</th>
-                                <th className="px-4 py-2 font-medium">Alamat</th>
-                                <th className="px-4 py-2 font-medium">Tanggal</th>
-                                <th className="px-4 py-2 font-medium">Aksi</th>
+                                <th className="px-4 py-2 font-medium">{t('name')}</th>
+                                <th className="px-4 py-2 font-medium">{t('email')}</th>
+                                <th className="px-4 py-2 font-medium">{t('address')}</th>
+                                <th className="px-4 py-2 font-medium">{t('date')}</th>
+                                <th className="px-4 py-2 font-medium">{t('actions')}</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white">

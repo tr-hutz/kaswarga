@@ -1,6 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
+import { useTranslations } from 'next-intl'
 import PaymentStatusBadge
     from '../tables/PaymentStatusBadge'
 
@@ -35,6 +36,8 @@ export default function PaymentDetailDrawer({
                                                 loading
 
                                             }) {
+
+    const t = useTranslations('pembayaran')
 
     useKeyDown(open, { Escape: onClose })
 
@@ -86,7 +89,7 @@ export default function PaymentDetailDrawer({
                                 font-bold
                             "
                         >
-                            Detail Pembayaran
+                            {t('detail.title')}
                         </h2>
 
                         <p
@@ -95,7 +98,7 @@ export default function PaymentDetailDrawer({
                                 text-slate-500
                             "
                         >
-                            Review transaksi pembayaran warga
+                            {t('detail.subtitle')}
                         </p>
 
                     </div>

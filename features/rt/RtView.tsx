@@ -5,6 +5,7 @@ import { Plus }        from 'lucide-react'
 import RtTable         from './components/RtTable'
 import RtForm          from './components/RtForm'
 import RtDeleteConfirm from './components/RtDeleteConfirm'
+import { useTranslations } from 'next-intl'
 
 export default function RtView({
     data,
@@ -21,6 +22,8 @@ export default function RtView({
     handleDelete
 }) {
 
+    const t = useTranslations('rt')
+
     return (
 
         <div className="space-y-6">
@@ -28,9 +31,9 @@ export default function RtView({
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-xl font-semibold">Kelola RT</h1>
+                    <h1 className="text-xl font-semibold">{t('title')}</h1>
                     <p className="text-sm text-gray-500 mt-0.5">
-                        Manajemen data RT dalam sistem
+                        {t('subtitle')}
                     </p>
                 </div>
                 <button
@@ -38,7 +41,7 @@ export default function RtView({
                     className="flex items-center gap-2 bg-black text-white text-sm rounded-xl px-4 py-2.5"
                 >
                     <Plus size={16} />
-                    Tambah RT
+                    {t('addButton')}
                 </button>
             </div>
 

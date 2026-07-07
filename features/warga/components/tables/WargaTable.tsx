@@ -3,6 +3,7 @@
 
 import WargaRow
     from './WargaRow'
+import { useTranslations } from 'next-intl'
 
 export default function WargaTable({
 
@@ -16,11 +17,14 @@ export default function WargaTable({
 
                                    }) {
 
+    const t = useTranslations('warga')
+    const tc = useTranslations('common')
+
     if (loading) {
 
         return (
             <div>
-                Loading...
+                {tc('states.loading')}
             </div>
         )
     }
@@ -51,27 +55,27 @@ export default function WargaTable({
                 <tr>
 
                     <th className="p-4 text-left">
-                        Nama
+                        {t('table.name')}
                     </th>
 
                     <th className="p-4 text-left">
-                        Jalan/Blok
+                        {t('table.block')}
                     </th>
 
                     <th className="p-4 text-left">
-                        No. Rumah
+                        {t('table.houseNumber')}
                     </th>
 
                     <th className="p-4 text-left">
-                        No HP
+                        {t('table.phone')}
                     </th>
 
                     <th className="p-4 text-left">
-                        Status
+                        {t('table.status')}
                     </th>
 
                     <th className="p-4 text-right">
-                        Aksi
+                        {t('table.actions')}
                     </th>
 
                 </tr>

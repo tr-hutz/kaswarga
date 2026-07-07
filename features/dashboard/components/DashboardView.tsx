@@ -1,6 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
+import { useTranslations } from 'next-intl'
 import InsightCard
   from '../cards/InsightCard'
 
@@ -40,6 +41,8 @@ export default function DashboardView({
 
 }) {
 
+  const t = useTranslations('dashboard')
+
   if (
     loading ||
     !analytics ||
@@ -49,7 +52,7 @@ export default function DashboardView({
 
     return (
       <div className="text-sm text-gray-400 p-6">
-        Memuat data...
+        {t('loading')}
       </div>
     )
   }
@@ -74,7 +77,7 @@ export default function DashboardView({
             font-bold
           "
         >
-          Dashboard
+          {t('title')}
         </h1>
 
         <select
@@ -119,8 +122,8 @@ export default function DashboardView({
       <div className="space-y-3">
 
         <SectionLabel
-          title="Status Iuran Warga"
-          subtitle="Rekap kepatuhan pembayaran iuran bulanan"
+          title={t('sections.paymentStatus')}
+          subtitle={t('sections.paymentStatusSubtitle')}
         />
 
         <div
@@ -133,30 +136,30 @@ export default function DashboardView({
         >
 
           <InsightCard
-            title="Total Warga"
+            title={t('cards.totalWarga')}
             value={paymentHealth.totalWarga}
           />
 
           <InsightCard
-            title="Lunas"
+            title={t('cards.paid')}
             value={paymentHealth.paid}
             valueColor="text-green-600"
           />
 
           <InsightCard
-            title="Hampir Lunas"
+            title={t('cards.almostPaid')}
             value={paymentHealth.almostPaid}
             valueColor="text-yellow-600"
           />
 
           <InsightCard
-            title="Menunggak"
+            title={t('cards.delinquent')}
             value={paymentHealth.delinquent}
             valueColor="text-orange-600"
           />
 
           <InsightCard
-            title="Belum Bayar"
+            title={t('cards.neverPaid')}
             value={paymentHealth.neverPaid}
             valueColor="text-red-600"
           />
@@ -170,8 +173,8 @@ export default function DashboardView({
       <div className="space-y-3">
 
         <SectionLabel
-          title="Keuangan RT"
-          subtitle={`Ringkasan arus kas tahun ${year}`}
+          title={t('sections.finance')}
+          subtitle={t('sections.financeSubtitle', { year })}
         />
 
         <div
@@ -184,30 +187,30 @@ export default function DashboardView({
         >
 
           <InsightCard
-            title="Saldo Saat Ini"
+            title={t('cards.balance')}
             value={formatRupiah(financialInsight.balance)}
-            subtitle="saldo berjalan"
+            subtitle={t('cards.balanceSubtitle')}
             valueColor="text-blue-700"
           />
 
           <InsightCard
-            title="Pemasukan"
+            title={t('cards.income')}
             value={formatRupiah(financialInsight.income)}
-            subtitle="tahun ini"
+            subtitle={t('cards.incomeSubtitle')}
             valueColor="text-green-600"
           />
 
           <InsightCard
-            title="Pengeluaran"
+            title={t('cards.expense')}
             value={formatRupiah(financialInsight.expense)}
-            subtitle="tahun ini"
+            subtitle={t('cards.expenseSubtitle')}
             valueColor="text-orange-600"
           />
 
           <InsightCard
-            title="Tunggakan"
+            title={t('cards.arrears')}
             value={formatRupiah(financialInsight.arrears)}
-            subtitle="perlu ditagih"
+            subtitle={t('cards.arrearsSubtitle')}
             valueColor="text-red-600"
           />
 

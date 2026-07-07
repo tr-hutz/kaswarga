@@ -9,17 +9,16 @@ import {
 
 } from '../../../../lib/export/export-utils'
 
-import {
-
-    transformPaymentExport
-
-} from '../../../../lib/services/payment-export-transform'
+import { transformPaymentExport } from '../../../../lib/services/payment-export-transform'
+import { useTranslations } from 'next-intl'
 
 export default function ExportButtons({
 
                                           rows = []
 
                                       }) {
+
+    const tc = useTranslations('common')
 
     /*
      |---------------------------------------------------------
@@ -102,7 +101,7 @@ export default function ExportButtons({
                     hover:bg-emerald-700
                 "
             >
-                Export Excel
+                {tc('actions.exportExcel')}
             </button>
 
             <button
@@ -118,7 +117,7 @@ export default function ExportButtons({
                     hover:bg-slate-900
                 "
             >
-                Export CSV
+                {tc('actions.exportCsv')}
             </button>
 
         </div>

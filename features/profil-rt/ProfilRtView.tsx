@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { RefreshCw } from 'lucide-react'
 import { generateRtCode } from '@/lib/services/registration.service'
 import ImageUpload from './components/ImageUpload'
+import { useTranslations } from 'next-intl'
 
 const EMPTY = {
     name: '', code: '', address: '', city: '', province: '', postalCode: '',
@@ -81,10 +82,12 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
         setDirty(false)
     }
 
+    const t = useTranslations('profilRt')
+
     if (loading) {
         return (
             <div className="py-16 text-center text-sm text-gray-400">
-                Memuat profil RT...
+                {t('loading')}
             </div>
         )
     }
@@ -95,20 +98,20 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
 
             {/* Header */}
             <div>
-                <h1 className="text-xl font-semibold">Profil RT</h1>
+                <h1 className="text-xl font-semibold">{t('title')}</h1>
                 <p className="text-sm text-gray-500 mt-0.5">
-                    Kelola informasi RT Anda
+                    {t('subtitle')}
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
 
-                <SectionTitle>Identitas RT</SectionTitle>
+                <SectionTitle>{t('sections.identity')}</SectionTitle>
 
                 <div className="grid grid-cols-2 gap-4">
 
                     <div className="col-span-2">
-                        <Field label="Nama RT *">
+                        <Field label={t('fields.name')}>
                             <input
                                 required
                                 value={form.name}
@@ -118,7 +121,7 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                         </Field>
                     </div>
 
-                    <Field label="Kode Unik RT">
+                    <Field label={t('fields.code')}>
                         <div className="flex gap-2">
                             <input
                                 value={form.code}
@@ -129,7 +132,7 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                                 type="button"
                                 onClick={handleGenerateCode}
                                 disabled={generating}
-                                title="Generate kode unik"
+                                title={t('generateCode')}
                                 className="flex items-center gap-1 border rounded-xl px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
                             >
                                 <RefreshCw size={13} className={generating ? 'animate-spin' : ''} />
@@ -138,7 +141,7 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                         </div>
                     </Field>
 
-                    <Field label="Iuran per Bulan (Rp)">
+                    <Field label={t('fields.monthlyFee')}>
                         <input
                             type="number"
                             value={form.monthlyFee}
@@ -149,12 +152,12 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
 
                 </div>
 
-                <SectionTitle>Alamat</SectionTitle>
+                <SectionTitle>{t('sections.address')}</SectionTitle>
 
                 <div className="grid grid-cols-2 gap-4">
 
                     <div className="col-span-2">
-                        <Field label="Alamat">
+                        <Field label={t('fields.address')}>
                             <input
                                 value={form.address}
                                 onChange={e => set('address', e.target.value)}
@@ -163,7 +166,7 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                         </Field>
                     </div>
 
-                    <Field label="Kota">
+                    <Field label={t('fields.city')}>
                         <input
                             value={form.city}
                             onChange={e => set('city', e.target.value)}
@@ -171,7 +174,7 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                         />
                     </Field>
 
-                    <Field label="Provinsi">
+                    <Field label={t('fields.province')}>
                         <input
                             value={form.province}
                             onChange={e => set('province', e.target.value)}
@@ -179,7 +182,7 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                         />
                     </Field>
 
-                    <Field label="Kode Pos">
+                    <Field label={t('fields.postalCode')}>
                         <input
                             value={form.postalCode}
                             onChange={e => set('postalCode', e.target.value)}
@@ -189,11 +192,11 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
 
                 </div>
 
-                <SectionTitle>Rekening Bank</SectionTitle>
+                <SectionTitle>{t('sections.bank')}</SectionTitle>
 
                 <div className="grid grid-cols-2 gap-4">
 
-                    <Field label="Nama Bank">
+                    <Field label={t('fields.bankName')}>
                         <input
                             value={form.bankName}
                             onChange={e => set('bankName', e.target.value)}
@@ -201,7 +204,7 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                         />
                     </Field>
 
-                    <Field label="Nomor Rekening">
+                    <Field label={t('fields.accountNumber')}>
                         <input
                             value={form.accountNumber}
                             onChange={e => set('accountNumber', e.target.value)}
@@ -210,7 +213,7 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                     </Field>
 
                     <div className="col-span-2">
-                        <Field label="Atas Nama">
+                        <Field label={t('fields.accountHolder')}>
                             <input
                                 value={form.accountHolder}
                                 onChange={e => set('accountHolder', e.target.value)}
@@ -221,19 +224,19 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
 
                 </div>
 
-                <SectionTitle>Aset Media</SectionTitle>
+                <SectionTitle>{t('sections.media')}</SectionTitle>
 
                 <div className="grid grid-cols-2 gap-4">
 
                     <ImageUpload
-                        label="Logo RT"
+                        label={t('fields.logo')}
                         currentUrl={form.logoUrl}
                         storagePath={`${rt?.id}/logo`}
                         onUploaded={url => set('logoUrl', url)}
                     />
 
                     <ImageUpload
-                        label="QRIS"
+                        label={t('fields.qris')}
                         currentUrl={form.qrisUrl}
                         storagePath={`${rt?.id}/qris`}
                         onUploaded={url => set('qrisUrl', url)}
@@ -247,7 +250,7 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                         disabled={saving || !dirty}
                         className="bg-black text-white rounded-xl px-6 py-2.5 text-sm disabled:opacity-40"
                     >
-                        {saving ? 'Menyimpan...' : 'Simpan Perubahan'}
+                        {saving ? t('saving') : t('save')}
                     </button>
                 </div>
 

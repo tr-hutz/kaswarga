@@ -21,6 +21,7 @@ import {exportToCSV, exportToExcel} from "../../lib/export/export-utils";
 import {
     useDialog
 } from '../../components/ui/DialogProvider'
+import { useTranslations } from 'next-intl'
 
 export default function PembayaranView({
 
@@ -69,6 +70,7 @@ export default function PembayaranView({
      |-------------------------------------------------------------
      */
 
+    const t = useTranslations('pembayaran')
     const { prompt } = useDialog()
 
     const {
@@ -119,10 +121,10 @@ export default function PembayaranView({
 
         const alasan =
             await prompt({
-                title: 'Tolak Pembayaran',
-                description: 'Berikan alasan penolakan untuk warga.',
-                placeholder: 'Masukkan alasan penolakan...',
-                confirmLabel: 'Tolak',
+                title: t('reject.title'),
+                description: t('reject.description'),
+                placeholder: t('reject.placeholder'),
+                confirmLabel: t('reject.confirmLabel'),
                 confirmClassName: 'bg-red-600 hover:bg-red-700 text-white'
             })
 

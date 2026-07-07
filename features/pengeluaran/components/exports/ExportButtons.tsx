@@ -1,6 +1,8 @@
 ﻿// @ts-nocheck
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 export default function ExportButtons({
 
                                           data = [],
@@ -8,6 +10,8 @@ export default function ExportButtons({
                                           onExportCSV
 
                                       }) {
+
+    const t = useTranslations('common')
 
     return (
 
@@ -33,7 +37,7 @@ export default function ExportButtons({
           hover:bg-slate-50
         "
             >
-                Export Excel
+                {t('actions.exportExcel')}
             </button>
 
             <button
@@ -50,7 +54,7 @@ export default function ExportButtons({
           hover:bg-slate-50
         "
             >
-                Export CSV
+                {t('actions.exportCsv')}
             </button>
 
         </div>

@@ -1,6 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
+import { useTranslations } from 'next-intl'
 import {
     isPending
 } from '../../services/pembayaran-status'
@@ -16,6 +17,8 @@ export default function ApprovalActionBar({
                                               loading
 
                                           }) {
+
+    const t = useTranslations('pembayaran')
 
     if (
         !payment ||
@@ -53,7 +56,7 @@ export default function ApprovalActionBar({
                     transition
                 "
             >
-                Approve
+                {t('approval.approve')}
             </button>
 
             <button
@@ -73,7 +76,7 @@ export default function ApprovalActionBar({
                     transition
                 "
             >
-                Reject
+                {t('approval.reject')}
             </button>
 
         </div>

@@ -29,6 +29,8 @@ import {
 
 } from '../../lib/services/activity-logger'
 
+import { useTranslations } from 'next-intl'
+
 export default function Topbar({
 
                                    mobileOpen,
@@ -41,6 +43,8 @@ export default function Topbar({
      | AUTH
      |-------------------------------------------------------------
      */
+
+    const t = useTranslations('topbar')
 
     const {
 
@@ -143,7 +147,7 @@ export default function Topbar({
                             "
                         >
 
-                            Kas Warga
+                            {t('brand')}
 
                         </div>
 

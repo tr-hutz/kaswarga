@@ -1,9 +1,15 @@
 ﻿// @ts-nocheck
+'use client'
+
+import { useTranslations } from 'next-intl'
+
 export default function WargaDetailSummary({
 
                                                warga
 
                                            }) {
+
+    const t = useTranslations('warga')
 
     if (!warga) {
         return null
@@ -55,7 +61,7 @@ export default function WargaDetailSummary({
                             text-slate-500
                         "
                     >
-                        No HP
+                        {t('table.phone')}
                     </p>
 
                     <p
@@ -76,7 +82,7 @@ export default function WargaDetailSummary({
                             text-slate-500
                         "
                     >
-                        Status
+                        {t('table.status')}
                     </p>
 
                     <p

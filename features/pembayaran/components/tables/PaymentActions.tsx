@@ -1,62 +1,30 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
-export default function PaymentActions({
+import { useTranslations } from 'next-intl'
 
-                                           row,
+export default function PaymentActions({ row, onApprove, onReject }) {
 
-                                           onApprove,
-                                           onReject
+    const t = useTranslations('pembayaran')
 
-                                       }) {
-
-    if (
-        row.status !== 'pending'
-    ) {
-
+    if (row.status !== 'pending') {
         return null
     }
+
     return (
-
         <div className="flex gap-2">
-
             <button
-                onClick={() =>
-                    onApprove(row.id)
-                }
-                className="px-3 py-1 rounded-lg bg-green-600 text-white">
-                Approve
-            </button>
-
-            <button
-                onClick={() => {
-
-                    const alasan =
-                        prompt(
-                            'Alasan penolakan'
-                        )
-
-                    if (!alasan) {
-                        return
-                    }
-
-                    onReject(
-                        row.id,
-                        alasan
-                    )
-
-                }}
-                className="
-          px-3
-          py-1
-          rounded-lg
-          bg-red-600
-          text-white
-        "
+                onClick={() => onApprove(row.id)}
+                className="px-3 py-1 rounded-lg bg-green-600 text-white"
             >
-                Reject
+                {t('approval.approve')}
             </button>
-
+            <button
+                onClick={() => onReject(row.id)}
+                className="px-3 py-1 rounded-lg bg-red-600 text-white"
+            >
+                {t('approval.reject')}
+            </button>
         </div>
     )
 }

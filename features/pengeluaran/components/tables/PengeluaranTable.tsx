@@ -2,6 +2,7 @@
 'use client'
 
 import PengeluaranRow from './PengeluaranRow'
+import { useTranslations } from 'next-intl'
 
 export default function PengeluaranTable({
     rows = [],
@@ -12,8 +13,10 @@ export default function PengeluaranTable({
     onDelete,
 }) {
 
+    const t = useTranslations('pengeluaran')
+
     if (loading) {
-        return <div className="p-6 text-sm text-gray-400">Memuat data...</div>
+        return <div className="p-6 text-sm text-gray-400">{t('table.loading')}</div>
     }
 
     return (
@@ -21,20 +24,20 @@ export default function PengeluaranTable({
             <table className="w-full text-sm">
                 <thead className="bg-slate-50">
                     <tr>
-                        <th className="p-4 text-left">Nomor Bukti</th>
-                        <th className="p-4 text-left">Tanggal</th>
-                        <th className="p-4 text-left">Kategori</th>
-                        <th className="p-4 text-left">Mitra / Penerima</th>
-                        <th className="p-4 text-right">Nominal</th>
-                        <th className="p-4 text-center">Status</th>
-                        <th className="p-4 text-right">Aksi</th>
+                        <th className="p-4 text-left">{t('table.receiptNumber')}</th>
+                        <th className="p-4 text-left">{t('table.date')}</th>
+                        <th className="p-4 text-left">{t('table.category')}</th>
+                        <th className="p-4 text-left">{t('table.recipient')}</th>
+                        <th className="p-4 text-right">{t('table.amount')}</th>
+                        <th className="p-4 text-center">{t('table.status')}</th>
+                        <th className="p-4 text-right">{t('table.actions')}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {rows.length === 0 ? (
                         <tr>
                             <td colSpan={7} className="p-8 text-center text-sm text-gray-400">
-                                Belum ada data pengeluaran.
+                                {t('table.empty')}
                             </td>
                         </tr>
                     ) : (

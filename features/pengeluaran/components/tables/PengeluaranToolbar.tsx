@@ -3,6 +3,7 @@
 
 import PageToolbar from '../../../../components/toolbar/PageToolbar'
 import { useExpenseCategories } from '../../hooks/usePengeluaranKategori'
+import { useTranslations } from 'next-intl'
 
 export default function PengeluaranToolbar({
     search,
@@ -21,6 +22,7 @@ export default function PengeluaranToolbar({
     onImport,
 }) {
 
+    const t = useTranslations('pengeluaran')
     const { categories } = useExpenseCategories()
 
     const filterOptions = categories.map(k => ({
@@ -31,18 +33,18 @@ export default function PengeluaranToolbar({
     return (
         <div className="w-full space-y-3">
             <PageToolbar
-                title="Pengeluaran"
-                subtitle="Manajemen pengeluaran RT"
+                title={t('title')}
+                subtitle={t('subtitle')}
 
                 onCreate={role === 'bendahara' ? onCreate : undefined}
 
                 search={search}
                 setSearch={setSearch}
-                searchPlaceholder="Cari pengeluaran..."
+                searchPlaceholder={t('searchPlaceholder')}
 
                 filterValue={category}
                 setFilterValue={setCategory}
-                filterPlaceholder="Semua Kategori"
+                filterPlaceholder={t('filterPlaceholder')}
                 filterOptions={filterOptions}
 
                 onExportCSV={onExportCSV}
@@ -57,7 +59,7 @@ export default function PengeluaranToolbar({
                         onClick={onApproveAll}
                         className="bg-emerald-600 text-white rounded-xl px-5 py-2.5 text-sm font-medium hover:bg-emerald-700 transition"
                     >
-                        Setujui Semua ({pendingCount})
+                        {t('approveAll', { count: pendingCount })}
                     </button>
                 </div>
             )}

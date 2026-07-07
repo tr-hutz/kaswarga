@@ -1,9 +1,9 @@
 ﻿// @ts-nocheck
 'use client'
 
-import PaymentStatusBadge
-    from './PaymentStatusBadge'
-import {formatRupiah} from "../../../../lib/utils";
+import PaymentStatusBadge from './PaymentStatusBadge'
+import { formatRupiah } from '../../../../lib/utils'
+import { useTranslations } from 'next-intl'
 
 export default function PaymentRow({
 
@@ -12,6 +12,8 @@ export default function PaymentRow({
                                        onClick
 
                                    }) {
+
+    const t = useTranslations('pembayaran')
 
     if (!row) {
         return null
@@ -46,7 +48,7 @@ export default function PaymentRow({
                     py-4
                 "
             >
-                Blok {row.block} / {row.houseNumber}
+                {t('detail.blockPrefix')} {row.block} / {row.houseNumber}
             </td>
 
             <td

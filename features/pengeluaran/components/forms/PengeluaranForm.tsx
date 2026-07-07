@@ -8,6 +8,7 @@ import FileUpload from '@/components/ui/FileUpload'
 import { useAuth } from '@/lib/auth/useAuth'
 import { generateNomorBukti } from '@/lib/services/pengeluaran.service'
 import { useExpenseCategories } from '../../hooks/usePengeluaranKategori'
+import { useTranslations } from 'next-intl'
 
 export default function PengeluaranForm({
     open,
@@ -40,6 +41,9 @@ export default function PengeluaranForm({
 
     const [saving,     setSaving]     = useState(false)
     const [generating, setGenerating] = useState(false)
+
+    const t = useTranslations('pengeluaran')
+    const tc = useTranslations('common')
 
     if (!open) return null
 
@@ -80,26 +84,26 @@ export default function PengeluaranForm({
             >
 
                 <h2 className="text-lg font-semibold">
-                    {initialData ? 'Edit Pengeluaran' : 'Tambah Pengeluaran'}
+                    {initialData ? t('form.editTitle') : t('form.addTitle')}
                 </h2>
 
                 {/* Nomor Bukti */}
                 <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700 block">
-                        Nomor Bukti
+                        {t('form.receiptNumber')}
                     </label>
                     <div className="flex gap-2">
                         <input
                             value={form.receiptNumber}
                             onChange={e => set('receiptNumber', e.target.value)}
-                            placeholder="Contoh: 03072026-RT08-00001"
+                            placeholder={t('form.receiptNumberPlaceholder')}
                             className="flex-1 border rounded-xl px-4 py-2 text-sm font-mono"
                         />
                         <button
                             type="button"
                             onClick={handleGenerate}
                             disabled={generating}
-                            title="Generate nomor otomatis"
+                            title={t('form.receiptNumberGenerate')}
                             className="
                                 h-10 w-10 shrink-0 rounded-xl border
                                 flex items-center justify-center
@@ -119,7 +123,7 @@ export default function PengeluaranForm({
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
                         <label className="text-sm font-medium text-gray-700 block">
-                            Tanggal <span className="text-red-500">*</span>
+                            {t('form.date')} <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="date"
@@ -132,14 +136,14 @@ export default function PengeluaranForm({
 
                     <div className="space-y-1.5">
                         <label className="text-sm font-medium text-gray-700 block">
-                            Kategori
+                            {t('form.category')}
                         </label>
                         <select
                             value={form.category}
                             onChange={e => set('category', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2 text-sm"
                         >
-                            <option value="">Pilih kategori</option>
+                            <option value="">{t('form.selectCategory')}</option>
                             {categories.map(k => (
                                 <option key={k.id} value={k.nama}>{k.nama}</option>
                             ))}
@@ -150,7 +154,7 @@ export default function PengeluaranForm({
                 {/* Nominal */}
                 <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700 block">
-                        Nominal (Rp) <span className="text-red-500">*</span>
+                        {t('form.amount')} <span className="text-red-500">*</span>
                     </label>
                     <input
                         type="number"
@@ -166,12 +170,12 @@ export default function PengeluaranForm({
                 {/* Penerima */}
                 <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700 block">
-                        Mitra / Penerima
+                        {t('form.recipient')}
                     </label>
                     <input
                         value={form.recipient}
                         onChange={e => set('recipient', e.target.value)}
-                        placeholder="Nama vendor, toko, atau individu penerima"
+                        placeholder={t('form.recipientPlaceholder')}
                         className="w-full border rounded-xl px-4 py-2 text-sm"
                     />
                 </div>
@@ -179,12 +183,12 @@ export default function PengeluaranForm({
                 {/* Deskripsi */}
                 <div className="space-y-1.5">
                     <label className="text-sm font-medium text-gray-700 block">
-                        Deskripsi
+                        {t('form.description')}
                     </label>
                     <textarea
                         value={form.description}
                         onChange={e => set('description', e.target.value)}
-                        placeholder="Keterangan pengeluaran..."
+                        placeholder={t('form.descriptionPlaceholder')}
                         rows={3}
                         className="w-full border rounded-xl px-4 py-2 text-sm resize-none"
                     />
@@ -192,7 +196,7 @@ export default function PengeluaranForm({
 
                 {/* Nota Upload */}
                 <FileUpload
-                    label="Nota / Bukti Pembayaran"
+                    label={t('form.receipt')}
                     currentUrl={form.receiptUrl}
                     pathPrefix={storagePath}
                     accept="image/jpeg,image/png,image/webp,application/pdf"
@@ -206,7 +210,7 @@ export default function PengeluaranForm({
                         onClick={onClose}
                         className="border rounded-xl px-4 py-2 text-sm"
                     >
-                        Batal
+                        {tc('actions.cancel')}
                     </button>
 
                     <button
@@ -215,7 +219,7 @@ export default function PengeluaranForm({
                         className="bg-black text-white rounded-xl px-4 py-2 text-sm disabled:opacity-50 flex items-center gap-2"
                     >
                         {saving && <Loader2 size={14} className="animate-spin" />}
-                        Simpan
+                        {tc('actions.save')}
                     </button>
 
                 </div>

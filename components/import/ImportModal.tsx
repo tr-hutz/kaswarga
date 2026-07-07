@@ -2,6 +2,7 @@
 'use client'
 
 import { Upload, Download, X, AlertCircle, CheckCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function ImportModal({
     open,
@@ -24,6 +25,9 @@ export default function ImportModal({
 
     if (!open) return null
 
+    const t = useTranslations('import')
+    const tCommon = useTranslations('common')
+
     const validRows   = rows.filter(isValid)
     const invalidRows = rows.filter(r => !isValid(r))
     const hasFile     = rows.length > 0
@@ -36,7 +40,7 @@ export default function ImportModal({
                     <div>
                         <h2 className="text-base font-semibold">{title}</h2>
                         <p className="text-xs text-gray-500 mt-0.5">
-                            Format yang didukung: CSV atau Excel (.xlsx)
+                            {t('format')}
                         </p>
                     </div>
                     <button
@@ -54,7 +58,7 @@ export default function ImportModal({
 
                             <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
                                 <span className="text-sm text-gray-600">
-                                    Gunakan template agar format kolom sesuai.
+                                    {t('templateNote')}
                                 </span>
                                 <button
                                     type="button"
@@ -62,7 +66,7 @@ export default function ImportModal({
                                     className="flex items-center gap-1.5 text-sm text-blue-600 hover:underline whitespace-nowrap shrink-0"
                                 >
                                     <Download size={14} />
-                                    Unduh Template
+                                    {t('downloadTemplate')}
                                 </button>
                             </div>
 
@@ -73,10 +77,10 @@ export default function ImportModal({
                             ">
                                 <Upload size={32} className="mx-auto text-gray-300 mb-3" />
                                 <p className="text-sm font-medium text-gray-700">
-                                    Klik untuk memilih file
+                                    {t('clickToSelect')}
                                 </p>
                                 <p className="text-xs text-gray-400 mt-1">
-                                    CSV atau Excel (.xlsx / .xls)
+                                    {t('fileFormat')}
                                 </p>
                                 <input
                                     ref={fileRef}
@@ -89,7 +93,7 @@ export default function ImportModal({
 
                             {columnGuideText && (
                                 <div className="text-xs text-gray-400 space-y-1">
-                                    <p className="font-medium text-gray-500">Kolom yang dikenali:</p>
+                                    <p className="font-medium text-gray-500">{t('columnGuide')}</p>
                                     <p>{columnGuideText}</p>
                                 </div>
                             )}
@@ -105,13 +109,13 @@ export default function ImportModal({
                                     </span>
                                     <span className="text-gray-300">·</span>
                                     <span className="text-emerald-600 font-medium">
-                                        {validRows.length} valid
+                                        {validRows.length} {t('valid')}
                                     </span>
                                     {invalidRows.length > 0 && (
                                         <>
                                             <span className="text-gray-300">·</span>
                                             <span className="text-red-500">
-                                                {invalidRows.length} dilewati
+                                                {invalidRows.length} {t('skipped')}
                                             </span>
                                         </>
                                     )}
@@ -121,7 +125,7 @@ export default function ImportModal({
                                     onClick={onReset}
                                     className="text-xs text-gray-400 hover:text-gray-600 underline shrink-0"
                                 >
-                                    Ganti file
+                                    {t('changeFile')}
                                 </button>
                             </div>
 
@@ -136,7 +140,7 @@ export default function ImportModal({
                                                         {col.label}
                                                     </th>
                                                 ))}
-                                                <th className="px-3 py-2 text-center font-medium">Status</th>
+                                                <th className="px-3 py-2 text-center font-medium">{t('status')}</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100">
@@ -171,7 +175,7 @@ export default function ImportModal({
 
                             {invalidRows.length > 0 && (
                                 <p className="text-xs text-red-500">
-                                    Baris yang tidak valid tidak akan diimpor.
+                                    {t('invalidRowsNote')}
                                 </p>
                             )}
 
@@ -192,7 +196,7 @@ export default function ImportModal({
                         onClick={onClose}
                         className="border rounded-xl px-4 py-2 text-sm"
                     >
-                        Batal
+                        {tCommon('actions.cancel')}
                     </button>
                     {hasFile && (
                         <button
@@ -202,7 +206,7 @@ export default function ImportModal({
                             className="bg-black text-white rounded-xl px-4 py-2 text-sm disabled:opacity-50"
                         >
                             {importing
-                                ? 'Mengimpor...'
+                                ? tCommon('states.importing')
                                 : `Import ${validRows.length} ${importButtonLabel}`
                             }
                         </button>
