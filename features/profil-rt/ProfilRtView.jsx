@@ -6,9 +6,9 @@ import { generateRtCode } from '@/lib/services/registration.service'
 import ImageUpload from './components/ImageUpload'
 
 const EMPTY = {
-    nama: '', kode: '', alamat: '', kota: '', provinsi: '', kodePos: '',
-    nominalIuran: '', namaBank: '', nomorRekening: '',
-    atasNama: '', qrisUrl: '', logoUrl: ''
+    name: '', code: '', address: '', city: '', province: '', postalCode: '',
+    monthlyFee: '', bankName: '', accountNumber: '',
+    accountHolder: '', qrisUrl: '', logoUrl: ''
 }
 
 function Field({ label, children }) {
@@ -39,16 +39,16 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
         if (!rt) return
 
         setForm({
-            nama:          rt.nama           || '',
-            kode:          rt.kode           || '',
-            alamat:        rt.alamat         || '',
-            kota:          rt.kota           || '',
-            provinsi:      rt.provinsi       || '',
-            kodePos:       rt.kode_pos       || '',
-            nominalIuran:  rt.nominal_iuran  ?? '',
-            namaBank:      rt.nama_bank      || '',
-            nomorRekening: rt.nomor_rekening || '',
-            atasNama:      rt.atas_nama      || '',
+            name:          rt.nama           || '',
+            code:          rt.kode           || '',
+            address:       rt.alamat         || '',
+            city:          rt.kota           || '',
+            province:      rt.provinsi       || '',
+            postalCode:    rt.kode_pos       || '',
+            monthlyFee:    rt.nominal_iuran  ?? '',
+            bankName:      rt.nama_bank      || '',
+            accountNumber: rt.nomor_rekening || '',
+            accountHolder: rt.atas_nama      || '',
             qrisUrl:       rt.qris_url       || '',
             logoUrl:       rt.logo_url       || ''
         })
@@ -62,13 +62,13 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
         setDirty(true)
     }
 
-    async function handleGenerateKode() {
+    async function handleGenerateCode() {
         setGenerating(true)
         try {
-            const kode = await generateRtCode()
-            set('kode', kode)
+            const code = await generateRtCode()
+            set('code', code)
         } catch (err) {
-            console.error('[generateKode]', err)
+            console.error('[generateCode]', err)
         } finally {
             setGenerating(false)
         }
@@ -76,7 +76,7 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
 
     function handleSubmit(e) {
         e.preventDefault()
-        onSave({ ...form, nominalIuran: Number(form.nominalIuran) || 0 })
+        onSave({ ...form, monthlyFee: Number(form.monthlyFee) || 0 })
         setDirty(false)
     }
 
@@ -110,8 +110,8 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                         <Field label="Nama RT *">
                             <input
                                 required
-                                value={form.nama}
-                                onChange={e => set('nama', e.target.value)}
+                                value={form.name}
+                                onChange={e => set('name', e.target.value)}
                                 className="w-full border rounded-xl px-4 py-2.5 text-sm"
                             />
                         </Field>
@@ -120,13 +120,13 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                     <Field label="Kode Unik RT">
                         <div className="flex gap-2">
                             <input
-                                value={form.kode}
-                                onChange={e => set('kode', e.target.value.toUpperCase())}
+                                value={form.code}
+                                onChange={e => set('code', e.target.value.toUpperCase())}
                                 className="w-full border rounded-xl px-4 py-2.5 text-sm"
                             />
                             <button
                                 type="button"
-                                onClick={handleGenerateKode}
+                                onClick={handleGenerateCode}
                                 disabled={generating}
                                 title="Generate kode unik"
                                 className="flex items-center gap-1 border rounded-xl px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
@@ -140,8 +140,8 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                     <Field label="Iuran per Bulan (Rp)">
                         <input
                             type="number"
-                            value={form.nominalIuran}
-                            onChange={e => set('nominalIuran', e.target.value)}
+                            value={form.monthlyFee}
+                            onChange={e => set('monthlyFee', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </Field>
@@ -155,8 +155,8 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                     <div className="col-span-2">
                         <Field label="Alamat">
                             <input
-                                value={form.alamat}
-                                onChange={e => set('alamat', e.target.value)}
+                                value={form.address}
+                                onChange={e => set('address', e.target.value)}
                                 className="w-full border rounded-xl px-4 py-2.5 text-sm"
                             />
                         </Field>
@@ -164,24 +164,24 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
 
                     <Field label="Kota">
                         <input
-                            value={form.kota}
-                            onChange={e => set('kota', e.target.value)}
+                            value={form.city}
+                            onChange={e => set('city', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </Field>
 
                     <Field label="Provinsi">
                         <input
-                            value={form.provinsi}
-                            onChange={e => set('provinsi', e.target.value)}
+                            value={form.province}
+                            onChange={e => set('province', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </Field>
 
                     <Field label="Kode Pos">
                         <input
-                            value={form.kodePos}
-                            onChange={e => set('kodePos', e.target.value)}
+                            value={form.postalCode}
+                            onChange={e => set('postalCode', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </Field>
@@ -194,16 +194,16 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
 
                     <Field label="Nama Bank">
                         <input
-                            value={form.namaBank}
-                            onChange={e => set('namaBank', e.target.value)}
+                            value={form.bankName}
+                            onChange={e => set('bankName', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </Field>
 
                     <Field label="Nomor Rekening">
                         <input
-                            value={form.nomorRekening}
-                            onChange={e => set('nomorRekening', e.target.value)}
+                            value={form.accountNumber}
+                            onChange={e => set('accountNumber', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </Field>
@@ -211,8 +211,8 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
                     <div className="col-span-2">
                         <Field label="Atas Nama">
                             <input
-                                value={form.atasNama}
-                                onChange={e => set('atasNama', e.target.value)}
+                                value={form.accountHolder}
+                                onChange={e => set('accountHolder', e.target.value)}
                                 className="w-full border rounded-xl px-4 py-2.5 text-sm"
                             />
                         </Field>

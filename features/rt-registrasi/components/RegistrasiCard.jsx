@@ -5,7 +5,7 @@ import { ChevronDown, ChevronUp, Check, X, Copy, CheckCheck, Link2 } from 'lucid
 import { approveRtRegistration, rejectRtRegistration }             from '@/lib/services/approval.service'
 import { useAuth }                                                  from '@/lib/auth/useAuth'
 import { useToast }                                                 from '@/components/ui/ToastProvider'
-import { formatTanggal as formatDate }                              from '@/lib/utils'
+import { formatDate }                                               from '@/lib/utils'
 import { supabase }                                                 from '@/lib/supabase'
 
 const IS_DEV = process.env.NODE_ENV === 'development'

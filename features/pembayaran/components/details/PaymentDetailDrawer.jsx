@@ -132,7 +132,7 @@ export default function PaymentDetailDrawer({
                 {/* PROOF */}
 
                 <PaymentProofPreview
-                    url={payment.buktiUrl}
+                    url={payment.proofUrl}
                 />
 
                 {/* ACTION */}

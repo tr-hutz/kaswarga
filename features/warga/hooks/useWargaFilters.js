@@ -4,7 +4,7 @@ import {
     useState
 } from 'react'
 
-export function useWargaFilters() {
+export function useResidentFilters() {
 
     const [
         search,

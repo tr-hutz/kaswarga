@@ -3,9 +3,9 @@
 import { useState } from 'react'
 
 import PengeluaranView         from './PengeluaranView'
-import { usePengeluaranData }     from './hooks/usePengeluaranData'
-import { usePengeluaranRealtime } from './hooks/usePengeluaranRealtime'
-import { usePengeluaranActions } from './hooks/usePengeluaranActions'
+import { useExpenseData }     from './hooks/usePengeluaranData'
+import { useExpenseRealtime } from './hooks/usePengeluaranRealtime'
+import { useExpenseActions } from './hooks/usePengeluaranActions'
 import { useToast }            from '@/components/ui/ToastProvider'
 import { useAuth }             from '@/lib/auth/useAuth'
 
@@ -26,7 +26,7 @@ export default function PengeluaranContainer() {
      */
 
     const [search,   setSearch]   = useState('')
-    const [kategori, setKategori] = useState('all')
+    const [category, setKategori] = useState('all')
 
     /*
      |-------------------------------------------------------------
@@ -34,8 +34,8 @@ export default function PengeluaranContainer() {
      |-------------------------------------------------------------
      */
 
-    const { rows, loading, refresh } = usePengeluaranData({ search, kategori })
-    usePengeluaranRealtime({ onReload: refresh })
+    const { rows, loading, refresh } = useExpenseData({ search, category })
+    useExpenseRealtime({ onReload: refresh })
 
     /*
      |-------------------------------------------------------------
@@ -45,7 +45,7 @@ export default function PengeluaranContainer() {
 
     const { toast } = useToast()
 
-    const actions = usePengeluaranActions({
+    const actions = useExpenseActions({
 
         onReload: refresh,
 
@@ -70,7 +70,7 @@ export default function PengeluaranContainer() {
         <PengeluaranView
             search={search}
             setSearch={setSearch}
-            kategori={kategori}
+            category={category}
             setKategori={setKategori}
             role={role}
             rows={rows}

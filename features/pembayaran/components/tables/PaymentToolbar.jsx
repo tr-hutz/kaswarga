@@ -7,8 +7,8 @@ export default function PaymentToolbar({
                                           search,
                                           setSearch,
 
-                                          kategori,
-                                          setKategori,
+                                          status,
+                                          setStatus,
 
                                           onExportCSV,
                                           onExportExcel
@@ -28,8 +28,8 @@ export default function PaymentToolbar({
 
             searchPlaceholder="Cari pembayaran..."
 
-            filterValue={kategori}
-            setFilterValue={setKategori}
+            filterValue={status}
+            setFilterValue={setStatus}
 
             filterPlaceholder="Semua Kategori"
 

@@ -6,23 +6,23 @@ import {
 
 import {
 
-    createPengeluaran,
-    updatePengeluaran,
-    deletePengeluaran
+    createExpense,
+    updateExpense,
+    deleteExpense
 
 } from '../../../lib/services/pengeluaran.service'
 
 import {
 
-    exportPengeluaranCSV,
-    exportPengeluaranExcel
+    exportExpenseToCSV,
+    exportExpenseToExcel
 
 } from '../services/pengeluaran-export-transform'
 
-import { usePengeluaranImport }    from './usePengeluaranImport'
-import { useApprovalPengeluaran } from './useApprovalPengeluaran'
+import { useExpenseImport }    from './usePengeluaranImport'
+import { useExpenseApproval } from './useApprovalPengeluaran'
 
-export function usePengeluaranActions({
+export function useExpenseActions({
 
                                           onReload,
                                           onImportSuccess,
@@ -129,7 +129,7 @@ export function usePengeluaranActions({
 
             if (!selectedRow) {
 
-                await createPengeluaran(
+                await createExpense(
                     payload
                 )
 
@@ -141,7 +141,7 @@ export function usePengeluaranActions({
                  |-------------------------------------------------------
                  */
 
-                await updatePengeluaran(
+                await updateExpense(
 
                     selectedRow.id,
                     payload
@@ -191,7 +191,7 @@ export function usePengeluaranActions({
 
         try {
 
-            await deletePengeluaran(
+            await deleteExpense(
                 row.id
             )
 
@@ -220,7 +220,7 @@ export function usePengeluaranActions({
         rows
     ) {
 
-        await exportPengeluaranCSV(
+        await exportExpenseToCSV(
             rows
         )
     }
@@ -229,7 +229,7 @@ export function usePengeluaranActions({
         rows
     ) {
 
-        await exportPengeluaranExcel(
+        await exportExpenseToExcel(
             rows
         )
     }
@@ -243,7 +243,7 @@ export function usePengeluaranActions({
     const {
         rows:      importRows,
         ...restImport
-    } = usePengeluaranImport(onImportSuccess)
+    } = useExpenseImport(onImportSuccess)
 
     /*
      |-------------------------------------------------------------
@@ -256,7 +256,7 @@ export function usePengeluaranActions({
         approve:    approvePengeluaran,
         reject:     rejectPengeluaran,
         approveAll: approveAllPengeluaran,
-    } = useApprovalPengeluaran({
+    } = useExpenseApproval({
         onSuccess: () => {
             closeDrawer()
             onReload?.()

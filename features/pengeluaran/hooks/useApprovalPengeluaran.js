@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useToast } from '@/components/ui/ToastProvider'
 
-export function useApprovalPengeluaran({ onSuccess } = {}) {
+export function useExpenseApproval({ onSuccess } = {}) {
 
     const { toast } = useToast()
     const [loading, setLoading] = useState(false)

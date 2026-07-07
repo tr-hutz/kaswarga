@@ -6,14 +6,14 @@ import {
 
 import {
 
-    exportWargaToExcel,
-    exportWargaToCSV
+    exportResidentsToExcel,
+    exportResidentsToCSV
 
 } from '../services/warga-export-transform'
 
-import { useWargaImport } from './useWargaImport'
+import { useResidentImport } from './useWargaImport'
 
-export function useWargaActions(onImportSuccess) {
+export function useResidentActions(onImportSuccess) {
 
     /*
      |------------------------------------------------------------------
@@ -102,11 +102,11 @@ export function useWargaActions(onImportSuccess) {
      */
 
     async function exportExcel(data) {
-        await exportWargaToExcel(data)
+        await exportResidentsToExcel(data)
     }
 
     async function exportCSV(data) {
-        await exportWargaToCSV(data)
+        await exportResidentsToCSV(data)
     }
 
     /*
@@ -115,7 +115,7 @@ export function useWargaActions(onImportSuccess) {
      |------------------------------------------------------------------
      */
 
-    const importState = useWargaImport(onImportSuccess)
+    const importState = useResidentImport(onImportSuccess)
 
     /*
      |------------------------------------------------------------------

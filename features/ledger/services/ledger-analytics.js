@@ -4,12 +4,12 @@ export function buildLedgerAnalytics(
 
 ) {
 
-    const pemasukan =
+    const income =
         rows
 
             .filter(
                 item =>
-                    item.jenis ===
+                    item.type ===
                     'pemasukan'
             )
 
@@ -17,17 +17,17 @@ export function buildLedgerAnalytics(
                 (sum, item) =>
 
                     sum +
-                    item.nominal,
+                    item.amount,
 
                 0
             )
 
-    const pengeluaran =
+    const expense =
         rows
 
             .filter(
                 item =>
-                    item.jenis ===
+                    item.type ===
                     'pengeluaran'
             )
 
@@ -35,20 +35,20 @@ export function buildLedgerAnalytics(
                 (sum, item) =>
 
                     sum +
-                    item.nominal,
+                    item.amount,
 
                 0
             )
 
     return {
 
-        pemasukan,
+        income,
 
-        pengeluaran,
+        expense,
 
-        saldo:
-            pemasukan -
-            pengeluaran
+        balance:
+            income -
+            expense
 
     }
 }

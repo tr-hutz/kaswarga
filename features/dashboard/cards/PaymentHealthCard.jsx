@@ -33,25 +33,25 @@ export default function PaymentHealthCard({
         <div>
           Lunas:
           {' '}
-          {data.lunas}
+          {data.paid}
         </div>
 
         <div>
           Hampir Lunas:
           {' '}
-          {data.hampirLunas}
+          {data.almostPaid}
         </div>
 
         <div>
           Menunggak:
           {' '}
-          {data.menunggak}
+          {data.delinquent}
         </div>
 
         <div>
           Belum Bayar:
           {' '}
-          {data.belumBayar}
+          {data.neverPaid}
         </div>
 
       </div>

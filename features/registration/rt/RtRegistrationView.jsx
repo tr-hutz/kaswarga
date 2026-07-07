@@ -28,7 +28,7 @@ function Input({ value, onChange, ...props }) {
 
 export default function RtRegistrationView({
     form, set, generating, submitting, error, success,
-    onGenerateKode, onSubmit
+    onGenerateCode, onSubmit
 }) {
 
     const [bankOpen, setBankOpen] = useState(false)
@@ -42,7 +42,7 @@ export default function RtRegistrationView({
                     </div>
                     <h1 className="text-xl font-bold">Pendaftaran Terkirim!</h1>
                     <p className="text-sm text-gray-600">
-                        Permintaan pendaftaran RT <strong>{form.nama}</strong> telah dikirim.
+                        Permintaan pendaftaran RT <strong>{form.name}</strong> telah dikirim.
                         Tim kami akan memverifikasi dan mengirimkan email aktivasi
                         kepada ketua, admin, dan bendahara dalam waktu 1–2 hari kerja.
                     </p>
@@ -82,8 +82,8 @@ export default function RtRegistrationView({
                             <Field label="Nama RT" required>
                                 <Input
                                     required
-                                    value={form.nama}
-                                    onChange={v => set('nama', v)}
+                                    value={form.name}
+                                    onChange={v => set('name', v)}
                                     placeholder="RT 001 Perumahan Asri"
                                 />
                             </Field>
@@ -94,14 +94,14 @@ export default function RtRegistrationView({
                                 <div className="flex gap-2">
                                     <Input
                                         required
-                                        value={form.kode}
-                                        onChange={v => set('kode', v.toUpperCase())}
+                                        value={form.code}
+                                        onChange={v => set('code', v.toUpperCase())}
                                         placeholder="RT-0001"
                                         className="w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
                                     <button
                                         type="button"
-                                        onClick={onGenerateKode}
+                                        onClick={onGenerateCode}
                                         disabled={generating}
                                         title="Generate kode unik"
                                         className="flex items-center gap-1 border rounded-xl px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
@@ -116,8 +116,8 @@ export default function RtRegistrationView({
                         <div className="col-span-2">
                             <Field label="Alamat">
                                 <Input
-                                    value={form.alamat}
-                                    onChange={v => set('alamat', v)}
+                                    value={form.address}
+                                    onChange={v => set('address', v)}
                                     placeholder="Jl. Contoh No. 1"
                                 />
                             </Field>
@@ -126,8 +126,8 @@ export default function RtRegistrationView({
                         <div>
                             <Field label="Kota">
                                 <Input
-                                    value={form.kota}
-                                    onChange={v => set('kota', v)}
+                                    value={form.city}
+                                    onChange={v => set('city', v)}
                                     placeholder="Jakarta"
                                 />
                             </Field>
@@ -136,8 +136,8 @@ export default function RtRegistrationView({
                         <div>
                             <Field label="Provinsi">
                                 <Input
-                                    value={form.provinsi}
-                                    onChange={v => set('provinsi', v)}
+                                    value={form.province}
+                                    onChange={v => set('province', v)}
                                     placeholder="DKI Jakarta"
                                 />
                             </Field>
@@ -146,8 +146,8 @@ export default function RtRegistrationView({
                         <div>
                             <Field label="Kode Pos">
                                 <Input
-                                    value={form.kodePos}
-                                    onChange={v => set('kodePos', v)}
+                                    value={form.postalCode}
+                                    onChange={v => set('postalCode', v)}
                                     placeholder="12345"
                                 />
                             </Field>
@@ -157,8 +157,8 @@ export default function RtRegistrationView({
                             <Field label="Iuran / Bulan (Rp)">
                                 <Input
                                     type="number"
-                                    value={form.nominalIuran}
-                                    onChange={v => set('nominalIuran', v)}
+                                    value={form.monthlyFee}
+                                    onChange={v => set('monthlyFee', v)}
                                     placeholder="50000"
                                 />
                             </Field>
@@ -183,8 +183,8 @@ export default function RtRegistrationView({
                             <div>
                                 <Field label="Nama Bank">
                                     <Input
-                                        value={form.namaBank}
-                                        onChange={v => set('namaBank', v)}
+                                        value={form.bankName}
+                                        onChange={v => set('bankName', v)}
                                         placeholder="BCA"
                                     />
                                 </Field>
@@ -192,8 +192,8 @@ export default function RtRegistrationView({
                             <div>
                                 <Field label="Nomor Rekening">
                                     <Input
-                                        value={form.nomorRekening}
-                                        onChange={v => set('nomorRekening', v)}
+                                        value={form.accountNumber}
+                                        onChange={v => set('accountNumber', v)}
                                         placeholder="1234567890"
                                     />
                                 </Field>
@@ -201,8 +201,8 @@ export default function RtRegistrationView({
                             <div className="col-span-2">
                                 <Field label="Atas Nama">
                                     <Input
-                                        value={form.atasNama}
-                                        onChange={v => set('atasNama', v)}
+                                        value={form.accountHolder}
+                                        onChange={v => set('accountHolder', v)}
                                         placeholder="RT 001 Perumahan Asri"
                                     />
                                 </Field>
@@ -226,8 +226,8 @@ export default function RtRegistrationView({
                         <Field label="Nama Ketua" required>
                             <Input
                                 required
-                                value={form.namaKetua}
-                                onChange={v => set('namaKetua', v)}
+                                value={form.chairmanName}
+                                onChange={v => set('chairmanName', v)}
                                 placeholder="Budi Santoso"
                             />
                         </Field>
@@ -235,8 +235,8 @@ export default function RtRegistrationView({
                             <Input
                                 required
                                 type="email"
-                                value={form.emailKetua}
-                                onChange={v => set('emailKetua', v)}
+                                value={form.chairmanEmail}
+                                onChange={v => set('chairmanEmail', v)}
                                 placeholder="ketua@example.com"
                             />
                         </Field>
@@ -246,8 +246,8 @@ export default function RtRegistrationView({
                         <Field label="Nama Admin" required>
                             <Input
                                 required
-                                value={form.namaAdmin}
-                                onChange={v => set('namaAdmin', v)}
+                                value={form.adminName}
+                                onChange={v => set('adminName', v)}
                                 placeholder="Siti Rahayu"
                             />
                         </Field>
@@ -255,8 +255,8 @@ export default function RtRegistrationView({
                             <Input
                                 required
                                 type="email"
-                                value={form.emailAdmin}
-                                onChange={v => set('emailAdmin', v)}
+                                value={form.adminEmail}
+                                onChange={v => set('adminEmail', v)}
                                 placeholder="admin@example.com"
                             />
                         </Field>
@@ -265,16 +265,16 @@ export default function RtRegistrationView({
                     <div className="grid grid-cols-2 gap-4">
                         <Field label="Nama Bendahara">
                             <Input
-                                value={form.namaBendahara}
-                                onChange={v => set('namaBendahara', v)}
+                                value={form.treasurerName}
+                                onChange={v => set('treasurerName', v)}
                                 placeholder="Ahmad Fauzi (opsional)"
                             />
                         </Field>
                         <Field label="Email Bendahara">
                             <Input
                                 type="email"
-                                value={form.emailBendahara}
-                                onChange={v => set('emailBendahara', v)}
+                                value={form.treasurerEmail}
+                                onChange={v => set('treasurerEmail', v)}
                                 placeholder="bendahara@example.com (opsional)"
                             />
                         </Field>

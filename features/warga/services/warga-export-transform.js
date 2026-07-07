@@ -8,35 +8,35 @@ function buildRows(
     return data.map(item => ({
 
         Nama:
-        item.nama,
+        item.name,
 
         Blok:
-        item.blok,
+        item.block,
 
         Rumah:
-        item.noRumah,
+        item.houseNumber,
 
         'No HP':
-        item.noHp,
+        item.phoneNumber,
 
         Status:
-        item.statusPembayaran,
+        item.paymentStatus,
 
         'Total Bayar':
-        item.totalBayar,
+        item.paidCount,
 
         Tunggakan:
-        item.tunggakan,
+        item.arrears,
 
         Aktif:
-            item.aktif
+            item.active
                 ? 'Aktif'
                 : 'Nonaktif'
 
     }))
 }
 
-export async function exportWargaToExcel(
+export async function exportResidentsToExcel(
     data = []
 ) {
 
@@ -63,7 +63,7 @@ export async function exportWargaToExcel(
     )
 }
 
-export async function exportWargaToCSV(
+export async function exportResidentsToCSV(
     data = []
 ) {
 

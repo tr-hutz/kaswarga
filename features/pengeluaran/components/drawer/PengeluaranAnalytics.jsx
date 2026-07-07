@@ -16,7 +16,7 @@ export default function PengeluaranAnalytics({
      |-------------------------------------------------------------
      */
 
-    const totalPengeluaran =
+    const totalExpense =
         rows.reduce(
 
             (
@@ -26,7 +26,7 @@ export default function PengeluaranAnalytics({
 
                 sum +
                 Number(
-                    item.nominal || 0
+                    item.amount || 0
                 ),
 
             0
@@ -42,21 +42,21 @@ export default function PengeluaranAnalytics({
 
     rows.forEach(item => {
 
-        const kategori =
-            item.kategori || '-'
+        const category =
+            item.category || '-'
 
-        if (!categoryMap[kategori]) {
+        if (!categoryMap[category]) {
 
-            categoryMap[kategori] = 0
+            categoryMap[category] = 0
         }
 
-        categoryMap[kategori] +=
+        categoryMap[category] +=
             Number(
-                item.nominal || 0
+                item.amount || 0
             )
     })
 
-    const topKategori =
+    const topCategory =
         Object.entries(
             categoryMap
         )
@@ -87,7 +87,7 @@ export default function PengeluaranAnalytics({
                 title="Total Pengeluaran"
                 value={
                     formatRupiah(
-                        totalPengeluaran
+                        totalExpense
                     )
                 }
             />
@@ -104,15 +104,15 @@ export default function PengeluaranAnalytics({
                 title="Kategori Terbesar"
 
                 value={
-                    topKategori
-                        ? topKategori[0]
+                    topCategory
+                        ? topCategory[0]
                         : '-'
                 }
 
                 subtitle={
-                    topKategori
+                    topCategory
                         ? formatRupiah(
-                            topKategori[1]
+                            topCategory[1]
                         )
                         : null
                 }

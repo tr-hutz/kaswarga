@@ -23,7 +23,7 @@ export default function LedgerRow({
         >
 
             <td className="p-4">
-                {row.tanggal}
+                {row.date}
             </td>
 
             <td className="p-4">
@@ -36,7 +36,7 @@ export default function LedgerRow({
                         text-xs
 
                         ${
-                        row.jenis ===
+                        row.type ===
                         'pemasukan'
 
                             ? `
@@ -52,14 +52,14 @@ export default function LedgerRow({
                     `}
                 >
 
-                    {row.jenis}
+                    {row.type}
 
                 </span>
 
             </td>
 
             <td className="p-4">
-                {row.deskripsi}
+                {row.description}
             </td>
 
             <td
@@ -69,7 +69,7 @@ export default function LedgerRow({
                     font-medium
                 "
             >
-                {row.nominalLabel}
+                {row.amountLabel}
             </td>
 
             <td
@@ -79,7 +79,7 @@ export default function LedgerRow({
                     font-semibold
                 "
             >
-                {row.saldoLabel}
+                {row.balanceLabel}
             </td>
 
         </tr>

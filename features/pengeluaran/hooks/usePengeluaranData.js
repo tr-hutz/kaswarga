@@ -9,14 +9,14 @@ import {
 
 import {
 
-    getPengeluaran
+    getExpenses
 
 } from '../../../lib/services/pengeluaran.service'
 
-export function usePengeluaranData({
+export function useExpenseData({
 
                                        search = '',
-                                       kategori = 'all'
+                                       category = 'all'
 
                                    } = {}) {
 
@@ -48,7 +48,7 @@ export function usePengeluaranData({
     }, [
 
         search,
-        kategori
+        category
 
     ])
     /* eslint-enable react-hooks/exhaustive-deps */
@@ -66,10 +66,10 @@ export function usePengeluaranData({
         try {
 
             const result =
-                await getPengeluaran({
+                await getExpenses({
 
                     search,
-                    kategori
+                    category
 
                 })
 

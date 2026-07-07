@@ -1,7 +1,7 @@
 'use client'
 
 import {
-    usePembayaran
+    usePayment
 } from './hooks/usePembayaran'
 
 import PembayaranView
@@ -9,19 +9,19 @@ import PembayaranView
 
 export default function PembayaranContainer() {
 
-    const pembayaran =
-        usePembayaran()
+    const payment =
+        usePayment()
 
     return (
         <PembayaranView
-            search={pembayaran.search}
-            setSearch={pembayaran.setSearch}
+            search={payment.search}
+            setSearch={payment.setSearch}
 
-            kategori={pembayaran.status}
-            setKategori={pembayaran.setStatus}
+            status={payment.status}
+            setStatus={payment.setStatus}
 
-            rows={pembayaran.rows}
-            reloadData={pembayaran.loadData}
+            rows={payment.rows}
+            reloadData={payment.loadData}
         />
     )
 }

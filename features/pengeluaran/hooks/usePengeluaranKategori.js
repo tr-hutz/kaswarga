@@ -1,18 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getPengeluaranKategori } from '../../../lib/services/pengeluaran-kategori.service'
+import { getExpenseCategories } from '../../../lib/services/pengeluaran-kategori.service'
 
-export function usePengeluaranKategori() {
-    const [kategori, setKategori] = useState([])
+export function useExpenseCategories() {
+    const [categories, setCategories] = useState([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        getPengeluaranKategori()
-            .then(setKategori)
+        getExpenseCategories()
+            .then(setCategories)
             .catch(err => console.error('[PENGELUARAN_KATEGORI]', err))
             .finally(() => setLoading(false))
     }, [])
 
-    return { kategori, loading }
+    return { categories, loading }
 }

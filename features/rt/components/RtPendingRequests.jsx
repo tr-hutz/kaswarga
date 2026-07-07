@@ -5,7 +5,7 @@ import { ChevronDown, ChevronUp, Check, X, Building2, Copy, CheckCheck } from 'l
 import { approveRtRegistration, rejectRtRegistration }       from '@/lib/services/approval.service'
 import { useAuth }                                           from '@/lib/auth/useAuth'
 import { useToast }                                          from '@/components/ui/ToastProvider'
-import { formatTanggal as formatDate }                        from '@/lib/utils'
+import { formatDate }                                         from '@/lib/utils'
 
 const IS_DEV = process.env.NODE_ENV === 'development'
 
@@ -77,7 +77,7 @@ function RequestCard({ req, onAction }) {
         setProcessing(true)
         try {
             const { inviteLinks } = await approveRtRegistration(req.id, membership)
-            toast({ message: `RT "${rtData.nama}" berhasil disetujui dan diaktifkan.`, type: 'success' })
+            toast({ message: `RT "${rtData.name}" berhasil disetujui dan diaktifkan.`, type: 'success' })
             if (IS_DEV && inviteLinks?.length) {
                 setDevLinks(inviteLinks)
                 // Don't call onAction yet — user must dismiss the dev links panel
@@ -116,9 +116,9 @@ function RequestCard({ req, onAction }) {
                 <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                         <div>
-                            <p className="font-medium text-sm">{rtData.nama}</p>
+                            <p className="font-medium text-sm">{rtData.name}</p>
                             <p className="text-xs text-gray-500 mt-0.5">
-                                {rtData.kode} &bull; {rtData.kota} &bull; {formatDate(req.created_at)}
+                                {rtData.code} &bull; {rtData.city} &bull; {formatDate(req.created_at)}
                             </p>
                         </div>
                         <button
@@ -135,11 +135,11 @@ function RequestCard({ req, onAction }) {
 
                             {/* RT details */}
                             <div className="space-y-1">
-                                {(rtData.alamat || rtData.kota) && (
-                                    <p>{[rtData.alamat, rtData.kota, rtData.provinsi].filter(Boolean).join(', ')}</p>
+                                {(rtData.address || rtData.city) && (
+                                    <p>{[rtData.address, rtData.city, rtData.province].filter(Boolean).join(', ')}</p>
                                 )}
-                                {rtData.kodePos  && <p><span className="font-medium">Kode Pos:</span> {rtData.kodePos}</p>}
-                                {rtData.telepon  && <p><span className="font-medium">Telepon:</span> {rtData.telepon}</p>}
+                                {rtData.postalCode  && <p><span className="font-medium">Kode Pos:</span> {rtData.postalCode}</p>}
+                                {rtData.phone  && <p><span className="font-medium">Telepon:</span> {rtData.phone}</p>}
                             </div>
 
                             {/* Management */}

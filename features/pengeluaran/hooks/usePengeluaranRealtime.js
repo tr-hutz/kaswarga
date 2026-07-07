@@ -8,7 +8,7 @@ import {
     supabase
 } from '../../../lib/supabase'
 
-export function usePengeluaranRealtime({
+export function useExpenseRealtime({
 
                                            onReload
 

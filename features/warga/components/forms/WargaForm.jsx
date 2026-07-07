@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createWarga, updateWarga } from '@/lib/services/warga.service'
+import { createResident, updateResident } from '@/lib/services/warga.service'
 
-const EMPTY = { nama: '', blok: '', noRumah: '', noHp: '' }
+const EMPTY = { name: '', block: '', houseNumber: '', phone: '' }
 
 export default function WargaForm({ open, onClose, warga, onSuccess }) {
 
@@ -15,10 +15,10 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
     useEffect(() => {
         if (!warga) { setForm(EMPTY); return }
         setForm({
-            nama:    warga.nama    || '',
-            blok:    warga.blok    || '',
-            noRumah: warga.noRumah || '',
-            noHp:    warga.noHp    || ''
+            name:        warga.name        || '',
+            block:       warga.block       || '',
+            houseNumber: warga.houseNumber || '',
+            phone:       warga.phone       || ''
         })
     }, [warga])
 
@@ -31,9 +31,9 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
         setSaving(true)
         try {
             if (isEdit) {
-                await updateWarga(warga.id, form)
+                await updateResident(warga.id, form)
             } else {
-                await createWarga(form)
+                await createResident(form)
             }
             onSuccess()
         } catch (err) {
@@ -63,8 +63,8 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
                         <input
                             required
                             placeholder="Nama sesuai KTP"
-                            value={form.nama}
-                            onChange={e => set('nama', e.target.value)}
+                            value={form.name}
+                            onChange={e => set('name', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </div>
@@ -73,8 +73,8 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
                         <label className="text-xs text-gray-500 mb-1 block">Blok / Jalan</label>
                         <input
                             placeholder="Blok A / Jl. Kenanga"
-                            value={form.blok}
-                            onChange={e => set('blok', e.target.value)}
+                            value={form.block}
+                            onChange={e => set('block', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </div>
@@ -83,8 +83,8 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
                         <label className="text-xs text-gray-500 mb-1 block">Nomor Rumah</label>
                         <input
                             placeholder="12"
-                            value={form.noRumah}
-                            onChange={e => set('noRumah', e.target.value)}
+                            value={form.houseNumber}
+                            onChange={e => set('houseNumber', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </div>
@@ -93,8 +93,8 @@ export default function WargaForm({ open, onClose, warga, onSuccess }) {
                         <label className="text-xs text-gray-500 mb-1 block">Nomor Telepon</label>
                         <input
                             placeholder="08123456789"
-                            value={form.noHp}
-                            onChange={e => set('noHp', e.target.value)}
+                            value={form.phone}
+                            onChange={e => set('phone', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2.5 text-sm"
                         />
                     </div>

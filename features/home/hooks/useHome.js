@@ -25,7 +25,7 @@ import {
 } from '../../../lib/helpers/payment-status'
 
 import {
-  calculateTunggakan,
+  calculateArrears,
   calculateUpcoming,
   calculatePaidMonths
 } from '../../../lib/helpers/payment-summary'
@@ -94,8 +94,8 @@ export function useHome() {
   ] = useState(null)
 
   const [
-    nominalIuran,
-    setNominalIuran
+    monthlyFee,
+    setMonthlyFee
   ] = useState(0)
 
   const [
@@ -139,9 +139,9 @@ export function useHome() {
         wargaId
       )
 
-      const nominalIuran = membership.rt?.nominal_iuran || 0
+      const monthlyFee = membership.rt?.nominal_iuran || 0
 
-      setNominalIuran(nominalIuran)
+      setMonthlyFee(monthlyFee)
 
       const [
         approvedData,
@@ -307,8 +307,8 @@ export function useHome() {
             statusMap
           ),
 
-        tunggakan:
-          calculateTunggakan(
+        arrears:
+          calculateArrears(
             statusMap,
             summaryYear
           ),
@@ -352,7 +352,7 @@ export function useHome() {
            |--------------------------------------------------------------------------
            */
 
-          let buktiUrl =
+          let proofUrl =
             null
 
           /*
@@ -367,7 +367,7 @@ export function useHome() {
             months,
             year,
             file,
-            buktiUrl
+            proofUrl
 
           })
 
@@ -410,7 +410,7 @@ export function useHome() {
     paymentYear,
     setPaymentYear,
 
-    nominalIuran,
+    monthlyFee,
 
     statusMap,
 

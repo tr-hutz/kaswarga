@@ -1,8 +1,8 @@
 import {
 
-    getWargaStatusLabel,
+    getResidentStatusLabel,
 
-    getWargaStatusClasses
+    getResidentStatusClasses
 
 } from '../../services/warga-status'
 
@@ -23,12 +23,12 @@ export default function WargaStatusBadge({
                 rounded-full
                 text-xs
                 font-medium
-                ${getWargaStatusClasses(status)}
+                ${getResidentStatusClasses(status)}
             `}
         >
 
             {
-                getWargaStatusLabel(
+                getResidentStatusLabel(
                     status
                 )
             }

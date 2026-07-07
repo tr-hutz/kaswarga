@@ -1,9 +1,9 @@
-import { getWargaStatus } from './warga-status'
+import { getResidentStatus } from './warga-status'
 import {
     transformPaymentHistory
 } from './warga-history-transform'
 
-export function transformWarga(
+export function transformResident(
 
     rows = []
 
@@ -18,7 +18,7 @@ export function transformWarga(
          */
 
         const status =
-            getWargaStatus(
+            getResidentStatus(
                 item
             )
 
@@ -38,19 +38,22 @@ export function transformWarga(
             id:
             item.id,
 
-            nama:
+            name:
                 item.nama || '-',
 
-            blok:
+            block:
                 item.blok || '-',
 
-            noRumah:
+            houseNumber:
                 item.no_rumah || '-',
+
+            phone:
+                item.no_hp || null,
 
             rtId:
             item.rt_id,
 
-            aktif:
+            active:
             item.aktif,
 
             createdAt:

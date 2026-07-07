@@ -12,7 +12,7 @@ import {
 
 } from '../../lib/supabase'
 
-export function useKonfirmasiPembayaranRealtime({
+export function usePaymentConfirmationRealtime({
 
                                           onReload
 

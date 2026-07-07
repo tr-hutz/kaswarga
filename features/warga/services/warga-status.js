@@ -1,4 +1,4 @@
-export function getWargaStatus(
+export function getResidentStatus(
 
     warga
 
@@ -13,7 +13,7 @@ export function getWargaStatus(
         : 'inactive'
 }
 
-export function getWargaStatusLabel(
+export function getResidentStatusLabel(
     status
 ) {
 
@@ -30,7 +30,7 @@ export function getWargaStatusLabel(
     }
 }
 
-export function getWargaStatusClasses(
+export function getResidentStatusClasses(
     status
 ) {
 

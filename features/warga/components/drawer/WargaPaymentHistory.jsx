@@ -4,15 +4,15 @@ import {
     MONTHS
 } from '../../../../constants/months'
 
-function getMonthName(bulan) {
+function getMonthName(month) {
 
-    const month =
+    const found =
         MONTHS.find(
             item =>
-                Number(item.id) === Number(bulan)
+                Number(item.id) === Number(month)
         )
 
-    return month?.short || '-'
+    return found?.short || '-'
 }
 
 function getStatusColor(status) {
@@ -101,9 +101,9 @@ export default function WargaPaymentHistory({
                   font-medium
                 "
                             >
-                                {getMonthName(item.bulan)}
+                                {getMonthName(item.month)}
                                 {' '}
-                                {item.tahun}
+                                {item.year}
                             </div>
 
                             <div
@@ -115,7 +115,7 @@ export default function WargaPaymentHistory({
                                 Rp
                                 {' '}
                                 {Number(
-                                    item.nominal || 0
+                                    item.amount || 0
                                 ).toLocaleString('id-ID')}
                             </div>
 
@@ -127,9 +127,9 @@ export default function WargaPaymentHistory({
                 "
                             >
                                 {
-                                    item.tanggal
+                                    item.date
                                         ? new Date(
-                                            item.tanggal
+                                            item.date
                                         ).toLocaleDateString(
                                             'id-ID'
                                         )

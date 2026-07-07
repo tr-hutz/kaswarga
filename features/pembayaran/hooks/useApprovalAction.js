@@ -6,9 +6,9 @@ import {
 
 import {
 
-    approvePembayaran,
+    approvePayment,
 
-    rejectPembayaran
+    rejectPayment
 
 } from '../../../lib/services/payment.service'
 
@@ -51,7 +51,7 @@ export function useApprovalActions({
 
             setLoading(true)
 
-            await approvePembayaran(
+            await approvePayment(
                 konfirmasiId
             )
 
@@ -95,7 +95,7 @@ export function useApprovalActions({
 
             setLoading(true)
 
-            await rejectPembayaran(
+            await rejectPayment(
                 konfirmasiId,
                 alasan
             )

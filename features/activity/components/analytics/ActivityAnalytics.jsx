@@ -18,7 +18,7 @@ export default function ActivityAnalytics({
 
         ).length
 
-    const pengeluaran =
+    const expenseCount =
         rows.filter(
 
             r =>
@@ -27,7 +27,7 @@ export default function ActivityAnalytics({
 
         ).length
 
-    const warga =
+    const residentCount =
         rows.filter(
 
             r =>
@@ -59,12 +59,12 @@ export default function ActivityAnalytics({
 
             <Card
                 title="Pengeluaran"
-                value={pengeluaran}
+                value={expenseCount}
             />
 
             <Card
                 title="Warga Updates"
-                value={warga}
+                value={residentCount}
             />
 
         </div>

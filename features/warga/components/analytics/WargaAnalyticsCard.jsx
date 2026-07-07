@@ -2,9 +2,9 @@
 
 export default function WargaAnalyticsCards({
 
-                                                totalBayar = 0,
-                                                tunggakan = 0,
-                                                totalNominal = 0
+                                                paidCount = 0,
+                                                arrears = 0,
+                                                totalAmount = 0
 
                                             }) {
 
@@ -12,18 +12,18 @@ export default function WargaAnalyticsCards({
 
         {
             label: 'Total Bayar',
-            value: totalBayar
+            value: paidCount
         },
 
         {
             label: 'Tunggakan',
-            value: tunggakan
+            value: arrears
         },
 
         {
             label: 'Total Nominal',
             value:
-                `Rp ${totalNominal.toLocaleString('id-ID')}`
+                `Rp ${totalAmount.toLocaleString('id-ID')}`
         }
     ]
 

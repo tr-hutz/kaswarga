@@ -93,7 +93,7 @@ export default function PaymentForm({
     onSubmit,
     loading,
     statusMap,
-    nominalIuran
+    monthlyFee
 }) {
 
     const ALL_MONTHS    = MONTHS.map(m => m.id)
@@ -109,11 +109,11 @@ export default function PaymentForm({
     /* Helpers                                                                  */
     /* ---------------------------------------------------------------------- */
 
-    function toggleMonth(bulan) {
-        const status = statusMap[bulan]
+    function toggleMonth(month) {
+        const status = statusMap[month]
         if (status === 'approved' || status === 'pending') return
         setSelectedMonths(prev =>
-            prev.includes(bulan) ? prev.filter(m => m !== bulan) : [...prev, bulan]
+            prev.includes(month) ? prev.filter(m => m !== month) : [...prev, month]
         )
     }
 
@@ -136,8 +136,8 @@ export default function PaymentForm({
     /* Derived                                                                  */
     /* ---------------------------------------------------------------------- */
 
-    const totalBulan  = selectedMonths.length
-    const totalIuran  = totalBulan * (nominalIuran || 0)
+    const totalMonths = selectedMonths.length
+    const totalFee    = totalMonths * (monthlyFee || 0)
 
     /* ---------------------------------------------------------------------- */
     /* Render                                                                   */
@@ -200,7 +200,7 @@ export default function PaymentForm({
                             <div className="text-sm opacity-80">
                                 {isDisabled
                                     ? status === 'approved' ? 'Lunas' : 'Menunggu'
-                                    : `Rp ${(nominalIuran || 0).toLocaleString('id-ID')}`
+                                    : `Rp ${(monthlyFee || 0).toLocaleString('id-ID')}`
                                 }
                             </div>
                         </button>
@@ -218,11 +218,11 @@ export default function PaymentForm({
                 <div className="rounded-2xl border p-4 bg-slate-50 space-y-3">
                     <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-600">Jumlah Bulan</span>
-                        <strong>{totalBulan} bulan</strong>
+                        <strong>{totalMonths} bulan</strong>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-600">Total Iuran</span>
-                        <strong>Rp {totalIuran.toLocaleString('id-ID')}</strong>
+                        <strong>Rp {totalFee.toLocaleString('id-ID')}</strong>
                     </div>
                     <div className="pt-1">
                         <button

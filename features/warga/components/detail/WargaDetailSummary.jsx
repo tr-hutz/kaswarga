@@ -24,7 +24,7 @@ export default function WargaDetailSummary({
                         font-bold
                     "
                 >
-                    {warga.nama}
+                    {warga.name}
                 </h2>
 
                 <p
@@ -33,7 +33,7 @@ export default function WargaDetailSummary({
                         text-slate-500
                     "
                 >
-                    Blok {warga.blok} / {warga.noRumah}
+                    Blok {warga.block} / {warga.houseNumber}
                 </p>
 
             </div>
@@ -62,7 +62,7 @@ export default function WargaDetailSummary({
                             font-medium
                         "
                     >
-                        {warga.noHp}
+                        {warga.phone}
                     </p>
 
                 </div>

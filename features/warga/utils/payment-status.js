@@ -1,23 +1,23 @@
 export function getPaymentStatus(
-    totalBayar,
+    paidCount,
     currentMonth
 ) {
 
     if (
-        totalBayar >= currentMonth
+        paidCount >= currentMonth
     ) {
-        return 'lunas'
+        return 'paid'
     }
 
     if (
-        totalBayar >= currentMonth - 2
+        paidCount >= currentMonth - 2
     ) {
-        return 'hampir-lunas'
+        return 'almost-paid'
     }
 
-    if (totalBayar > 0) {
-        return 'menunggak'
+    if (paidCount > 0) {
+        return 'delinquent'
     }
 
-    return 'belum-bayar'
+    return 'never-paid'
 }

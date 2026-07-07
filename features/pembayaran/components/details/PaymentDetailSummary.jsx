@@ -36,7 +36,7 @@ export default function PaymentDetailSummary({
                         font-medium
                     "
                 >
-                    {payment.nama}
+                    {payment.name}
                 </p>
 
             </div>
@@ -57,7 +57,7 @@ export default function PaymentDetailSummary({
                         font-medium
                     "
                 >
-                    Blok {payment.blok} / {payment.noRumah}
+                    Blok {payment.block} / {payment.houseNumber}
                 </p>
 
             </div>
@@ -78,7 +78,7 @@ export default function PaymentDetailSummary({
                         font-medium
                     "
                 >
-                    {payment.tahun}
+                    {payment.year}
                 </p>
 
             </div>
@@ -101,7 +101,7 @@ export default function PaymentDetailSummary({
                 >
                     Rp {
                     Number(
-                        payment.totalBayar || 0
+                        payment.totalAmount || 0
                     ).toLocaleString('id-ID')
                 }
                 </p>

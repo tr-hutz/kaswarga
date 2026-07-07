@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '../../../../lib/supabase'
-import { bulanList, formatBulan, formatAccounting } from '../../../../lib/utils'
+import { monthList, formatMonths, formatAccounting } from '../../../../lib/utils'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 
 const maskAccountNumber = (num) => {
@@ -10,7 +10,7 @@ const maskAccountNumber = (num) => {
   return 'x'.repeat(s.length - 4) + s.slice(-4)
 }
 
-const groupByBulan = (rows = []) => {
+const groupByMonth = (rows = []) => {
   const map = {}
   rows.forEach(r => {
     const m = new Date(r.tanggal).getMonth() + 1
@@ -22,10 +22,10 @@ const groupByBulan = (rows = []) => {
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url)
-  const tahun = searchParams.get('tahun') || new Date().getFullYear()
+  const year = searchParams.get('year') || new Date().getFullYear()
 
-  const start = `${tahun}-01-01`
-  const end = `${parseInt(tahun) + 1}-01-01`
+  const start = `${year}-01-01`
+  const end = `${parseInt(year) + 1}-01-01`
 
   const { data: profil } = await supabase
     .from('rt')
@@ -39,29 +39,29 @@ export async function GET(req) {
     .eq('rt_id', profil?.id)
     .in('role', ['admin', 'bendahara'])
 
-  const namaKetua =
+  const chairmanName =
     members?.find(m => m.role === 'admin')
       ?.user?.nama || '-'
 
-  const namaBendahara =
+  const treasurerName =
     members?.find(m => m.role === 'bendahara')
       ?.user?.nama || '-'
 
-  const { data: pemasukan } = await supabase
+  const { data: incomeRows } = await supabase
     .from('pembayaran')
     .select(`*, warga(nama, blok, no_rumah)`)
     .gte('tanggal', start)
     .lt('tanggal', end)
 
-  const { data: pengeluaran } = await supabase
+  const { data: expenseRows } = await supabase
     .from('pengeluaran')
     .select('*')
     .gte('tanggal', start)
     .lt('tanggal', end)
 
-  const totalMasuk = (pemasukan || []).reduce((a, b) => a + (b.jumlah_bayar || 0), 0)
-  const totalKeluar = (pengeluaran || []).reduce((a, b) => a + (b.nominal || 0), 0)
-  const saldo = totalMasuk - totalKeluar
+  const totalIncome  = (incomeRows  || []).reduce((a, b) => a + (b.jumlah_bayar || 0), 0)
+  const totalExpense = (expenseRows || []).reduce((a, b) => a + (b.nominal     || 0), 0)
+  const balance = totalIncome - totalExpense
 
   // ===== PDF =====
   const pdfDoc = await PDFDocument.create()
@@ -124,7 +124,7 @@ export async function GET(req) {
     page.drawText('LAPORAN KAS WARGA', {
       x: leftX, y: topY, size: 16, font: bold
     })
-    page.drawText(`Tahun ${tahun}`, {
+    page.drawText(`Tahun ${year}`, {
       x: leftX, y: topY - 18, size: 11, font
     })
 
@@ -161,13 +161,13 @@ export async function GET(req) {
     })
 
     page.drawText('Masuk', { x: leftX, y: sY - 16, size: 10, font })
-    drawTextRight(formatAccounting(totalMasuk), 300, sY - 16)
+    drawTextRight(formatAccounting(totalIncome), 300, sY - 16)
 
     page.drawText('Keluar', { x: leftX, y: sY - 32, size: 10, font })
-    drawTextRight(formatAccounting(totalKeluar), 300, sY - 32)
+    drawTextRight(formatAccounting(totalExpense), 300, sY - 32)
 
     page.drawText('Saldo', { x: leftX, y: sY - 48, size: 10, font: bold })
-    drawTextRight(formatAccounting(saldo), 300, sY - 48, 10, true)
+    drawTextRight(formatAccounting(balance), 300, sY - 48, 10, true)
 
     page.drawText('INFORMASI REKENING', {
       x: rightX, y: sY, size: 12, font: bold
@@ -186,23 +186,23 @@ export async function GET(req) {
     y -= 8
   }
 
-  // ===== pemasukan =====
-  const drawPemasukan = () => {
+  // ===== income =====
+  const drawIncome = () => {
     ensureSpace(24)
     page.drawText('PEMASUKAN', { x: leftX, y, size: 12, font: bold })
     y -= 18
 
-    const byMonth = groupByBulan(pemasukan || [])
+    const byMonth = groupByMonth(incomeRows || [])
 
     Object.keys(byMonth)
       .sort((a, b) => a - b)
       .forEach((m) => {
-        const bulanNama = bulanList.find(b => b.id == m)?.nama
+        const monthName = monthList.find(b => b.id == m)?.name
 
         const rows = byMonth[m]
           .sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal))
 
-        const totalBulan = rows.reduce(
+        const monthTotal = rows.reduce(
           (sum, r) => sum + (r.jumlah_bayar || 0), 0
         )
 
@@ -210,11 +210,11 @@ export async function GET(req) {
 
         const headerY = y
 
-        page.drawText(`— ${bulanNama}`, {
+        page.drawText(`— ${monthName}`, {
           x: leftX, y, size: 11, font: bold
         })
 
-        drawTextRight(formatAccounting(totalBulan), COL_RIGHT, y, 11, true)
+        drawTextRight(formatAccounting(monthTotal), COL_RIGHT, y, 11, true)
 
         page.drawLine({
           start: { x: leftX, y: headerY - 3 },
@@ -227,8 +227,8 @@ export async function GET(req) {
         rows.forEach(p => {
           if (y < MARGIN_BOTTOM) {
             newPage()
-            page.drawText(`— ${bulanNama}`, { x: leftX, y, size: 11, font: bold })
-            drawTextRight(formatAccounting(totalBulan), COL_RIGHT, y, 11, true)
+            page.drawText(`— ${monthName}`, { x: leftX, y, size: 11, font: bold })
+            drawTextRight(formatAccounting(monthTotal), COL_RIGHT, y, 11, true)
             y -= 16
           }
 
@@ -238,7 +238,7 @@ export async function GET(req) {
             `${p.warga?.nama || '-'} (${p.warga?.blok || '-'}-${p.warga?.no_rumah || '-'})`,
             { x: 90, y, size: 9, font }
           )
-          page.drawText(formatBulan(p.bulan_dibayar), { x: 320, y, size: 9, font })
+          page.drawText(formatMonths(p.bulan_dibayar), { x: 320, y, size: 9, font })
           drawTextRight(formatAccounting(p.jumlah_bayar), COL_RIGHT, y)
           y -= 14
         })
@@ -247,23 +247,23 @@ export async function GET(req) {
       })
   }
 
-  // ===== pengeluaran =====
-  const drawPengeluaran = () => {
+  // ===== expense =====
+  const drawExpense = () => {
     ensureSpace(24)
     page.drawText('PENGELUARAN', { x: leftX, y, size: 12, font: bold })
     y -= 18
 
-    const byMonth = groupByBulan(pengeluaran || [])
+    const byMonth = groupByMonth(expenseRows || [])
 
     Object.keys(byMonth)
       .sort((a, b) => a - b)
       .forEach((m) => {
-        const bulanNama = bulanList.find(b => b.id == m)?.nama
+        const monthName = monthList.find(b => b.id == m)?.name
 
         const rows = byMonth[m]
           .sort((a, b) => new Date(a.tanggal) - new Date(b.tanggal))
 
-        const totalBulan = rows.reduce(
+        const monthTotal = rows.reduce(
           (sum, r) => sum + (r.nominal || 0), 0
         )
 
@@ -271,11 +271,11 @@ export async function GET(req) {
 
         const headerY = y
 
-        page.drawText(`— ${bulanNama}`, {
+        page.drawText(`— ${monthName}`, {
           x: leftX, y, size: 11, font: bold
         })
 
-        drawTextRight(formatAccounting(totalBulan), COL_RIGHT, y, 11, true)
+        drawTextRight(formatAccounting(monthTotal), COL_RIGHT, y, 11, true)
 
         page.drawLine({
           start: { x: leftX, y: headerY - 3 },
@@ -288,8 +288,8 @@ export async function GET(req) {
         rows.forEach(p => {
           if (y < MARGIN_BOTTOM) {
             newPage()
-            page.drawText(`— ${bulanNama}`, { x: leftX, y, size: 11, font: bold })
-            drawTextRight(formatAccounting(totalBulan), COL_RIGHT, y, 11, true)
+            page.drawText(`— ${monthName}`, { x: leftX, y, size: 11, font: bold })
+            drawTextRight(formatAccounting(monthTotal), COL_RIGHT, y, 11, true)
             y -= 16
           }
 
@@ -325,7 +325,7 @@ export async function GET(req) {
       start: { x: leftSign, y: yTtd - 70 },
       end: { x: leftSign + 160, y: yTtd - 70 }
     })
-    page.drawText(namaKetua, {
+    page.drawText(chairmanName, {
       x: leftSign, y: yTtd - 90, size: 10, font: bold
     })
 
@@ -334,7 +334,7 @@ export async function GET(req) {
       start: { x: rightSign, y: yTtd - 70 },
       end: { x: rightSign + 160, y: yTtd - 70 }
     })
-    page.drawText(namaBendahara, {
+    page.drawText(treasurerName, {
       x: rightSign, y: yTtd - 90, size: 10, font: bold
     })
 
@@ -347,8 +347,8 @@ export async function GET(req) {
   y -= 18
 
   drawSummary()
-  drawPemasukan()
-  drawPengeluaran()
+  drawIncome()
+  drawExpense()
   drawSignature()
 
   // ===== nomor halaman =====
@@ -369,7 +369,7 @@ export async function GET(req) {
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '')
 
-  const filename = `laporan-kas-${tahun}-${rtSlug}.pdf`
+  const filename = `laporan-kas-${year}-${rtSlug}.pdf`
 
   return new NextResponse(pdfBytes, {
     headers: {

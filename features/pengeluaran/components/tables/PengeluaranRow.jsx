@@ -19,23 +19,23 @@ export default function PengeluaranRow({
             onClick={() => onSelect(row)}
         >
             <td className="p-4 font-mono text-xs text-gray-500">
-                {row.nomorBukti || '—'}
+                {row.receiptNumber || '—'}
             </td>
 
             <td className="p-4">
-                {row.tanggalLabel || row.tanggal}
+                {row.dateLabel || row.date}
             </td>
 
             <td className="p-4">
-                {row.kategori || '—'}
+                {row.category || '—'}
             </td>
 
             <td className="p-4 text-gray-600">
-                {row.penerima || '—'}
+                {row.recipient || '—'}
             </td>
 
             <td className="p-4 text-right font-medium">
-                {formatRupiah(row.nominal || 0)}
+                {formatRupiah(row.amount || 0)}
             </td>
 
             <td className="p-4 text-center">

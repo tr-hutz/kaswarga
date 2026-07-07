@@ -1,4 +1,4 @@
-export function buildPengeluaranAnalytics(
+export function buildExpenseAnalytics(
 
     rows = []
 
@@ -10,7 +10,7 @@ export function buildPengeluaranAnalytics(
      |-------------------------------------------------------------
      */
 
-    const totalNominal =
+    const totalAmount =
         rows.reduce(
 
             (
@@ -20,7 +20,7 @@ export function buildPengeluaranAnalytics(
 
                 sum +
                 Number(
-                    item.nominal || 0
+                    item.amount || 0
                 ),
 
             0
@@ -32,21 +32,21 @@ export function buildPengeluaranAnalytics(
      |-------------------------------------------------------------
      */
 
-    const kategoriMap = {}
+    const categoryMap = {}
 
     rows.forEach(item => {
 
-        const kategori =
-            item.kategori || '-'
+        const category =
+            item.category || '-'
 
-        if (!kategoriMap[kategori]) {
+        if (!categoryMap[category]) {
 
-            kategoriMap[kategori] = 0
+            categoryMap[category] = 0
         }
 
-        kategoriMap[kategori] +=
+        categoryMap[category] +=
             Number(
-                item.nominal || 0
+                item.amount || 0
             )
     })
 
@@ -56,9 +56,9 @@ export function buildPengeluaranAnalytics(
      |-------------------------------------------------------------
      */
 
-    const topKategori =
+    const topCategory =
         Object.entries(
-            kategoriMap
+            categoryMap
         )
 
             .sort(
@@ -74,13 +74,13 @@ export function buildPengeluaranAnalytics(
 
     return {
 
-        totalNominal,
+        totalAmount,
 
-        totalTransaksi:
+        totalCount:
         rows.length,
 
-        kategoriMap,
+        categoryMap,
 
-        topKategori
+        topCategory
     }
 }

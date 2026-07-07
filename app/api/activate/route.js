@@ -63,7 +63,7 @@ export async function POST(req) {
             bendahara: regReq?.nama_bendahara,
             warga:     regReq?.nama_warga,
         }
-        const namaUser = nameByRole[invite.role] || user.user_metadata?.full_name || user.email.split('@')[0]
+        const displayName = nameByRole[invite.role] || user.user_metadata?.full_name || user.email.split('@')[0]
 
         // Remove any stale users row from a previously deleted auth account with the same
         // email. Supabase auth enforces unique emails, so if a different ID owns this email
@@ -80,7 +80,7 @@ export async function POST(req) {
         await supabaseAdmin.from('users').upsert({
             id:    user.id,
             email: user.email,
-            nama:  namaUser
+            nama:  displayName
         }, { onConflict: 'id' })
 
         // Check for existing membership (idempotent).
@@ -118,7 +118,7 @@ export async function POST(req) {
             } else {
                 const wargaData = {
                     rt_id: invite.rt_id,
-                    nama:  namaUser,
+                    nama:  displayName,
                     email: user.email,
                     aktif: true,
                 }
@@ -173,14 +173,14 @@ export async function POST(req) {
             .eq('id', invite.id)
 
         // Get RT name for response
-        let rtNama = null
+        let rtName = null
         if (invite.rt_id) {
             const { data: rt } = await supabaseAdmin
                 .from('rt')
                 .select('nama')
                 .eq('id', invite.rt_id)
                 .single()
-            rtNama = rt?.nama || null
+            rtName = rt?.nama || null
         }
 
         // Log activity
@@ -198,8 +198,8 @@ export async function POST(req) {
         return NextResponse.json({
             ok:       true,
             role:     invite.role,
-            rtNama,
-            namaUser
+            rtName,
+            displayName
         })
 
     } catch (err) {

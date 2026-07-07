@@ -11,29 +11,29 @@ export function transformPaymentHistory(
 
         return details.map(detail => {
 
-            const month =
+            const monthEntry =
                 MONTHS.find(
                     m => Number(m.id) === Number(detail.bulan)
                 )
 
             return {
 
-                pembayaranId:
+                paymentId:
                 item.id,
 
-                tanggal:
+                date:
                 item.tanggal,
 
-                tahun:
+                year:
                 item.tahun,
 
-                bulan:
+                month:
                 detail.bulan,
 
-                bulanLabel:
-                    month?.name || '-',
+                monthLabel:
+                    monthEntry?.name || '-',
 
-                nominal:
+                amount:
                     Number(detail.nominal || 0)
             }
         })

@@ -138,25 +138,25 @@ export default function DashboardView({
 
           <InsightCard
             title="Lunas"
-            value={paymentHealth.lunas}
+            value={paymentHealth.paid}
             valueColor="text-green-600"
           />
 
           <InsightCard
             title="Hampir Lunas"
-            value={paymentHealth.hampirLunas}
+            value={paymentHealth.almostPaid}
             valueColor="text-yellow-600"
           />
 
           <InsightCard
             title="Menunggak"
-            value={paymentHealth.menunggak}
+            value={paymentHealth.delinquent}
             valueColor="text-orange-600"
           />
 
           <InsightCard
             title="Belum Bayar"
-            value={paymentHealth.belumBayar}
+            value={paymentHealth.neverPaid}
             valueColor="text-red-600"
           />
 
@@ -184,28 +184,28 @@ export default function DashboardView({
 
           <InsightCard
             title="Saldo Saat Ini"
-            value={formatRupiah(financialInsight.saldo)}
+            value={formatRupiah(financialInsight.balance)}
             subtitle="saldo berjalan"
             valueColor="text-blue-700"
           />
 
           <InsightCard
             title="Pemasukan"
-            value={formatRupiah(financialInsight.pemasukan)}
+            value={formatRupiah(financialInsight.income)}
             subtitle="tahun ini"
             valueColor="text-green-600"
           />
 
           <InsightCard
             title="Pengeluaran"
-            value={formatRupiah(financialInsight.pengeluaran)}
+            value={formatRupiah(financialInsight.expense)}
             subtitle="tahun ini"
             valueColor="text-orange-600"
           />
 
           <InsightCard
             title="Tunggakan"
-            value={formatRupiah(financialInsight.tunggakan)}
+            value={formatRupiah(financialInsight.arrears)}
             subtitle="perlu ditagih"
             valueColor="text-red-600"
           />

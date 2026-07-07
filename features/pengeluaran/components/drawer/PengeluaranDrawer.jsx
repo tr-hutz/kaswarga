@@ -33,8 +33,8 @@ export default function PengeluaranDrawer({
                 <div className="flex justify-between items-start mb-6">
                     <div>
                         <h2 className="text-xl font-semibold">Detail Pengeluaran</h2>
-                        {row.nomorBukti && (
-                            <p className="font-mono text-sm text-gray-500 mt-0.5">{row.nomorBukti}</p>
+                        {row.receiptNumber && (
+                            <p className="font-mono text-sm text-gray-500 mt-0.5">{row.receiptNumber}</p>
                         )}
                     </div>
                     <div className="flex items-center gap-3">
@@ -51,16 +51,16 @@ export default function PengeluaranDrawer({
                 {/* Fields */}
                 <div className="space-y-4">
 
-                    <Field label="Tanggal"        value={row.tanggalLabel || row.tanggal} />
-                    <Field label="Kategori"       value={row.kategori || '—'} />
-                    <Field label="Nominal"        value={`Rp ${formatRupiah(row.nominal)}`} />
+                    <Field label="Tanggal"        value={row.dateLabel || row.date} />
+                    <Field label="Kategori"       value={row.category || '—'} />
+                    <Field label="Nominal"        value={`Rp ${formatRupiah(row.amount)}`} />
 
-                    {row.penerima && (
-                        <Field label="Mitra / Penerima" value={row.penerima} />
+                    {row.recipient && (
+                        <Field label="Mitra / Penerima" value={row.recipient} />
                     )}
 
-                    {row.deskripsi && (
-                        <Field label="Deskripsi" value={row.deskripsi} />
+                    {row.description && (
+                        <Field label="Deskripsi" value={row.description} />
                     )}
 
                 </div>
@@ -75,19 +75,19 @@ export default function PengeluaranDrawer({
                 {row.status === 'rejected' && (
                     <div className="mt-6 p-4 bg-red-50 rounded-xl border border-red-100 text-sm text-red-800 space-y-1">
                         <p className="font-medium">Ditolak</p>
-                        {row.catatanPenolakan && (
-                            <p className="text-red-700">{row.catatanPenolakan}</p>
+                        {row.rejectionNote && (
+                            <p className="text-red-700">{row.rejectionNote}</p>
                         )}
                     </div>
                 )}
 
                 {/* Nota */}
-                {row.notaUrl && (
+                {row.receiptUrl && (
                     <div className="mt-6">
                         <p className="text-sm text-slate-500 mb-2">Nota</p>
-                        {row.notaUrl.endsWith('.pdf') ? (
+                        {row.receiptUrl.endsWith('.pdf') ? (
                             <a
-                                href={row.notaUrl}
+                                href={row.receiptUrl}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="text-blue-600 text-sm underline"
@@ -97,7 +97,7 @@ export default function PengeluaranDrawer({
                         ) : (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
-                                src={row.notaUrl}
+                                src={row.receiptUrl}
                                 alt="Nota"
                                 className="rounded-xl border w-full object-contain"
                             />

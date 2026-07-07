@@ -52,7 +52,7 @@ export default function PaymentSummary({
             font-bold
           "
         >
-          {summary.tunggakan}
+          {summary.arrears}
         </div>
       </div>
 

@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getWarga }            from '../../../lib/services/warga.service'
+import { getResidents }        from '../../../lib/services/warga.service'
 import { supabase }            from '../../../lib/supabase'
 import { useAuth }             from '../../../lib/auth/useAuth'
 
-export function useWargaData({ search = '', status = 'aktif' } = {}) {
+export function useResidentData({ search = '', status = 'aktif' } = {}) {
 
     const { membership } = useAuth()
 
@@ -40,7 +40,7 @@ export function useWargaData({ search = '', status = 'aktif' } = {}) {
     async function loadData() {
         setLoading(true)
         try {
-            const result = await getWarga({ search, status })
+            const result = await getResidents({ search, status })
             setData(result || [])
         } catch (err) {
             console.error('[WARGA]', err)

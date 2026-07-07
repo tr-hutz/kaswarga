@@ -76,7 +76,7 @@ export default function MonthlyCollectionChart({
             />
 
             <XAxis
-              dataKey="bulan"
+              dataKey="month"
             />
 
             <YAxis />

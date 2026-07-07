@@ -2,11 +2,11 @@
 
 export default function TunggakanAlert({
 
-                                           tunggakan = 0
+                                           arrears = 0
 
                                        }) {
 
-    if (tunggakan <= 0) {
+    if (arrears <= 0) {
         return null
     }
 
@@ -27,7 +27,7 @@ export default function TunggakanAlert({
             sebanyak
             <strong>
                 {' '}
-                {tunggakan} bulan
+                {arrears} bulan
             </strong>
 
         </div>

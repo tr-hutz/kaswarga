@@ -23,7 +23,7 @@ const COLUMN_ALIASES = {
     phone:         'no_hp',
 }
 
-export function useWargaImport(onSuccess) {
+export function useResidentImport(onSuccess) {
     return useImport({
         columnAliases:     COLUMN_ALIASES,
         isValidRow:        r => !!r.nama?.trim(),

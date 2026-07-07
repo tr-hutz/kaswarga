@@ -36,7 +36,7 @@ export default function PaymentRow({
                     py-4
                 "
             >
-                {row.nama}
+                {row.name}
             </td>
 
             <td
@@ -45,7 +45,7 @@ export default function PaymentRow({
                     py-4
                 "
             >
-                Blok {row.blok} / {row.noRumah}
+                Blok {row.block} / {row.houseNumber}
             </td>
 
             <td
@@ -54,7 +54,7 @@ export default function PaymentRow({
                     py-4
                 "
             >
-                {row.bulanLabel || '-'}
+                {row.monthLabel || '-'}
             </td>
 
             <td
@@ -65,7 +65,7 @@ export default function PaymentRow({
             >
                 {
                 formatRupiah(
-                    row.totalBayar || 0
+                    row.totalAmount || 0
                 )
             }
             </td>

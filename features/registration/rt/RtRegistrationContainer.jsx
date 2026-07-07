@@ -5,11 +5,11 @@ import { generateRtCode, submitRtRegistration }       from '@/lib/services/regis
 import RtRegistrationView                             from './RtRegistrationView'
 
 const EMPTY = {
-    nama: '', kode: '', alamat: '', kota: '', provinsi: '', kodePos: '',
-    nominalIuran: '', namaBank: '', nomorRekening: '', atasNama: '',
-    namaKetua: '', emailKetua: '',
-    namaAdmin: '', emailAdmin: '',
-    namaBendahara: '', emailBendahara: ''
+    name: '', code: '', address: '', city: '', province: '', postalCode: '',
+    monthlyFee: '', bankName: '', accountNumber: '', accountHolder: '',
+    chairmanName: '', chairmanEmail: '',
+    adminName: '', adminEmail: '',
+    treasurerName: '', treasurerEmail: ''
 }
 
 export default function RtRegistrationContainer() {
@@ -25,11 +25,11 @@ export default function RtRegistrationContainer() {
         setError('')
     }
 
-    async function handleGenerateKode() {
+    async function handleGenerateCode() {
         setGenerating(true)
         try {
-            const kode = await generateRtCode()
-            set('kode', kode)
+            const code = await generateRtCode()
+            set('code', code)
         } catch (err) {
             setError('Gagal generate kode: ' + err.message)
         } finally {
@@ -42,14 +42,14 @@ export default function RtRegistrationContainer() {
         setError('')
 
         // Validate unique emails
-        const emails = [form.emailKetua, form.emailAdmin, form.emailBendahara].filter(Boolean)
+        const emails = [form.chairmanEmail, form.adminEmail, form.treasurerEmail].filter(Boolean)
         const unique  = new Set(emails.map(e => e.toLowerCase()))
         if (unique.size !== emails.length) {
             setError('Email ketua, admin, dan bendahara harus berbeda satu sama lain.')
             return
         }
 
-        if (!form.kode) {
+        if (!form.code) {
             setError('Kode RT wajib diisi. Gunakan tombol Generate atau isi manual.')
             return
         }
@@ -57,23 +57,23 @@ export default function RtRegistrationContainer() {
         setSubmitting(true)
         try {
             await submitRtRegistration({
-                namaKetua:      form.namaKetua,
-                emailKetua:     form.emailKetua,
-                namaAdmin:      form.namaAdmin,
-                emailAdmin:     form.emailAdmin,
-                namaBendahara:  form.namaBendahara  || null,
-                emailBendahara: form.emailBendahara || null,
+                chairmanName:   form.chairmanName,
+                chairmanEmail:  form.chairmanEmail,
+                adminName:      form.adminName,
+                adminEmail:     form.adminEmail,
+                treasurerName:  form.treasurerName  || null,
+                treasurerEmail: form.treasurerEmail || null,
                 rtData: {
-                    nama:          form.nama,
-                    kode:          form.kode,
-                    alamat:        form.alamat,
-                    kota:          form.kota,
-                    provinsi:      form.provinsi,
-                    kodePos:       form.kodePos,
-                    nominalIuran:  Number(form.nominalIuran) || 0,
-                    namaBank:      form.namaBank,
-                    nomorRekening: form.nomorRekening,
-                    atasNama:      form.atasNama
+                    name:          form.name,
+                    code:          form.code,
+                    address:       form.address,
+                    city:          form.city,
+                    province:      form.province,
+                    postalCode:    form.postalCode,
+                    monthlyFee:    Number(form.monthlyFee) || 0,
+                    bankName:      form.bankName,
+                    accountNumber: form.accountNumber,
+                    accountHolder: form.accountHolder
                 }
             })
             setSuccess(true)
@@ -92,7 +92,7 @@ export default function RtRegistrationContainer() {
             submitting={submitting}
             error={error}
             success={success}
-            onGenerateKode={handleGenerateKode}
+            onGenerateCode={handleGenerateCode}
             onSubmit={handleSubmit}
         />
     )

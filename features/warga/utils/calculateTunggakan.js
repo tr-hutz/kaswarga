@@ -1,10 +1,10 @@
-export function calculateTunggakan(
-    totalBayar,
+export function calculateArrears(
+    paidCount,
     currentMonth
 ) {
 
     return Math.max(
-        currentMonth - totalBayar,
+        currentMonth - paidCount,
         0
     )
 }

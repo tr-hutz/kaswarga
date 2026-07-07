@@ -81,7 +81,7 @@ export function useDashboardAnalytics() {
          * payment health
          */
 
-        const warga =
+        const residents =
           data.wargaAnalytics || []
 
         const currentMonth =
@@ -91,45 +91,45 @@ export function useDashboardAnalytics() {
         const paymentHealth = {
 
           totalWarga:
-          warga.length,
+          residents.length,
 
-          lunas:
-          warga.filter(item =>
+          paid:
+          residents.filter(item =>
 
-              item.totalBayar >=
+              item.paidCount >=
               currentMonth
 
           ).length,
 
-          hampirLunas:
-          warga.filter(item =>
+          almostPaid:
+          residents.filter(item =>
 
-              item.totalBayar >=
+              item.paidCount >=
               currentMonth - 2
 
               &&
 
-              item.totalBayar <
+              item.paidCount <
               currentMonth
 
           ).length,
 
-          menunggak:
-          warga.filter(item =>
+          delinquent:
+          residents.filter(item =>
 
-              item.totalBayar > 0
+              item.paidCount > 0
 
               &&
 
-              item.totalBayar <
+              item.paidCount <
               currentMonth - 2
 
           ).length,
 
-          belumBayar:
-          warga.filter(item =>
+          neverPaid:
+          residents.filter(item =>
 
-              item.totalBayar === 0
+              item.paidCount === 0
 
           ).length
 
@@ -140,10 +140,10 @@ export function useDashboardAnalytics() {
         )
 
         setFinancialInsight({
-          saldo:      data.insight.saldoTerkini,
-          pemasukan:  data.insight.totalPemasukan,
-          pengeluaran: data.insight.totalPengeluaran,
-          tunggakan:  data.insight.totalTunggakan
+          balance: data.insight.currentBalance,
+          income:  data.insight.totalIncome,
+          expense: data.insight.totalExpense,
+          arrears: data.insight.totalArrears
         })
 
       } catch (err) {

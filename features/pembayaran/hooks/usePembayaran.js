@@ -8,12 +8,12 @@ import {
 import { useSearchParams } from 'next/navigation'
 
 import {
-    getKonfirmasiPembayaran
+    getPaymentConfirmations
 } from '../../../lib/services/payment.service'
 
 const VALID_STATUSES = ['pending', 'approved', 'rejected']
 
-export function usePembayaran() {
+export function usePayment() {
 
     const searchParams = useSearchParams()
 
@@ -77,9 +77,9 @@ export function usePembayaran() {
         try {
 
             const data =
-                await getKonfirmasiPembayaran({
+                await getPaymentConfirmations({
 
-                    tahun: year,
+                    year,
                     status,
                     search
 

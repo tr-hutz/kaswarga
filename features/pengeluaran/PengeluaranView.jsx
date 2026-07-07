@@ -11,7 +11,7 @@ export default function PengeluaranView({
     /* filters */
     search,
     setSearch,
-    kategori,
+    category,
     setKategori,
 
     /* role */
@@ -71,7 +71,7 @@ export default function PengeluaranView({
                 <PengeluaranToolbar
                     search={search}
                     setSearch={setSearch}
-                    kategori={kategori}
+                    category={category}
                     setKategori={setKategori}
                     role={role}
                     pendingCount={pendingCount}

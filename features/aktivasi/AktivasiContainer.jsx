@@ -18,8 +18,8 @@ export default function AktivasiContainer() {
 
     const [state,         setState]         = useState(STATE.LOADING)
     const [email,         setEmail]         = useState(null)
-    const [namaUser,      setNamaUser]      = useState(null)
-    const [rtNama,        setRtNama]        = useState(null)
+    const [displayName,   setDisplayName]   = useState(null)
+    const [rtName,        setRtName]        = useState(null)
     const [resending,     setResending]     = useState(false)
     const [resendDone,    setResendDone]    = useState(false)
     const [errMsg,        setErrMsg]        = useState('')
@@ -82,8 +82,8 @@ export default function AktivasiContainer() {
             const body = await res.json()
 
             if (res.ok) {
-                setNamaUser(body.namaUser || null)
-                setRtNama(body.rtNama || null)
+                setDisplayName(body.displayName || null)
+                setRtName(body.rtName || null)
                 setState(STATE.SET_PASSWORD)
                 return
             }
@@ -174,11 +174,11 @@ export default function AktivasiContainer() {
                             <span className="text-xs font-medium">Akun berhasil diaktifkan</span>
                         </div>
                         <h1 className="text-xl font-bold">Buat Password</h1>
-                        {(namaUser || rtNama) && (
+                        {(displayName || rtName) && (
                             <p className="text-sm font-medium text-gray-700">
-                                {namaUser && <span>{namaUser}</span>}
-                                {namaUser && rtNama && <span className="text-gray-300"> · </span>}
-                                {rtNama && <span>{rtNama}</span>}
+                                {displayName && <span>{displayName}</span>}
+                                {displayName && rtName && <span className="text-gray-300"> · </span>}
+                                {rtName && <span>{rtName}</span>}
                             </p>
                         )}
                         <p className="text-sm text-gray-500">

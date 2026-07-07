@@ -1,7 +1,7 @@
 'use client'
 
 import {
-    deleteWarga
+    deleteResident
 } from '@/lib/services/warga.service'
 
 export default function WargaRow({
@@ -28,7 +28,7 @@ export default function WargaRow({
 
         try {
 
-            await deleteWarga(
+            await deleteResident(
                 item.id
             )
 
@@ -62,25 +62,25 @@ export default function WargaRow({
                     onDetail(item)
                 }
             >
-                {item.nama}
+                {item.name}
             </td>
 
             <td className="p-4">
-                {item.blok}
+                {item.block}
             </td>
 
             <td className="p-4">
-                {item.noRumah}
+                {item.houseNumber}
             </td>
 
             <td className="p-4">
-                {item.noHp || '-'}
+                {item.phone || '-'}
             </td>
 
             <td className="p-4">
 
                 {
-                    item.aktif
+                    item.active
                         ? 'Aktif'
                         : 'Nonaktif'
                 }

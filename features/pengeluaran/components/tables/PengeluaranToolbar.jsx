@@ -1,14 +1,14 @@
 'use client'
 
 import PageToolbar from '../../../../components/toolbar/PageToolbar'
-import { usePengeluaranKategori } from '../../hooks/usePengeluaranKategori'
+import { useExpenseCategories } from '../../hooks/usePengeluaranKategori'
 
 export default function PengeluaranToolbar({
     search,
     setSearch,
 
-    kategori,
-    setKategori,
+    category,
+    setCategory,
 
     role,
     pendingCount,
@@ -20,9 +20,9 @@ export default function PengeluaranToolbar({
     onImport,
 }) {
 
-    const { kategori: kategoriList } = usePengeluaranKategori()
+    const { categories } = useExpenseCategories()
 
-    const filterOptions = kategoriList.map(k => ({
+    const filterOptions = categories.map(k => ({
         label: k.nama,
         value: k.nama,
     }))
@@ -39,8 +39,8 @@ export default function PengeluaranToolbar({
                 setSearch={setSearch}
                 searchPlaceholder="Cari pengeluaran..."
 
-                filterValue={kategori}
-                setFilterValue={setKategori}
+                filterValue={category}
+                setFilterValue={setCategory}
                 filterPlaceholder="Semua Kategori"
                 filterOptions={filterOptions}
 

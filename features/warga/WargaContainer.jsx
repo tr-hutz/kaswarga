@@ -5,11 +5,11 @@ import {
 } from 'react'
 
 import {
-    useWargaData
+    useResidentData
 } from './hooks/useWargaData'
 
 import {
-    useWargaActions
+    useResidentActions
 } from './hooks/useWargaActions'
 
 import { useToast } from '@/components/ui/ToastProvider'
@@ -51,7 +51,7 @@ export default function WargaContainer() {
         pendingLoading,
         refresh
 
-    } = useWargaData({
+    } = useResidentData({
 
         search,
         status
@@ -66,7 +66,7 @@ export default function WargaContainer() {
 
     const { toast } = useToast()
 
-    const actions = useWargaActions((inserted) => {
+    const actions = useResidentActions((inserted) => {
         refresh()
         toast({ message: `${inserted} data warga berhasil diimpor.`, type: 'success' })
     })

@@ -19,7 +19,7 @@ export default function HomeView({
   paymentYear,
   setPaymentYear,
 
-  nominalIuran,
+  monthlyFee,
 
   submitPayment,
 
@@ -115,19 +115,19 @@ export default function HomeView({
         {MONTHS.map(
           monthData => {
 
-            const bulan =
+            const monthId =
               monthData.id
 
             return (
 
               <MonthCard
-                key={bulan}
+                key={monthId}
                 month={
                   monthData.short
                 }
                 status={
                   statusMap[
-                  bulan
+                  monthId
                   ]
                 }
               />
@@ -143,7 +143,7 @@ export default function HomeView({
       <PaymentForm
         paymentYear={paymentYear}
         setPaymentYear={setPaymentYear}
-        nominalIuran={nominalIuran}
+        monthlyFee={monthlyFee}
         onSubmit={submitPayment}
         loading={submitting}
         statusMap={formStatusMap}

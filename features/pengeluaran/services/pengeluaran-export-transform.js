@@ -1,7 +1,7 @@
 import * as XLSX
     from 'xlsx'
 
-export async function exportPengeluaranExcel(
+export async function exportExpenseToExcel(
     data = []
 ) {
 
@@ -9,22 +9,22 @@ export async function exportPengeluaranExcel(
         data.map(item => ({
 
             'Nomor Bukti':
-            item.nomorBukti || '',
+            item.receiptNumber || '',
 
             Tanggal:
-            item.tanggalLabel,
+            item.dateLabel,
 
             Kategori:
-            item.kategori,
+            item.category,
 
             'Mitra / Penerima':
-            item.penerima || '',
+            item.recipient || '',
 
             Deskripsi:
-            item.deskripsi,
+            item.description,
 
             Nominal:
-            item.nominal,
+            item.amount,
 
             Status:
             item.status || 'pending'
@@ -53,7 +53,7 @@ export async function exportPengeluaranExcel(
     )
 }
 
-export async function exportPengeluaranCSV(
+export async function exportExpenseToCSV(
     data = []
 ) {
 
@@ -61,22 +61,22 @@ export async function exportPengeluaranCSV(
         data.map(item => ({
 
             nomor_bukti:
-            item.nomorBukti || '',
+            item.receiptNumber || '',
 
             tanggal:
-            item.tanggalLabel,
+            item.dateLabel,
 
             kategori:
-            item.kategori,
+            item.category,
 
             penerima:
-            item.penerima || '',
+            item.recipient || '',
 
             deskripsi:
-            item.deskripsi,
+            item.description,
 
             nominal:
-            item.nominal,
+            item.amount,
 
             status:
             item.status || 'pending'

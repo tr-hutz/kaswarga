@@ -120,7 +120,7 @@ export default function LedgerDrawer({
                                 font-medium
                             "
                         >
-                            {row.jenis}
+                            {row.type}
                         </p>
 
                     </div>
@@ -141,7 +141,7 @@ export default function LedgerDrawer({
                                 font-medium
                             "
                         >
-                            {row.sumber}
+                            {row.source}
                         </p>
 
                     </div>
@@ -162,7 +162,7 @@ export default function LedgerDrawer({
                                 font-medium
                             "
                         >
-                            {row.deskripsi}
+                            {row.description}
                         </p>
 
                     </div>
@@ -184,7 +184,7 @@ export default function LedgerDrawer({
                                 font-semibold
                             "
                         >
-                            {row.nominalLabel}
+                            {row.amountLabel}
                         </p>
 
                     </div>
@@ -206,7 +206,7 @@ export default function LedgerDrawer({
                                 font-semibold
                             "
                         >
-                            {row.saldoLabel}
+                            {row.balanceLabel}
                         </p>
 
                     </div>
@@ -227,7 +227,7 @@ export default function LedgerDrawer({
                                 font-medium
                             "
                         >
-                            {row.tanggal}
+                            {row.date}
                         </p>
 
                     </div>

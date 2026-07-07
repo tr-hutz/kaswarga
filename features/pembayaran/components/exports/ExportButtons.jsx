@@ -10,7 +10,7 @@ import {
 
 import {
 
-    transformPembayaranExport
+    transformPaymentExport
 
 } from '../../../../lib/services/payment-export-transform'
 
@@ -28,7 +28,7 @@ export default function ExportButtons({
 
     function getExportData() {
 
-        return transformPembayaranExport(
+        return transformPaymentExport(
             rows
         )
     }

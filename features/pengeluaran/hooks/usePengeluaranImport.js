@@ -22,7 +22,7 @@ const COLUMN_ALIASES = {
     ket:         'deskripsi',
 }
 
-export function usePengeluaranImport(onSuccess) {
+export function useExpenseImport(onSuccess) {
     return useImport({
         columnAliases:     COLUMN_ALIASES,
         isValidRow:        r => !!r.tanggal?.trim() && !!r.nominal?.trim(),

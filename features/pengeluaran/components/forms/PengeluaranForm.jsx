@@ -6,7 +6,7 @@ import { Loader2, RefreshCw } from 'lucide-react'
 import FileUpload from '@/components/ui/FileUpload'
 import { useAuth } from '@/lib/auth/useAuth'
 import { generateNomorBukti } from '@/lib/services/pengeluaran.service'
-import { usePengeluaranKategori } from '../../hooks/usePengeluaranKategori'
+import { useExpenseCategories } from '../../hooks/usePengeluaranKategori'
 
 export default function PengeluaranForm({
     open,
@@ -17,24 +17,24 @@ export default function PengeluaranForm({
 
     const { membership } = useAuth()
     const rtId = membership?.rt?.id
-    const { kategori: kategoriList } = usePengeluaranKategori()
+    const { categories } = useExpenseCategories()
 
     const [form, setForm] = useState(() => initialData ? {
-        nomorBukti: initialData.nomorBukti || '',
-        kategori:   initialData.kategori   || '',
-        nominal:    initialData.nominal     || '',
-        tanggal:    initialData.tanggal     || '',
-        penerima:   initialData.penerima    || '',
-        deskripsi:  initialData.deskripsi   || '',
-        notaUrl:    initialData.notaUrl     || '',
+        receiptNumber: initialData.receiptNumber || '',
+        category:      initialData.category      || '',
+        amount:        initialData.amount        || '',
+        date:          initialData.date          || '',
+        recipient:     initialData.recipient     || '',
+        description:   initialData.description   || '',
+        receiptUrl:    initialData.receiptUrl    || '',
     } : {
-        nomorBukti: '',
-        kategori:   '',
-        nominal:    '',
-        tanggal:    '',
-        penerima:   '',
-        deskripsi:  '',
-        notaUrl:    '',
+        receiptNumber: '',
+        category:      '',
+        amount:        '',
+        date:          '',
+        recipient:     '',
+        description:   '',
+        receiptUrl:    '',
     })
 
     const [saving,     setSaving]     = useState(false)
@@ -50,7 +50,7 @@ export default function PengeluaranForm({
         setGenerating(true)
         try {
             const nomor = await generateNomorBukti()
-            set('nomorBukti', nomor)
+            set('receiptNumber', nomor)
         } catch {
             // silently fail — user can type manually
         } finally {
@@ -89,8 +89,8 @@ export default function PengeluaranForm({
                     </label>
                     <div className="flex gap-2">
                         <input
-                            value={form.nomorBukti}
-                            onChange={e => set('nomorBukti', e.target.value)}
+                            value={form.receiptNumber}
+                            onChange={e => set('receiptNumber', e.target.value)}
                             placeholder="Contoh: 03072026-RT08-00001"
                             className="flex-1 border rounded-xl px-4 py-2 text-sm font-mono"
                         />
@@ -123,8 +123,8 @@ export default function PengeluaranForm({
                         <input
                             type="date"
                             required
-                            value={form.tanggal}
-                            onChange={e => set('tanggal', e.target.value)}
+                            value={form.date}
+                            onChange={e => set('date', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2 text-sm"
                         />
                     </div>
@@ -134,12 +134,12 @@ export default function PengeluaranForm({
                             Kategori
                         </label>
                         <select
-                            value={form.kategori}
-                            onChange={e => set('kategori', e.target.value)}
+                            value={form.category}
+                            onChange={e => set('category', e.target.value)}
                             className="w-full border rounded-xl px-4 py-2 text-sm"
                         >
                             <option value="">Pilih kategori</option>
-                            {kategoriList.map(k => (
+                            {categories.map(k => (
                                 <option key={k.id} value={k.nama}>{k.nama}</option>
                             ))}
                         </select>
@@ -155,8 +155,8 @@ export default function PengeluaranForm({
                         type="number"
                         required
                         min={0}
-                        value={form.nominal}
-                        onChange={e => set('nominal', e.target.value)}
+                        value={form.amount}
+                        onChange={e => set('amount', e.target.value)}
                         placeholder="0"
                         className="w-full border rounded-xl px-4 py-2 text-sm"
                     />
@@ -168,8 +168,8 @@ export default function PengeluaranForm({
                         Mitra / Penerima
                     </label>
                     <input
-                        value={form.penerima}
-                        onChange={e => set('penerima', e.target.value)}
+                        value={form.recipient}
+                        onChange={e => set('recipient', e.target.value)}
                         placeholder="Nama vendor, toko, atau individu penerima"
                         className="w-full border rounded-xl px-4 py-2 text-sm"
                     />
@@ -181,8 +181,8 @@ export default function PengeluaranForm({
                         Deskripsi
                     </label>
                     <textarea
-                        value={form.deskripsi}
-                        onChange={e => set('deskripsi', e.target.value)}
+                        value={form.description}
+                        onChange={e => set('description', e.target.value)}
                         placeholder="Keterangan pengeluaran..."
                         rows={3}
                         className="w-full border rounded-xl px-4 py-2 text-sm resize-none"
@@ -192,10 +192,10 @@ export default function PengeluaranForm({
                 {/* Nota Upload */}
                 <FileUpload
                     label="Nota / Bukti Pembayaran"
-                    currentUrl={form.notaUrl}
+                    currentUrl={form.receiptUrl}
                     pathPrefix={storagePath}
                     accept="image/jpeg,image/png,image/webp,application/pdf"
-                    onUploaded={url => set('notaUrl', url)}
+                    onUploaded={url => set('receiptUrl', url)}
                 />
 
                 <div className="flex justify-end gap-3 pt-2">

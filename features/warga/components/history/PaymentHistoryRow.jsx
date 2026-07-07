@@ -16,20 +16,20 @@ export default function PaymentHistoryRow({
         >
 
             <td className="p-4">
-                {row.bulanLabel}
+                {row.monthLabel}
             </td>
 
             <td className="p-4">
-                {row.tahun}
+                {row.year}
             </td>
 
             <td className="p-4 font-medium">
-                Rp {row.nominal.toLocaleString('id-ID')}
+                Rp {(row.amount || 0).toLocaleString('id-ID')}
             </td>
 
             <td className="p-4 text-slate-500">
                 {
-                    new Date(row.tanggal)
+                    new Date(row.date)
                         .toLocaleDateString('id-ID')
                 }
             </td>

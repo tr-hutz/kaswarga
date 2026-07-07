@@ -12,18 +12,18 @@ export function buildMonthCards(
       index
     ) => {
 
-      const bulan =
+      const month =
         index + 1
 
       return {
 
-        bulan,
+        month,
 
         label: month,
 
         status:
           statusMap[
-          bulan
+          month
           ] || 'unpaid'
 
       }

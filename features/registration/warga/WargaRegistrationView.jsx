@@ -51,8 +51,8 @@ export default function WargaRegistrationView({
                         <label className="text-xs text-gray-500 mb-1 block">Nama Lengkap <span className="text-red-500">*</span></label>
                         <input
                             required
-                            value={form.nama}
-                            onChange={e => set('nama', e.target.value)}
+                            value={form.name}
+                            onChange={e => set('name', e.target.value)}
                             placeholder="Nama sesuai KTP"
                             className="w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -74,8 +74,8 @@ export default function WargaRegistrationView({
                         <label className="text-xs text-gray-500 mb-1 block">Kode RT <span className="text-red-500">*</span></label>
                         <input
                             required
-                            value={form.rtKode}
-                            onChange={e => set('rtKode', e.target.value.toUpperCase())}
+                            value={form.rtCode}
+                            onChange={e => set('rtCode', e.target.value.toUpperCase())}
                             placeholder="RT-0001"
                             className="w-full border rounded-xl px-4 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
@@ -98,8 +98,8 @@ export default function WargaRegistrationView({
                                 <div className="mt-3">
                                     <label className="text-xs text-gray-500 mb-1 block">Blok / Jalan</label>
                                     <input
-                                        value={form.blok}
-                                        onChange={e => set('blok', e.target.value)}
+                                        value={form.block}
+                                        onChange={e => set('block', e.target.value)}
                                         placeholder="Blok A / Jl. Kenanga"
                                         className="w-full border rounded-xl px-4 py-2.5 text-sm"
                                     />
@@ -107,8 +107,8 @@ export default function WargaRegistrationView({
                                 <div>
                                     <label className="text-xs text-gray-500 mb-1 block">Nomor Rumah</label>
                                     <input
-                                        value={form.noRumah}
-                                        onChange={e => set('noRumah', e.target.value)}
+                                        value={form.houseNumber}
+                                        onChange={e => set('houseNumber', e.target.value)}
                                         placeholder="12"
                                         className="w-full border rounded-xl px-4 py-2.5 text-sm"
                                     />
@@ -116,8 +116,8 @@ export default function WargaRegistrationView({
                                 <div>
                                     <label className="text-xs text-gray-500 mb-1 block">Nomor Telepon</label>
                                     <input
-                                        value={form.noHp}
-                                        onChange={e => set('noHp', e.target.value)}
+                                        value={form.phone}
+                                        onChange={e => set('phone', e.target.value)}
                                         placeholder="08123456789"
                                         className="w-full border rounded-xl px-4 py-2.5 text-sm"
                                     />

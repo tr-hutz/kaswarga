@@ -6,27 +6,27 @@
 
 export function getPaymentStatus({
 
-                                     totalBayar = 0,
+                                     paidCount = 0,
                                      currentMonth = 0
 
                                  }) {
 
     if (
-        totalBayar >= currentMonth
+        paidCount >= currentMonth
     ) {
 
         return 'Lunas'
     }
 
     if (
-        totalBayar >= currentMonth - 2
+        paidCount >= currentMonth - 2
     ) {
 
         return 'Hampir Lunas'
     }
 
     if (
-        totalBayar > 0
+        paidCount > 0
     ) {
 
         return 'Menunggak'
@@ -41,16 +41,16 @@ export function getPaymentStatus({
 |------------------------------------------------------------------
 */
 
-export function calculateTunggakan({
+export function calculateArrears({
 
-                                       totalBayar = 0,
+                                       paidCount = 0,
                                        currentMonth = 0
 
                                    }) {
 
     return Math.max(
         currentMonth -
-        totalBayar,
+        paidCount,
         0
     )
 }
@@ -63,12 +63,12 @@ export function calculateTunggakan({
 
 export function formatHouseLabel({
 
-                                     blok,
-                                     noRumah
+                                     block,
+                                     houseNumber
 
                                  }) {
 
-    return `${blok}-${noRumah}`
+    return `${block}-${houseNumber}`
 }
 
 /*

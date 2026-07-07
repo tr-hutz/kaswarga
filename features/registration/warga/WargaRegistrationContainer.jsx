@@ -5,7 +5,7 @@ import { submitWargaRegistration }     from '@/lib/services/registration.service
 import WargaRegistrationView           from './WargaRegistrationView'
 
 const EMPTY = {
-    nama: '', email: '', rtKode: '', blok: '', noRumah: '', noHp: ''
+    name: '', email: '', rtCode: '', block: '', houseNumber: '', phone: ''
 }
 
 export default function WargaRegistrationContainer() {
@@ -27,12 +27,12 @@ export default function WargaRegistrationContainer() {
 
         try {
             await submitWargaRegistration({
-                nama:    form.nama,
-                email:   form.email,
-                rtKode:  form.rtKode,
-                blok:    form.blok   || null,
-                noRumah: form.noRumah || null,
-                noHp:    form.noHp   || null
+                name:        form.name,
+                email:       form.email,
+                rtCode:      form.rtCode,
+                block:       form.block       || null,
+                houseNumber: form.houseNumber || null,
+                phone:       form.phone       || null
             })
             setSuccess(true)
         } catch (err) {

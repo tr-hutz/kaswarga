@@ -57,7 +57,7 @@ export default function PaymentHistoryTable({
 
                         <PaymentHistoryRow
                             key={
-                                `${row.pembayaranId}-${row.bulan}`
+                                `${row.paymentId}-${row.month}`
                             }
                             row={row}
                         />

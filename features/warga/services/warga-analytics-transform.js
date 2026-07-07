@@ -1,13 +1,13 @@
 import { MONTHS } from '../../../constants/months'
 
-export function transformWargaAnalytics(
-    pembayaran = []
+export function transformResidentAnalytics(
+    payments = []
 ) {
 
     return MONTHS.map(month => {
 
         const total =
-            pembayaran.reduce(
+            payments.reduce(
                 (sum, item) => {
 
                     const details =

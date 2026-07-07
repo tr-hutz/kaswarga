@@ -1,6 +1,6 @@
 import {MONTHS} from '../../../constants/months'
 
-function formatBulan(
+function formatMonthIds(
     detail = []
 ) {
 
@@ -24,7 +24,7 @@ function formatBulan(
         .join(', ')
 }
 
-function formatRumah(
+function formatAddress(
     warga
 ) {
 
@@ -61,20 +61,20 @@ function calculateTotal(
     )
 }
 
-export function transformPembayaran(
-    pembayaran = []
+export function transformPayment(
+    payments = []
 ) {
 
-    return pembayaran.map(
+    return payments.map(
         item => ({
 
             id:
             item.id,
 
-            tahun:
+            year:
             item.tahun,
 
-            tanggal:
+            date:
             item.tanggal,
 
             rt_id:
@@ -83,17 +83,17 @@ export function transformPembayaran(
             warga_id:
             item.warga_id,
 
-            namaWarga:
+            residentName:
                 item.warga?.nama ||
                 '-',
 
-            rumah:
-                formatRumah(
+            address:
+                formatAddress(
                     item.warga
                 ),
 
-            bulanLabel:
-                formatBulan(
+            monthLabel:
+                formatMonthIds(
                     item.detail_pembayaran
                 ),
 
@@ -112,7 +112,7 @@ export function transformPembayaran(
     )
 }
 
-export function transformKonfirmasi(
+export function transformConfirmation(
     rows = []
 ) {
 
@@ -122,7 +122,7 @@ export function transformKonfirmasi(
 
         .map(item => {
 
-            const warga =
+            const resident =
                 Array.isArray(item.warga)
                     ? item.warga[0]
                     : item.warga
@@ -131,7 +131,7 @@ export function transformKonfirmasi(
                 item
                     ?.detail_konfirmasi_pembayaran || []
 
-            const bulanLabel =
+            const monthLabel =
                 details
                     .map(detail => {
 
@@ -148,7 +148,7 @@ export function transformKonfirmasi(
                     .filter(Boolean)
                     .join(', ')
 
-            const totalBayar =
+            const totalAmount =
                 details.reduce(
                     (sum, detail) => {
 
@@ -168,32 +168,32 @@ export function transformKonfirmasi(
                 id:
                 item.id,
 
-                tahun:
+                year:
                 item.tahun,
 
                 status:
                 item.status,
 
-                totalBayar:
+                totalAmount:
                     item.total_bayar ||
-                    totalBayar,
+                    totalAmount,
 
                 createdAt:
                 item.created_at,
 
-                buktiUrl:
+                proofUrl:
                 item.bukti_url,
 
-                nama:
-                    warga?.nama || '-',
+                name:
+                    resident?.nama || '-',
 
-                blok:
-                    warga?.blok || '-',
+                block:
+                    resident?.blok || '-',
 
-                noRumah:
-                    warga?.no_rumah || '-',
+                houseNumber:
+                    resident?.no_rumah || '-',
 
-                bulanLabel,
+                monthLabel,
 
                 details
             }

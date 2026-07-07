@@ -1,18 +1,18 @@
 'use client'
 
-import { usePengeluaranKategori } from '../../hooks/usePengeluaranKategori'
+import { useExpenseCategories } from '../../hooks/usePengeluaranKategori'
 
 export default function PengeluaranFilters({
 
                                                search,
                                                setSearch,
 
-                                               kategori,
-                                               setKategori
+                                               category,
+                                               setCategory
 
                                            }) {
 
-    const { kategori: kategoriList } = usePengeluaranKategori()
+    const { categories } = useExpenseCategories()
 
     return (
 
@@ -50,10 +50,10 @@ export default function PengeluaranFilters({
 
             <select
 
-                value={kategori}
+                value={category}
 
                 onChange={e =>
-                    setKategori(
+                    setCategory(
                         e.target.value
                     )
                 }
@@ -70,7 +70,7 @@ export default function PengeluaranFilters({
                     Semua Kategori
                 </option>
 
-                {kategoriList.map(k => (
+                {categories.map(k => (
                     <option key={k.id} value={k.nama}>
                         {k.nama}
                     </option>

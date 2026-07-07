@@ -61,7 +61,7 @@ export default function LedgerAnalytics({
                 >
                     {
                         formatRupiah(
-                            analytics.pemasukan
+                            analytics.income
                         )
                     }
                 </h2>
@@ -95,7 +95,7 @@ export default function LedgerAnalytics({
                 >
                     {
                         formatRupiah(
-                            analytics.pengeluaran
+                            analytics.expense
                         )
                     }
                 </h2>
@@ -129,7 +129,7 @@ export default function LedgerAnalytics({
                 >
                     {
                         formatRupiah(
-                            analytics.saldo
+                            analytics.balance
                         )
                     }
                 </h2>

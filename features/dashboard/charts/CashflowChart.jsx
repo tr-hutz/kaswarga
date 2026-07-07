@@ -77,7 +77,7 @@ export default function CashflowChart({
             />
 
             <XAxis
-              dataKey="bulan"
+              dataKey="month"
             />
 
             <YAxis />
@@ -88,19 +88,19 @@ export default function CashflowChart({
 
             <Line
               type="monotone"
-              dataKey="pemasukan"
+              dataKey="income"
               strokeWidth={2}
             />
 
             <Line
               type="monotone"
-              dataKey="pengeluaran"
+              dataKey="expense"
               strokeWidth={2}
             />
 
             <Line
               type="monotone"
-              dataKey="saldo"
+              dataKey="balance"
               strokeWidth={2}
             />
 

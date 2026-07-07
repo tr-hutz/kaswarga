@@ -6,16 +6,16 @@ import {
 } from 'react'
 
 import {
-    getWargaPaymentHistory
+    getResidentPaymentHistory
 } from '../../../lib/services/warga.service'
 
 import {
-    transformWargaAnalytics
+    transformResidentAnalytics
 } from '../services/warga-analytics-transform'
 
-export function useWargaAnalytics(
+export function useResidentAnalytics(
     wargaId,
-    tahun
+    year
 ) {
 
     const [
@@ -36,15 +36,15 @@ export function useWargaAnalytics(
 
             try {
 
-                const pembayaran =
-                    await getWargaPaymentHistory(
+                const payments =
+                    await getResidentPaymentHistory(
                         wargaId,
-                        tahun
+                        year
                     )
 
                 setAnalytics(
-                    transformWargaAnalytics(
-                        pembayaran
+                    transformResidentAnalytics(
+                        payments
                     )
                 )
 
@@ -62,7 +62,7 @@ export function useWargaAnalytics(
             loadData()
         }
 
-    }, [wargaId, tahun])
+    }, [wargaId, year])
 
     return {
         loading,

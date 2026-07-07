@@ -15,8 +15,8 @@ export default function LedgerReport() {
         new Date().getFullYear()
 
     const [
-        tahun,
-        setTahun
+        year,
+        setYear
     ] = useState(currentYear)
 
     const [
@@ -39,7 +39,7 @@ export default function LedgerReport() {
 
             const res =
                 await fetch(
-                    `/api/ledger/laporan?tahun=${tahun}`
+                    `/api/ledger/laporan?year=${year}`
                 )
 
             if (!res.ok) {
@@ -60,7 +60,7 @@ export default function LedgerReport() {
 
             const filename =
                 match?.[1] ||
-                `laporan-kas-${tahun}.pdf`
+                `laporan-kas-${year}.pdf`
 
             const blob =
                 await res.blob()
@@ -142,9 +142,9 @@ export default function LedgerReport() {
             >
 
                 <select
-                    value={tahun}
+                    value={year}
                     onChange={e =>
-                        setTahun(
+                        setYear(
                             Number(e.target.value)
                         )
                     }

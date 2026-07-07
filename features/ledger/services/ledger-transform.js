@@ -15,30 +15,30 @@ export function transformLedger(
         id:
         item.id,
 
-        tanggal:
+        date:
         item.tanggal,
 
-        jenis:
+        type:
         item.jenis,
 
-        sumber:
+        source:
         item.sumber,
 
-        deskripsi:
+        description:
             item.deskripsi || '-',
 
-        nominal:
+        amount:
             item.nominal || 0,
 
-        nominalLabel:
+        amountLabel:
             formatRupiah(
                 item.nominal || 0
             ),
 
-        saldo:
+        balance:
             item.saldo_setelah || 0,
 
-        saldoLabel:
+        balanceLabel:
             formatRupiah(
                 item.saldo_setelah || 0
             )

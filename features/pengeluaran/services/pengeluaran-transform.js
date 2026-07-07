@@ -1,4 +1,4 @@
-export function transformPengeluaran(
+export function transformExpense(
     rows = []
 ) {
 
@@ -9,34 +9,34 @@ export function transformPengeluaran(
             id:
             item.id,
 
-            nomorBukti:
+            receiptNumber:
             item.nomor_bukti,
 
-            kategori:
+            category:
             item.kategori,
 
-            deskripsi:
+            description:
             item.deskripsi,
 
-            nominal:
+            amount:
                 Number(
                     item.nominal || 0
                 ),
 
-            penerima:
+            recipient:
             item.penerima,
 
-            tanggal:
+            date:
             item.tanggal,
 
-            tanggalLabel:
+            dateLabel:
                 new Date(
                     item.tanggal
                 ).toLocaleDateString(
                     'id-ID'
                 ),
 
-            notaUrl:
+            receiptUrl:
             item.nota_url,
 
             status:
@@ -51,10 +51,10 @@ export function transformPengeluaran(
             approvedAt:
             item.approved_at,
 
-            catatanPenolakan:
+            rejectionNote:
             item.catatan_penolakan,
 
-            aktif:
+            active:
             item.aktif
 
         }

@@ -2,10 +2,10 @@
 
 import { useState }                                              from 'react'
 import { ChevronDown, ChevronUp, Check, X, UserPlus, Copy, CheckCheck } from 'lucide-react'
-import { approveWargaRegistration, rejectWargaRegistration }     from '@/lib/services/approval.service'
+import { approveResidentRegistration, rejectResidentRegistration } from '@/lib/services/approval.service'
 import { useAuth }                                               from '@/lib/auth/useAuth'
 import { useToast }                                              from '@/components/ui/ToastProvider'
-import { formatTanggal as formatDate }                           from '@/lib/utils'
+import { formatDate }                                            from '@/lib/utils'
 
 const IS_DEV = process.env.NODE_ENV === 'development'
 
@@ -39,7 +39,7 @@ function RequestRow({ req, onAction }) {
     async function handleApprove() {
         setProcessing(true)
         try {
-            const { inviteLink } = await approveWargaRegistration(req.id, membership)
+            const { inviteLink } = await approveResidentRegistration(req.id, membership)
             toast({ message: `Pendaftaran "${req.nama_warga}" disetujui. Link aktivasi dikirim.`, type: 'success' })
             if (IS_DEV && inviteLink) {
                 setDevLink(inviteLink)
@@ -59,7 +59,7 @@ function RequestRow({ req, onAction }) {
         if (!window.confirm(`Tolak dan hapus pendaftaran "${req.nama_warga}"? Warga harus mendaftar ulang.`)) return
         setProcessing(true)
         try {
-            await rejectWargaRegistration(req.id, membership)
+            await rejectResidentRegistration(req.id, membership)
             toast({ message: 'Pendaftaran ditolak dan dihapus.', type: 'success' })
         } catch (err) {
             toast({ message: err.message, type: 'error' })

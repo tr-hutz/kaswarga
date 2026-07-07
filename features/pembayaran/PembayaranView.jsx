@@ -31,8 +31,8 @@ export default function PembayaranView({
                                            search,
                                            setSearch,
 
-                                           kategori,
-                                           setKategori,
+                                           status,
+                                           setStatus,
 
                                            /*
                                             |-------------------------------------------------------------
@@ -161,8 +161,8 @@ export default function PembayaranView({
                     search={search}
                     setSearch={setSearch}
 
-                    kategori={kategori}
-                    setKategori={setKategori}
+                    status={status}
+                    setStatus={setStatus}
 
                     onExportCSV={() => exportToCSV({data: rows, fileName: 'pembayaran.csv'})}
                     onExportExcel={() => exportToExcel({data: rows, fileName: 'pembayaran.xlsx'})}

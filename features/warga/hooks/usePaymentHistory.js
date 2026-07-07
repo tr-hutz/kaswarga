@@ -6,7 +6,7 @@ import {
 } from 'react'
 
 import {
-    getWargaPaymentHistory
+    getResidentPaymentHistory
 } from '../../../lib/services/warga.service'
 
 import {
@@ -15,7 +15,7 @@ import {
 
 export function usePaymentHistory(
     wargaId,
-    tahun
+    year
 ) {
 
     const [
@@ -37,9 +37,9 @@ export function usePaymentHistory(
             try {
 
                 const data =
-                    await getWargaPaymentHistory(
+                    await getResidentPaymentHistory(
                         wargaId,
-                        tahun
+                        year
                     )
 
                 setHistory(
@@ -60,7 +60,7 @@ export function usePaymentHistory(
             loadData()
         }
 
-    }, [wargaId, tahun])
+    }, [wargaId, year])
 
     return {
         loading,
