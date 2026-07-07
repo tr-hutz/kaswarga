@@ -18,7 +18,7 @@ export function applyConfirmationFilters(query: any, { year, rtId, wargaId, stat
 
         query =
             query.eq(
-                'tahun',
+                'year',
                 year
             )
     }
@@ -48,7 +48,7 @@ export function applyConfirmationFilters(query: any, { year, rtId, wargaId, stat
 
         query =
             query.eq(
-                'warga_id',
+                'resident_id',
                 wargaId
             )
     }

@@ -58,10 +58,10 @@ export async function POST(req: Request) {
         // Resolve display name from registration request
         const regReq     = invite.registration_request
         const nameByRole = {
-            ketua:     regReq?.nama_ketua,
-            admin:     regReq?.nama_admin,
-            bendahara: regReq?.nama_bendahara,
-            warga:     regReq?.nama_warga,
+            CHAIR:     regReq?.chair_name,
+            ADMIN:     regReq?.admin_name,
+            TREASURER: regReq?.treasurer_name,
+            RESIDENT:  regReq?.resident_name,
         }
         const displayName = (nameByRole as any)[invite.role] || user.user_metadata?.full_name || (user.email ?? '').split('@')[0]
 
@@ -80,14 +80,14 @@ export async function POST(req: Request) {
         await supabaseAdmin.from('users').upsert({
             id:    user.id,
             email: user.email,
-            nama:  displayName
+            name:  displayName
         }, { onConflict: 'id' })
 
         // Check for existing membership (idempotent).
         // Use .is() for null rt_id to avoid .eq(null) being interpreted as IS NULL,
         // which would falsely match super_admin rows that have rt_id = NULL.
         const membershipQuery = supabaseAdmin
-            .from('user_membership')
+            .from('memberships')
             .select('id')
             .eq('user_id', user.id)
 
@@ -101,65 +101,65 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Already activated', code: 'ALREADY_ACTIVATED' }, { status: 409 })
         }
 
-        // Create warga row for the activated user (only when linked to an RT).
+        // Create resident row for the activated user (only when linked to an RT).
         // Reuse an existing row if this email is already registered in the RT
         // (can happen after re-invites or manual backfills).
-        let wargaId = null
+        let residentId = null
         if (invite.rt_id) {
-            const { data: existingWarga } = await supabaseAdmin
-                .from('warga')
+            const { data: existingResident } = await supabaseAdmin
+                .from('residents')
                 .select('id')
                 .eq('rt_id', invite.rt_id)
                 .eq('email', user.email ?? '')
                 .maybeSingle()
 
-            if (existingWarga) {
-                wargaId = existingWarga.id
+            if (existingResident) {
+                residentId = existingResident.id
             } else {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const wargaData: any = {
-                    rt_id: invite.rt_id,
-                    nama:  displayName,
-                    email: user.email,
-                    aktif: true,
+                const residentData: any = {
+                    rt_id:  invite.rt_id,
+                    name:   displayName,
+                    email:  user.email,
+                    active: true,
                 }
-                if (invite.role === 'warga' && regReq) {
-                    wargaData.blok     = (regReq as any).blok     || null
-                    wargaData.no_rumah = (regReq as any).no_rumah || null
-                    wargaData.no_hp    = (regReq as any).no_hp    || null
+                if (invite.role === 'RESIDENT' && regReq) {
+                    residentData.block        = (regReq as any).block        || null
+                    residentData.house_number = (regReq as any).house_number || null
+                    residentData.phone        = (regReq as any).phone        || null
                 }
-                const { data: warga, error: wargaError } = await supabaseAdmin
-                    .from('warga')
-                    .insert(wargaData)
+                const { data: resident, error: residentError } = await supabaseAdmin
+                    .from('residents')
+                    .insert(residentData)
                     .select('id')
                     .single()
-                if (wargaError) {
-                    console.error('[activate] warga error:', wargaError)
-                    return NextResponse.json({ error: wargaError.message }, { status: 500 })
+                if (residentError) {
+                    console.error('[activate] resident error:', residentError)
+                    return NextResponse.json({ error: residentError.message }, { status: 500 })
                 }
-                wargaId = warga.id
+                residentId = resident.id
             }
         }
 
         // Create membership
         const { error: memberError } = await supabaseAdmin
-            .from('user_membership')
+            .from('memberships')
             .insert({
-                user_id:  user.id,
-                rt_id:    (invite.rt_id || null) as any,
+                user_id:     user.id,
+                rt_id:       (invite.rt_id || null) as any,
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                role:     invite.role as any,
-                status:   'active',
-                warga_id: wargaId
+                role:        invite.role as any,
+                status:      'active',
+                resident_id: residentId
             })
 
         if (memberError) {
             // Unique constraint violation — membership already exists (race condition or stale check).
-            // Clean up the orphan warga row we just created and treat as already activated.
+            // Clean up the orphan resident row we just created and treat as already activated.
             if (memberError.code === '23505') {
-                if (wargaId) {
+                if (residentId) {
                     try {
-                        await supabaseAdmin.from('warga').delete().eq('id', wargaId)
+                        await supabaseAdmin.from('residents').delete().eq('id', residentId)
                     } catch (_) {}
                 }
                 return NextResponse.json({ error: 'Already activated', code: 'ALREADY_ACTIVATED' }, { status: 409 })
@@ -179,10 +179,10 @@ export async function POST(req: Request) {
         if (invite.rt_id) {
             const { data: rt } = await supabaseAdmin
                 .from('rt')
-                .select('nama')
+                .select('name')
                 .eq('id', invite.rt_id)
                 .single()
-            rtName = rt?.nama || null
+            rtName = rt?.name || null
         }
 
         // Log activity
@@ -191,7 +191,7 @@ export async function POST(req: Request) {
             actor_id:    user.id,
             actor_name:  user.email ?? '',
             action:      'ACTIVATE_ACCOUNT',
-            entity_type: 'user_membership',
+            entity_type: 'memberships',
             entity_id:   user.id,
             description: `${user.email} mengaktifkan akun sebagai ${invite.role}`,
             metadata:    { role: invite.role, rt_id: invite.rt_id }

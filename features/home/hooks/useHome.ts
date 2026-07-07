@@ -140,7 +140,7 @@ export function useHome() {
         wargaId
       )
 
-      const monthlyFee = membership.rt?.nominal_iuran || 0
+      const monthlyFee = membership.rt?.monthly_fee || 0
 
       setMonthlyFee(monthlyFee)
 

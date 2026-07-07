@@ -31,7 +31,7 @@ export function applyExpenseFilters(query: any, { rtId, category, search, active
 
     query =
         query.eq(
-            'aktif',
+            'active',
             active
         )
 
@@ -48,7 +48,7 @@ export function applyExpenseFilters(query: any, { rtId, category, search, active
 
         query =
             query.eq(
-                'kategori',
+                'category',
                 category
             )
     }
@@ -63,7 +63,7 @@ export function applyExpenseFilters(query: any, { rtId, category, search, active
 
         query =
             query.or(
-                `deskripsi.ilike.%${search}%,kategori.ilike.%${search}%,penerima.ilike.%${search}%,nomor_bukti.ilike.%${search}%`
+                `description.ilike.%${search}%,category.ilike.%${search}%,recipient.ilike.%${search}%,receipt_number.ilike.%${search}%`
             )
     }
 

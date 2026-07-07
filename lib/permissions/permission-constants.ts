@@ -1,9 +1,9 @@
 export const ROLES = {
-    SUPER_ADMIN: 'super_admin',
-    KETUA:       'ketua',
-    ADMIN:       'admin',
-    BENDAHARA:   'bendahara',
-    WARGA:       'warga'
+    SUPER_ADMIN: 'SUPER_ADMIN',
+    CHAIR:       'CHAIR',
+    ADMIN:       'ADMIN',
+    TREASURER:   'TREASURER',
+    RESIDENT:    'RESIDENT'
 } as const
 
 export type Role = typeof ROLES[keyof typeof ROLES]

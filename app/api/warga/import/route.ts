@@ -31,8 +31,8 @@ export async function POST(req: Request) {
         }
 
         const { data: membership, error: membershipError } = await supabaseAdmin
-            .from('user_membership')
-            .select('role, rt_id, user:users(nama)')
+            .from('memberships')
+            .select('role, rt_id, user:users(name)')
             .eq('user_id', authData.user.id)
             .eq('status', 'active')
             .maybeSingle()
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Membership not found' }, { status: 403 })
         }
 
-        if (!['ketua', 'admin'].includes(membership.role)) {
+        if (!['CHAIR', 'ADMIN'].includes(membership.role)) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
         }
 
@@ -57,14 +57,14 @@ export async function POST(req: Request) {
         }
 
         const toInsert = rows
-            .filter(r => r.nama?.trim())
+            .filter(r => r.name?.trim())
             .map(r => ({
-                rt_id:    membership.rt_id,
-                nama:     r.nama.trim(),
-                blok:     r.blok?.trim()     || null,
-                no_rumah: r.no_rumah?.trim() || null,
-                no_hp:    r.no_hp?.trim()    || null,
-                aktif:    true,
+                rt_id:        membership.rt_id,
+                name:         r.name.trim(),
+                block:        r.block?.trim()        || null,
+                house_number: r.house_number?.trim() || null,
+                phone:        r.phone?.trim()        || null,
+                active:       true,
             }))
 
         if (toInsert.length === 0) {
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
         }
 
         const { data, error } = await supabaseAdmin
-            .from('warga')
+            .from('residents')
             .insert(toInsert)
             .select('id')
 
@@ -81,9 +81,9 @@ export async function POST(req: Request) {
         await supabaseAdmin.from('activity_logs').insert({
             rt_id:       membership.rt_id,
             actor_id:    authData.user.id,
-            actor_name:  membership.user?.nama || authData.user.email,
-            action:      'IMPORT_WARGA',
-            entity_type: 'warga',
+            actor_name:  membership.user?.name || authData.user.email,
+            action:      'IMPORT_RESIDENTS',
+            entity_type: 'residents',
             entity_id:   membership.rt_id,
             description: `Import ${data.length} data warga`,
             metadata:    { count: data.length }

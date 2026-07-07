@@ -16,7 +16,7 @@ import MobileOverlay from './MobileOverlay'
 
 import { useAuth } from '../../lib/auth/useAuth'
 
-const PUBLIC_PATHS = ['/login', '/daftar', '/aktivasi']
+const PUBLIC_PATHS = ['/login', '/register', '/activation']
 
 function isPublicPath(pathname) {
   return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
@@ -39,7 +39,7 @@ export default function AppShell({
 
     // Redirect authenticated users away from /login based on role
     if (membership && pathname === '/login') {
-      router.replace(membership.role === 'super_admin' ? '/rt' : '/')
+      router.replace(membership.role === 'SUPER_ADMIN' ? '/rt' : '/')
       return
     }
 
@@ -82,7 +82,7 @@ export default function AppShell({
             atau kunjungi halaman aktivasi.
           </p>
           <a
-            href="/aktivasi"
+            href="/activation"
             className="inline-block bg-black text-white rounded-xl px-6 py-2.5 text-sm font-medium"
           >
             Ke Halaman Aktivasi

@@ -40,15 +40,15 @@ export default function RtTable({ data, loading, onEdit, onDelete }) {
                 <tbody className="divide-y divide-gray-100">
                     {data.map(rt => (
                         <tr key={rt.id} className="hover:bg-gray-50 transition-colors">
-                            <td className="px-4 py-3 font-medium">{rt.nama}</td>
-                            <td className="px-4 py-3 text-gray-500">{rt.kode || '-'}</td>
-                            <td className="px-4 py-3 text-gray-500">{rt.kota || '-'}</td>
+                            <td className="px-4 py-3 font-medium">{rt.name}</td>
+                            <td className="px-4 py-3 text-gray-500">{rt.code || '-'}</td>
+                            <td className="px-4 py-3 text-gray-500">{rt.city || '-'}</td>
                             <td className="px-4 py-3 text-center">
                                 <span className={`
                                     inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                    ${rt.aktif ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}
+                                    ${rt.active ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'}
                                 `}>
-                                    {rt.aktif ? tc('status.active') : tc('status.inactive')}
+                                    {rt.active ? tc('status.active') : tc('status.inactive')}
                                 </span>
                             </td>
                             <td className="px-4 py-3">

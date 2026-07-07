@@ -18,7 +18,7 @@ export default function SidebarMenu({ onClose }) {
     const [pendingWargaCount, setPendingWargaCount] = useState(0)
 
     useEffect(() => {
-        if (role !== 'super_admin') return
+        if (role !== 'SUPER_ADMIN') return
 
         function fetchCount() {
             supabase
@@ -46,7 +46,7 @@ export default function SidebarMenu({ onClose }) {
 
     useEffect(() => {
         const rtId = membership?.rt?.id
-        if (!rtId || !['ketua', 'admin'].includes(role)) return
+        if (!rtId || !['CHAIR', 'ADMIN'].includes(role)) return
 
         function fetchCount() {
             supabase
@@ -87,8 +87,8 @@ export default function SidebarMenu({ onClose }) {
                     item={item}
                     active={pathname === item.href}
                     badge={
-                        item.href === '/rt/registrasi' ? pendingRtCount :
-                        item.href === '/warga'          ? pendingWargaCount :
+                        item.href === '/rt/registration' ? pendingRtCount :
+                        item.href === '/residents'       ? pendingWargaCount :
                         0
                     }
                     onClick={onClose}

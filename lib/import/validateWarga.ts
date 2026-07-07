@@ -1,14 +1,14 @@
 interface RawResidentRow {
-  nama?: unknown
-  blok?: unknown
-  no_rumah?: unknown
+  name?: unknown
+  block?: unknown
+  house_number?: unknown
   email?: unknown
 }
 
 interface ValidatedResident {
-  nama: string
-  blok: string
-  no_rumah: string
+  name: string
+  block: string
+  house_number: string
   email: string
 }
 
@@ -18,7 +18,7 @@ type ValidationResult =
 
 export function validateImportResidents(
   rows: RawResidentRow[],
-  existingData: { blok: string; no_rumah: string }[] = []
+  existingData: { block: string; house_number: string }[] = []
 ): ValidationResult {
 
   const inserts = []
@@ -29,7 +29,7 @@ export function validateImportResidents(
   // duplicate database
   const existingSet = new Set(
     existingData.map(
-      x => `${x.blok}-${x.no_rumah}`
+      x => `${x.block}-${x.house_number}`
     )
   )
 
@@ -37,15 +37,15 @@ export function validateImportResidents(
 
     const row = rows[i]
 
-    const nama = String(row.nama || '').trim()
-    const blok = String(row.blok || '').trim()
-    const no_rumah = String(row.no_rumah || '').trim()
-    const email = String(row.email || '').trim()
+    const name         = String(row.name         || '').trim()
+    const block        = String(row.block        || '').trim()
+    const house_number = String(row.house_number || '').trim()
+    const email        = String(row.email        || '').trim()
 
     const rowNumber = i + 2
 
     // ===== EMPTY VALIDATION =====
-    if (!nama || !blok || !no_rumah) {
+    if (!name || !block || !house_number) {
       return {
         success: false,
         message:
@@ -54,7 +54,7 @@ export function validateImportResidents(
     }
 
     // ===== DUPLICATE FILE =====
-    const key = `${blok}-${no_rumah}`
+    const key = `${block}-${house_number}`
 
     if (seen.has(key)) {
       return {
@@ -76,9 +76,9 @@ export function validateImportResidents(
     }
 
     inserts.push({
-      nama,
-      blok,
-      no_rumah,
+      name,
+      block,
+      house_number,
       email
     })
   }

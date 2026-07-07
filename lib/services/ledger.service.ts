@@ -41,12 +41,12 @@ export async function getLedger({ search = '' }: { search?: string } = {}) {
             )
 
             .eq(
-                'aktif',
+                'active',
                 true
             )
 
             .order(
-                'tanggal',
+                'date',
                 {
                     ascending: false
                 }
@@ -56,7 +56,7 @@ export async function getLedger({ search = '' }: { search?: string } = {}) {
 
         query =
             query.ilike(
-                'deskripsi',
+                'description',
                 `%${search}%`
             )
     }

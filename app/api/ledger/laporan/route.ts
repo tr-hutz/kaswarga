@@ -14,7 +14,7 @@ const maskAccountNumber = (num: string | number | null) => {
 const groupByMonth = (rows: any[] = []): Record<number, any[]> => {
   const map: Record<number, any[]> = {}
   rows.forEach(r => {
-    const m = new Date(r.tanggal).getMonth() + 1
+    const m = new Date(r.date).getMonth() + 1
     if (!map[m]) map[m] = []
     map[m].push(r)
   })
@@ -36,33 +36,36 @@ export async function GET(req: Request) {
     .single()
 
   const { data: members } = await supabase
-    .from('user_membership')
-    .select('role, user:users(nama)')
+    .from('memberships')
+    .select('role, user:users(name)')
     .eq('rt_id', profil?.id ?? '')
-    .in('role', ['admin', 'bendahara'])
+    .in('role', ['ADMIN', 'TREASURER'])
 
   const chairmanName =
-    members?.find(m => m.role === 'admin')
-      ?.user?.nama || '-'
+    members?.find(m => m.role === 'ADMIN')
+      ?.user?.name || '-'
 
   const treasurerName =
-    members?.find(m => m.role === 'bendahara')
-      ?.user?.nama || '-'
+    members?.find(m => m.role === 'TREASURER')
+      ?.user?.name || '-'
 
   const { data: incomeRows } = await supabase
-    .from('pembayaran')
-    .select(`*, warga(nama, blok, no_rumah)`)
-    .gte('tanggal', start)
-    .lt('tanggal', end)
+    .from('payment_details')
+    .select(`month, amount, payments!inner(date, rt_id, resident_id, residents(name, block, house_number))`)
+    .eq('year', parseInt(year))
+    .eq('payments.rt_id', profil?.id ?? '')
+    .gte('payments.date', start)
+    .lt('payments.date', end)
 
   const { data: expenseRows } = await supabase
-    .from('pengeluaran')
+    .from('expenses')
     .select('*')
-    .gte('tanggal', start)
-    .lt('tanggal', end)
+    .eq('rt_id', profil?.id ?? '')
+    .gte('date', start)
+    .lt('date', end)
 
-  const totalIncome  = (incomeRows  || []).reduce((a, b) => a + (b.jumlah_bayar || 0), 0)
-  const totalExpense = (expenseRows || []).reduce((a, b) => a + (b.nominal     || 0), 0)
+  const totalIncome  = (incomeRows  || []).reduce((a, b) => a + (b.amount || 0), 0)
+  const totalExpense = (expenseRows || []).reduce((a, b) => a + (b.amount || 0), 0)
   const balance = totalIncome - totalExpense
 
   // ===== PDF =====
@@ -141,13 +144,13 @@ export async function GET(req: Request) {
 
     const infoX = rightX + 50
 
-    page.drawText(profil?.nama || '-', {
+    page.drawText(profil?.name || '-', {
       x: infoX, y: topY, size: 12, font: bold
     })
-    page.drawText(`RT ${profil?.kode || '-'}`, {
+    page.drawText(`RT ${profil?.code || '-'}`, {
       x: infoX, y: topY - 15, size: 10, font
     })
-    page.drawText(profil?.alamat || '-', {
+    page.drawText(profil?.address || '-', {
       x: infoX, y: topY - 28, size: 9, font
     })
 
@@ -175,13 +178,13 @@ export async function GET(req: Request) {
       x: rightX, y: sY, size: 12, font: bold
     })
     page.drawText('Bank', { x: rightX, y: sY - 16, size: 10, font })
-    drawTextRight(profil?.nama_bank || '-', COL_RIGHT, sY - 16)
+    drawTextRight(profil?.bank_name || '-', COL_RIGHT, sY - 16)
 
     page.drawText('No. Rek', { x: rightX, y: sY - 32, size: 10, font })
-    drawTextRight(maskAccountNumber(profil?.nomor_rekening ?? null), COL_RIGHT, sY - 32)
+    drawTextRight(maskAccountNumber(profil?.account_number ?? null), COL_RIGHT, sY - 32)
 
     page.drawText('A.n', { x: rightX, y: sY - 48, size: 10, font })
-    drawTextRight(profil?.atas_nama || '-', COL_RIGHT, sY - 48)
+    drawTextRight(profil?.account_holder || '-', COL_RIGHT, sY - 48)
 
     y -= 70
     drawDivider(y + 10)
@@ -194,7 +197,8 @@ export async function GET(req: Request) {
     page.drawText('PEMASUKAN', { x: leftX, y, size: 12, font: bold })
     y -= 18
 
-    const byMonth = groupByMonth(incomeRows || [])
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const byMonth = groupByMonth((incomeRows as any[]) || [])
 
     Object.keys(byMonth)
       .sort((a, b) => Number(a) - Number(b))
@@ -202,10 +206,10 @@ export async function GET(req: Request) {
         const monthName = monthList.find(b => b.id === Number(m))?.name
 
         const rows = (byMonth as Record<string, any[]>)[m]
-          .sort((a: any, b: any) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime())
+          .sort((a: any, b: any) => new Date(a.payments?.date).getTime() - new Date(b.payments?.date).getTime())
 
         const monthTotal = rows.reduce(
-          (sum: any, r: any) => sum + (r.jumlah_bayar || 0), 0
+          (sum: any, r: any) => sum + (r.amount || 0), 0
         )
 
         ensureSpace(24)
@@ -234,14 +238,15 @@ export async function GET(req: Request) {
             y -= 16
           }
 
-          const tgl = new Date(p.tanggal).getDate()
+          const tgl = new Date(p.payments?.date).getDate()
+          const resident = p.payments?.residents
           page.drawText(String(tgl), { x: 50, y, size: 9, font })
           page.drawText(
-            `${p.warga?.nama || '-'} (${p.warga?.blok || '-'}-${p.warga?.no_rumah || '-'})`,
+            `${resident?.name || '-'} (${resident?.block || '-'}-${resident?.house_number || '-'})`,
             { x: 90, y, size: 9, font }
           )
-          page.drawText(formatMonths(p.bulan_dibayar), { x: 320, y, size: 9, font })
-          drawTextRight(formatAccounting(p.jumlah_bayar), COL_RIGHT, y)
+          page.drawText(formatMonths([p.month]), { x: 320, y, size: 9, font })
+          drawTextRight(formatAccounting(p.amount), COL_RIGHT, y)
           y -= 14
         })
 
@@ -263,10 +268,10 @@ export async function GET(req: Request) {
         const monthName = monthList.find(b => b.id === Number(m))?.name
 
         const rows = (byMonth as Record<string, any[]>)[m]
-          .sort((a: any, b: any) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime())
+          .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
         const monthTotal = rows.reduce(
-          (sum: any, r: any) => sum + (r.nominal || 0), 0
+          (sum: any, r: any) => sum + (r.amount || 0), 0
         )
 
         ensureSpace(24)
@@ -295,11 +300,11 @@ export async function GET(req: Request) {
             y -= 16
           }
 
-          const tgl = new Date(p.tanggal).getDate()
+          const tgl = new Date(p.date).getDate()
           page.drawText(String(tgl), { x: 50, y, size: 9, font })
-          page.drawText(p.kategori || '-', { x: 90, y, size: 9, font })
-          page.drawText(p.deskripsi || '-', { x: 260, y, size: 9, font })
-          drawTextRight(formatAccounting(p.nominal), COL_RIGHT, y)
+          page.drawText(p.category || '-', { x: 90, y, size: 9, font })
+          page.drawText(p.description || '-', { x: 260, y, size: 9, font })
+          drawTextRight(formatAccounting(p.amount), COL_RIGHT, y)
           y -= 14
         })
 
@@ -366,7 +371,7 @@ export async function GET(req: Request) {
 
   const pdfBytes = await pdfDoc.save()
 
-  const rtSlug = (profil?.kode || profil?.nama || 'rt')
+  const rtSlug = (profil?.code || profil?.name || 'rt')
     .toLowerCase()
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '')

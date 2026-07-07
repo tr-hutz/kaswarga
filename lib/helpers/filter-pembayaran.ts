@@ -11,7 +11,7 @@ export function applyPaymentFilters(query: any, { year, rtId, wargaId }: Payment
 
     query =
         query.eq(
-            'tahun',
+            'year',
             year
         )
   }
@@ -29,7 +29,7 @@ export function applyPaymentFilters(query: any, { year, rtId, wargaId }: Payment
 
     query =
         query.eq(
-            'warga_id',
+            'resident_id',
             wargaId
         )
   }

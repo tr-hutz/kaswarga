@@ -22,7 +22,7 @@ export default function RtDeleteConfirm({ rt, onConfirm, onCancel, loading }) {
                 </div>
 
                 <p className="text-sm text-gray-600">
-                    {t('delete.message', { name: rt.nama })}
+                    {t('delete.message', { name: rt.name })}
                 </p>
 
                 <div className="flex justify-end gap-2 pt-1">

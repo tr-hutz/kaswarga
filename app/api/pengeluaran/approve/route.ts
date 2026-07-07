@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         }
 
         const { data: membership, error: membershipError } = await supabaseAdmin
-            .from('user_membership')
+            .from('memberships')
             .select('role, rt_id')
             .eq('user_id', authData.user.id)
             .eq('status', 'active')
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Membership not found' }, { status: 403 })
         }
 
-        if (membership.role !== 'ketua') {
+        if (membership.role !== 'CHAIR') {
             return NextResponse.json({ error: 'Hanya ketua RT yang dapat menyetujui pengeluaran' }, { status: 403 })
         }
 

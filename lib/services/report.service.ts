@@ -15,16 +15,16 @@ export async function getPaymentReport(
 
   const { data, error } =
     await supabase
-      .from('detail_pembayaran')
+      .from('payment_details')
       .select(`
-        bulan,
-        nominal,
-        pembayaran!inner(tanggal, rt_id),
-        warga(nama, blok, no_rumah)
+        month,
+        amount,
+        payments!inner(date, rt_id),
+        residents(name, block, house_number)
       `)
-      .eq('tahun', year)
-      .eq('pembayaran.rt_id', rtId)
-      .order('bulan')
+      .eq('year', year)
+      .eq('payments.rt_id', rtId)
+      .order('month')
 
   if (error)
     throw error
@@ -43,12 +43,12 @@ export async function getExpenseReport(
 
   const { data, error } =
     await supabase
-      .from('pengeluaran')
+      .from('expenses')
       .select('*')
       .eq('rt_id', rtId)
-      .gte('tanggal', `${year}-01-01`)
-      .lt('tanggal', `${year + 1}-01-01`)
-      .order('tanggal')
+      .gte('date', `${year}-01-01`)
+      .lt('date', `${year + 1}-01-01`)
+      .order('date')
 
   if (error)
     throw error

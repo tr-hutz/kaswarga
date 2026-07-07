@@ -33,7 +33,7 @@ async function sendInvite({
 */
 
 interface Actor {
-    user?: { id?: string; nama?: string; email?: string } | null
+    user?: { id?: string; name?: string; email?: string } | null
     email?: string
 }
 
@@ -51,27 +51,27 @@ export async function approveRtRegistration(requestId: string, actor: Actor | nu
     const rtData = (req.rt_data || {}) as Record<string, unknown>
 
     const rtPayload = {
-        nama:           rtData.name           as string,
-        kode:           rtData.code           as string,
-        alamat:         (rtData.address       as string) || null,
-        kota:           (rtData.city          as string) || null,
-        provinsi:       (rtData.province      as string) || null,
-        kode_pos:       (rtData.postalCode    as string) || null,
+        name:           rtData.name           as string,
+        code:           rtData.code           as string,
+        address:        (rtData.address       as string) || null,
+        city:           (rtData.city          as string) || null,
+        province:       (rtData.province      as string) || null,
+        postal_code:    (rtData.postalCode    as string) || null,
         email:          (rtData.email         as string) || null,
-        telepon:        (rtData.telepon       as string) || null,
-        nominal_iuran:  (rtData.monthlyFee    as number) || 0,
-        nama_bank:      (rtData.bankName      as string) || null,
-        nomor_rekening: (rtData.accountNumber as string) || null,
-        atas_nama:      (rtData.accountHolder as string) || null,
+        phone:          (rtData.telepon       as string) || null,
+        monthly_fee:    (rtData.monthlyFee    as number) || 0,
+        bank_name:      (rtData.bankName      as string) || null,
+        account_number: (rtData.accountNumber as string) || null,
+        account_holder: (rtData.accountHolder as string) || null,
         qris_url:       (rtData.qrisUrl       as string) || null,
-        aktif:          true
+        active:         true
     }
 
-    // If an RT with this kode already exists, update it; otherwise insert a new one
+    // If an RT with this code already exists, update it; otherwise insert a new one
     const { data: existing } = await supabase
         .from('rt')
         .select('id')
-        .eq('kode', rtData.code as string)
+        .eq('code', rtData.code as string)
         .maybeSingle()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -104,11 +104,11 @@ export async function approveRtRegistration(requestId: string, actor: Actor | nu
         })
         .eq('id', requestId)
 
-    // Send invites — ketua required, admin required, bendahara optional
+    // Send invites — chair required, admin required, treasurer optional
     const invites = [
-        { email: req.email_ketua,     role: 'ketua' },
-        { email: req.email_admin,     role: 'admin' },
-        { email: req.email_bendahara, role: 'bendahara' }
+        { email: req.chair_email,     role: 'CHAIR' },
+        { email: req.admin_email,     role: 'ADMIN' },
+        { email: req.treasurer_email, role: 'TREASURER' }
     ].filter(i => !!i.email)
 
     const devLinks = await Promise.all(invites.map(async i => {
@@ -125,12 +125,12 @@ export async function approveRtRegistration(requestId: string, actor: Actor | nu
     logActivity({
         rtId:        null,
         actorId:     actor?.user?.id,
-        actorName:   actor?.user?.nama || actor?.email,
+        actorName:   actor?.user?.name || actor?.email,
         action:      'APPROVE_RT_REGISTRATION',
         entityType:  'registration_requests',
         entityId:    requestId,
         description: `Pendaftaran RT "${rtData.name}" disetujui`,
-        metadata:    { rt_id: rt.id, rt_kode: rtData.code }
+        metadata:    { rt_id: rt.id, rt_code: rtData.code }
     })
 
     return { rt, inviteLinks }
@@ -159,7 +159,7 @@ export async function rejectRtRegistration(requestId: string, reason: string | n
     logActivity({
         rtId:        null,
         actorId:     actor?.user?.id,
-        actorName:   actor?.user?.nama || actor?.email,
+        actorName:   actor?.user?.name || actor?.email,
         action:      'REJECT_RT_REGISTRATION',
         entityType:  'registration_requests',
         entityId:    requestId,
@@ -170,7 +170,7 @@ export async function rejectRtRegistration(requestId: string, reason: string | n
 
 /*
 |--------------------------------------------------------------------------
-| APPROVE WARGA REGISTRATION
+| APPROVE RESIDENT REGISTRATION
 | First-approver-wins: checks status before processing
 |--------------------------------------------------------------------------
 */
@@ -197,23 +197,23 @@ export async function approveResidentRegistration(requestId: string, actor: Acto
         .eq('id', requestId)
         .eq('status', 'pending') // extra guard
 
-    // Send invite to warga
+    // Send invite to resident
     const devLink = await sendInvite({
         registrationRequestId: requestId,
-        email: req.email_warga ?? '',
-        role:  'warga',
+        email: req.resident_email ?? '',
+        role:  'RESIDENT',
         rtId:  req.rt_id ?? ''
     })
 
     logActivity({
         rtId:        req.rt_id,
         actorId:     actor?.user?.id,
-        actorName:   actor?.user?.nama,
-        action:      'APPROVE_WARGA_REGISTRATION',
+        actorName:   actor?.user?.name,
+        action:      'APPROVE_RESIDENT_REGISTRATION',
         entityType:  'registration_requests',
         entityId:    requestId,
-        description: `Pendaftaran warga "${req.nama_warga}" disetujui`,
-        metadata:    { email: req.email_warga }
+        description: `Pendaftaran warga "${req.resident_name}" disetujui`,
+        metadata:    { email: req.resident_email }
     })
 
     return { inviteLink: devLink }
@@ -221,14 +221,14 @@ export async function approveResidentRegistration(requestId: string, actor: Acto
 
 /*
 |--------------------------------------------------------------------------
-| REJECT WARGA REGISTRATION (hard delete)
+| REJECT RESIDENT REGISTRATION (hard delete)
 |--------------------------------------------------------------------------
 */
 
 export async function rejectResidentRegistration(requestId: string, actor: Actor | null) {
     const { data: req } = await supabase
         .from('registration_requests')
-        .select('nama_warga, rt_id')
+        .select('resident_name, rt_id')
         .eq('id', requestId)
         .single()
 
@@ -242,11 +242,11 @@ export async function rejectResidentRegistration(requestId: string, actor: Actor
     logActivity({
         rtId:        req?.rt_id || null,
         actorId:     actor?.user?.id,
-        actorName:   actor?.user?.nama,
-        action:      'REJECT_WARGA_REGISTRATION',
+        actorName:   actor?.user?.name,
+        action:      'REJECT_RESIDENT_REGISTRATION',
         entityType:  'registration_requests',
         entityId:    requestId,
-        description: `Pendaftaran warga "${req?.nama_warga}" ditolak dan dihapus`,
+        description: `Pendaftaran warga "${req?.resident_name}" ditolak dan dihapus`,
         metadata:    {}
     })
 }

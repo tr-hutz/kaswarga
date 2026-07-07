@@ -7,10 +7,6 @@ import {
 } from '../auth/getCurrentMembership'
 
 import {
-  applyPaymentFilters
-} from '../helpers/filter-pembayaran'
-
-import {
   MONTHS
 } from '../../constants/months'
 
@@ -40,25 +36,25 @@ export async function getDashboardData(
   const rtId =
     membership.rt?.id
 
-  const wargaId =
-    membership.warga?.id || null
+  const residentId =
+    membership.resident?.id || null
 
   /*
    |--------------------------------------------------------------------------
-   | TOTAL WARGA
+   | TOTAL RESIDENTS
    |--------------------------------------------------------------------------
    */
 
-  let wargaQuery =
+  let residentsQuery =
     supabase
 
-      .from('warga')
+      .from('residents')
 
       .select(`
         id,
-        nama,
-        blok,
-        no_rumah
+        name,
+        block,
+        house_number
       `)
 
       .eq(
@@ -67,52 +63,52 @@ export async function getDashboardData(
       )
 
       .order(
-        'nama',
+        'name',
         {
           ascending: true
         }
       )
 
   const {
-    data: wargaData,
-    error: wargaError
+    data: residentsData,
+    error: residentsError
   } =
-    await wargaQuery
+    await residentsQuery
 
-  if (wargaError) {
+  if (residentsError) {
 
-    throw wargaError
+    throw residentsError
   }
 
   /*
    |--------------------------------------------------------------------------
-   | DETAIL PEMBAYARAN
+   | PAYMENTS
    |--------------------------------------------------------------------------
    */
 
   let paymentQuery = supabase
-    .from('pembayaran')
+    .from('payments')
     .select(`
       id,
-      tanggal,
-      tahun,
-      warga_id,
+      date,
+      year,
+      resident_id,
       rt_id,
 
-      detail_pembayaran:
-      detail_pembayaran!detail_pembayaran_pembayaran_id_fkey (
+      payment_details:
+      payment_details (
         id,
-        bulan,
-        nominal,
-        tahun
+        month,
+        amount,
+        year
       )
     `)
     .eq(
-      'tahun',
+      'year',
       year
     )
     .order(
-      'tanggal',
+      'date',
       {
         ascending: false
       }
@@ -120,20 +116,20 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
-   | FILTER WARGA
+   | FILTER RESIDENT
    |--------------------------------------------------------------------------
    */
 
   if (
-    role === 'warga'
+    role === 'RESIDENT'
     &&
-    wargaId
+    residentId
   ) {
 
     paymentQuery =
       paymentQuery.eq(
-        'warga_id',
-        wargaId
+        'resident_id',
+        residentId
       )
   }
 
@@ -165,52 +161,52 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
-   | DETAIL KONFIRMASI
+   | CONFIRMATIONS
    |--------------------------------------------------------------------------
    */
 
   let confirmationQuery = supabase
     .from(
-      'konfirmasi_pembayaran'
+      'payment_confirmations'
     )
     .select(`
       id,
       status,
-      tahun,
-      bukti_url,
+      year,
+      proof_url,
 
-      warga_id,
+      resident_id,
       rt_id,
 
-      detail_konfirmasi_pembayaran:
-      detail_konfirmasi_pembayaran!detail_konfirmasi_pembayaran_konfirmasi_id_fkey (
+      confirmation_details:
+      confirmation_details (
         id,
-        bulan,
-        nominal,
-        tahun
+        month,
+        amount,
+        year
       )
     `)
     .eq(
-      'tahun',
+      'year',
       year
     )
 
   /*
    |--------------------------------------------------------------------------
-   | FILTER WARGA
+   | FILTER RESIDENT
    |--------------------------------------------------------------------------
    */
 
   if (
-    role === 'warga'
+    role === 'RESIDENT'
     &&
-    wargaId
+    residentId
   ) {
 
     confirmationQuery =
       confirmationQuery.eq(
-        'warga_id',
-        wargaId
+        'resident_id',
+        residentId
       )
   }
 
@@ -242,30 +238,30 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
-   | PENGELUARAN
+   | EXPENSES
    |--------------------------------------------------------------------------
    */
 
   let expenseQuery =
     supabase
 
-      .from('pengeluaran')
+      .from('expenses')
 
       .select(`
         id,
-        kategori,
-        deskripsi,
-        nominal,
-        tanggal
+        category,
+        description,
+        amount,
+        date
       `)
 
       .gte(
-        'tanggal',
+        'date',
         `${year}-01-01`
       )
 
       .lte(
-        'tanggal',
+        'date',
         `${year}-12-31`
       )
 
@@ -291,7 +287,7 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
-   | TOTAL PEMASUKAN
+   | TOTAL INCOME
    |--------------------------------------------------------------------------
    */
 
@@ -306,7 +302,7 @@ export async function getDashboardData(
                 const totalDetail =
                     (
                         payment
-                            .detail_pembayaran || []
+                            .payment_details || []
                     )
 
                         .reduce(
@@ -321,7 +317,7 @@ export async function getDashboardData(
                                     acc +
 
                                     Number(
-                                        detail.nominal || 0
+                                        detail.amount || 0
                                     )
 
                                 )
@@ -343,19 +339,19 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
-   | TOTAL PENGELUARAN
+   | TOTAL EXPENSES
    |--------------------------------------------------------------------------
    */
 
   const totalExpense =
     expenseData.reduce(
-      (sum, item) => sum + (item.nominal || 0),
+      (sum, item) => sum + (item.amount || 0),
       0
     )
 
   /*
    |--------------------------------------------------------------------------
-   | SALDO TERKINI (from ledger)
+   | CURRENT BALANCE (from ledger)
    |--------------------------------------------------------------------------
    */
 
@@ -368,7 +364,7 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
-   | TOTAL TUNGGAKAN
+   | TOTAL ARREARS
    |--------------------------------------------------------------------------
    */
 
@@ -376,19 +372,19 @@ export async function getDashboardData(
     new Date().getMonth() + 1
 
   const monthlyFee =
-    membership.rt?.nominal_iuran || 0
+    membership.rt?.monthly_fee || 0
 
   /*
    |--------------------------------------------------------------------------
-   | STATUS PEMBAYARAN WARGA
+   | RESIDENT PAYMENT ANALYTICS
    |--------------------------------------------------------------------------
    */
 
-  const wargaAnalytics =
-    wargaData.map(warga => {
+  const residentAnalytics =
+    residentsData.map(resident => {
 
       /*
-       * per-warga payments
+       * per-resident payments
        */
 
         const paidMonths =
@@ -397,8 +393,8 @@ export async function getDashboardData(
                 .filter(item => {
 
                     return (
-                        item.warga_id ===
-                        warga.id
+                        item.resident_id ===
+                        resident.id
                     )
 
                 })
@@ -406,16 +402,16 @@ export async function getDashboardData(
                 .flatMap(item =>
 
                     (
-                        item.detail_pembayaran || []
+                        item.payment_details || []
                     )
 
                         .map(detail =>
-                            detail.bulan
+                            detail.month
                         )
                 )
 
       /*
-       * jumlah bayar
+       * paid count
        */
 
       const paidCount =
@@ -439,14 +435,14 @@ export async function getDashboardData(
 
       return {
 
-        id: warga.id,
+        id: resident.id,
 
-        name: warga.nama,
+        name: resident.name,
 
-        block: warga.blok,
+        block: resident.block,
 
         houseNumber:
-          warga.no_rumah,
+          resident.house_number,
 
         paidCount,
 
@@ -486,13 +482,13 @@ export async function getDashboardData(
 
                         (
                             payment
-                                .detail_pembayaran || []
+                                .payment_details || []
                         )
 
                             .filter(detail =>
 
                                 Number(
-                                    detail.bulan
+                                    detail.month
                                 ) ===
 
                                 Number(
@@ -510,7 +506,7 @@ export async function getDashboardData(
                                     acc +
 
                                     Number(
-                                        detail.nominal || 0
+                                        detail.amount || 0
                                     ),
 
                                 0
@@ -533,7 +529,7 @@ export async function getDashboardData(
 
             const itemMonth =
               new Date(
-                item.tanggal!
+                item.date!
               )
                 .getMonth() + 1
 
@@ -550,7 +546,7 @@ export async function getDashboardData(
               return (
                 sum +
                 (
-                  item.nominal || 0
+                  item.amount || 0
                 )
               )
 
@@ -596,13 +592,13 @@ export async function getDashboardData(
 
                             (
                                 payment
-                                    .detail_pembayaran || []
+                                    .payment_details || []
                             )
 
                                 .filter(detail =>
 
                                     Number(
-                                        detail.bulan
+                                        detail.month
                                     ) ===
 
                                     Number(
@@ -640,7 +636,7 @@ export async function getDashboardData(
    */
 
   const totalArrears =
-    wargaAnalytics.reduce(
+    residentAnalytics.reduce(
       (sum, w) => sum + w.arrears,
       0
     ) * monthlyFee
@@ -652,13 +648,13 @@ export async function getDashboardData(
     rt:
       membership.rt,
 
-    warga:
-      membership.warga,
+    resident:
+      membership.resident,
 
     insight: {
 
-      totalWarga:
-        wargaData.length,
+      totalResidents:
+        residentsData.length,
 
       totalIncome,
 
@@ -671,7 +667,7 @@ export async function getDashboardData(
 
     },
 
-    wargaAnalytics,
+    residentAnalytics,
 
     cashflow,
 

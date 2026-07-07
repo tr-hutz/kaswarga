@@ -51,7 +51,7 @@ export default function UserTable({ data, loading, currentUserId, onEditRole, on
                         if (!memberships.length) {
                             return (
                                 <tr key={user.id} className="hover:bg-gray-50">
-                                    <td className="px-4 py-3 font-medium">{user.nama || '-'}</td>
+                                    <td className="px-4 py-3 font-medium">{user.name || '-'}</td>
                                     <td className="px-4 py-3 text-gray-500">{user.email}</td>
                                     <td className="px-4 py-3 text-gray-400 italic">{t('table.noRt')}</td>
                                     <td className="px-4 py-3 text-gray-400 italic">-</td>
@@ -67,7 +67,7 @@ export default function UserTable({ data, loading, currentUserId, onEditRole, on
                                 {idx === 0 && (
                                     <>
                                         <td className="px-4 py-3 font-medium" rowSpan={memberships.length}>
-                                            {user.nama || '-'}
+                                            {user.name || '-'}
                                         </td>
                                         <td className="px-4 py-3 text-gray-500" rowSpan={memberships.length}>
                                             {user.email}
@@ -75,7 +75,7 @@ export default function UserTable({ data, loading, currentUserId, onEditRole, on
                                     </>
                                 )}
                                 <td className="px-4 py-3 text-gray-600">
-                                    {m.rt?.nama || <span className="italic text-gray-400">{t('editRole.system')}</span>}
+                                    {m.rt?.name || <span className="italic text-gray-400">{t('editRole.system')}</span>}
                                 </td>
                                 <td className="px-4 py-3">
                                     <span className={`

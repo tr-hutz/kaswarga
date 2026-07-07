@@ -31,8 +31,8 @@ export async function POST(req: Request) {
         }
 
         const { data: membership, error: membershipError } = await supabaseAdmin
-            .from('user_membership')
-            .select('role, rt_id, user:users(nama)')
+            .from('memberships')
+            .select('role, rt_id, user:users(name)')
             .eq('user_id', authData.user.id)
             .eq('status', 'active')
             .maybeSingle()
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Membership not found' }, { status: 403 })
         }
 
-        if (!['ketua', 'admin', 'bendahara'].includes(membership.role)) {
+        if (!['CHAIR', 'ADMIN', 'TREASURER'].includes(membership.role)) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
         }
 
@@ -57,17 +57,17 @@ export async function POST(req: Request) {
         }
 
         const toInsert = rows
-            .filter(r => r.tanggal?.trim() && r.nominal?.trim())
+            .filter(r => r.date?.trim() && r.amount?.trim())
             .map(r => ({
-                rt_id:      membership.rt_id,
-                tanggal:    r.tanggal.trim(),
-                kategori:   r.kategori?.trim()  || null,
-                nominal:    parseInt(r.nominal.replace(/[^0-9]/g, ''), 10) || 0,
-                penerima:   r.penerima?.trim()  || null,
-                deskripsi:  r.deskripsi?.trim() || null,
-                aktif:      true,
-                status:     'pending',
-                created_by: authData.user.id,
+                rt_id:       membership.rt_id,
+                date:        r.date.trim(),
+                category:    r.category?.trim()     || null,
+                amount:      parseInt(r.amount.replace(/[^0-9]/g, ''), 10) || 0,
+                recipient:   r.recipient?.trim()    || null,
+                description: r.description?.trim()  || null,
+                active:      true,
+                status:      'pending',
+                created_by:  authData.user.id,
             }))
 
         if (toInsert.length === 0) {
@@ -75,7 +75,7 @@ export async function POST(req: Request) {
         }
 
         const { data, error } = await supabaseAdmin
-            .from('pengeluaran')
+            .from('expenses')
             .insert(toInsert)
             .select('id')
 
@@ -84,20 +84,20 @@ export async function POST(req: Request) {
         await supabaseAdmin.from('activity_logs').insert({
             rt_id:       membership.rt_id,
             actor_id:    authData.user.id,
-            actor_name:  membership.user?.nama || authData.user.email,
-            action:      'IMPORT_PENGELUARAN',
-            entity_type: 'pengeluaran',
+            actor_name:  membership.user?.name || authData.user.email,
+            action:      'IMPORT_EXPENSES',
+            entity_type: 'expenses',
             entity_id:   membership.rt_id,
-            description: `Import ${data.length} data pengeluaran`,
+            description: `Import ${data.length} data expenses`,
             metadata:    { count: data.length }
         })
 
-        // Notify all ketua users with ONE grouped notification
+        // Notify all CHAIR users with ONE grouped notification
         const { data: ketuaMembers } = await supabaseAdmin
-            .from('user_membership')
+            .from('memberships')
             .select('user_id')
             .eq('rt_id', membership.rt_id)
-            .eq('role', 'ketua')
+            .eq('role', 'CHAIR')
             .eq('status', 'active')
 
         if (ketuaMembers?.length && data.length > 0) {
@@ -107,7 +107,7 @@ export async function POST(req: Request) {
                     type:           'expense_pending',
                     title:          'Pengeluaran Baru Menunggu Persetujuan',
                     message:        `${data.length} pengeluaran baru diimpor dan perlu disetujui.`,
-                    entity_type:    'pengeluaran',
+                    entity_type:    'expenses',
                     entity_id:      membership.rt_id,
                     target_user_id: m.user_id,
                 }))

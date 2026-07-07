@@ -55,7 +55,7 @@ export function useRtActions(refresh) {
 
         try {
             await deleteRt(delTarget.id)
-            toast({ message: `RT "${delTarget.nama}" berhasil dihapus.`, type: 'success' })
+            toast({ message: `RT "${delTarget.name}" berhasil dihapus.`, type: 'success' })
             setDelTarget(null)
             refresh()
         } catch (err) {

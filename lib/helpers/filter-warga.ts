@@ -31,7 +31,7 @@ export function applyResidentFilters(query: any, { rtId, search, status }: Resid
     if (search) {
 
         query =
-            query.or(`nama.ilike.%${search}%,blok.ilike.%${search}%,no_rumah.ilike.%${search}%`)
+            query.or(`name.ilike.%${search}%,block.ilike.%${search}%,house_number.ilike.%${search}%`)
     }
 
     /*
@@ -44,7 +44,7 @@ export function applyResidentFilters(query: any, { rtId, search, status }: Resid
 
         query =
             query.eq(
-                'aktif',
+                'active',
                 true
             )
     }
@@ -53,7 +53,7 @@ export function applyResidentFilters(query: any, { rtId, search, status }: Resid
 
         query =
             query.eq(
-                'aktif',
+                'active',
                 false
             )
     }

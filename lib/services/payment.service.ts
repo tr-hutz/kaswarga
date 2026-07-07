@@ -8,7 +8,7 @@ import {applyConfirmationFilters} from '../helpers/filter-konfirmasi'
 
 import {applyPaymentFilters} from '../helpers/filter-pembayaran'
 
-import {transformConfirmation, transformPayment} from '../../features/pembayaran/services/pembayaran-transform'
+import {transformConfirmation, transformPayment} from '../../features/payment/services/payment-transform'
 
 import {MONTHS} from '../../constants/months'
 
@@ -33,8 +33,8 @@ async function getMembershipContext() {
         rt:
         membership?.rt,
 
-        warga:
-        membership?.warga
+        resident:
+        membership?.resident
     }
 }
 
@@ -45,7 +45,7 @@ async function getMembershipContext() {
 */
 
 export async function getApprovedPayments(
-    wargaId: string | null | undefined,
+    residentId: string | null | undefined,
     year: number
 ) {
 
@@ -55,30 +55,30 @@ export async function getApprovedPayments(
         supabase
 
             .from(
-                'detail_pembayaran'
+                'payment_details'
             )
 
             .select(`
         id,
-        bulan,
-        nominal,
+        month,
+        amount,
 
-        pembayaran!inner (
+        payments!inner (
           id,
-          tanggal,
-          tahun,
-          warga_id,
+          date,
+          year,
+          resident_id,
           rt_id
         )
       `)
 
             .eq(
-                'pembayaran.tahun',
+                'payments.year',
                 year
             )
 
             .order(
-                'bulan',
+                'month',
                 {
                     ascending: true
                 }
@@ -88,17 +88,17 @@ export async function getApprovedPayments(
 
         query =
             query.eq(
-                'pembayaran.rt_id',
+                'payments.rt_id',
                 rt.id
             )
     }
 
-    if (wargaId) {
+    if (residentId) {
 
         query =
             query.eq(
-                'pembayaran.warga_id',
-                wargaId
+                'payments.resident_id',
+                residentId
             )
     }
 
@@ -113,13 +113,13 @@ export async function getApprovedPayments(
 
     return (data || []).map(item => ({
         ...item,
-        month: item.bulan,
-        amount: item.nominal
+        month: item.month,
+        amount: item.amount
     }))
 }
 
 export async function getPendingPayments(
-    wargaId: string | null | undefined,
+    residentId: string | null | undefined,
     year: number
 ) {
 
@@ -129,35 +129,35 @@ export async function getPendingPayments(
         supabase
 
             .from(
-                'detail_konfirmasi_pembayaran'
+                'confirmation_details'
             )
 
             .select(`
         id,
-        bulan,
-        nominal,
+        month,
+        amount,
 
-        konfirmasi_pembayaran!inner (
+        payment_confirmations!inner (
           id,
           status,
-          tahun,
-          warga_id,
+          year,
+          resident_id,
           rt_id
         )
       `)
 
             .eq(
-                'konfirmasi_pembayaran.tahun',
+                'payment_confirmations.year',
                 year
             )
 
             .eq(
-                'konfirmasi_pembayaran.status',
+                'payment_confirmations.status',
                 'pending'
             )
 
             .order(
-                'bulan',
+                'month',
                 {
                     ascending: true
                 }
@@ -167,17 +167,17 @@ export async function getPendingPayments(
 
         query =
             query.eq(
-                'konfirmasi_pembayaran.rt_id',
+                'payment_confirmations.rt_id',
                 rt.id
             )
     }
 
-    if (wargaId) {
+    if (residentId) {
 
         query =
             query.eq(
-                'konfirmasi_pembayaran.warga_id',
-                wargaId
+                'payment_confirmations.resident_id',
+                residentId
             )
     }
 
@@ -194,7 +194,7 @@ export async function getPendingPayments(
 }
 
 export async function getRejectedPayments(
-    wargaId: string | null | undefined,
+    residentId: string | null | undefined,
     year: number
 ) {
 
@@ -204,35 +204,35 @@ export async function getRejectedPayments(
         supabase
 
             .from(
-                'detail_konfirmasi_pembayaran'
+                'confirmation_details'
             )
 
             .select(`
         id,
-        bulan,
-        nominal,
+        month,
+        amount,
 
-        konfirmasi_pembayaran!inner (
+        payment_confirmations!inner (
           id,
           status,
-          tahun,
-          warga_id,
+          year,
+          resident_id,
           rt_id
         )
       `)
 
             .eq(
-                'konfirmasi_pembayaran.tahun',
+                'payment_confirmations.year',
                 year
             )
 
             .eq(
-                'konfirmasi_pembayaran.status',
+                'payment_confirmations.status',
                 'rejected'
             )
 
             .order(
-                'bulan',
+                'month',
                 {
                     ascending: true
                 }
@@ -242,17 +242,17 @@ export async function getRejectedPayments(
 
         query =
             query.eq(
-                'konfirmasi_pembayaran.rt_id',
+                'payment_confirmations.rt_id',
                 rt.id
             )
     }
 
-    if (wargaId) {
+    if (residentId) {
 
         query =
             query.eq(
-                'konfirmasi_pembayaran.warga_id',
-                wargaId
+                'payment_confirmations.resident_id',
+                residentId
             )
     }
 
@@ -281,32 +281,32 @@ export async function getDashboardAnalytics(
     const {
         role,
         rt,
-        warga
+        resident
     } = await getMembershipContext()
 
     /*
     |--------------------------------------------------------------------------
-    | PEMBAYARAN
+    | PAYMENTS
     |--------------------------------------------------------------------------
     */
 
     let paymentQuery =
         supabase
 
-            .from('pembayaran')
+            .from('payments')
 
             .select(`
         id,
-        tanggal,
-        tahun,
+        date,
+        year,
         rt_id,
-        warga_id,
+        resident_id,
 
-        detail_pembayaran:
-        detail_pembayaran!detail_pembayaran_pembayaran_id_fkey (
+        payment_details:
+        payment_details (
           id,
-          bulan,
-          nominal
+          month,
+          amount
         )
       `)
 
@@ -320,15 +320,15 @@ export async function getDashboardAnalytics(
                 rt?.id,
 
                 wargaId:
-                    role === 'warga'
-                        ? warga?.id
+                    role === 'RESIDENT'
+                        ? resident?.id
                         : null
             }
         )
 
     /*
     |--------------------------------------------------------------------------
-    | PENGELUARAN
+    | EXPENSES
     |--------------------------------------------------------------------------
     */
 
@@ -336,19 +336,24 @@ export async function getDashboardAnalytics(
     let expenseQuery: any =
         supabase
 
-            .from('pengeluaran')
+            .from('expenses')
 
             .select(`
         id,
-        jumlah,
-        tanggal,
-        kategori,
+        amount,
+        date,
+        category,
         rt_id
       `)
 
-            .eq(
-                'tahun' as any,
-                year
+            .gte(
+                'date',
+                `${year}-01-01`
+            )
+
+            .lte(
+                'date',
+                `${year}-12-31`
             )
 
     if (rt?.id) {
@@ -408,14 +413,14 @@ export async function getDashboardAnalytics(
 
                         const detail =
                             paymentItem
-                                .detail_pembayaran || []
+                                .payment_details || []
 
                         const monthTotal =
                             detail
 
                                 .filter(
                                     item =>
-                                        item.bulan ===
+                                        item.month ===
                                         month.id
                                 )
 
@@ -427,7 +432,7 @@ export async function getDashboardAnalytics(
 
                                         acc +
                                         (
-                                            item.nominal || 0
+                                            item.amount || 0
                                         ),
 
                                     0
@@ -467,7 +472,7 @@ export async function getDashboardAnalytics(
 
                 const detail =
                     paymentItem
-                        .detail_pembayaran || []
+                        .payment_details || []
 
                 const total =
                     detail.reduce(
@@ -478,7 +483,7 @@ export async function getDashboardAnalytics(
 
                             acc +
                             (
-                                item.nominal || 0
+                                item.amount || 0
                             ),
 
                         0
@@ -502,7 +507,7 @@ export async function getDashboardAnalytics(
             ) =>
 
                 sum +
-                (item.jumlah || 0),
+                (item.amount || 0),
 
             0
         )
@@ -542,22 +547,21 @@ export async function getPaymentHealth(
     const {
         role,
         rt,
-        warga
+        resident
     } = await getMembershipContext()
 
     let query =
         supabase
 
-            .from('pembayaran')
+            .from('payments')
 
             .select(`
         id,
-        warga_id,
+        resident_id,
 
-        detail_pembayaran:
-        detail_pembayaran!detail_pembayaran_pembayaran_id_fkey (
+        payment_details (
           id,
-          bulan
+          month
         )
       `)
 
@@ -571,8 +575,8 @@ export async function getPaymentHealth(
                 rt?.id,
 
                 wargaId:
-                    role === 'warga'
-                        ? warga?.id
+                    role === 'RESIDENT'
+                        ? resident?.id
                         : null
             }
         )
@@ -591,14 +595,14 @@ export async function getPaymentHealth(
 
     /*
     |--------------------------------------------------------------------------
-    | TOTAL WARGA
+    | TOTAL RESIDENTS
     |--------------------------------------------------------------------------
     */
 
-    let wargaQuery =
+    let residentsQuery =
         supabase
 
-            .from('warga')
+            .from('residents')
 
             .select(`
         id
@@ -606,19 +610,19 @@ export async function getPaymentHealth(
 
     if (rt?.id) {
 
-        wargaQuery =
-            wargaQuery.eq(
+        residentsQuery =
+            residentsQuery.eq(
                 'rt_id',
                 rt.id
             )
     }
 
     const {
-        data: wargaData
-    } = await wargaQuery
+        data: residentsData
+    } = await residentsQuery
 
-    const totalWarga =
-        wargaData?.length || 0
+    const totalResidents =
+        residentsData?.length || 0
 
     /*
     |--------------------------------------------------------------------------
@@ -642,26 +646,26 @@ export async function getPaymentHealth(
 
             if (
                 !paymentMap[
-                    item.warga_id
+                    item.resident_id
                     ]
             ) {
 
                 paymentMap[
-                    item.warga_id
+                    item.resident_id
                     ] = new Set()
             }
 
             item
-                .detail_pembayaran
+                .payment_details
                 ?.forEach(
                     detail => {
 
                         paymentMap[
-                            item.warga_id
+                            item.resident_id
                             ]
 
                             .add(
-                                detail.bulan
+                                detail.month
                             )
                     }
                 )
@@ -705,7 +709,7 @@ export async function getPaymentHealth(
 
     return {
 
-        totalWarga,
+        totalResidents,
 
         paid,
 
@@ -719,7 +723,7 @@ export async function getPaymentHealth(
 
 /*
 |--------------------------------------------------------------------------
-| PEMBAYARAN PAGE
+| PAYMENTS PAGE
 |--------------------------------------------------------------------------
 */
 
@@ -730,39 +734,39 @@ export async function getPayments(
     const {
         role,
         rt,
-        warga
+        resident
     } = await getMembershipContext()
 
     let query =
         supabase
 
-            .from('pembayaran')
+            .from('payments')
 
             .select(`
         id,
-        tahun,
-        tanggal,
+        year,
+        date,
         rt_id,
-        warga_id,
+        resident_id,
 
-        warga:
-        warga!pembayaran_warga_id_fkey (
+        residents:
+        residents!payments_resident_id_fkey (
           id,
-          nama,
-          blok,
-          no_rumah
+          name,
+          block,
+          house_number
         ),
 
-        detail_pembayaran:
-        detail_pembayaran!detail_pembayaran_pembayaran_id_fkey (
+        payment_details:
+        payment_details (
           id,
-          bulan,
-          nominal
+          month,
+          amount
         )
       `)
 
             .order(
-                'tanggal',
+                'date',
                 {
                     ascending: false
                 }
@@ -778,8 +782,8 @@ export async function getPayments(
                 rt?.id,
 
                 wargaId:
-                    role === 'warga'
-                        ? warga?.id
+                    role === 'RESIDENT'
+                        ? resident?.id
                         : null
             }
         )
@@ -802,7 +806,7 @@ export async function getPendingConfirmations(
     year: number
 ) {
 
-    return getKonfirmasi(
+    return getConfirmations(
         year,
         'pending'
     )
@@ -812,13 +816,13 @@ export async function getRejectedConfirmations(
     year: number
 ) {
 
-    return getKonfirmasi(
+    return getConfirmations(
         year,
         'rejected'
     )
 }
 
-async function getKonfirmasi(
+async function getConfirmations(
     year: number,
     status: string
 ) {
@@ -826,39 +830,39 @@ async function getKonfirmasi(
     const {
         role,
         rt,
-        warga
+        resident
     } = await getMembershipContext()
 
     let query =
         supabase
 
             .from(
-                'konfirmasi_pembayaran'
+                'payment_confirmations'
             )
 
             .select(`
         id,
-        tahun,
+        year,
         status,
-        total_bayar,
-        bukti_url,
+        total_amount,
+        proof_url,
         created_at,
         rt_id,
-        warga_id,
+        resident_id,
 
-        warga:
-        warga (
+        residents:
+        residents (
           id,
-          nama,
-          blok,
-          no_rumah
+          name,
+          block,
+          house_number
         ),
 
-        detail_konfirmasi_pembayaran:
-        detail_konfirmasi_pembayaran (
+        confirmation_details:
+        confirmation_details (
           id,
-          bulan,
-          nominal
+          month,
+          amount
         )
       `)
 
@@ -881,8 +885,8 @@ async function getKonfirmasi(
                 rt?.id,
 
                 wargaId:
-                    role === 'warga'
-                        ? warga?.id
+                    role === 'RESIDENT'
+                        ? resident?.id
                         : null
             }
         )
@@ -908,7 +912,7 @@ async function getKonfirmasi(
 */
 
 export async function approvePayment(
-    konfirmasiId: string
+    confirmationId: string
 ) {
 
     const [
@@ -919,11 +923,11 @@ export async function approvePayment(
         getCurrentMembership()
     ])
 
-    const { data: konfirmasi } =
+    const { data: confirmation } =
         await supabase
-            .from('konfirmasi_pembayaran')
-            .select('warga_id, tahun, total_bayar, detail_konfirmasi_pembayaran(bulan)')
-            .eq('id', konfirmasiId)
+            .from('payment_confirmations')
+            .select('resident_id, year, total_amount, confirmation_details(month)')
+            .eq('id', confirmationId)
             .single()
 
     const {
@@ -932,8 +936,8 @@ export async function approvePayment(
     } = await supabase.rpc(
         'approve_konfirmasi',
         {
-            p_konfirmasi_id: konfirmasiId,
-            p_user_id:       user?.id ?? ''
+            p_confirmation_id: confirmationId,
+            p_user_id:         user?.id ?? ''
         }
     )
 
@@ -944,17 +948,17 @@ export async function approvePayment(
     logActivity({
         rtId:       membership?.rt?.id,
         actorId:    membership?.user?.id,
-        actorName:  membership?.user?.nama,
-        action:     'APPROVE_PEMBAYARAN',
-        entityType: 'konfirmasi_pembayaran',
-        entityId:   konfirmasiId,
+        actorName:  membership?.user?.name,
+        action:     'APPROVE_PAYMENT',
+        entityType: 'payment_confirmations',
+        entityId:   confirmationId,
         description: `Setujui konfirmasi pembayaran`,
         metadata:   {
-            konfirmasiId,
-            wargaId:     konfirmasi?.warga_id,
-            year:        konfirmasi?.tahun,
-            totalAmount: konfirmasi?.total_bayar,
-            months:      konfirmasi?.detail_konfirmasi_pembayaran?.map(d => d.bulan) ?? []
+            confirmationId,
+            residentId:  confirmation?.resident_id,
+            year:        confirmation?.year,
+            totalAmount: confirmation?.total_amount,
+            months:      confirmation?.confirmation_details?.map(d => d.month) ?? []
         }
     })
 
@@ -962,8 +966,8 @@ export async function approvePayment(
 }
 
 export async function rejectPayment(
-    konfirmasiId: string,
-    alasan: string | null | undefined
+    confirmationId: string,
+    reason: string | null | undefined
 ) {
 
     const [
@@ -974,11 +978,11 @@ export async function rejectPayment(
         getCurrentMembership()
     ])
 
-    const { data: konfirmasi } =
+    const { data: confirmation } =
         await supabase
-            .from('konfirmasi_pembayaran')
-            .select('warga_id, tahun, total_bayar, detail_konfirmasi_pembayaran(bulan)')
-            .eq('id', konfirmasiId)
+            .from('payment_confirmations')
+            .select('resident_id, year, total_amount, confirmation_details(month)')
+            .eq('id', confirmationId)
             .single()
 
     const {
@@ -987,9 +991,9 @@ export async function rejectPayment(
     } = await supabase.rpc(
         'reject_konfirmasi',
         {
-            p_konfirmasi_id: konfirmasiId,
-            p_alasan:        alasan ?? '',
-            p_user_id:       user?.id ?? ''
+            p_confirmation_id: confirmationId,
+            p_reason:          reason ?? '',
+            p_user_id:         user?.id ?? ''
         }
     )
 
@@ -1000,18 +1004,18 @@ export async function rejectPayment(
     logActivity({
         rtId:       membership?.rt?.id,
         actorId:    membership?.user?.id,
-        actorName:  membership?.user?.nama,
-        action:     'REJECT_PEMBAYARAN',
-        entityType: 'konfirmasi_pembayaran',
-        entityId:   konfirmasiId,
-        description: `Tolak konfirmasi pembayaran${alasan ? `: ${alasan}` : ''}`,
+        actorName:  membership?.user?.name,
+        action:     'REJECT_PAYMENT',
+        entityType: 'payment_confirmations',
+        entityId:   confirmationId,
+        description: `Tolak konfirmasi pembayaran${reason ? `: ${reason}` : ''}`,
         metadata:   {
-            konfirmasiId,
-            wargaId:     konfirmasi?.warga_id,
-            year:        konfirmasi?.tahun,
-            totalAmount: konfirmasi?.total_bayar,
-            months:      konfirmasi?.detail_konfirmasi_pembayaran?.map(d => d.bulan) ?? [],
-            reason:      alasan ?? null
+            confirmationId,
+            residentId:  confirmation?.resident_id,
+            year:        confirmation?.year,
+            totalAmount: confirmation?.total_amount,
+            months:      confirmation?.confirmation_details?.map(d => d.month) ?? [],
+            reason:      reason ?? null
         }
     })
 
@@ -1031,7 +1035,7 @@ export async function getPaymentConfirmations({
     const {
         role,
         rt,
-        warga
+        resident
     } =
         await getMembershipContext()
 
@@ -1039,36 +1043,36 @@ export async function getPaymentConfirmations({
         supabase
 
             .from(
-                'konfirmasi_pembayaran'
+                'payment_confirmations'
             )
 
             .select(`
 
   id,
-  tahun,
+  year,
   status,
-  total_bayar,
-  bukti_url,
+  total_amount,
+  proof_url,
   created_at,
 
   rt_id,
-  warga_id,
+  resident_id,
 
-  warga:warga!inner (
+  residents:residents!inner (
 
     id,
-    nama,
-    blok,
-    no_rumah
+    name,
+    block,
+    house_number
 
   ),
 
-  detail_konfirmasi_pembayaran:
-  detail_konfirmasi_pembayaran!detail_konfirmasi_pembayaran_konfirmasi_id_fkey (
+  confirmation_details:
+  confirmation_details (
 
     id,
-    bulan,
-    nominal
+    month,
+    amount
 
   )
 
@@ -1091,7 +1095,7 @@ export async function getPaymentConfirmations({
 
         query =
             query.eq(
-                'tahun',
+                'year',
                 year
             )
     }
@@ -1115,15 +1119,15 @@ export async function getPaymentConfirmations({
     }
 
     if (
-        role === 'warga'
+        role === 'RESIDENT'
         &&
-        warga?.id
+        resident?.id
     ) {
 
         query =
             query.eq(
-                'warga_id',
-                warga.id
+                'resident_id',
+                resident.id
             )
     }
 
@@ -1137,7 +1141,7 @@ export async function getPaymentConfirmations({
 
         query =
             query.ilike(
-                'warga.nama',
+                'residents.name',
                 `%${search}%`
             )
     }

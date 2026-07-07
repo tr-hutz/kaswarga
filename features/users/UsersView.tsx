@@ -64,7 +64,7 @@ export default function UsersView({
                         </div>
 
                         <p className="text-sm text-gray-600">
-                            {t('removeMembership.message', { rtName: delTarget.rt?.nama })}
+                            {t('removeMembership.message', { rtName: delTarget.rt?.name })}
                         </p>
 
                         <div className="flex justify-end gap-2 pt-1">

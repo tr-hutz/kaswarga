@@ -4,13 +4,13 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 
-const ROLE_VALUES = ['ketua', 'admin', 'bendahara', 'warga']
+const ROLE_VALUES = ['CHAIR', 'ADMIN', 'TREASURER', 'RESIDENT']
 
 export default function EditRoleForm({ target, onSave, onClose, saving }) {
     const t  = useTranslations('users')
     const tc = useTranslations('common')
 
-    const [role, setRole] = useState(target?.membership?.role || 'warga')
+    const [role, setRole] = useState(target?.membership?.role || 'RESIDENT')
 
     if (!target) return null
 
@@ -23,12 +23,12 @@ export default function EditRoleForm({ target, onSave, onClose, saving }) {
                 <div>
                     <p className="text-sm text-gray-500">
                         {t('editRole.user')}: <span className="font-medium text-gray-800">
-                            {target.user?.nama || target.user?.email}
+                            {target.user?.name || target.user?.email}
                         </span>
                     </p>
                     <p className="text-sm text-gray-500">
                         {t('editRole.rt')}: <span className="font-medium text-gray-800">
-                            {target.membership?.rt?.nama || t('editRole.system')}
+                            {target.membership?.rt?.name || t('editRole.system')}
                         </span>
                     </p>
                 </div>

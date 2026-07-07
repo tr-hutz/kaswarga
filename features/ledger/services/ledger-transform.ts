@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import {
 
     formatRupiah
@@ -17,31 +17,31 @@ export function transformLedger(
         item.id,
 
         date:
-        item.tanggal,
+        item.date,
 
         type:
-        item.jenis,
+        item.type,
 
         source:
-        item.sumber,
+        item.source,
 
         description:
-            item.deskripsi || '-',
+            item.description || '-',
 
         amount:
-            item.nominal || 0,
+            item.amount || 0,
 
         amountLabel:
             formatRupiah(
-                item.nominal || 0
+                item.amount || 0
             ),
 
         balance:
-            item.saldo_setelah || 0,
+            item.balance_after || 0,
 
         balanceLabel:
             formatRupiah(
-                item.saldo_setelah || 0
+                item.balance_after || 0
             )
 
     }))

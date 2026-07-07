@@ -16,16 +16,16 @@ export async function getAllUsers() {
         .from('users')
         .select(`
             id,
-            nama,
+            name,
             email,
             created_at,
-            memberships:user_membership (
+            memberships:memberships (
                 id,
                 role,
                 rt:rt (
                     id,
-                    nama,
-                    kode
+                    name,
+                    code
                 )
             )
         `)
@@ -42,16 +42,16 @@ export async function getAllUsers() {
 |--------------------------------------------------------------------------
 */
 
-export async function updateMembershipRole(membershipId: string, newRole: UserRole, actorMembership: { user?: { id?: string; nama?: string } | null } | null) {
+export async function updateMembershipRole(membershipId: string, newRole: UserRole, actorMembership: { user?: { id?: string; name?: string } | null } | null) {
 
     const { data: before } = await supabase
-        .from('user_membership')
+        .from('memberships')
         .select('role, user_id, rt_id')
         .eq('id', membershipId)
         .single()
 
     const { data, error } = await supabase
-        .from('user_membership')
+        .from('memberships')
         .update({ role: newRole })
         .eq('id', membershipId)
         .select()
@@ -62,9 +62,9 @@ export async function updateMembershipRole(membershipId: string, newRole: UserRo
     logActivity({
         rtId:       SYSTEM_RT_ID,
         actorId:    actorMembership?.user?.id,
-        actorName:  actorMembership?.user?.nama,
+        actorName:  actorMembership?.user?.name,
         action:     'UPDATE_USER_ROLE',
-        entityType: 'user_membership',
+        entityType: 'memberships',
         entityId:   membershipId,
         description: `Ubah role user dari ${before?.role} menjadi ${newRole}`,
         metadata:   { before: before?.role, after: newRole, rt_id: before?.rt_id }
@@ -81,11 +81,11 @@ export async function updateMembershipRole(membershipId: string, newRole: UserRo
 
 export async function assignUserToRt(
     { userId, rtId, role }: { userId: string; rtId: string; role: UserRole },
-    actorMembership: { user?: { id?: string; nama?: string } | null } | null
+    actorMembership: { user?: { id?: string; name?: string } | null } | null
 ) {
 
     const { data, error } = await supabase
-        .from('user_membership')
+        .from('memberships')
         .insert({ user_id: userId, rt_id: rtId, role })
         .select()
         .single()
@@ -95,9 +95,9 @@ export async function assignUserToRt(
     logActivity({
         rtId:       SYSTEM_RT_ID,
         actorId:    actorMembership?.user?.id,
-        actorName:  actorMembership?.user?.nama,
+        actorName:  actorMembership?.user?.name,
         action:     'ASSIGN_USER_RT',
-        entityType: 'user_membership',
+        entityType: 'memberships',
         entityId:   data.id,
         description: `Assign user ke RT dengan role ${role}`,
         metadata:   { user_id: userId, rt_id: rtId, role }
@@ -112,16 +112,16 @@ export async function assignUserToRt(
 |--------------------------------------------------------------------------
 */
 
-export async function removeMembership(membershipId: string, actorMembership: { user?: { id?: string; nama?: string } | null } | null): Promise<true> {
+export async function removeMembership(membershipId: string, actorMembership: { user?: { id?: string; name?: string } | null } | null): Promise<true> {
 
     const { data: before } = await supabase
-        .from('user_membership')
+        .from('memberships')
         .select('role, user_id, rt_id')
         .eq('id', membershipId)
         .single()
 
     const { error } = await supabase
-        .from('user_membership')
+        .from('memberships')
         .delete()
         .eq('id', membershipId)
 
@@ -130,9 +130,9 @@ export async function removeMembership(membershipId: string, actorMembership: { 
     logActivity({
         rtId:       SYSTEM_RT_ID,
         actorId:    actorMembership?.user?.id,
-        actorName:  actorMembership?.user?.nama,
+        actorName:  actorMembership?.user?.name,
         action:     'REMOVE_USER_RT',
-        entityType: 'user_membership',
+        entityType: 'memberships',
         entityId:   membershipId,
         description: `Hapus membership user dari RT`,
         metadata:   { user_id: before?.user_id, rt_id: before?.rt_id, role: before?.role }

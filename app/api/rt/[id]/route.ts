@@ -39,20 +39,20 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         }
 
         const { data: membership, error: membershipError } = await supabaseAdmin
-            .from('user_membership')
-            .select('role, user:users(nama)')
+            .from('memberships')
+            .select('role, user:users(name)')
             .eq('user_id', authData.user.id)
             .eq('status', 'active')
             .maybeSingle()
 
-        if (membershipError || membership?.role !== 'super_admin') {
+        if (membershipError || membership?.role !== 'SUPER_ADMIN') {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
         }
 
         // Fetch RT name for the activity log
         const { data: rt, error: rtError } = await supabaseAdmin
             .from('rt')
-            .select('nama, kode')
+            .select('name, code')
             .eq('id', id)
             .is('deleted_at', null)
             .maybeSingle()
@@ -64,14 +64,14 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         // Soft-delete the RT
         const { error: deleteError } = await supabaseAdmin
             .from('rt')
-            .update({ deleted_at: new Date().toISOString(), aktif: false, updated_at: new Date().toISOString() })
+            .update({ deleted_at: new Date().toISOString(), active: false, updated_at: new Date().toISOString() })
             .eq('id', id)
 
         if (deleteError) throw deleteError
 
         // Deactivate all memberships for this RT
         const { error: membershipUpdateError } = await supabaseAdmin
-            .from('user_membership')
+            .from('memberships')
             .update({ status: 'deactivated' })
             .eq('rt_id', id)
 
@@ -83,12 +83,12 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
             .insert({
                 rt_id:       SYSTEM_RT_ID,
                 actor_id:    authData.user.id,
-                actor_name:  membership.user?.nama || authData.user.email,
+                actor_name:  membership.user?.name || authData.user.email,
                 action:      'DELETE_RT',
                 entity_type: 'rt',
                 entity_id:   id,
-                description: `Deleted RT: ${rt.nama}`,
-                metadata:    { nama: rt.nama, kode: rt.kode }
+                description: `Deleted RT: ${rt.name}`,
+                metadata:    { name: rt.name, code: rt.code }
             })
 
         return NextResponse.json({ success: true })

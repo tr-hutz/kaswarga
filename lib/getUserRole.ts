@@ -1,14 +1,14 @@
 import { supabase } from './supabase'
 
-export const getUserRole = async (): Promise<{ role: string | null; nama: string | null } | null> => {
+export const getUserRole = async (): Promise<{ role: string | null; name: string | null } | null> => {
   const { data } = await supabase.auth.getUser()
   if (!data.user) return null
 
   const email = (data.user.email ?? '').trim().toLowerCase()
 
-  const { data: warga, error } = await supabase
-    .from('warga')
-    .select('role, nama')
+  const { data: resident, error } = await supabase
+    .from('residents')
+    .select('role, name')
     .eq('email', email)
     .maybeSingle()
 
@@ -17,8 +17,6 @@ export const getUserRole = async (): Promise<{ role: string | null; nama: string
     return null
   }
 
-  console.log('WARGA: ', warga);
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (warga as any) || null
+  return (resident as any) || null
 }

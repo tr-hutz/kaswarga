@@ -64,11 +64,11 @@ export default function Topbar({
         logActivity({
             rtId:       membership?.rt?.id,
             actorId:    membership?.user?.id,
-            actorName:  membership?.user?.nama,
+            actorName:  membership?.user?.name,
             action:     'LOGOUT',
             entityType: 'auth',
             entityId:   membership?.user?.id,
-            description: `${membership?.user?.nama} logged out`,
+            description: `${membership?.user?.name} logged out`,
             metadata:   { role }
         })
 
@@ -161,7 +161,7 @@ export default function Topbar({
                             {
 
                                 membership?.rt
-                                    ?.nama
+                                    ?.name
                             }
 
                         </div>
@@ -200,7 +200,7 @@ export default function Topbar({
                             {
 
                                 membership?.user
-                                    ?.nama
+                                    ?.name
                             }
 
                         </div>

@@ -15,27 +15,27 @@ export async function getHomeSummary(
 
   const { data: paymentRows } =
     await supabase
-      .from('pembayaran')
-      .select('detail_pembayaran!detail_pembayaran_pembayaran_id_fkey(nominal)')
+      .from('payments')
+      .select('payment_details(amount)')
       .eq('rt_id', rtId)
-      .eq('tahun', year)
+      .eq('year', year)
 
   const totalIncome =
     (paymentRows || [])
-      .flatMap(p => p.detail_pembayaran || [])
-      .reduce((sum, item) => sum + (item.nominal || 0), 0)
+      .flatMap(p => p.payment_details || [])
+      .reduce((sum, item) => sum + (item.amount || 0), 0)
 
   const { data: expenseRows } =
     await supabase
-      .from('pengeluaran')
-      .select('nominal')
+      .from('expenses')
+      .select('amount')
       .eq('rt_id', rtId)
-      .gte('tanggal', `${year}-01-01`)
-      .lt('tanggal', `${year + 1}-01-01`)
+      .gte('date', `${year}-01-01`)
+      .lt('date', `${year + 1}-01-01`)
 
   const totalExpense =
     (expenseRows || [])
-      .reduce((sum, item) => sum + (item.nominal || 0), 0)
+      .reduce((sum, item) => sum + (item.amount || 0), 0)
 
   return {
     totalIncome,
@@ -55,12 +55,12 @@ export async function getMonthlyCashflow(
 
   const { data, error } =
     await supabase
-      .from('pembayaran')
-      .select('detail_pembayaran!detail_pembayaran_pembayaran_id_fkey(bulan, nominal)')
+      .from('payments')
+      .select('payment_details(month, amount)')
       .eq('rt_id', rtId)
-      .eq('tahun', year)
+      .eq('year', year)
 
   if (error) throw error
 
-  return (data || []).flatMap(p => p.detail_pembayaran || [])
+  return (data || []).flatMap(p => p.payment_details || [])
 }

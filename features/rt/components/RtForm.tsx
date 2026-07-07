@@ -20,12 +20,12 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
         if (!rt) { setForm(EMPTY); return }
 
         setForm({
-            name:      rt.nama      || '',
-            code:      rt.kode      || '',
-            address:   rt.alamat    || '',
-            city:      rt.kota      || '',
-            province:  rt.provinsi  || '',
-            postalCode: rt.kode_pos || ''
+            name:      rt.name      || '',
+            code:      rt.code      || '',
+            address:   rt.address   || '',
+            city:      rt.city      || '',
+            province:  rt.province  || '',
+            postalCode: rt.postal_code || ''
         })
 
     }, [rt])

@@ -41,7 +41,7 @@ export async function getCurrentMembership(): Promise<Membership> {
     await supabase
 
       .from(
-        'user_membership'
+        'memberships'
       )
 
       .select(`
@@ -50,22 +50,22 @@ export async function getCurrentMembership(): Promise<Membership> {
 
         user:users (
           id,
-          nama,
+          name,
           email
         ),
 
         rt:rt (
           id,
-          nama,
-          kode,
-          nominal_iuran
+          name,
+          code,
+          monthly_fee
         ),
 
-        warga:warga (
+        resident:residents (
           id,
-          nama,
-          blok,
-          no_rumah,
+          name,
+          block,
+          house_number,
           rt_id
         )
       `)
@@ -102,12 +102,12 @@ export async function getCurrentMembership(): Promise<Membership> {
   ) {
 
     return {
-      id:     null,
-      role:   null,
-      user:   { id: authUser.id, email: authUser.email ?? null, nama: null },
-      rt:     null,
-      warga:  null,
-      status: 'no_membership'
+      id:       null,
+      role:     null,
+      user:     { id: authUser.id, email: authUser.email ?? null, name: null },
+      rt:       null,
+      resident: null,
+      status:   'no_membership'
     }
   }
 
@@ -131,7 +131,7 @@ export async function getCurrentMembership(): Promise<Membership> {
    */
 
   if (
-    membership.role !== 'super_admin' &&
+    membership.role !== 'SUPER_ADMIN' &&
     !membership.rt?.id
   ) {
 
@@ -147,11 +147,11 @@ export async function getCurrentMembership(): Promise<Membership> {
    */
 
   return {
-    id:     membership.id,
-    role:   membership.role as Membership['role'],
-    user:   (membership.user as Membership['user']) || null,
-    rt:     (membership.rt as Membership['rt']) || null,
-    warga:  (membership.warga as Membership['warga']) || null,
-    status: 'active'
+    id:       membership.id,
+    role:     membership.role as Membership['role'],
+    user:     (membership.user as Membership['user']) || null,
+    rt:       (membership.rt as Membership['rt']) || null,
+    resident: (membership.resident as Membership['resident']) || null,
+    status:   'active'
   }
 }

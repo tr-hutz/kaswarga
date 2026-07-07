@@ -14,12 +14,12 @@ export default function HomeContainer() {
   const home              = useHome()
 
   useEffect(() => {
-    if (!loading && role === 'super_admin') {
+    if (!loading && role === 'SUPER_ADMIN') {
       router.replace('/rt')
     }
   }, [loading, role])
 
-  if (role === 'super_admin') return null
+  if (role === 'SUPER_ADMIN') return null
 
   return (
     <HomeView

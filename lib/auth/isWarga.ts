@@ -1,14 +1,14 @@
 import { getCurrentMembership } from './getCurrentMembership'
-import type { MembershipWarga } from '../../types'
+import type { MembershipResident } from '../../types'
 
-export async function isResident(): Promise<boolean | MembershipWarga | null> {
+export async function isResident(): Promise<boolean | MembershipResident | null> {
 
   const membership =
     await getCurrentMembership()
 
   return (
-    membership.role === 'warga'
+    membership.role === 'RESIDENT'
     &&
-    membership.warga
+    membership.resident
   )
 }

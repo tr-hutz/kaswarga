@@ -42,7 +42,7 @@ export const NAVIGATION: NavItem[] = [
 
     {
         label: 'rtRegistration',
-        href: '/rt/registrasi',
+        href: '/rt/registration',
         icon: ClipboardList,
         permission: PERMISSIONS.MANAGE_RT
     },
@@ -65,7 +65,7 @@ export const NAVIGATION: NavItem[] = [
         href: '/',
         icon: Home,
         permission: null,
-        hideForRoles: ['super_admin']
+        hideForRoles: ['SUPER_ADMIN']
     },
 
     {
@@ -73,26 +73,26 @@ export const NAVIGATION: NavItem[] = [
         href: '/dashboard',
         icon: LayoutDashboard,
         permission: null,
-        hideForRoles: ['super_admin']
+        hideForRoles: ['SUPER_ADMIN']
     },
 
     {
         label: 'warga',
-        href: '/warga',
+        href: '/residents',
         icon: Users,
         permission: PERMISSIONS.VIEW_WARGA
     },
 
     {
         label: 'pembayaran',
-        href: '/pembayaran',
+        href: '/payments',
         icon: Wallet,
         permission: PERMISSIONS.VIEW_PEMBAYARAN
     },
 
     {
         label: 'pengeluaran',
-        href: '/pengeluaran',
+        href: '/expenses',
         icon: Receipt,
         permission: PERMISSIONS.VIEW_PENGELUARAN
     },
@@ -120,14 +120,14 @@ export const NAVIGATION: NavItem[] = [
 
     {
         label: 'profilRt',
-        href: '/profil-rt',
+        href: '/rt-profile',
         icon: Settings,
         permission: PERMISSIONS.EDIT_RT_PROFILE
     },
 
     {
         label: 'changePassword',
-        href: '/ganti-password',
+        href: '/change-password',
         icon: KeyRound,
         permission: null
     }

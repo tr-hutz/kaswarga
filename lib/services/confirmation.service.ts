@@ -2,97 +2,97 @@ import { supabase }
   from '../supabase'
 
 export async function getPendingPayments(
-  wargaId: string,
+  residentId: string,
   year: number
 ) {
 
   const { data, error } =
     await supabase
       .from(
-        'detail_konfirmasi_pembayaran'
+        'confirmation_details'
       )
       .select(`
         id,
-        bulan,
-        nominal,
-        konfirmasi_pembayaran!inner(
+        month,
+        amount,
+        payment_confirmations!inner(
           status,
           created_at
         )
       `)
-      .eq('warga_id', wargaId)
-      .eq('tahun', year)
+      .eq('resident_id', residentId)
+      .eq('year', year)
       .eq(
-        'konfirmasi_pembayaran.status',
+        'payment_confirmations.status',
         'pending'
       )
-      .order('bulan')
+      .order('month')
 
   if (error)
     throw error
 
   return (data || []).map(item => ({
     ...item,
-    month: item.bulan,
-    amount: item.nominal
+    month: item.month,
+    amount: item.amount
   }))
 }
 
 export async function getRejectedPayments(
-  wargaId: string,
+  residentId: string,
   year: number
 ) {
 
   const { data, error } =
     await supabase
       .from(
-        'detail_konfirmasi_pembayaran'
+        'confirmation_details'
       )
       .select(`
         id,
-        bulan,
-        nominal,
-        konfirmasi_pembayaran!inner(
+        month,
+        amount,
+        payment_confirmations!inner(
           status,
-          alasan_penolakan
+          rejection_reason
         )
       `)
-      .eq('warga_id', wargaId)
-      .eq('tahun', year)
+      .eq('resident_id', residentId)
+      .eq('year', year)
       .eq(
-        'konfirmasi_pembayaran.status',
+        'payment_confirmations.status',
         'rejected'
       )
-      .order('bulan')
+      .order('month')
 
   if (error)
     throw error
 
   return (data || []).map(item => ({
     ...item,
-    month: item.bulan,
-    amount: item.nominal
+    month: item.month,
+    amount: item.amount
   }))
 }
 
 export async function approveConfirmation(
-  konfirmasiId: string
+  confirmationId: string
 ): Promise<void> {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase.rpc as any)('approve_konfirmasi', { p_konfirmasi_id: konfirmasiId })
+  const { error } = await (supabase.rpc as any)('approve_konfirmasi', { p_confirmation_id: confirmationId })
 
   if (error)
     throw error
 }
 
 export async function rejectConfirmation(
-  konfirmasiId: string,
+  confirmationId: string,
   reason: string
 ): Promise<void> {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase.rpc as any)('reject_konfirmasi', { p_konfirmasi_id: konfirmasiId, p_alasan: reason })
+  const { error } = await (supabase.rpc as any)('reject_konfirmasi', { p_confirmation_id: confirmationId, p_reason: reason })
 
   if (error)
     throw error
