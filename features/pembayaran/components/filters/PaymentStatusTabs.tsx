@@ -1,63 +1,28 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
-const tabs = [
+import { useTranslations } from 'next-intl'
 
-    {
-        key: 'pending',
-        label: 'Pending'
-    },
+export default function PaymentStatusTabs({ status, setStatus }) {
+    const t = useTranslations('common')
 
-    {
-        key: 'approved',
-        label: 'Approved'
-    },
+    const tabs = [
+        { key: 'pending',   label: t('paymentStatus.pending') },
+        { key: 'approved',  label: t('paymentStatus.approved') },
+        { key: 'rejected',  label: t('paymentStatus.rejected') },
+    ]
 
-    {
-        key: 'rejected',
-        label: 'Rejected'
-    }
-]
-
-export default function PaymentStatusTabs({
-
-                                              status,
-                                              setStatus
-
-                                          }) {
     return (
-
-        <div
-            className="
-        flex
-        gap-2
-      "
-        >
+        <div className="flex gap-2">
             {tabs.map(tab => (
-
                 <button
                     key={tab.key}
-                    onClick={() =>
-                        setStatus(tab.key)
-                    }
-                    className={`
-            px-4
-            py-2
-            rounded-xl
-            border
-
-            ${
-                        status === tab.key
-                            ? 'bg-black text-white'
-                            : 'bg-white'
-                    }
-          `}
+                    onClick={() => setStatus(tab.key)}
+                    className={`px-4 py-2 rounded-xl border ${status === tab.key ? 'bg-black text-white' : 'bg-white'}`}
                 >
                     {tab.label}
                 </button>
-
             ))}
-
         </div>
     )
 }
