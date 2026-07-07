@@ -143,195 +143,183 @@ export type Database = {
           },
         ]
       }
-      detail_konfirmasi_pembayaran: {
+      confirmation_details: {
         Row: {
-          bulan: number
+          amount: number
+          confirmation_id: string
           created_at: string
           id: string
-          konfirmasi_id: string
-          nominal: number
-          tahun: number
-          warga_id: string
+          month: number
+          resident_id: string
+          year: number
         }
         Insert: {
-          bulan: number
+          amount: number
+          confirmation_id: string
           created_at?: string
           id?: string
-          konfirmasi_id: string
-          nominal: number
-          tahun: number
-          warga_id: string
+          month: number
+          resident_id: string
+          year: number
         }
         Update: {
-          bulan?: number
+          amount?: number
+          confirmation_id?: string
           created_at?: string
           id?: string
-          konfirmasi_id?: string
-          nominal?: number
-          tahun?: number
-          warga_id?: string
+          month?: number
+          resident_id?: string
+          year?: number
         }
         Relationships: [
           {
             foreignKeyName: "detail_konfirmasi_pembayaran_konfirmasi_id_fkey"
-            columns: ["konfirmasi_id"]
+            columns: ["confirmation_id"]
             isOneToOne: false
-            referencedRelation: "konfirmasi_pembayaran"
+            referencedRelation: "payment_confirmations"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "detail_konfirmasi_pembayaran_warga_id_fkey"
-            columns: ["warga_id"]
+            columns: ["resident_id"]
             isOneToOne: false
-            referencedRelation: "warga"
+            referencedRelation: "residents"
             referencedColumns: ["id"]
           },
         ]
       }
-      detail_pembayaran: {
+      expense_categories: {
         Row: {
-          bulan: number
-          created_at: string
-          id: string
-          nominal: number
-          pembayaran_id: string
-          tahun: number
-          warga_id: string
+          id: number
+          name: string
+          sort_order: number
         }
         Insert: {
-          bulan: number
-          created_at?: string
-          id?: string
-          nominal: number
-          pembayaran_id: string
-          tahun: number
-          warga_id: string
+          id?: number
+          name: string
+          sort_order?: number
         }
         Update: {
-          bulan?: number
-          created_at?: string
-          id?: string
-          nominal?: number
-          pembayaran_id?: string
-          tahun?: number
-          warga_id?: string
+          id?: number
+          name?: string
+          sort_order?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "detail_pembayaran_pembayaran_id_fkey"
-            columns: ["pembayaran_id"]
-            isOneToOne: false
-            referencedRelation: "pembayaran"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "detail_pembayaran_warga_id_fkey"
-            columns: ["warga_id"]
-            isOneToOne: false
-            referencedRelation: "warga"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
-      konfirmasi_pembayaran: {
+      expenses: {
         Row: {
-          alasan_penolakan: string | null
+          active: boolean | null
+          amount: number | null
           approved_at: string | null
-          bukti_url: string | null
-          created_at: string
+          approved_by: string | null
+          category: string | null
+          created_at: string | null
+          created_by: string | null
+          date: string | null
+          description: string | null
           id: string
-          rejected_at: string | null
+          receipt_number: string | null
+          receipt_url: string | null
+          recipient: string | null
+          rejection_note: string | null
           rt_id: string
-          status: string
-          tahun: number
-          total_bayar: number
-          warga_id: string
+          status: string | null
         }
         Insert: {
-          alasan_penolakan?: string | null
+          active?: boolean | null
+          amount?: number | null
           approved_at?: string | null
-          bukti_url?: string | null
-          created_at?: string
+          approved_by?: string | null
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date?: string | null
+          description?: string | null
           id?: string
-          rejected_at?: string | null
+          receipt_number?: string | null
+          receipt_url?: string | null
+          recipient?: string | null
+          rejection_note?: string | null
           rt_id: string
-          status?: string
-          tahun: number
-          total_bayar: number
-          warga_id: string
+          status?: string | null
         }
         Update: {
-          alasan_penolakan?: string | null
+          active?: boolean | null
+          amount?: number | null
           approved_at?: string | null
-          bukti_url?: string | null
-          created_at?: string
+          approved_by?: string | null
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          date?: string | null
+          description?: string | null
           id?: string
-          rejected_at?: string | null
+          receipt_number?: string | null
+          receipt_url?: string | null
+          recipient?: string | null
+          rejection_note?: string | null
           rt_id?: string
-          status?: string
-          tahun?: number
-          total_bayar?: number
-          warga_id?: string
+          status?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "konfirmasi_pembayaran_rt_id_fkey"
+            foreignKeyName: "pengeluaran_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pengeluaran_rt_id_fkey"
             columns: ["rt_id"]
             isOneToOne: false
             referencedRelation: "rt"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "konfirmasi_pembayaran_warga_id_fkey"
-            columns: ["warga_id"]
-            isOneToOne: false
-            referencedRelation: "warga"
             referencedColumns: ["id"]
           },
         ]
       }
       ledger: {
         Row: {
-          aktif: boolean | null
+          active: boolean | null
+          amount: number
+          balance_after: number
           created_at: string | null
           created_by: string | null
-          deskripsi: string | null
+          date: string
+          description: string | null
           id: string
-          jenis: string
-          nominal: number
-          referensi_id: string | null
+          reference_id: string | null
           rt_id: string
-          saldo_setelah: number
-          sumber: string
-          tanggal: string
+          source: string
+          type: string
         }
         Insert: {
-          aktif?: boolean | null
+          active?: boolean | null
+          amount?: number
+          balance_after?: number
           created_at?: string | null
           created_by?: string | null
-          deskripsi?: string | null
+          date?: string
+          description?: string | null
           id?: string
-          jenis: string
-          nominal?: number
-          referensi_id?: string | null
+          reference_id?: string | null
           rt_id: string
-          saldo_setelah?: number
-          sumber: string
-          tanggal?: string
+          source: string
+          type: string
         }
         Update: {
-          aktif?: boolean | null
+          active?: boolean | null
+          amount?: number
+          balance_after?: number
           created_at?: string | null
           created_by?: string | null
-          deskripsi?: string | null
+          date?: string
+          description?: string | null
           id?: string
-          jenis?: string
-          nominal?: number
-          referensi_id?: string | null
+          reference_id?: string | null
           rt_id?: string
-          saldo_setelah?: number
-          sumber?: string
-          tanggal?: string
+          source?: string
+          type?: string
         }
         Relationships: [
           {
@@ -339,6 +327,58 @@ export type Database = {
             columns: ["rt_id"]
             isOneToOne: false
             referencedRelation: "rt"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      memberships: {
+        Row: {
+          created_at: string | null
+          id: string
+          resident_id: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          rt_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          resident_id?: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          rt_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          resident_id?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          rt_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_membership_rt_id_fkey"
+            columns: ["rt_id"]
+            isOneToOne: false
+            referencedRelation: "rt"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_membership_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_membership_warga_id_fkey"
+            columns: ["resident_id"]
+            isOneToOne: false
+            referencedRelation: "residents"
             referencedColumns: ["id"]
           },
         ]
@@ -393,39 +433,141 @@ export type Database = {
           },
         ]
       }
-      pembayaran: {
+      payment_confirmations: {
         Row: {
+          approved_at: string | null
           created_at: string
           id: string
-          jumlah_bayar: number
-          keterangan: string | null
-          metode: string | null
+          proof_url: string | null
+          rejected_at: string | null
+          rejection_reason: string | null
+          resident_id: string
           rt_id: string
-          tahun: number
-          tanggal: string
-          warga_id: string
+          status: string
+          total_amount: number
+          year: number
+        }
+        Insert: {
+          approved_at?: string | null
+          created_at?: string
+          id?: string
+          proof_url?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          resident_id: string
+          rt_id: string
+          status?: string
+          total_amount: number
+          year: number
+        }
+        Update: {
+          approved_at?: string | null
+          created_at?: string
+          id?: string
+          proof_url?: string | null
+          rejected_at?: string | null
+          rejection_reason?: string | null
+          resident_id?: string
+          rt_id?: string
+          status?: string
+          total_amount?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "konfirmasi_pembayaran_rt_id_fkey"
+            columns: ["rt_id"]
+            isOneToOne: false
+            referencedRelation: "rt"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "konfirmasi_pembayaran_warga_id_fkey"
+            columns: ["resident_id"]
+            isOneToOne: false
+            referencedRelation: "residents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_details: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          month: number
+          payment_id: string
+          resident_id: string
+          year: number
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          month: number
+          payment_id: string
+          resident_id: string
+          year: number
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          month?: number
+          payment_id?: string
+          resident_id?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "detail_pembayaran_pembayaran_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "detail_pembayaran_warga_id_fkey"
+            columns: ["resident_id"]
+            isOneToOne: false
+            referencedRelation: "residents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          method: string | null
+          notes: string | null
+          resident_id: string
+          rt_id: string
+          total_amount: number
+          year: number
         }
         Insert: {
           created_at?: string
+          date?: string
           id?: string
-          jumlah_bayar: number
-          keterangan?: string | null
-          metode?: string | null
+          method?: string | null
+          notes?: string | null
+          resident_id: string
           rt_id: string
-          tahun: number
-          tanggal?: string
-          warga_id: string
+          total_amount: number
+          year: number
         }
         Update: {
           created_at?: string
+          date?: string
           id?: string
-          jumlah_bayar?: number
-          keterangan?: string | null
-          metode?: string | null
+          method?: string | null
+          notes?: string | null
+          resident_id?: string
           rt_id?: string
-          tahun?: number
-          tanggal?: string
-          warga_id?: string
+          total_amount?: number
+          year?: number
         }
         Relationships: [
           {
@@ -437,182 +579,92 @@ export type Database = {
           },
           {
             foreignKeyName: "pembayaran_warga_id_fkey"
-            columns: ["warga_id"]
+            columns: ["resident_id"]
             isOneToOne: false
-            referencedRelation: "warga"
+            referencedRelation: "residents"
             referencedColumns: ["id"]
           },
         ]
-      }
-      pengeluaran: {
-        Row: {
-          aktif: boolean | null
-          approved_at: string | null
-          approved_by: string | null
-          catatan_penolakan: string | null
-          created_at: string | null
-          created_by: string | null
-          deskripsi: string | null
-          id: string
-          kategori: string | null
-          nominal: number | null
-          nomor_bukti: string | null
-          nota_url: string | null
-          penerima: string | null
-          rt_id: string
-          status: string | null
-          tanggal: string | null
-        }
-        Insert: {
-          aktif?: boolean | null
-          approved_at?: string | null
-          approved_by?: string | null
-          catatan_penolakan?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          deskripsi?: string | null
-          id?: string
-          kategori?: string | null
-          nominal?: number | null
-          nomor_bukti?: string | null
-          nota_url?: string | null
-          penerima?: string | null
-          rt_id: string
-          status?: string | null
-          tanggal?: string | null
-        }
-        Update: {
-          aktif?: boolean | null
-          approved_at?: string | null
-          approved_by?: string | null
-          catatan_penolakan?: string | null
-          created_at?: string | null
-          created_by?: string | null
-          deskripsi?: string | null
-          id?: string
-          kategori?: string | null
-          nominal?: number | null
-          nomor_bukti?: string | null
-          nota_url?: string | null
-          penerima?: string | null
-          rt_id?: string
-          status?: string | null
-          tanggal?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "pengeluaran_approved_by_fkey"
-            columns: ["approved_by"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pengeluaran_rt_id_fkey"
-            columns: ["rt_id"]
-            isOneToOne: false
-            referencedRelation: "rt"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      pengeluaran_kategori: {
-        Row: {
-          id: number
-          nama: string
-          urutan: number
-        }
-        Insert: {
-          id?: number
-          nama: string
-          urutan?: number
-        }
-        Update: {
-          id?: number
-          nama?: string
-          urutan?: number
-        }
-        Relationships: []
       }
       registration_requests: {
         Row: {
+          admin_email: string | null
+          admin_name: string | null
           approved_at: string | null
           approved_by: string | null
-          blok: string | null
+          block: string | null
+          chair_email: string | null
+          chair_name: string | null
           created_at: string
-          email_admin: string | null
-          email_bendahara: string | null
-          email_ketua: string | null
-          email_warga: string | null
           expires_at: string
+          house_number: string | null
           id: string
-          nama_admin: string | null
-          nama_bendahara: string | null
-          nama_ketua: string | null
-          nama_warga: string | null
-          no_hp: string | null
-          no_rumah: string | null
+          phone: string | null
           rejected_at: string | null
           rejected_by: string | null
           rejection_reason: string | null
+          resident_email: string | null
+          resident_name: string | null
+          rt_code: string | null
           rt_data: Json | null
           rt_id: string | null
-          rt_kode: string | null
           status: string
+          treasurer_email: string | null
+          treasurer_name: string | null
           type: string
           updated_at: string
         }
         Insert: {
+          admin_email?: string | null
+          admin_name?: string | null
           approved_at?: string | null
           approved_by?: string | null
-          blok?: string | null
+          block?: string | null
+          chair_email?: string | null
+          chair_name?: string | null
           created_at?: string
-          email_admin?: string | null
-          email_bendahara?: string | null
-          email_ketua?: string | null
-          email_warga?: string | null
           expires_at?: string
+          house_number?: string | null
           id?: string
-          nama_admin?: string | null
-          nama_bendahara?: string | null
-          nama_ketua?: string | null
-          nama_warga?: string | null
-          no_hp?: string | null
-          no_rumah?: string | null
+          phone?: string | null
           rejected_at?: string | null
           rejected_by?: string | null
           rejection_reason?: string | null
+          resident_email?: string | null
+          resident_name?: string | null
+          rt_code?: string | null
           rt_data?: Json | null
           rt_id?: string | null
-          rt_kode?: string | null
           status?: string
+          treasurer_email?: string | null
+          treasurer_name?: string | null
           type: string
           updated_at?: string
         }
         Update: {
+          admin_email?: string | null
+          admin_name?: string | null
           approved_at?: string | null
           approved_by?: string | null
-          blok?: string | null
+          block?: string | null
+          chair_email?: string | null
+          chair_name?: string | null
           created_at?: string
-          email_admin?: string | null
-          email_bendahara?: string | null
-          email_ketua?: string | null
-          email_warga?: string | null
           expires_at?: string
+          house_number?: string | null
           id?: string
-          nama_admin?: string | null
-          nama_bendahara?: string | null
-          nama_ketua?: string | null
-          nama_warga?: string | null
-          no_hp?: string | null
-          no_rumah?: string | null
+          phone?: string | null
           rejected_at?: string | null
           rejected_by?: string | null
           rejection_reason?: string | null
+          resident_email?: string | null
+          resident_name?: string | null
+          rt_code?: string | null
           rt_data?: Json | null
           rt_id?: string | null
-          rt_kode?: string | null
           status?: string
+          treasurer_email?: string | null
+          treasurer_name?: string | null
           type?: string
           updated_at?: string
         }
@@ -640,177 +692,38 @@ export type Database = {
           },
         ]
       }
-      rt: {
+      residents: {
         Row: {
-          aktif: boolean | null
-          alamat: string | null
-          atas_nama: string | null
-          created_at: string | null
-          deleted_at: string | null
-          email: string | null
-          id: string
-          kode: string | null
-          kode_pos: string | null
-          kota: string | null
-          logo_url: string | null
-          nama: string
-          nama_bank: string | null
-          nominal_iuran: number
-          nomor_rekening: string | null
-          provinsi: string | null
-          qris_url: string | null
-          telepon: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          aktif?: boolean | null
-          alamat?: string | null
-          atas_nama?: string | null
-          created_at?: string | null
-          deleted_at?: string | null
-          email?: string | null
-          id?: string
-          kode?: string | null
-          kode_pos?: string | null
-          kota?: string | null
-          logo_url?: string | null
-          nama: string
-          nama_bank?: string | null
-          nominal_iuran?: number
-          nomor_rekening?: string | null
-          provinsi?: string | null
-          qris_url?: string | null
-          telepon?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          aktif?: boolean | null
-          alamat?: string | null
-          atas_nama?: string | null
-          created_at?: string | null
-          deleted_at?: string | null
-          email?: string | null
-          id?: string
-          kode?: string | null
-          kode_pos?: string | null
-          kota?: string | null
-          logo_url?: string | null
-          nama?: string
-          nama_bank?: string | null
-          nominal_iuran?: number
-          nomor_rekening?: string | null
-          provinsi?: string | null
-          qris_url?: string | null
-          telepon?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      user_membership: {
-        Row: {
-          created_at: string | null
-          id: string
-          role: Database["public"]["Enums"]["user_role"]
-          rt_id: string
-          status: string
-          user_id: string
-          warga_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          role: Database["public"]["Enums"]["user_role"]
-          rt_id: string
-          status?: string
-          user_id: string
-          warga_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          role?: Database["public"]["Enums"]["user_role"]
-          rt_id?: string
-          status?: string
-          user_id?: string
-          warga_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_membership_rt_id_fkey"
-            columns: ["rt_id"]
-            isOneToOne: false
-            referencedRelation: "rt"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_membership_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_membership_warga_id_fkey"
-            columns: ["warga_id"]
-            isOneToOne: false
-            referencedRelation: "warga"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      users: {
-        Row: {
+          active: boolean | null
+          block: string | null
           created_at: string | null
           email: string | null
+          house_number: string | null
           id: string
-          nama: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          email?: string | null
-          id: string
-          nama?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          email?: string | null
-          id?: string
-          nama?: string | null
-        }
-        Relationships: []
-      }
-      warga: {
-        Row: {
-          aktif: boolean | null
-          blok: string | null
-          created_at: string | null
-          email: string | null
-          id: string
-          nama: string
-          no_hp: string | null
-          no_rumah: string | null
+          name: string
+          phone: string | null
           rt_id: string
         }
         Insert: {
-          aktif?: boolean | null
-          blok?: string | null
+          active?: boolean | null
+          block?: string | null
           created_at?: string | null
           email?: string | null
+          house_number?: string | null
           id?: string
-          nama: string
-          no_hp?: string | null
-          no_rumah?: string | null
+          name: string
+          phone?: string | null
           rt_id: string
         }
         Update: {
-          aktif?: boolean | null
-          blok?: string | null
+          active?: boolean | null
+          block?: string | null
           created_at?: string | null
           email?: string | null
+          house_number?: string | null
           id?: string
-          nama?: string
-          no_hp?: string | null
-          no_rumah?: string | null
+          name?: string
+          phone?: string | null
           rt_id?: string
         }
         Relationships: [
@@ -823,70 +736,139 @@ export type Database = {
           },
         ]
       }
+      rt: {
+        Row: {
+          account_holder: string | null
+          account_number: string | null
+          active: boolean | null
+          address: string | null
+          bank_name: string | null
+          city: string | null
+          code: string | null
+          created_at: string | null
+          deleted_at: string | null
+          email: string | null
+          id: string
+          logo_url: string | null
+          monthly_fee: number
+          name: string
+          phone: string | null
+          postal_code: string | null
+          province: string | null
+          qris_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          account_holder?: string | null
+          account_number?: string | null
+          active?: boolean | null
+          address?: string | null
+          bank_name?: string | null
+          city?: string | null
+          code?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          monthly_fee?: number
+          name: string
+          phone?: string | null
+          postal_code?: string | null
+          province?: string | null
+          qris_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          account_holder?: string | null
+          account_number?: string | null
+          active?: boolean | null
+          address?: string | null
+          bank_name?: string | null
+          city?: string | null
+          code?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          monthly_fee?: number
+          name?: string
+          phone?: string | null
+          postal_code?: string | null
+          province?: string | null
+          qris_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       approve_konfirmasi: {
-        Args: { p_konfirmasi_id: string; p_user_id: string }
+        Args: { p_confirmation_id: string; p_user_id: string }
         Returns: undefined
       }
       approve_pengeluaran: {
         Args: { p_id: string; p_user_id: string }
         Returns: undefined
       }
-      generate_kas_simulasi: {
-        Args: {
-          p_jumlah_data?: number
-          p_max_bulan?: number
-          p_rasio_pengeluaran?: number
-          p_tahun: number
-        }
-        Returns: undefined
+      approve_all_pending_pengeluaran: {
+        Args: { p_rt_id: string; p_user_id: string }
+        Returns: number
       }
-      generate_rt_code: { Args: never; Returns: string }
+      generate_rt_code: { Args: Record<PropertyKey, never>; Returns: string }
       get_last_saldo: { Args: { p_rt_id: string }; Returns: number }
-      insert_ledger:
-        | {
-            Args: {
-              p_created_by: string
-              p_deskripsi: string
-              p_jenis: string
-              p_nominal: number
-              p_referensi_id: string
-              p_rt_id: string
-              p_sumber: string
-              p_tanggal: string
-            }
-            Returns: string
-          }
-        | {
-            Args: {
-              p_created_by: string
-              p_deskripsi: string
-              p_jenis: string
-              p_nominal: number
-              p_referensi_id: string
-              p_rt_id: string
-              p_sumber: string
-              p_tanggal: string
-            }
-            Returns: string
-          }
-      is_super_admin: { Args: never; Returns: boolean }
+      get_user_rt_ids: { Args: Record<PropertyKey, never>; Returns: string[] }
+      insert_ledger: {
+        Args: {
+          p_rt_id: string
+          p_type: string
+          p_source: string
+          p_reference_id: string
+          p_date: string
+          p_description: string
+          p_amount: number
+          p_created_by: string
+        }
+        Returns: string
+      }
+      is_member_of_rt: { Args: { p_rt_id: string }; Returns: boolean }
+      is_super_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
       populate_cashflow: {
         Args: {
+          p_tahun: number
           p_jumlah_data?: number
           p_max_bulan?: number
           p_rasio_pengeluaran?: number
-          p_tahun: number
         }
         Returns: undefined
       }
-      random_between: { Args: { max: number; min: number }; Returns: number }
       reject_konfirmasi: {
-        Args: { p_alasan: string; p_konfirmasi_id: string; p_user_id: string }
+        Args: { p_confirmation_id: string; p_reason: string; p_user_id: string }
         Returns: undefined
       }
       reject_pengeluaran: {
@@ -896,7 +878,7 @@ export type Database = {
     }
     Enums: {
       status_konfirmasi: "pending" | "approved" | "rejected"
-      user_role: "admin" | "bendahara" | "warga" | "super_admin" | "ketua"
+      user_role: "ADMIN" | "CHAIR" | "RESIDENT" | "SUPER_ADMIN" | "TREASURER"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1028,7 +1010,7 @@ export const Constants = {
   public: {
     Enums: {
       status_konfirmasi: ["pending", "approved", "rejected"],
-      user_role: ["admin", "bendahara", "warga", "super_admin", "ketua"],
+      user_role: ["ADMIN", "CHAIR", "RESIDENT", "SUPER_ADMIN", "TREASURER"],
     },
   },
 } as const
