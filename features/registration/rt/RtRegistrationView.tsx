@@ -1,9 +1,10 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
-import { useState }       from 'react'
+import { useState } from 'react'
 import { ChevronDown, ChevronUp, RefreshCw, CheckCircle } from 'lucide-react'
-import Link               from 'next/link'
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 function Field({ label, required, children }) {
     return (
@@ -32,6 +33,7 @@ export default function RtRegistrationView({
     onGenerateCode, onSubmit
 }) {
 
+    const t = useTranslations('registration.rt')
     const [bankOpen, setBankOpen] = useState(false)
 
     if (success) {
@@ -41,17 +43,15 @@ export default function RtRegistrationView({
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600">
                         <CheckCircle size={32} />
                     </div>
-                    <h1 className="text-xl font-bold">Pendaftaran Terkirim!</h1>
+                    <h1 className="text-xl font-bold">{t('success.title')}</h1>
                     <p className="text-sm text-gray-600">
-                        Permintaan pendaftaran RT <strong>{form.name}</strong> telah dikirim.
-                        Tim kami akan memverifikasi dan mengirimkan email aktivasi
-                        kepada ketua, admin, dan bendahara dalam waktu 1–2 hari kerja.
+                        {t('success.message', { name: form.name })}
                     </p>
                     <Link
                         href="/login"
                         className="inline-block mt-2 bg-black text-white rounded-xl px-6 py-2.5 text-sm font-medium"
                     >
-                        Kembali ke Login
+                        {t('success.backToLogin')}
                     </Link>
                 </div>
             </div>
@@ -65,22 +65,22 @@ export default function RtRegistrationView({
                 className="w-full max-w-2xl mx-auto space-y-6"
             >
                 <div>
-                    <h1 className="text-2xl font-bold">Daftarkan RT Baru</h1>
+                    <h1 className="text-2xl font-bold">{t('title')}</h1>
                     <p className="text-sm text-gray-500 mt-1">
-                        Pendaftaran akan diverifikasi oleh super admin sebelum diaktifkan.
+                        {t('subtitle')}
                     </p>
                 </div>
 
                 {/* Identitas RT */}
                 <div className="bg-white rounded-2xl border p-6 space-y-4">
                     <h2 className="font-semibold text-sm text-gray-700 uppercase tracking-wide">
-                        Identitas RT
+                        {t('sections.identity')}
                     </h2>
 
                     <div className="grid grid-cols-2 gap-4">
 
                         <div>
-                            <Field label="Nama RT" required>
+                            <Field label={t('fields.name')} required>
                                 <Input
                                     required
                                     value={form.name}
@@ -91,7 +91,7 @@ export default function RtRegistrationView({
                         </div>
 
                         <div>
-                            <Field label="Kode RT" required>
+                            <Field label={t('fields.code')} required>
                                 <div className="flex gap-2">
                                     <Input
                                         required
@@ -104,7 +104,7 @@ export default function RtRegistrationView({
                                         type="button"
                                         onClick={onGenerateCode}
                                         disabled={generating}
-                                        title="Generate kode unik"
+                                        title={t('generate')}
                                         className="flex items-center gap-1 border rounded-xl px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
                                     >
                                         <RefreshCw size={13} className={generating ? 'animate-spin' : ''} />
@@ -115,7 +115,7 @@ export default function RtRegistrationView({
                         </div>
 
                         <div className="col-span-2">
-                            <Field label="Alamat">
+                            <Field label={t('fields.address')}>
                                 <Input
                                     value={form.address}
                                     onChange={v => set('address', v)}
@@ -125,7 +125,7 @@ export default function RtRegistrationView({
                         </div>
 
                         <div>
-                            <Field label="Kota">
+                            <Field label={t('fields.city')}>
                                 <Input
                                     value={form.city}
                                     onChange={v => set('city', v)}
@@ -135,7 +135,7 @@ export default function RtRegistrationView({
                         </div>
 
                         <div>
-                            <Field label="Provinsi">
+                            <Field label={t('fields.province')}>
                                 <Input
                                     value={form.province}
                                     onChange={v => set('province', v)}
@@ -145,7 +145,7 @@ export default function RtRegistrationView({
                         </div>
 
                         <div>
-                            <Field label="Kode Pos">
+                            <Field label={t('fields.postalCode')}>
                                 <Input
                                     value={form.postalCode}
                                     onChange={v => set('postalCode', v)}
@@ -155,7 +155,7 @@ export default function RtRegistrationView({
                         </div>
 
                         <div>
-                            <Field label="Iuran / Bulan (Rp)">
+                            <Field label={t('fields.monthlyFee')}>
                                 <Input
                                     type="number"
                                     value={form.monthlyFee}
@@ -175,14 +175,14 @@ export default function RtRegistrationView({
                         onClick={() => setBankOpen(o => !o)}
                         className="w-full flex items-center justify-between px-6 py-4 text-sm font-semibold text-gray-700"
                     >
-                        Informasi Rekening (opsional)
+                        {t('sections.bank')}
                         {bankOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                     </button>
 
                     {bankOpen && (
                         <div className="px-6 pb-6 grid grid-cols-2 gap-4">
                             <div>
-                                <Field label="Nama Bank">
+                                <Field label={t('fields.bankName')}>
                                     <Input
                                         value={form.bankName}
                                         onChange={v => set('bankName', v)}
@@ -191,7 +191,7 @@ export default function RtRegistrationView({
                                 </Field>
                             </div>
                             <div>
-                                <Field label="Nomor Rekening">
+                                <Field label={t('fields.accountNumber')}>
                                     <Input
                                         value={form.accountNumber}
                                         onChange={v => set('accountNumber', v)}
@@ -200,7 +200,7 @@ export default function RtRegistrationView({
                                 </Field>
                             </div>
                             <div className="col-span-2">
-                                <Field label="Atas Nama">
+                                <Field label={t('fields.accountHolder')}>
                                     <Input
                                         value={form.accountHolder}
                                         onChange={v => set('accountHolder', v)}
@@ -216,15 +216,15 @@ export default function RtRegistrationView({
                 <div className="bg-white rounded-2xl border p-6 space-y-4">
                     <div>
                         <h2 className="font-semibold text-sm text-gray-700 uppercase tracking-wide">
-                            Akun Pengurus
+                            {t('sections.officers')}
                         </h2>
                         <p className="text-xs text-gray-500 mt-1">
-                            Link aktivasi akan dikirimkan ke email masing-masing. Harus berbeda satu sama lain.
+                            {t('sections.officersNote')}
                         </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <Field label="Nama Ketua" required>
+                        <Field label={t('fields.chairmanName')} required>
                             <Input
                                 required
                                 value={form.chairmanName}
@@ -232,7 +232,7 @@ export default function RtRegistrationView({
                                 placeholder="Budi Santoso"
                             />
                         </Field>
-                        <Field label="Email Ketua" required>
+                        <Field label={t('fields.chairmanEmail')} required>
                             <Input
                                 required
                                 type="email"
@@ -244,7 +244,7 @@ export default function RtRegistrationView({
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <Field label="Nama Admin" required>
+                        <Field label={t('fields.adminName')} required>
                             <Input
                                 required
                                 value={form.adminName}
@@ -252,7 +252,7 @@ export default function RtRegistrationView({
                                 placeholder="Siti Rahayu"
                             />
                         </Field>
-                        <Field label="Email Admin" required>
+                        <Field label={t('fields.adminEmail')} required>
                             <Input
                                 required
                                 type="email"
@@ -264,14 +264,14 @@ export default function RtRegistrationView({
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                        <Field label="Nama Bendahara">
+                        <Field label={t('fields.treasurerName')}>
                             <Input
                                 value={form.treasurerName}
                                 onChange={v => set('treasurerName', v)}
                                 placeholder="Ahmad Fauzi (opsional)"
                             />
                         </Field>
-                        <Field label="Email Bendahara">
+                        <Field label={t('fields.treasurerEmail')}>
                             <Input
                                 type="email"
                                 value={form.treasurerEmail}
@@ -290,14 +290,14 @@ export default function RtRegistrationView({
 
                 <div className="flex items-center justify-between pb-4">
                     <Link href="/daftar" className="text-sm text-gray-500 hover:underline">
-                        Kembali
+                        {t('back')}
                     </Link>
                     <button
                         type="submit"
                         disabled={submitting}
                         className="bg-black text-white rounded-xl px-6 py-2.5 text-sm font-medium disabled:opacity-50"
                     >
-                        {submitting ? 'Mengirim...' : 'Kirim Pendaftaran'}
+                        {submitting ? t('submitting') : t('submit')}
                     </button>
                 </div>
 

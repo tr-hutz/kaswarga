@@ -7,6 +7,7 @@ import { approveRtRegistration, rejectRtRegistration }       from '@/lib/service
 import { useAuth }                                           from '@/lib/auth/useAuth'
 import { useToast }                                          from '@/components/ui/ToastProvider'
 import { formatDate }                                         from '@/lib/utils'
+import { useTranslations }                                   from 'next-intl'
 
 const IS_DEV = process.env.NODE_ENV === 'development'
 
@@ -71,6 +72,7 @@ function RequestCard({ req, onAction }) {
     const [devLinks,   setDevLinks]   = useState(null)
     const { membership }              = useAuth()
     const { toast }                   = useToast()
+    const tc                          = useTranslations('common')
 
     const rtData = req.rt_data || {}
 
@@ -179,7 +181,7 @@ function RequestCard({ req, onAction }) {
                                 className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                             >
                                 <Check size={12} />
-                                Setujui
+                                {tc('actions.approve')}
                             </button>
                             <button
                                 onClick={handleReject}
@@ -187,7 +189,7 @@ function RequestCard({ req, onAction }) {
                                 className="flex items-center gap-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                             >
                                 <X size={12} />
-                                Tolak
+                                {tc('actions.reject')}
                             </button>
                         </div>
                     )}
@@ -203,6 +205,7 @@ function RequestCard({ req, onAction }) {
 
 export default function RtPendingRequests({ requests, loading, onAction }) {
     const [open, setOpen] = useState(true)
+    const t = useTranslations('rtRegistrasi')
 
     if (loading) return null
     if (!requests || requests.length === 0) return null
@@ -215,7 +218,7 @@ export default function RtPendingRequests({ requests, loading, onAction }) {
                 className="w-full flex items-center justify-between px-5 py-4 text-sm font-semibold text-amber-800"
             >
                 <span>
-                    Permintaan Pendaftaran RT
+                    {t('pendingSection.title')}
                     <span className="ml-2 bg-amber-200 text-amber-800 rounded-full px-2 py-0.5 text-xs font-medium">
                         {requests.length}
                     </span>
