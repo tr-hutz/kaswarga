@@ -36,9 +36,10 @@ alter table detail_konfirmasi_pembayaran
     add constraint detail_konfirmasi_nominal_check
         check (nominal > 0);
 
-alter table detail_konfirmasi_pembayaran
-    add constraint detail_konfirmasi_unique
-        unique (warga_id, tahun, bulan);
+-- NOTE: no unique constraint on (warga_id, tahun, bulan) here intentionally.
+-- A warga must be able to resubmit after rejection, so drafts are allowed to
+-- repeat a month.  The uniqueness constraint on detail_pembayaran (approved
+-- payments) still prevents double-approval for the same period.
 
 
 /* ----------------------------------------------------------------------------
@@ -98,3 +99,37 @@ create index idx_notifications_rt           on notifications (rt_id);
 create index idx_notifications_target_user  on notifications (target_user_id);
 create index idx_notifications_unread       on notifications (is_read);
 create index idx_notifications_created_at   on notifications (created_at desc);
+
+
+/* ----------------------------------------------------------------------------
+ * INDEXES — RLS query support
+ * Each index prevents a full table scan per row evaluated by the RT-scoped
+ * RLS policies defined in 007_rls.sql.
+ * --------------------------------------------------------------------------- */
+
+-- user_membership: RLS helper functions scan by user_id
+create index idx_user_membership_user_id
+    on user_membership (user_id);
+
+-- Core data tables: scanned by rt_id in RLS predicates
+create index idx_warga_rt_id
+    on warga (rt_id);
+
+create index idx_konfirmasi_rt_id
+    on konfirmasi_pembayaran (rt_id);
+
+create index idx_pembayaran_rt_id
+    on pembayaran (rt_id);
+
+create index idx_pengeluaran_rt_id
+    on pengeluaran (rt_id);
+
+create index idx_activity_logs_rt_id
+    on activity_logs (rt_id);
+
+-- Detail tables: scanned by parent FK in RLS subquery
+create index idx_detail_konfirmasi_konfirmasi_id
+    on detail_konfirmasi_pembayaran (konfirmasi_id);
+
+create index idx_detail_pembayaran_pembayaran_id
+    on detail_pembayaran (pembayaran_id);

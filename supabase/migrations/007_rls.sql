@@ -1,8 +1,19 @@
 /*
  * =============================================================================
- * 006_RLS
+ * 007_RLS
  * Enable row-level security and define all access policies.
- * Depends on: 000–003 (all tables), 005_functions (is_super_admin)
+ * Depends on: 000–003 (all tables), 005_functions (is_super_admin,
+ *             get_user_rt_ids, is_member_of_rt)
+ *
+ * Design: each data table is scoped to the user's RT memberships.
+ *   - SELECT  : rt_id in (select get_user_rt_ids())  OR  is_super_admin()
+ *   - INSERT  : is_member_of_rt(rt_id)               OR  is_super_admin()
+ *   - UPDATE  : same as SELECT (using) + INSERT (with check)
+ *
+ * Detail tables (no direct rt_id column) scope through their parent row.
+ *
+ * Role-based access within an RT (e.g. treasurer-only actions) is enforced
+ * at the service/application layer per PERMISSION_MATRIX.md.
  * =============================================================================
  */
 
@@ -31,27 +42,35 @@ alter table activation_invites           enable row level security;
  * RT
  * --------------------------------------------------------------------------- */
 
+-- All authenticated users may read the RT list (needed for selection screens
+-- and super_admin dashboards).
 create policy "rt: authenticated can read"
     on rt for select to authenticated
     using (true);
 
-create policy "rt: authenticated can insert"
+-- Only super_admin may create RT records (via approveRtRegistration).
+create policy "rt: super_admin can insert"
     on rt for insert to authenticated
-    with check (true);
+    with check (is_super_admin());
 
-create policy "rt: authenticated can update"
+-- Members of an RT (chair / admin) or super_admin may update its profile.
+create policy "rt: members can update own rt"
     on rt for update to authenticated
-    using (true);
+    using     (id in (select get_user_rt_ids()) or is_super_admin())
+    with check (id in (select get_user_rt_ids()) or is_super_admin());
 
-create policy "rt: authenticated can delete"
+-- Only super_admin may delete an RT (trigger also guards the system RT row).
+create policy "rt: super_admin can delete"
     on rt for delete to authenticated
-    using (true);
+    using (is_super_admin());
 
 
 /* ----------------------------------------------------------------------------
  * USERS
  * --------------------------------------------------------------------------- */
 
+-- All authenticated users may read user profiles (needed for name lookups
+-- across the app).
 create policy "users: authenticated can read"
     on users for select to authenticated
     using (true);
@@ -61,17 +80,18 @@ create policy "users: authenticated can read"
  * WARGA
  * --------------------------------------------------------------------------- */
 
-create policy "warga: authenticated can read"
+create policy "warga: read own rt"
     on warga for select to authenticated
-    using (true);
+    using (rt_id in (select get_user_rt_ids()) or is_super_admin());
 
-create policy "warga: authenticated can insert"
+create policy "warga: insert own rt"
     on warga for insert to authenticated
-    with check (true);
+    with check (is_member_of_rt(rt_id) or is_super_admin());
 
-create policy "warga: authenticated can update"
+create policy "warga: update own rt"
     on warga for update to authenticated
-    using (true);
+    using     (rt_id in (select get_user_rt_ids()) or is_super_admin())
+    with check (is_member_of_rt(rt_id) or is_super_admin());
 
 
 /* ----------------------------------------------------------------------------
@@ -106,95 +126,124 @@ create policy "membership: super_admin delete"
  * KONFIRMASI PEMBAYARAN
  * --------------------------------------------------------------------------- */
 
-create policy "konfirmasi: authenticated can read"
+create policy "konfirmasi: read own rt"
     on konfirmasi_pembayaran for select to authenticated
-    using (true);
+    using (rt_id in (select get_user_rt_ids()) or is_super_admin());
 
-create policy "konfirmasi: authenticated can insert"
+create policy "konfirmasi: insert own rt"
     on konfirmasi_pembayaran for insert to authenticated
-    with check (true);
+    with check (is_member_of_rt(rt_id) or is_super_admin());
 
-create policy "konfirmasi: authenticated can update"
+create policy "konfirmasi: update own rt"
     on konfirmasi_pembayaran for update to authenticated
-    using (true);
+    using     (rt_id in (select get_user_rt_ids()) or is_super_admin())
+    with check (is_member_of_rt(rt_id) or is_super_admin());
 
 
 /* ----------------------------------------------------------------------------
  * DETAIL KONFIRMASI PEMBAYARAN
+ * No direct rt_id — scoped through the parent konfirmasi row.
  * --------------------------------------------------------------------------- */
 
-create policy "detail konfirmasi: authenticated can read"
+create policy "detail konfirmasi: read own rt"
     on detail_konfirmasi_pembayaran for select to authenticated
-    using (true);
+    using (
+        konfirmasi_id in (
+            select id from konfirmasi_pembayaran
+            where  rt_id in (select get_user_rt_ids())
+        )
+        or is_super_admin()
+    );
 
-create policy "detail konfirmasi: authenticated can insert"
+create policy "detail konfirmasi: insert own rt"
     on detail_konfirmasi_pembayaran for insert to authenticated
-    with check (true);
+    with check (
+        konfirmasi_id in (
+            select id from konfirmasi_pembayaran
+            where  rt_id in (select get_user_rt_ids())
+        )
+        or is_super_admin()
+    );
 
 
 /* ----------------------------------------------------------------------------
  * PEMBAYARAN
+ * Approved payment rows are immutable; no update policy is added.
  * --------------------------------------------------------------------------- */
 
-create policy "pembayaran: authenticated can read"
+create policy "pembayaran: read own rt"
     on pembayaran for select to authenticated
-    using (true);
+    using (rt_id in (select get_user_rt_ids()) or is_super_admin());
 
-create policy "pembayaran: authenticated can insert"
+-- approve_konfirmasi (security_definer) is the normal insert path.
+create policy "pembayaran: insert own rt"
     on pembayaran for insert to authenticated
-    with check (true);
-
-create policy "pembayaran: authenticated can delete"
-    on pembayaran for delete to authenticated
-    using (true);
+    with check (is_member_of_rt(rt_id) or is_super_admin());
 
 
 /* ----------------------------------------------------------------------------
  * DETAIL PEMBAYARAN
+ * No direct rt_id — scoped through the parent pembayaran row.
  * --------------------------------------------------------------------------- */
 
-create policy "detail pembayaran: authenticated can read"
+create policy "detail pembayaran: read own rt"
     on detail_pembayaran for select to authenticated
-    using (true);
+    using (
+        pembayaran_id in (
+            select id from pembayaran
+            where  rt_id in (select get_user_rt_ids())
+        )
+        or is_super_admin()
+    );
 
-create policy "detail pembayaran: authenticated can insert"
+create policy "detail pembayaran: insert own rt"
     on detail_pembayaran for insert to authenticated
-    with check (true);
-
-create policy "detail pembayaran: authenticated can delete"
-    on detail_pembayaran for delete to authenticated
-    using (true);
+    with check (
+        pembayaran_id in (
+            select id from pembayaran
+            where  rt_id in (select get_user_rt_ids())
+        )
+        or is_super_admin()
+    );
 
 
 /* ----------------------------------------------------------------------------
  * PENGELUARAN
  * --------------------------------------------------------------------------- */
 
-create policy "pengeluaran: authenticated can read"
+create policy "pengeluaran: read own rt"
     on pengeluaran for select to authenticated
-    using (true);
+    using (rt_id in (select get_user_rt_ids()) or is_super_admin());
 
-create policy "pengeluaran: authenticated can insert"
+create policy "pengeluaran: insert own rt"
     on pengeluaran for insert to authenticated
-    with check (true);
+    with check (is_member_of_rt(rt_id) or is_super_admin());
+
+-- Allows treasurers to edit pending expense records before approval.
+create policy "pengeluaran: update own rt"
+    on pengeluaran for update to authenticated
+    using     (rt_id in (select get_user_rt_ids()) or is_super_admin())
+    with check (is_member_of_rt(rt_id) or is_super_admin());
 
 
 /* ----------------------------------------------------------------------------
  * LEDGER
+ * Ledger is append-only; no update or delete policies.
+ * insert_ledger (security_definer) is the normal write path.
  * --------------------------------------------------------------------------- */
 
-create policy "ledger: authenticated can read"
+create policy "ledger: read own rt"
     on ledger for select to authenticated
-    using (true);
+    using (rt_id in (select get_user_rt_ids()) or is_super_admin());
 
-create policy "ledger: authenticated can insert"
+create policy "ledger: insert own rt"
     on ledger for insert to authenticated
-    with check (true);
+    with check (is_member_of_rt(rt_id) or is_super_admin());
 
 
 /* ----------------------------------------------------------------------------
  * NOTIFICATIONS
- * Users only see their own notifications; updates are limited to own rows.
+ * Users only see and modify their own notifications.
  * --------------------------------------------------------------------------- */
 
 create policy "notifications: read own"
@@ -213,15 +262,26 @@ create policy "notifications: update own"
 
 /* ----------------------------------------------------------------------------
  * ACTIVITY LOGS
+ * RT members see their own RT's logs.
+ * System RT (00000000-...-0001) logs are visible to super_admin only.
  * --------------------------------------------------------------------------- */
 
-create policy "activity_logs: authenticated can read"
+create policy "activity_logs: read own rt"
     on activity_logs for select to authenticated
-    using (true);
+    using (
+        (
+            rt_id != '00000000-0000-0000-0000-000000000001'
+            and rt_id in (select get_user_rt_ids())
+        )
+        or is_super_admin()
+    );
 
-create policy "activity_logs: authenticated can insert"
+create policy "activity_logs: insert own rt"
     on activity_logs for insert to authenticated
-    with check (true);
+    with check (
+        rt_id in (select get_user_rt_ids())
+        or (rt_id = '00000000-0000-0000-0000-000000000001' and is_super_admin())
+    );
 
 
 /* ----------------------------------------------------------------------------

@@ -115,6 +115,51 @@ $$;
 
 
 /* ----------------------------------------------------------------------------
+ * get_user_rt_ids
+ * Returns every RT ID that the current user actively belongs to.
+ * Used as the core predicate in RT-scoped RLS policies.
+ * --------------------------------------------------------------------------- */
+
+create or replace function get_user_rt_ids()
+returns setof uuid
+language sql
+security definer
+stable
+as $$
+    select rt_id
+    from   user_membership
+    where  user_id = auth.uid()
+    and    status  = 'active'
+    and    rt_id   is not null
+$$;
+
+
+/* ----------------------------------------------------------------------------
+ * is_member_of_rt
+ * Returns true when the current user is an active member of p_rt_id.
+ * Used in INSERT / UPDATE with-check policies.
+ * --------------------------------------------------------------------------- */
+
+create or replace function is_member_of_rt(p_rt_id uuid)
+returns boolean
+language sql
+security definer
+stable
+as $$
+    select exists (
+        select 1
+        from   user_membership
+        where  user_id = auth.uid()
+        and    rt_id   = p_rt_id
+        and    status  = 'active'
+    )
+$$;
+
+grant execute on function get_user_rt_ids()      to authenticated;
+grant execute on function is_member_of_rt(uuid)  to authenticated;
+
+
+/* ----------------------------------------------------------------------------
  * prevent_system_rt_delete
  * Trigger function that blocks deletion of the reserved System RT row.
  * --------------------------------------------------------------------------- */
@@ -292,9 +337,12 @@ begin
             using errcode = 'KW002';
     end if;
 
+    -- Fetch the warga's user account scoped to this specific RT to avoid
+    -- picking the wrong row when a warga belongs to multiple RTs.
     select * into v_warga
     from   user_membership
-    where  warga_id = v_konfirmasi.warga_id;
+    where  warga_id = v_konfirmasi.warga_id
+    and    rt_id    = v_konfirmasi.rt_id;
 
     -- 3. Duplicate month check
     if exists (
@@ -417,9 +465,11 @@ begin
     where  id = p_konfirmasi_id
     for update;
 
+    -- Fetch the warga's user account scoped to this RT.
     select * into v_warga
     from   user_membership
-    where  warga_id = v_konfirmasi.warga_id;
+    where  warga_id = v_konfirmasi.warga_id
+    and    rt_id    = v_konfirmasi.rt_id;
 
     -- 2. Status check
     if not found then
