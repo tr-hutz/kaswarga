@@ -1,16 +1,23 @@
-import {supabase} from '../supabase'
-
-import {getCurrentMembership} from '../auth/getCurrentMembership'
-
-import {logActivity} from './activity-logger'
-
-import {applyConfirmationFilters} from '../helpers/filter-konfirmasi'
-
-import {applyPaymentFilters} from '../helpers/filter-pembayaran'
-
-import {transformConfirmation, transformPayment} from '../../features/payment/services/payment-transform'
-
-import {MONTHS} from '../../constants/months'
+import { supabase } from '../supabase'
+import { getCurrentMembership } from '../auth/getCurrentMembership'
+import { logActivity } from './activity-logger'
+import { transformConfirmation, transformPayment } from '../../features/payment/services/payment-transform'
+import { MONTHS } from '../../constants/months'
+import {
+    findApprovedPaymentDetails,
+    findPendingConfirmationDetailsForHome,
+    findRejectedConfirmationDetailsForHome,
+    findPaymentsForDashboard,
+    findExpensesForDashboard,
+    findResidentIdsByRt,
+    findPaymentsForHealth,
+    findPayments,
+    findConfirmations,
+    findPaymentConfirmations,
+    findConfirmationById,
+    callApproveKonfirmasi,
+    callRejectKonfirmasi
+} from '../repositories/payment.repository'
 
 /*
 |--------------------------------------------------------------------------
@@ -20,21 +27,13 @@ import {MONTHS} from '../../constants/months'
 
 async function getMembershipContext() {
 
-    const membership =
-        await getCurrentMembership()
+    const membership = await getCurrentMembership()
 
     return {
-
         membership,
-
-        role:
-        membership?.role,
-
-        rt:
-        membership?.rt,
-
-        resident:
-        membership?.resident
+        role:     membership?.role,
+        rt:       membership?.rt,
+        resident: membership?.resident
     }
 }
 
@@ -51,71 +50,11 @@ export async function getApprovedPayments(
 
     const { rt } = await getMembershipContext()
 
-    let query =
-        supabase
-
-            .from(
-                'payment_details'
-            )
-
-            .select(`
-        id,
-        month,
-        amount,
-
-        payments!inner (
-          id,
-          date,
-          year,
-          resident_id,
-          rt_id
-        )
-      `)
-
-            .eq(
-                'payments.year',
-                year
-            )
-
-            .order(
-                'month',
-                {
-                    ascending: true
-                }
-            )
-
-    if (rt?.id) {
-
-        query =
-            query.eq(
-                'payments.rt_id',
-                rt.id
-            )
-    }
-
-    if (residentId) {
-
-        query =
-            query.eq(
-                'payments.resident_id',
-                residentId
-            )
-    }
-
-    const {
-        data,
-        error
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    return (data || []).map(item => ({
-        ...item,
-        month: item.month,
-        amount: item.amount
-    }))
+    return findApprovedPaymentDetails({
+        rtId:       rt?.id,
+        residentId: residentId ?? null,
+        year
+    })
 }
 
 export async function getPendingPayments(
@@ -125,72 +64,11 @@ export async function getPendingPayments(
 
     const { rt } = await getMembershipContext()
 
-    let query =
-        supabase
-
-            .from(
-                'confirmation_details'
-            )
-
-            .select(`
-        id,
-        month,
-        amount,
-
-        payment_confirmations!inner (
-          id,
-          status,
-          year,
-          resident_id,
-          rt_id
-        )
-      `)
-
-            .eq(
-                'payment_confirmations.year',
-                year
-            )
-
-            .eq(
-                'payment_confirmations.status',
-                'pending'
-            )
-
-            .order(
-                'month',
-                {
-                    ascending: true
-                }
-            )
-
-    if (rt?.id) {
-
-        query =
-            query.eq(
-                'payment_confirmations.rt_id',
-                rt.id
-            )
-    }
-
-    if (residentId) {
-
-        query =
-            query.eq(
-                'payment_confirmations.resident_id',
-                residentId
-            )
-    }
-
-    const {
-        data,
-        error
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    return data || []
+    return findPendingConfirmationDetailsForHome({
+        rtId:       rt?.id,
+        residentId: residentId ?? null,
+        year
+    })
 }
 
 export async function getRejectedPayments(
@@ -200,72 +78,11 @@ export async function getRejectedPayments(
 
     const { rt } = await getMembershipContext()
 
-    let query =
-        supabase
-
-            .from(
-                'confirmation_details'
-            )
-
-            .select(`
-        id,
-        month,
-        amount,
-
-        payment_confirmations!inner (
-          id,
-          status,
-          year,
-          resident_id,
-          rt_id
-        )
-      `)
-
-            .eq(
-                'payment_confirmations.year',
-                year
-            )
-
-            .eq(
-                'payment_confirmations.status',
-                'rejected'
-            )
-
-            .order(
-                'month',
-                {
-                    ascending: true
-                }
-            )
-
-    if (rt?.id) {
-
-        query =
-            query.eq(
-                'payment_confirmations.rt_id',
-                rt.id
-            )
-    }
-
-    if (residentId) {
-
-        query =
-            query.eq(
-                'payment_confirmations.resident_id',
-                residentId
-            )
-    }
-
-    const {
-        data,
-        error
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    return data || []
+    return findRejectedConfirmationDetailsForHome({
+        rtId:       rt?.id,
+        residentId: residentId ?? null,
+        year
+    })
 }
 
 /*
@@ -278,122 +95,19 @@ export async function getDashboardAnalytics(
     year: number
 ) {
 
-    const {
-        role,
-        rt,
-        resident
-    } = await getMembershipContext()
+    const { role, rt, resident } = await getMembershipContext()
 
-    /*
-    |--------------------------------------------------------------------------
-    | PAYMENTS
-    |--------------------------------------------------------------------------
-    */
-
-    let paymentQuery =
-        supabase
-
-            .from('payments')
-
-            .select(`
-        id,
-        date,
-        year,
-        rt_id,
-        resident_id,
-
-        payment_details:
-        payment_details (
-          id,
-          month,
-          amount
-        )
-      `)
-
-    paymentQuery =
-        applyPaymentFilters(
-            paymentQuery,
-            {
-                year,
-
-                rtId:
-                rt?.id,
-
-                wargaId:
-                    role === 'RESIDENT'
-                        ? resident?.id
-                        : null
-            }
-        )
-
-    /*
-    |--------------------------------------------------------------------------
-    | EXPENSES
-    |--------------------------------------------------------------------------
-    */
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let expenseQuery: any =
-        supabase
-
-            .from('expenses')
-
-            .select(`
-        id,
-        amount,
-        date,
-        category,
-        rt_id
-      `)
-
-            .gte(
-                'date',
-                `${year}-01-01`
-            )
-
-            .lte(
-                'date',
-                `${year}-12-31`
-            )
-
-    if (rt?.id) {
-
-        expenseQuery =
-            expenseQuery.eq(
-                'rt_id',
-                rt.id
-            )
-    }
-
-    const [
-
-        paymentResult,
-        expenseResult
-
-    ] = await Promise.all([
-
-        paymentQuery,
-        expenseQuery
-
+    const [payments, expenses] = await Promise.all([
+        findPaymentsForDashboard({
+            year,
+            rtId:    rt?.id,
+            wargaId: role === 'RESIDENT' ? resident?.id : null
+        }),
+        findExpensesForDashboard({
+            year,
+            rtId: rt?.id
+        })
     ])
-
-    if (
-        paymentResult.error
-    ) {
-        throw paymentResult.error
-    }
-
-    if (
-        expenseResult.error
-    ) {
-        throw expenseResult.error
-    }
-
-    const payments =
-        paymentResult.data || []
-
-    const expenses =
-        expenseResult.data || []
 
     /*
     |--------------------------------------------------------------------------
@@ -401,61 +115,25 @@ export async function getDashboardAnalytics(
     |--------------------------------------------------------------------------
     */
 
-    const collection =
-        MONTHS.map(month => {
+    const collection = MONTHS.map(month => {
 
-            const total =
-                payments.reduce(
-                    (
-                        sum,
-                        paymentItem
-                    ) => {
+        const total = payments.reduce((sum, paymentItem) => {
 
-                        const detail =
-                            paymentItem
-                                .payment_details || []
+            const detail = paymentItem.payment_details || []
 
-                        const monthTotal =
-                            detail
+            const monthTotal = detail
+                .filter(item => item.month === month.id)
+                .reduce((acc, item) => acc + (item.amount || 0), 0)
 
-                                .filter(
-                                    item =>
-                                        item.month ===
-                                        month.id
-                                )
+            return sum + monthTotal
 
-                                .reduce(
-                                    (
-                                        acc,
-                                        item
-                                    ) =>
+        }, 0)
 
-                                        acc +
-                                        (
-                                            item.amount || 0
-                                        ),
-
-                                    0
-                                )
-
-                        return (
-                            sum +
-                            monthTotal
-                        )
-
-                    },
-
-                    0
-                )
-
-            return {
-
-                month:
-                month.short,
-
-                total
-            }
-        })
+        return {
+            month: month.short,
+            total
+        }
+    })
 
     /*
     |--------------------------------------------------------------------------
@@ -463,73 +141,26 @@ export async function getDashboardAnalytics(
     |--------------------------------------------------------------------------
     */
 
-    const totalIncome =
-        payments.reduce(
-            (
-                sum,
-                paymentItem
-            ) => {
+    const totalIncome = payments.reduce((sum, paymentItem) => {
 
-                const detail =
-                    paymentItem
-                        .payment_details || []
+        const detail = paymentItem.payment_details || []
 
-                const total =
-                    detail.reduce(
-                        (
-                            acc,
-                            item
-                        ) =>
+        const total = detail.reduce((acc, item) => acc + (item.amount || 0), 0)
 
-                            acc +
-                            (
-                                item.amount || 0
-                            ),
+        return sum + total
 
-                        0
-                    )
+    }, 0)
 
-                return (
-                    sum + total
-                )
-
-            },
-
-            0
-        )
-
-    const totalExpense =
-        expenses.reduce(
-            (
-                sum: number,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                item: any
-            ) =>
-
-                sum +
-                (item.amount || 0),
-
-            0
-        )
+    const totalExpense = expenses.reduce(
+        (sum: number, item: { amount: number | null }) => sum + (item.amount || 0),
+        0
+    )
 
     return {
-
         collection,
-
         cashflow: [
-
-            {
-                name: 'Pemasukan',
-                total:
-                totalIncome
-            },
-
-            {
-                name: 'Pengeluaran',
-                total:
-                totalExpense
-            }
-
+            { name: 'Pemasukan',   total: totalIncome },
+            { name: 'Pengeluaran', total: totalExpense }
         ]
     }
 }
@@ -544,85 +175,18 @@ export async function getPaymentHealth(
     year: number
 ) {
 
-    const {
-        role,
-        rt,
-        resident
-    } = await getMembershipContext()
+    const { role, rt, resident } = await getMembershipContext()
 
-    let query =
-        supabase
+    const [payments, residentsData] = await Promise.all([
+        findPaymentsForHealth({
+            year,
+            rtId:    rt?.id,
+            wargaId: role === 'RESIDENT' ? resident?.id : null
+        }),
+        findResidentIdsByRt(rt?.id)
+    ])
 
-            .from('payments')
-
-            .select(`
-        id,
-        resident_id,
-
-        payment_details (
-          id,
-          month
-        )
-      `)
-
-    query =
-        applyPaymentFilters(
-            query,
-            {
-                year,
-
-                rtId:
-                rt?.id,
-
-                wargaId:
-                    role === 'RESIDENT'
-                        ? resident?.id
-                        : null
-            }
-        )
-
-    const {
-        data,
-        error
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    const payments =
-        data || []
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOTAL RESIDENTS
-    |--------------------------------------------------------------------------
-    */
-
-    let residentsQuery =
-        supabase
-
-            .from('residents')
-
-            .select(`
-        id
-      `)
-
-    if (rt?.id) {
-
-        residentsQuery =
-            residentsQuery.eq(
-                'rt_id',
-                rt.id
-            )
-    }
-
-    const {
-        data: residentsData
-    } = await residentsQuery
-
-    const totalResidents =
-        residentsData?.length || 0
+    const totalResidents = residentsData.length
 
     /*
     |--------------------------------------------------------------------------
@@ -630,9 +194,7 @@ export async function getPaymentHealth(
     |--------------------------------------------------------------------------
     */
 
-    const currentMonth =
-        new Date()
-            .getMonth() + 1
+    const currentMonth = new Date().getMonth() + 1
 
     let paid = 0
     let almostPaid = 0
@@ -641,82 +203,37 @@ export async function getPaymentHealth(
 
     const paymentMap: Record<string, Set<number>> = {}
 
-    payments.forEach(
-        item => {
+    payments.forEach(item => {
 
-            if (
-                !paymentMap[
-                    item.resident_id
-                    ]
-            ) {
-
-                paymentMap[
-                    item.resident_id
-                    ] = new Set()
-            }
-
-            item
-                .payment_details
-                ?.forEach(
-                    detail => {
-
-                        paymentMap[
-                            item.resident_id
-                            ]
-
-                            .add(
-                                detail.month
-                            )
-                    }
-                )
+        if (!paymentMap[item.resident_id]) {
+            paymentMap[item.resident_id] = new Set()
         }
-    )
 
-    Object.values(
-        paymentMap
-    ).forEach(
-        (monthSet: Set<number>) => {
+        item.payment_details?.forEach(detail => {
+            paymentMap[item.resident_id].add(detail.month)
+        })
+    })
 
-            const paidCount =
-                monthSet.size
+    Object.values(paymentMap).forEach((monthSet: Set<number>) => {
 
-            if (
-                paidCount >=
-                currentMonth
-            ) {
+        const paidCount = monthSet.size
 
-                paid++
-
-            } else if (
-                paidCount >=
-                currentMonth - 2
-            ) {
-
-                almostPaid++
-
-            } else if (
-                paidCount > 0
-            ) {
-
-                delinquent++
-
-            } else {
-
-                neverPaid++
-            }
+        if (paidCount >= currentMonth) {
+            paid++
+        } else if (paidCount >= currentMonth - 2) {
+            almostPaid++
+        } else if (paidCount > 0) {
+            delinquent++
+        } else {
+            neverPaid++
         }
-    )
+    })
 
     return {
-
         totalResidents,
-
         paid,
-
         almostPaid,
-
         delinquent,
-
         neverPaid
     }
 }
@@ -731,95 +248,27 @@ export async function getPayments(
     year: number
 ) {
 
-    const {
-        role,
-        rt,
-        resident
-    } = await getMembershipContext()
+    const { role, rt, resident } = await getMembershipContext()
 
-    let query =
-        supabase
-
-            .from('payments')
-
-            .select(`
-        id,
+    const data = await findPayments({
         year,
-        date,
-        rt_id,
-        resident_id,
+        rtId:    rt?.id,
+        wargaId: role === 'RESIDENT' ? resident?.id : null
+    })
 
-        residents:
-        residents!payments_resident_id_fkey (
-          id,
-          name,
-          block,
-          house_number
-        ),
-
-        payment_details:
-        payment_details (
-          id,
-          month,
-          amount
-        )
-      `)
-
-            .order(
-                'date',
-                {
-                    ascending: false
-                }
-            )
-
-    query =
-        applyPaymentFilters(
-            query,
-            {
-                year,
-
-                rtId:
-                rt?.id,
-
-                wargaId:
-                    role === 'RESIDENT'
-                        ? resident?.id
-                        : null
-            }
-        )
-
-    const {
-        data,
-        error
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    return transformPayment(
-        data
-    )
+    return transformPayment(data)
 }
 
 export async function getPendingConfirmations(
     year: number
 ) {
-
-    return getConfirmations(
-        year,
-        'pending'
-    )
+    return getConfirmations(year, 'pending')
 }
 
 export async function getRejectedConfirmations(
     year: number
 ) {
-
-    return getConfirmations(
-        year,
-        'rejected'
-    )
+    return getConfirmations(year, 'rejected')
 }
 
 async function getConfirmations(
@@ -827,82 +276,16 @@ async function getConfirmations(
     status: string
 ) {
 
-    const {
-        role,
-        rt,
-        resident
-    } = await getMembershipContext()
+    const { role, rt, resident } = await getMembershipContext()
 
-    let query =
-        supabase
-
-            .from(
-                'payment_confirmations'
-            )
-
-            .select(`
-        id,
+    const data = await findConfirmations({
         year,
         status,
-        total_amount,
-        proof_url,
-        created_at,
-        rt_id,
-        resident_id,
+        rtId:    rt?.id,
+        wargaId: role === 'RESIDENT' ? resident?.id : null
+    })
 
-        residents:
-        residents (
-          id,
-          name,
-          block,
-          house_number
-        ),
-
-        confirmation_details:
-        confirmation_details (
-          id,
-          month,
-          amount
-        )
-      `)
-
-            .order(
-                'created_at',
-                {
-                    ascending: false
-                }
-            )
-
-    query =
-        applyConfirmationFilters(
-            query,
-            {
-                year,
-
-                status,
-
-                rtId:
-                rt?.id,
-
-                wargaId:
-                    role === 'RESIDENT'
-                        ? resident?.id
-                        : null
-            }
-        )
-
-    const {
-        data,
-        error
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    return transformConfirmation(
-        data
-    )
+    return transformConfirmation(data)
 }
 
 /*
@@ -923,27 +306,9 @@ export async function approvePayment(
         getCurrentMembership()
     ])
 
-    const { data: confirmation } =
-        await supabase
-            .from('payment_confirmations')
-            .select('resident_id, year, total_amount, confirmation_details(month)')
-            .eq('id', confirmationId)
-            .single()
+    const confirmation = await findConfirmationById(confirmationId)
 
-    const {
-        data,
-        error
-    } = await supabase.rpc(
-        'approve_konfirmasi',
-        {
-            p_confirmation_id: confirmationId,
-            p_user_id:         user?.id ?? ''
-        }
-    )
-
-    if (error) {
-        throw error
-    }
+    const data = await callApproveKonfirmasi(confirmationId, user?.id ?? '')
 
     logActivity({
         rtId:       membership?.rt?.id,
@@ -978,28 +343,9 @@ export async function rejectPayment(
         getCurrentMembership()
     ])
 
-    const { data: confirmation } =
-        await supabase
-            .from('payment_confirmations')
-            .select('resident_id, year, total_amount, confirmation_details(month)')
-            .eq('id', confirmationId)
-            .single()
+    const confirmation = await findConfirmationById(confirmationId)
 
-    const {
-        data,
-        error
-    } = await supabase.rpc(
-        'reject_konfirmasi',
-        {
-            p_confirmation_id: confirmationId,
-            p_reason:          reason ?? '',
-            p_user_id:         user?.id ?? ''
-        }
-    )
-
-    if (error) {
-        throw error
-    }
+    const data = await callRejectKonfirmasi(confirmationId, reason ?? '', user?.id ?? '')
 
     logActivity({
         rtId:       membership?.rt?.id,
@@ -1032,130 +378,15 @@ export async function getPaymentConfirmations({
     search?: string | null
 }) {
 
-    const {
-        role,
-        rt,
-        resident
-    } =
-        await getMembershipContext()
+    const { role, rt, resident } = await getMembershipContext()
 
-    let query =
-        supabase
+    const data = await findPaymentConfirmations({
+        year,
+        status,
+        search,
+        rtId:       rt?.id,
+        residentId: role === 'RESIDENT' ? resident?.id : null
+    })
 
-            .from(
-                'payment_confirmations'
-            )
-
-            .select(`
-
-  id,
-  year,
-  status,
-  total_amount,
-  proof_url,
-  created_at,
-
-  rt_id,
-  resident_id,
-
-  residents:residents!inner (
-
-    id,
-    name,
-    block,
-    house_number
-
-  ),
-
-  confirmation_details:
-  confirmation_details (
-
-    id,
-    month,
-    amount
-
-  )
-
-`)
-
-            .order(
-                'created_at',
-                {
-                    ascending: false
-                }
-            )
-
-    /*
-     |------------------------------------------------------------------
-     | FILTERS
-     |------------------------------------------------------------------
-     */
-
-    if (year) {
-
-        query =
-            query.eq(
-                'year',
-                year
-            )
-    }
-
-    if (status && status !== 'all') {
-
-        query =
-            query.eq(
-                'status',
-                status
-            )
-    }
-
-    if (rt?.id) {
-
-        query =
-            query.eq(
-                'rt_id',
-                rt.id
-            )
-    }
-
-    if (
-        role === 'RESIDENT'
-        &&
-        resident?.id
-    ) {
-
-        query =
-            query.eq(
-                'resident_id',
-                resident.id
-            )
-    }
-
-    /*
-     |------------------------------------------------------------------
-     | SEARCH
-     |------------------------------------------------------------------
-     */
-
-    if (search) {
-
-        query =
-            query.ilike(
-                'residents.name',
-                `%${search}%`
-            )
-    }
-
-    const {
-        data,
-        error
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    return transformConfirmation(
-        data || []
-    )
+    return transformConfirmation(data)
 }

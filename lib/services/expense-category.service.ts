@@ -1,12 +1,5 @@
-import { supabase } from '../supabase'
+import { findExpenseCategories } from '../repositories/expense-category.repository'
 
 export async function getExpenseCategories() {
-    const { data, error } = await supabase
-        .from('expense_categories')
-        .select('id, name')
-        .is('deleted_at', null)
-        .order('sort_order')
-
-    if (error) throw error
-    return data || []
+    return findExpenseCategories()
 }

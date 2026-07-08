@@ -1,22 +1,9 @@
 'use client'
 
-import {
-
-    supabase
-
-} from '../supabase'
-
-import {
-
-    getCurrentMembership
-
-} from '../auth/getCurrentMembership'
-
-import {
-
-    transformActivity
-
-} from '../../features/activity/services/activity-transform'
+import { getCurrentMembership } from '../auth/getCurrentMembership'
+import { transformActivity } from '../../features/activity/services/activity-transform'
+import { findActivities, insertActivity } from '../repositories/activity.repository'
+import type { Json } from '../../types/database'
 
 /*
  |-------------------------------------------------------------
@@ -26,54 +13,12 @@ import {
 
 export async function getActivities({ limit = 100 }: { limit?: number } = {}) {
 
-    const membership =
-        await getCurrentMembership()
+    const membership = await getCurrentMembership()
+    const rtId = membership?.rt?.id
 
-    const rtId =
-        membership?.rt?.id
+    const data = await findActivities({ rtId, limit })
 
-    let query =
-
-        supabase
-
-            .from(
-                'activity_logs'
-            )
-
-            .select('*')
-
-            .order(
-                'created_at',
-                {
-                    ascending: false
-                }
-            )
-
-            .limit(limit)
-
-    if (rtId) {
-
-        query =
-            query.eq(
-                'rt_id',
-                rtId
-            )
-    }
-
-    const {
-
-        data,
-        error
-
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    return transformActivity(
-        data || []
-    )
+    return transformActivity(data)
 }
 
 /*
@@ -106,42 +51,14 @@ export async function createActivity({
     metadata = {}
 }: ActivityParams): Promise<void> {
 
-    const {
-
-        error
-
-    } = await supabase
-
-        .from(
-            'activity_logs'
-        )
-
-        .insert({
-
-            rt_id:
-            rtId || SYSTEM_RT_ID,
-
-            actor_id:
-            actorId,
-
-            actor_name:
-            actorName,
-
-            action,
-
-            entity_type:
-            entityType,
-
-            entity_id:
-            entityId,
-
-            description,
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            metadata: metadata as any
-        })
-
-    if (error) {
-        throw error
-    }
+    await insertActivity({
+        rt_id:       rtId || SYSTEM_RT_ID,
+        actor_id:    actorId,
+        actor_name:  actorName,
+        action,
+        entity_type: entityType,
+        entity_id:   entityId,
+        description,
+        metadata:    metadata as Json
+    })
 }

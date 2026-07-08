@@ -1,22 +1,15 @@
+import { getCurrentMembership } from '../auth/getCurrentMembership'
+import { logActivity } from './activity-logger'
+import { transformExpense } from '../../features/expense/services/expense-transform'
 import {
-    supabase
-} from '../supabase'
-
-import {
-    getCurrentMembership
-} from '../auth/getCurrentMembership'
-
-import {
-    logActivity
-} from './activity-logger'
-
-import {
-    transformExpense
-} from '../../features/expense/services/expense-transform'
-
-import {
-    applyExpenseFilters
-} from '../helpers/filter-pengeluaran'
+    findExpenses,
+    countExpensesByDateRange,
+    findExpenseSnapshot,
+    insertExpense,
+    updateExpenseById
+} from '../repositories/expense.repository'
+import { findMembersByRole } from '../repositories/membership.repository'
+import { insertNotifications } from '../repositories/notification.repository'
 
 /*
 |------------------------------------------------------------------
@@ -37,16 +30,11 @@ export async function generateNomorBukti() {
     const startOfMonth    = new Date(year, month - 1, 1).toISOString()
     const startOfNextMonth = new Date(year, month, 1).toISOString()
 
-    const { count } = await supabase
-        .from('expenses')
-        .select('*', { count: 'exact', head: true })
-        .eq('rt_id', rtId ?? '')
-        .gte('created_at', startOfMonth)
-        .lt('created_at', startOfNextMonth)
+    const count = await countExpensesByDateRange(rtId ?? '', startOfMonth, startOfNextMonth)
 
-    const seq   = (count || 0) + 1
-    const dd    = String(now.getDate()).padStart(2, '0')
-    const mm    = String(month).padStart(2, '0')
+    const seq    = count + 1
+    const dd     = String(now.getDate()).padStart(2, '0')
+    const mm     = String(month).padStart(2, '0')
     const seqStr = String(seq).padStart(5, '0')
 
     return `${dd}${mm}${year}-${code}-${seqStr}`
@@ -66,98 +54,12 @@ export async function getExpenses({
     search?: string | null
 } = {}) {
 
-    /*
-     |-------------------------------------------------------------
-     | MEMBERSHIP
-     |-------------------------------------------------------------
-     */
+    const membership = await getCurrentMembership()
+    const rtId = membership?.rt?.id
 
-    const membership =
-        await getCurrentMembership()
+    const data = await findExpenses({ rtId, category, search })
 
-    const rtId =
-        membership?.rt?.id
-
-    /*
-     |-------------------------------------------------------------
-     | QUERY
-     |-------------------------------------------------------------
-     */
-
-    let query =
-        supabase
-
-            .from('expenses')
-
-            .select(`
-
-        id,
-        receipt_number,
-        category,
-        description,
-        amount,
-        recipient,
-        date,
-
-        receipt_url,
-        status,
-        created_by,
-        approved_by,
-        approved_at,
-        rejection_note,
-
-        rt_id
-
-      `)
-
-            .is('deleted_at', null)
-
-            .order(
-                'date',
-                {
-                    ascending: false
-                }
-            )
-
-    /*
-     |-------------------------------------------------------------
-     | FILTERS
-     |-------------------------------------------------------------
-     */
-
-    query =
-        applyExpenseFilters(
-
-            query,
-
-            {
-
-                rtId,
-                category,
-                search
-
-            }
-
-        )
-
-    /*
-     |-------------------------------------------------------------
-     | EXECUTE
-     |-------------------------------------------------------------
-     */
-
-    const {
-        data,
-        error
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    return transformExpense(
-        data || []
-    )
+    return transformExpense(data)
 }
 
 /*
@@ -180,59 +82,20 @@ export async function createExpense(
     payload: ExpensePayload
 ) {
 
-    const membership =
-        await getCurrentMembership()
+    const membership = await getCurrentMembership()
+    const rtId = membership?.rt?.id
 
-    const rtId =
-        membership?.rt?.id
-
-    const {
-
-        data,
-        error
-
-    } = await supabase
-
-        .from('expenses')
-
-        .insert({
-
-            receipt_number:
-            payload.receiptNumber || null,
-
-            category:
-            payload.category,
-
-            description:
-            payload.description,
-
-            amount:
-            payload.amount,
-
-            recipient:
-            payload.recipient || null,
-
-            date:
-            payload.date,
-
-            receipt_url:
-            payload.receiptUrl || null,
-
-            created_by:
-            membership?.user?.id || null,
-
-            rt_id:
-            rtId ?? ''
-
-        })
-
-        .select()
-
-        .single()
-
-    if (error) {
-        throw error
-    }
+    const data = await insertExpense({
+        receipt_number: payload.receiptNumber || null,
+        category:       payload.category,
+        description:    payload.description,
+        amount:         payload.amount,
+        recipient:      payload.recipient || null,
+        date:           payload.date,
+        receipt_url:    payload.receiptUrl || null,
+        created_by:     membership?.user?.id || null,
+        rt_id:          rtId ?? ''
+    })
 
     logActivity({
         rtId:       membership?.rt?.id,
@@ -252,14 +115,9 @@ export async function createExpense(
 
     // Notify all CHAIR in the RT
     try {
-        const { data: chairList } = await supabase
-            .from('memberships')
-            .select('user_id')
-            .eq('rt_id', rtId ?? '')
-            .eq('role', 'CHAIR')
-            .eq('status', 'active')
+        const chairList = await findMembersByRole(rtId ?? '', 'CHAIR')
 
-        if (chairList?.length) {
+        if (chairList.length) {
             const notifRows = chairList.map(k => ({
                 rt_id:          rtId ?? '',
                 type:           'expense_pending',
@@ -269,7 +127,7 @@ export async function createExpense(
                 entity_id:      data.id,
                 target_user_id: k.user_id,
             }))
-            await supabase.from('notifications').insert(notifRows)
+            await insertNotifications(notifRows)
         }
     } catch {
         // Notification errors must not block the main flow
@@ -289,68 +147,21 @@ export async function updateExpense(
     payload: ExpensePayload
 ) {
 
-    const membership =
-        await getCurrentMembership()
+    const membership = await getCurrentMembership()
 
-    const { data: before } =
-        await supabase
-            .from('expenses')
-            .select('category, description, amount, date')
-            .eq('id', id)
-            .single()
+    const before = await findExpenseSnapshot(id)
 
-    const {
-
-        data,
-        error
-
-    } = await supabase
-
-        .from('expenses')
-
-        .update({
-
-            receipt_number:
-            payload.receiptNumber || null,
-
-            category:
-            payload.category,
-
-            description:
-            payload.description,
-
-            amount:
-            payload.amount,
-
-            recipient:
-            payload.recipient || null,
-
-            date:
-            payload.date,
-
-            receipt_url:
-            payload.receiptUrl || null,
-
-            updated_at:
-            new Date().toISOString(),
-
-            updated_by:
-            membership?.user?.id ?? null
-
-        })
-
-        .eq(
-            'id',
-            id
-        )
-
-        .select()
-
-        .single()
-
-    if (error) {
-        throw error
-    }
+    const data = await updateExpenseById(id, {
+        receipt_number: payload.receiptNumber || null,
+        category:       payload.category,
+        description:    payload.description,
+        amount:         payload.amount,
+        recipient:      payload.recipient || null,
+        date:           payload.date,
+        receipt_url:    payload.receiptUrl || null,
+        updated_at:     new Date().toISOString(),
+        updated_by:     membership?.user?.id ?? null
+    })
 
     logActivity({
         rtId:       membership?.rt?.id,
@@ -389,40 +200,15 @@ export async function deleteExpense(
     id: string
 ): Promise<true> {
 
-    const membership =
-        await getCurrentMembership()
+    const membership = await getCurrentMembership()
 
-    const { data: before } =
-        await supabase
-            .from('expenses')
-            .select('category, description, amount, date')
-            .eq('id', id)
-            .single()
+    const before = await findExpenseSnapshot(id)
 
-    const {
-
-        error
-
-    } = await supabase
-
-        .from('expenses')
-
-        .update({
-
-            deleted_at: new Date().toISOString(),
-            deleted_by: membership?.user?.id ?? null,
-            active:     false
-
-        })
-
-        .eq(
-            'id',
-            id
-        )
-
-    if (error) {
-        throw error
-    }
+    await updateExpenseById(id, {
+        deleted_at: new Date().toISOString(),
+        deleted_by: membership?.user?.id ?? null,
+        active:     false
+    })
 
     logActivity({
         rtId:       membership?.rt?.id,

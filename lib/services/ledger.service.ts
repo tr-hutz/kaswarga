@@ -1,78 +1,17 @@
-import {
-
-    supabase
-
-} from '../supabase'
-
-import {
-
-    getCurrentMembership
-
-} from '../auth/getCurrentMembership'
-
-import {
-
-    transformLedger
-
-} from '../../features/ledger/services/ledger-transform'
+import { getCurrentMembership } from '../auth/getCurrentMembership'
+import { transformLedger } from '../../features/ledger/services/ledger-transform'
+import { findLedger } from '../repositories/ledger.repository'
 
 export async function getLedger({ search = '' }: { search?: string } = {}) {
 
-    const membership =
-        await getCurrentMembership()
-
-    const rtId =
-        membership?.rt?.id
+    const membership = await getCurrentMembership()
+    const rtId = membership?.rt?.id
 
     if (!rtId) {
         return []
     }
 
-    let query =
-        supabase
+    const data = await findLedger({ rtId, search })
 
-            .from('ledger')
-
-            .select('*')
-
-            .eq(
-                'rt_id',
-                rtId
-            )
-
-            .eq(
-                'active',
-                true
-            )
-
-            .order(
-                'date',
-                {
-                    ascending: false
-                }
-            )
-
-    if (search) {
-
-        query =
-            query.ilike(
-                'description',
-                `%${search}%`
-            )
-    }
-
-    const {
-
-        data,
-        error
-
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    return transformLedger(
-        data || []
-    )
+    return transformLedger(data)
 }

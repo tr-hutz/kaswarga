@@ -1,5 +1,9 @@
-import { supabase } from '@/lib/supabase'
 import type { Json } from '@/types'
+import {
+    generateRtCode as generateRtCodeFromRepo,
+    findRtByCode,
+    insertRegistrationRequest
+} from '@/lib/repositories/registration.repository'
 
 /*
 |--------------------------------------------------------------------------
@@ -8,9 +12,7 @@ import type { Json } from '@/types'
 */
 
 export async function generateRtCode() {
-    const { data, error } = await supabase.rpc('generate_rt_code')
-    if (error) throw error
-    return data
+    return generateRtCodeFromRepo()
 }
 
 /*
@@ -38,25 +40,18 @@ export async function submitRtRegistration({
     treasurerName,
     rtData
 }: RtRegistrationPayload) {
-    const { data, error } = await supabase
-        .from('registration_requests')
-        .insert({
-            type:            'rt',
-            chair_name:      chairmanName   || null,
-            chair_email:     chairmanEmail  || null,
-            admin_name:      adminName      || null,
-            admin_email:     adminEmail     || null,
-            treasurer_email: treasurerEmail || null,
-            treasurer_name:  treasurerName  || null,
-            rt_code:         rtData.code as string,
-            rt_data:         rtData as unknown as Json,
-            expires_at:      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-        })
-        .select()
-        .single()
-
-    if (error) throw error
-    return data
+    return insertRegistrationRequest({
+        type:            'rt',
+        chair_name:      chairmanName   || null,
+        chair_email:     chairmanEmail  || null,
+        admin_name:      adminName      || null,
+        admin_email:     adminEmail     || null,
+        treasurer_email: treasurerEmail || null,
+        treasurer_name:  treasurerName  || null,
+        rt_code:         rtData.code as string,
+        rt_data:         rtData as unknown as Json,
+        expires_at:      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+    })
 }
 
 /*
@@ -83,31 +78,21 @@ export async function submitWargaRegistration({
     phone
 }: WargaRegistrationPayload) {
     // Validate RT code exists
-    const { data: rt, error: rtError } = await supabase
-        .from('rt')
-        .select('id, name')
-        .eq('code', rtCode.trim().toUpperCase())
-        .maybeSingle()
+    const rt = await findRtByCode(rtCode.trim().toUpperCase())
 
-    if (rtError) throw rtError
     if (!rt) throw new Error(`RT dengan kode "${rtCode}" tidak ditemukan.`)
 
-    const { data, error } = await supabase
-        .from('registration_requests')
-        .insert({
-            type:          'warga',
-            resident_name:  name,
-            resident_email: email,
-            rt_code:        rtCode.trim().toUpperCase(),
-            rt_id:          rt.id,
-            block:          block || null,
-            house_number:   houseNumber || null,
-            phone:          phone || null,
-            expires_at:     new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-        })
-        .select()
-        .single()
+    const data = await insertRegistrationRequest({
+        type:           'warga',
+        resident_name:  name,
+        resident_email: email,
+        rt_code:        rtCode.trim().toUpperCase(),
+        rt_id:          rt.id,
+        block:          block || null,
+        house_number:   houseNumber || null,
+        phone:          phone || null,
+        expires_at:     new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+    })
 
-    if (error) throw error
     return { ...data, rtName: rt.name }
 }
