@@ -186,7 +186,7 @@ export async function approveResidentRegistration(requestId: string, actor: Acto
         action:      'APPROVE_RESIDENT_REGISTRATION',
         entityType:  'registration_requests',
         entityId:    requestId,
-        description: `Pendaftaran warga "${req.resident_name}" disetujui`,
+        description: `Resident registration "${req.resident_name}" approved`,
         metadata:    { email: req.resident_email }
     })
 
@@ -211,7 +211,7 @@ export async function rejectResidentRegistration(requestId: string, actor: Actor
         action:      'REJECT_RESIDENT_REGISTRATION',
         entityType:  'registration_requests',
         entityId:    requestId,
-        description: `Pendaftaran warga "${req?.resident_name}" ditolak dan dihapus`,
+        description: `Resident registration "${req?.resident_name}" rejected and deleted`,
         metadata:    {}
     })
 }

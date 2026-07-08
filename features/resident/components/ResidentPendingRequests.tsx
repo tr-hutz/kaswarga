@@ -37,7 +37,7 @@ function RequestRow({ req, onAction }) {
     const [devLink,    setDevLink]    = useState(null)
     const { membership }              = useAuth()
     const { toast }                   = useToast()
-    const t                           = useTranslations('warga.pending')
+    const t                           = useTranslations('residents.pending')
 
     async function handleApprove() {
         setProcessing(true)
@@ -137,7 +137,7 @@ function RequestRow({ req, onAction }) {
 
 export default function ResidentPendingRequests({ requests, loading, onAction }) {
     const [open, setOpen] = useState(true)
-    const t = useTranslations('warga.pending')
+    const t = useTranslations('residents.pending')
 
     if (loading) return null
     if (!requests || requests.length === 0) return null

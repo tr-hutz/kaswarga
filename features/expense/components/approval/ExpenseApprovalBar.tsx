@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl'
 
 export default function ExpenseApprovalBar({ row, onApprove, onReject, loading }) {
 
-    const t = useTranslations('pengeluaran')
+    const t = useTranslations('expenses')
     const tc = useTranslations('common')
     const [rejectMode, setRejectMode] = useState(false)
     const [alasan,     setAlasan]     = useState('')

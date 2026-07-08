@@ -8,11 +8,11 @@
 
 
 /* ----------------------------------------------------------------------------
- * get_last_saldo
+ * get_last_balance
  * Returns the most recent ledger balance for an RT (0 if no entries yet).
  * --------------------------------------------------------------------------- */
 
-create or replace function get_last_saldo(p_rt_id uuid)
+create or replace function get_last_balance(p_rt_id uuid)
 returns bigint
 language plpgsql
 as $$
@@ -54,7 +54,7 @@ declare
     v_new_balance  bigint;
     v_id           uuid;
 begin
-    v_last_balance := get_last_saldo(p_rt_id);
+    v_last_balance := get_last_balance(p_rt_id);
 
     if p_type = 'pemasukan' then
         v_new_balance := v_last_balance + p_amount;
@@ -304,7 +304,7 @@ $$;
 
 
 /* ----------------------------------------------------------------------------
- * approve_konfirmasi
+ * approve_confirmation
  *
  * Flow:
  *   1. Lock the payment_confirmations row
@@ -318,7 +318,7 @@ $$;
  *   9. Send in-app notification to resident
  * --------------------------------------------------------------------------- */
 
-create or replace function approve_konfirmasi(
+create or replace function approve_confirmation(
     p_confirmation_id uuid,
     p_user_id         uuid
 )
@@ -452,7 +452,7 @@ $$;
 
 
 /* ----------------------------------------------------------------------------
- * reject_konfirmasi
+ * reject_confirmation
  *
  * Flow:
  *   1. Lock the payment_confirmations row
@@ -461,7 +461,7 @@ $$;
  *   4. Send in-app notification to resident
  * --------------------------------------------------------------------------- */
 
-create or replace function reject_konfirmasi(
+create or replace function reject_confirmation(
     p_confirmation_id uuid,
     p_reason          text,
     p_user_id         uuid
@@ -533,10 +533,10 @@ begin
 end;
 $$;
 
-revoke all     on function approve_konfirmasi(uuid, uuid)      from public;
-revoke all     on function reject_konfirmasi(uuid, text, uuid) from public;
-grant  execute on function approve_konfirmasi(uuid, uuid)      to authenticated;
-grant  execute on function reject_konfirmasi(uuid, text, uuid) to authenticated;
+revoke all     on function approve_confirmation(uuid, uuid)      from public;
+revoke all     on function reject_confirmation(uuid, text, uuid) from public;
+grant  execute on function approve_confirmation(uuid, uuid)      to authenticated;
+grant  execute on function reject_confirmation(uuid, text, uuid) to authenticated;
 
 
 /* ----------------------------------------------------------------------------
@@ -546,10 +546,10 @@ grant  execute on function reject_konfirmasi(uuid, text, uuid) to authenticated;
  * --------------------------------------------------------------------------- */
 
 create or replace function populate_cashflow(
-    p_tahun             int,
-    p_jumlah_data       int     default 100,
-    p_max_bulan         int     default 3,
-    p_rasio_pengeluaran numeric default 0.8
+    p_year             int,
+    p_data_count       int     default 100,
+    p_max_months         int     default 3,
+    p_expense_ratio numeric default 0.8
 )
 returns void
 language plpgsql
@@ -580,15 +580,15 @@ begin
     end if;
 
     -- Clear existing data for the year
-    delete from payment_details where year = p_tahun;
-    delete from payments        where year = p_tahun;
-    delete from expenses        where extract(year from date) = p_tahun;
+    delete from payment_details where year = p_year;
+    delete from payments        where year = p_year;
+    delete from expenses        where extract(year from date) = p_year;
 
     -- Generate payments
-    for i in 1..p_jumlah_data loop
+    for i in 1..p_data_count loop
         select id into v_resident_id from residents order by random() limit 1;
 
-        v_month_count     := floor(random() * p_max_bulan + 1);
+        v_month_count     := floor(random() * p_max_months + 1);
         v_selected_months := '{}';
 
         while array_length(v_selected_months, 1) is null
@@ -600,7 +600,7 @@ begin
                 if not exists (
                     select 1 from payment_details
                     where  resident_id = v_resident_id
-                    and    year        = p_tahun
+                    and    year        = p_year
                     and    month       = v_random_month
                 ) then
                     v_selected_months := array_append(v_selected_months, v_random_month);
@@ -612,19 +612,19 @@ begin
         v_date         := now() - (floor(random() * 120) || ' days')::interval;
 
         insert into payments (resident_id, rt_id, year, total_amount, date, created_at)
-        values (v_resident_id, v_rt.id, p_tahun, v_total_amount, v_date, now())
+        values (v_resident_id, v_rt.id, p_year, v_total_amount, v_date, now())
         returning id into v_payment_id;
 
         foreach v_month in array v_selected_months loop
             insert into payment_details (payment_id, resident_id, year, month, amount, created_at)
-            values (v_payment_id, v_resident_id, p_tahun, v_month, v_rt.monthly_fee, now());
+            values (v_payment_id, v_resident_id, p_year, v_month, v_rt.monthly_fee, now());
         end loop;
 
         v_total_income := v_total_income + v_total_amount;
     end loop;
 
     -- Generate expenses proportional to total income
-    v_target_expense := (v_total_income * p_rasio_pengeluaran)::bigint;
+    v_target_expense := (v_total_income * p_expense_ratio)::bigint;
 
     while v_current_expense < v_target_expense loop
         v_total_amount := (floor(random() * 5) + 1) * v_rt.monthly_fee;
@@ -649,15 +649,15 @@ $$;
 -- Utility functions: restrict access to safe roles
 revoke all     on function populate_cashflow(int, int, int, numeric)                                       from public;
 revoke all     on function insert_ledger(uuid, varchar, varchar, uuid, timestamptz, text, bigint, uuid)    from public;
-revoke all     on function get_last_saldo(uuid)                                                            from public;
+revoke all     on function get_last_balance(uuid)                                                            from public;
 
 grant  execute on function populate_cashflow(int, int, int, numeric)                                       to service_role;
 grant  execute on function insert_ledger(uuid, varchar, varchar, uuid, timestamptz, text, bigint, uuid)    to service_role;
-grant  execute on function get_last_saldo(uuid)                                                            to authenticated;
+grant  execute on function get_last_balance(uuid)                                                            to authenticated;
 
 
 /* ----------------------------------------------------------------------------
- * approve_pengeluaran
+ * approve_expense
  *
  * Flow:
  *   1. Lock the expenses row
@@ -667,7 +667,7 @@ grant  execute on function get_last_saldo(uuid)                                 
  *   5. Notify the expense creator
  * --------------------------------------------------------------------------- */
 
-create or replace function approve_pengeluaran(
+create or replace function approve_expense(
     p_id      uuid,
     p_user_id uuid
 )
@@ -733,7 +733,7 @@ $$;
 
 
 /* ----------------------------------------------------------------------------
- * reject_pengeluaran
+ * reject_expense
  *
  * Flow:
  *   1. Lock the expenses row
@@ -742,9 +742,9 @@ $$;
  *   4. Notify the expense creator
  * --------------------------------------------------------------------------- */
 
-create or replace function reject_pengeluaran(
+create or replace function reject_expense(
     p_id      uuid,
-    p_alasan  text,
+    p_reason  text,
     p_user_id uuid
 )
 returns void
@@ -775,7 +775,7 @@ begin
     update expenses
     set    status          = 'rejected',
            approved_by     = p_user_id,
-           rejection_note  = p_alasan
+           rejection_note  = p_reason
     where  id = p_id;
 
     -- 4. Notify creator
@@ -787,8 +787,8 @@ begin
             'expense_rejected',
             'Pengeluaran Ditolak',
             'Pengeluaran ' || coalesce(v_row.receipt_number, '') || ' ditolak' ||
-                case when p_alasan is not null and p_alasan != ''
-                     then '. Alasan: ' || p_alasan
+                case when p_reason is not null and p_reason != ''
+                     then '. Alasan: ' || p_reason
                      else ''
                 end,
             'expenses',
@@ -799,20 +799,20 @@ begin
 end;
 $$;
 
-revoke all     on function approve_pengeluaran(uuid, uuid)       from public;
-revoke all     on function reject_pengeluaran(uuid, text, uuid)  from public;
-grant  execute on function approve_pengeluaran(uuid, uuid)       to authenticated;
-grant  execute on function reject_pengeluaran(uuid, text, uuid)  to authenticated;
+revoke all     on function approve_expense(uuid, uuid)       from public;
+revoke all     on function reject_expense(uuid, text, uuid)  from public;
+grant  execute on function approve_expense(uuid, uuid)       to authenticated;
+grant  execute on function reject_expense(uuid, text, uuid)  to authenticated;
 
 
 /* ----------------------------------------------------------------------------
- * approve_all_pending_pengeluaran
+ * approve_all_pending_expenses
  *
  * Approves every pending expense for the given RT atomically.
  * Returns the count of rows approved.
  * --------------------------------------------------------------------------- */
 
-create or replace function approve_all_pending_pengeluaran(
+create or replace function approve_all_pending_expenses(
     p_rt_id   uuid,
     p_user_id uuid
 )
@@ -871,5 +871,5 @@ begin
 end;
 $$;
 
-revoke all     on function approve_all_pending_pengeluaran(uuid, uuid) from public;
-grant  execute on function approve_all_pending_pengeluaran(uuid, uuid) to authenticated;
+revoke all     on function approve_all_pending_expenses(uuid, uuid) from public;
+grant  execute on function approve_all_pending_expenses(uuid, uuid) to authenticated;

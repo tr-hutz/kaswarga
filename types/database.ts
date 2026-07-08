@@ -891,20 +891,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      approve_konfirmasi: {
+      approve_confirmation: {
         Args: { p_confirmation_id: string; p_user_id: string }
         Returns: undefined
       }
-      approve_pengeluaran: {
+      approve_expense: {
         Args: { p_id: string; p_user_id: string }
         Returns: undefined
       }
-      approve_all_pending_pengeluaran: {
+      approve_all_pending_expenses: {
         Args: { p_rt_id: string; p_user_id: string }
         Returns: number
       }
       generate_rt_code: { Args: Record<PropertyKey, never>; Returns: string }
-      get_last_saldo: { Args: { p_rt_id: string }; Returns: number }
+      get_last_balance: { Args: { p_rt_id: string }; Returns: number }
       get_user_rt_ids: { Args: Record<PropertyKey, never>; Returns: string[] }
       insert_ledger: {
         Args: {
@@ -923,19 +923,19 @@ export type Database = {
       is_super_admin: { Args: Record<PropertyKey, never>; Returns: boolean }
       populate_cashflow: {
         Args: {
-          p_tahun: number
-          p_jumlah_data?: number
-          p_max_bulan?: number
-          p_rasio_pengeluaran?: number
+          p_year: number
+          p_data_count?: number
+          p_max_months?: number
+          p_expense_ratio?: number
         }
         Returns: undefined
       }
-      reject_konfirmasi: {
+      reject_confirmation: {
         Args: { p_confirmation_id: string; p_reason: string; p_user_id: string }
         Returns: undefined
       }
-      reject_pengeluaran: {
-        Args: { p_alasan: string; p_id: string; p_user_id: string }
+      reject_expense: {
+        Args: { p_reason: string; p_id: string; p_user_id: string }
         Returns: undefined
       }
     }

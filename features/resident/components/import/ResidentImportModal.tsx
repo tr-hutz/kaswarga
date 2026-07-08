@@ -24,7 +24,7 @@ export default function ResidentImportModal({
     onDownloadTemplate,
     onReset,
 }) {
-    const t = useTranslations('warga')
+    const t = useTranslations('residents')
 
     const columnGuide = (
         <>

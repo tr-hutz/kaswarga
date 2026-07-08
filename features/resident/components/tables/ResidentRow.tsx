@@ -17,7 +17,7 @@ export default function ResidentRow({
 
                                  }) {
 
-    const t  = useTranslations('warga')
+    const t  = useTranslations('residents')
     const tc = useTranslations('common')
 
     async function handleDelete() {

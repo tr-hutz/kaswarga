@@ -64,7 +64,6 @@
       "saveFailed": "Gagal menyimpan data"
     }
   },
-
   "nav": {
     "home": "Beranda",
     "dashboard": "Dashboard",
@@ -80,12 +79,10 @@
     "rtRegistration": "Pendaftaran RT",
     "users": "Kelola Users"
   },
-
   "topbar": {
     "brand": "Kas Warga",
     "logout": "Keluar"
   },
-
   "auth": {
     "title": "Login Kas Warga",
     "subtitle": "Masuk ke sistem iuran warga",
@@ -100,8 +97,343 @@
     "hasInvitation": "Punya undangan tapi link tidak valid?",
     "requestNewLink": "Minta link baru"
   },
-
-  "warga": {
+  "ledger": {
+    "title": "Buku Kas",
+    "searchPlaceholder": "Cari transaksi...",
+    "table": {
+      "date": "Tanggal",
+      "type": "Jenis",
+      "description": "Deskripsi",
+      "amount": "Nominal",
+      "balance": "Saldo",
+      "loading": "Loading..."
+    },
+    "analytics": {
+      "income": "Total Pemasukan",
+      "expense": "Total Pengeluaran",
+      "balance": "Saldo Akhir"
+    },
+    "drawer": {
+      "title": "Detail Ledger",
+      "subtitle": "Detail transaksi kas",
+      "type": "Jenis",
+      "source": "Sumber",
+      "description": "Deskripsi",
+      "amount": "Nominal",
+      "balanceAfter": "Saldo Setelah",
+      "date": "Tanggal"
+    },
+    "report": {
+      "title": "Laporan Arus Kas",
+      "subtitle": "Generate laporan kas tahunan dalam format PDF",
+      "generating": "Membuat...",
+      "generate": "Generate PDF",
+      "errorFailed": "Gagal membuat laporan"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "loading": "Memuat data...",
+    "sections": {
+      "paymentStatus": "Status Iuran Warga",
+      "paymentStatusSubtitle": "Rekap kepatuhan pembayaran iuran bulanan",
+      "finance": "Keuangan RT",
+      "financeSubtitle": "Ringkasan arus kas tahun {year}"
+    },
+    "cards": {
+      "totalWarga": "Total Warga",
+      "paid": "Lunas",
+      "almostPaid": "Hampir Lunas",
+      "delinquent": "Menunggak",
+      "neverPaid": "Belum Bayar",
+      "balance": "Saldo Saat Ini",
+      "balanceSubtitle": "saldo berjalan",
+      "income": "Pemasukan",
+      "incomeSubtitle": "tahun ini",
+      "expense": "Pengeluaran",
+      "expenseSubtitle": "tahun ini",
+      "arrears": "Tunggakan",
+      "arrearsSubtitle": "perlu ditagih"
+    }
+  },
+  "home": {
+    "title": "Beranda Warga",
+    "loading": "Loading...",
+    "summary": {
+      "paid": "Sudah Bayar",
+      "arrears": "Tunggakan",
+      "upcoming": "Upcoming"
+    },
+    "payment": {
+      "title": "Ajukan Pembayaran",
+      "annualized": "Disetahunkan",
+      "monthPaid": "Lunas",
+      "monthPending": "Menunggu",
+      "totalMonths": "Jumlah Bulan",
+      "totalFee": "Total Iuran",
+      "monthsUnit": "bulan",
+      "submit": "Ajukan Pembayaran",
+      "submitting": "Mengirim..."
+    },
+    "bukti": {
+      "label": "Bukti Pembayaran",
+      "clickUpload": "Klik untuk upload bukti",
+      "format": "JPG, PNG · maks. 5 MB",
+      "change": "Ganti"
+    }
+  },
+  "notification": {
+    "title": "Notifikasi",
+    "subtitle": "Riwayat notifikasi sistem",
+    "searchPlaceholder": "Cari notifikasi...",
+    "filter": {
+      "all": "Semua",
+      "unread": "Belum Dibaca"
+    },
+    "markAllRead": "Tandai Semua Dibaca",
+    "empty": "Tidak ada notifikasi"
+  },
+  "activity": {
+    "title": "Activity Feed",
+    "subtitle": "Histori aktivitas sistem",
+    "loading": "Loading...",
+    "table": {
+      "actor": "Pelaku",
+      "action": "Aksi",
+      "entity": "Entitas",
+      "description": "Deskripsi",
+      "time": "Waktu"
+    },
+    "analytics": {
+      "total": "Total Activity",
+      "approvals": "Approvals",
+      "expense": "Pengeluaran",
+      "residentUpdates": "Pembaruan Warga"
+    },
+    "drawer": {
+      "title": "Detail Aktivitas",
+      "close": "Tutup",
+      "actor": "Pelaku",
+      "action": "Aksi",
+      "entity": "Entitas",
+      "description": "Deskripsi",
+      "metadata": "Metadata"
+    }
+  },
+  "rt": {
+    "title": "Kelola RT",
+    "subtitle": "Manajemen data RT dalam sistem",
+    "addButton": "Tambah RT",
+    "table": {
+      "name": "Nama RT",
+      "code": "Kode",
+      "city": "Kota",
+      "status": "Status",
+      "actions": "Aksi",
+      "loading": "Memuat data RT...",
+      "empty": "Belum ada data RT."
+    },
+    "form": {
+      "addTitle": "Tambah RT Baru",
+      "editTitle": "Edit RT",
+      "name": "Nama RT *",
+      "namePlaceholder": "RT 001 Perumahan Asri",
+      "code": "Kode",
+      "codePlaceholder": "RT001",
+      "address": "Alamat",
+      "addressPlaceholder": "Jl. Contoh No. 1",
+      "city": "Kota",
+      "cityPlaceholder": "Jakarta",
+      "province": "Provinsi",
+      "provincePlaceholder": "DKI Jakarta",
+      "postalCode": "Kode Pos",
+      "postalCodePlaceholder": "12345"
+    },
+    "delete": {
+      "title": "Hapus RT",
+      "message": "Apakah Anda yakin ingin menghapus {name}? Tindakan ini tidak dapat dibatalkan.",
+      "confirm": "Hapus RT ini? Tindakan ini tidak dapat dibatalkan."
+    }
+  },
+  "users": {
+    "title": "Kelola Pengguna",
+    "subtitle": "Manajemen role dan keanggotaan pengguna",
+    "table": {
+      "name": "Nama",
+      "email": "Email",
+      "rt": "RT",
+      "role": "Role",
+      "actions": "Aksi",
+      "loading": "Memuat data pengguna...",
+      "empty": "Belum ada data pengguna.",
+      "noRt": "Tanpa RT"
+    },
+    "editRole": {
+      "title": "Ubah Role",
+      "user": "Pengguna",
+      "rt": "RT",
+      "system": "System"
+    },
+    "roles": {
+      "ketua": "Ketua",
+      "admin": "Admin",
+      "bendahara": "Bendahara",
+      "warga": "Warga",
+      "super_admin": "Super Admin"
+    },
+    "removeMembership": {
+      "title": "Hapus Membership",
+      "message": "Hapus akses ke RT {rtName}? Pengguna tidak akan bisa mengakses RT ini.",
+      "confirm": "Hapus",
+      "deleting": "Menghapus..."
+    }
+  },
+  "registration": {
+    "rt": {
+      "title": "Daftarkan RT Baru",
+      "subtitle": "Pendaftaran akan diverifikasi oleh super admin sebelum diaktifkan.",
+      "success": {
+        "title": "Pendaftaran Terkirim!",
+        "message": "Permintaan pendaftaran RT {name} telah dikirim. Tim kami akan memverifikasi dan mengirimkan email aktivasi kepada ketua, admin, dan bendahara dalam waktu 1–2 hari kerja.",
+        "backToLogin": "Kembali ke Login"
+      },
+      "sections": {
+        "identity": "Identitas RT",
+        "bank": "Informasi Rekening (opsional)",
+        "officers": "Akun Pengurus",
+        "officersNote": "Link aktivasi akan dikirimkan ke email masing-masing. Harus berbeda satu sama lain."
+      },
+      "fields": {
+        "name": "Nama RT",
+        "code": "Kode RT",
+        "address": "Alamat",
+        "city": "Kota",
+        "province": "Provinsi",
+        "postalCode": "Kode Pos",
+        "monthlyFee": "Iuran / Bulan (Rp)",
+        "bankName": "Nama Bank",
+        "accountNumber": "Nomor Rekening",
+        "accountHolder": "Atas Nama",
+        "chairmanName": "Nama Ketua",
+        "chairmanEmail": "Email Ketua",
+        "adminName": "Nama Admin",
+        "adminEmail": "Email Admin",
+        "treasurerName": "Nama Bendahara",
+        "treasurerEmail": "Email Bendahara"
+      },
+      "submit": "Kirim Pendaftaran",
+      "submitting": "Mengirim...",
+      "back": "Kembali",
+      "generate": "Generate kode unik"
+    },
+    "landing": {
+      "title": "Pendaftaran",
+      "asRt": "Daftar sebagai RT baru",
+      "asWarga": "Daftar sebagai Warga"
+    },
+    "resident": {
+      "title": "Daftar sebagai Warga",
+      "subtitle": "Butuh kode RT dari pengurus RT Anda.",
+      "fields": {
+        "fullName": "Nama Lengkap",
+        "email": "Email",
+        "rtCode": "Kode RT",
+        "rtCodeNote": "Tanyakan kode ini kepada pengurus RT Anda",
+        "extra": "Informasi Tambahan (opsional)",
+        "block": "Blok / Jalan",
+        "houseNumber": "Nomor Rumah",
+        "phone": "Nomor Telepon"
+      },
+      "success": {
+        "title": "Pendaftaran Terkirim!",
+        "message": "Permintaan pendaftaran Anda telah dikirim kepada pengurus RT. Setelah disetujui, link aktivasi akan dikirimkan ke email {email}.",
+        "backToLogin": "Kembali ke Login"
+      },
+      "submit": "Kirim Pendaftaran",
+      "submitting": "Mengirim...",
+      "back": "Kembali",
+      "errors": {
+        "submitFailed": "Gagal mengirim pendaftaran."
+      }
+    }
+  },
+  "profilRt": {
+    "title": "Profil RT",
+    "subtitle": "Kelola informasi RT Anda",
+    "loading": "Memuat profil RT...",
+    "sections": {
+      "identity": "Identitas RT",
+      "address": "Alamat",
+      "bank": "Rekening Bank",
+      "media": "Aset Media"
+    },
+    "fields": {
+      "name": "Nama RT *",
+      "code": "Kode Unik RT",
+      "monthlyFee": "Iuran per Bulan (Rp)",
+      "address": "Alamat",
+      "city": "Kota",
+      "province": "Provinsi",
+      "postalCode": "Kode Pos",
+      "bankName": "Nama Bank",
+      "accountNumber": "Nomor Rekening",
+      "accountHolder": "Atas Nama",
+      "logo": "Logo RT",
+      "qris": "QRIS"
+    },
+    "save": "Simpan Perubahan",
+    "saving": "Menyimpan...",
+    "generateCode": "Generate kode unik",
+    "imageUpload": {
+      "change": "Ganti",
+      "clickToUpload": "Klik untuk upload",
+      "formatNote": "JPG, PNG, WebP · maks. 2 MB",
+      "uploadFailed": "Upload gagal"
+    }
+  },
+  "settings": {
+    "title": "Ganti Password",
+    "subtitle": "Perbarui password akun Anda",
+    "newPassword": "Password Baru",
+    "newPasswordPlaceholder": "Minimal 8 karakter",
+    "confirmPassword": "Konfirmasi Password Baru",
+    "confirmPasswordPlaceholder": "Ulangi password baru",
+    "save": "Simpan Password",
+    "saving": "Menyimpan...",
+    "errors": {
+      "minLength": "Password baru minimal 8 karakter.",
+      "mismatch": "Konfirmasi password tidak cocok.",
+      "success": "Password berhasil diubah.",
+      "failed": "Gagal mengubah password."
+    }
+  },
+  "import": {
+    "format": "Format yang didukung: CSV atau Excel (.xlsx)",
+    "templateNote": "Gunakan template agar format kolom sesuai.",
+    "downloadTemplate": "Unduh Template",
+    "clickToSelect": "Klik untuk memilih file",
+    "fileFormat": "CSV atau Excel (.xlsx / .xls)",
+    "columnGuide": "Kolom yang dikenali:",
+    "changeFile": "Ganti file",
+    "valid": "valid",
+    "skipped": "dilewati",
+    "invalidRowsNote": "Baris yang tidak valid tidak akan diimpor.",
+    "status": "Status",
+    "required": "wajib"
+  },
+  "appShell": {
+    "noMembership": {
+      "title": "Akun Belum Aktif",
+      "description": "Akun Anda belum terhubung ke RT. Silakan cek email undangan Anda dan klik link aktivasi, atau kunjungi halaman aktivasi.",
+      "goToActivation": "Ke Halaman Aktivasi"
+    }
+  },
+  "fileUpload": {
+    "uploading": "Mengunggah...",
+    "clickToAttach": "Klik untuk lampirkan nota",
+    "uploadFailed": "Upload gagal"
+  },
+  "residents": {
     "title": "Warga",
     "subtitle": "Manajemen data warga",
     "searchPlaceholder": "Cari nama warga...",
@@ -169,8 +501,7 @@
       "badge": "{total} bulan menunggak"
     }
   },
-
-  "pembayaran": {
+  "payments": {
     "title": "Pembayaran",
     "subtitle": "Riwayat pembayaran warga",
     "searchPlaceholder": "Cari pembayaran...",
@@ -205,8 +536,7 @@
       "reject": "Tolak"
     }
   },
-
-  "pengeluaran": {
+  "expenses": {
     "title": "Pengeluaran",
     "subtitle": "Manajemen pengeluaran RT",
     "searchPlaceholder": "Cari pengeluaran...",
@@ -267,377 +597,7 @@
       "topCategory": "Kategori Terbesar"
     }
   },
-
-  "ledger": {
-    "title": "Buku Kas",
-    "searchPlaceholder": "Cari transaksi...",
-    "table": {
-      "date": "Tanggal",
-      "type": "Jenis",
-      "description": "Deskripsi",
-      "amount": "Nominal",
-      "balance": "Saldo",
-      "loading": "Loading..."
-    },
-    "analytics": {
-      "income": "Total Pemasukan",
-      "expense": "Total Pengeluaran",
-      "balance": "Saldo Akhir"
-    },
-    "drawer": {
-      "title": "Detail Ledger",
-      "subtitle": "Detail transaksi kas",
-      "type": "Jenis",
-      "source": "Sumber",
-      "description": "Deskripsi",
-      "amount": "Nominal",
-      "balanceAfter": "Saldo Setelah",
-      "date": "Tanggal"
-    },
-    "report": {
-      "title": "Laporan Arus Kas",
-      "subtitle": "Generate laporan kas tahunan dalam format PDF",
-      "generating": "Membuat...",
-      "generate": "Generate PDF",
-      "errorFailed": "Gagal membuat laporan"
-    }
-  },
-
-  "dashboard": {
-    "title": "Dashboard",
-    "loading": "Memuat data...",
-    "sections": {
-      "paymentStatus": "Status Iuran Warga",
-      "paymentStatusSubtitle": "Rekap kepatuhan pembayaran iuran bulanan",
-      "finance": "Keuangan RT",
-      "financeSubtitle": "Ringkasan arus kas tahun {year}"
-    },
-    "cards": {
-      "totalWarga": "Total Warga",
-      "paid": "Lunas",
-      "almostPaid": "Hampir Lunas",
-      "delinquent": "Menunggak",
-      "neverPaid": "Belum Bayar",
-      "balance": "Saldo Saat Ini",
-      "balanceSubtitle": "saldo berjalan",
-      "income": "Pemasukan",
-      "incomeSubtitle": "tahun ini",
-      "expense": "Pengeluaran",
-      "expenseSubtitle": "tahun ini",
-      "arrears": "Tunggakan",
-      "arrearsSubtitle": "perlu ditagih"
-    }
-  },
-
-  "home": {
-    "title": "Beranda Warga",
-    "loading": "Loading...",
-    "summary": {
-      "paid": "Sudah Bayar",
-      "arrears": "Tunggakan",
-      "upcoming": "Upcoming"
-    },
-    "payment": {
-      "title": "Ajukan Pembayaran",
-      "annualized": "Disetahunkan",
-      "monthPaid": "Lunas",
-      "monthPending": "Menunggu",
-      "totalMonths": "Jumlah Bulan",
-      "totalFee": "Total Iuran",
-      "monthsUnit": "bulan",
-      "submit": "Ajukan Pembayaran",
-      "submitting": "Mengirim..."
-    },
-    "bukti": {
-      "label": "Bukti Pembayaran",
-      "clickUpload": "Klik untuk upload bukti",
-      "format": "JPG, PNG · maks. 5 MB",
-      "change": "Ganti"
-    }
-  },
-
-  "notification": {
-    "title": "Notifikasi",
-    "subtitle": "Riwayat notifikasi sistem",
-    "searchPlaceholder": "Cari notifikasi...",
-    "filter": {
-      "all": "Semua",
-      "unread": "Belum Dibaca"
-    },
-    "markAllRead": "Tandai Semua Dibaca",
-    "empty": "Tidak ada notifikasi"
-  },
-
-  "activity": {
-    "title": "Activity Feed",
-    "subtitle": "Histori aktivitas sistem",
-    "loading": "Loading...",
-    "table": {
-      "actor": "Pelaku",
-      "action": "Aksi",
-      "entity": "Entitas",
-      "description": "Deskripsi",
-      "time": "Waktu"
-    },
-    "analytics": {
-      "total": "Total Activity",
-      "approvals": "Approvals",
-      "expense": "Pengeluaran",
-      "wargaUpdates": "Pembaruan Warga"
-    },
-    "drawer": {
-      "title": "Detail Aktivitas",
-      "close": "Tutup",
-      "actor": "Pelaku",
-      "action": "Aksi",
-      "entity": "Entitas",
-      "description": "Deskripsi",
-      "metadata": "Metadata"
-    }
-  },
-
-  "rt": {
-    "title": "Kelola RT",
-    "subtitle": "Manajemen data RT dalam sistem",
-    "addButton": "Tambah RT",
-    "table": {
-      "name": "Nama RT",
-      "code": "Kode",
-      "city": "Kota",
-      "status": "Status",
-      "actions": "Aksi",
-      "loading": "Memuat data RT...",
-      "empty": "Belum ada data RT."
-    },
-    "form": {
-      "addTitle": "Tambah RT Baru",
-      "editTitle": "Edit RT",
-      "name": "Nama RT *",
-      "namePlaceholder": "RT 001 Perumahan Asri",
-      "code": "Kode",
-      "codePlaceholder": "RT001",
-      "address": "Alamat",
-      "addressPlaceholder": "Jl. Contoh No. 1",
-      "city": "Kota",
-      "cityPlaceholder": "Jakarta",
-      "province": "Provinsi",
-      "provincePlaceholder": "DKI Jakarta",
-      "postalCode": "Kode Pos",
-      "postalCodePlaceholder": "12345"
-    },
-    "delete": {
-      "title": "Hapus RT",
-      "message": "Apakah Anda yakin ingin menghapus {name}? Tindakan ini tidak dapat dibatalkan.",
-      "confirm": "Hapus RT ini? Tindakan ini tidak dapat dibatalkan."
-    }
-  },
-
-  "users": {
-    "title": "Kelola Pengguna",
-    "subtitle": "Manajemen role dan keanggotaan pengguna",
-    "table": {
-      "name": "Nama",
-      "email": "Email",
-      "rt": "RT",
-      "role": "Role",
-      "actions": "Aksi",
-      "loading": "Memuat data pengguna...",
-      "empty": "Belum ada data pengguna.",
-      "noRt": "Tanpa RT"
-    },
-    "editRole": {
-      "title": "Ubah Role",
-      "user": "Pengguna",
-      "rt": "RT",
-      "system": "System"
-    },
-    "roles": {
-      "ketua": "Ketua",
-      "admin": "Admin",
-      "bendahara": "Bendahara",
-      "warga": "Warga",
-      "super_admin": "Super Admin"
-    },
-    "removeMembership": {
-      "title": "Hapus Membership",
-      "message": "Hapus akses ke RT {rtName}? Pengguna tidak akan bisa mengakses RT ini.",
-      "confirm": "Hapus",
-      "deleting": "Menghapus..."
-    }
-  },
-
-  "rtRegistrasi": {
-    "title": "Pendaftaran RT",
-    "subtitle": "Kelola permintaan pendaftaran RT baru",
-    "empty": "Tidak ada pendaftaran",
-    "tabs": {
-      "pending": "Menunggu",
-      "approved": "Disetujui",
-      "rejected": "Ditolak",
-      "all": "Semua"
-    },
-    "card": {
-      "approve": "Setujui",
-      "reject": "Tolak",
-      "rejectConfirm": "Tolak pendaftaran RT ini?",
-      "loading": "Memuat...",
-      "viewLinks": "Lihat Link Aktivasi",
-      "address": "Alamat",
-      "postalCode": "Kode Pos",
-      "phone": "Telepon",
-      "approvedAt": "Disetujui",
-      "rejectedAt": "Ditolak",
-      "reason": "Alasan",
-      "devClose": "Tutup",
-      "roles": {
-        "ketua": "Ketua",
-        "admin": "Admin",
-        "bendahara": "Bendahara"
-      }
-    },
-    "pendingSection": {
-      "title": "Permintaan Pendaftaran RT"
-    }
-  },
-
-  "registration": {
-    "rt": {
-      "title": "Daftarkan RT Baru",
-      "subtitle": "Pendaftaran akan diverifikasi oleh super admin sebelum diaktifkan.",
-      "success": {
-        "title": "Pendaftaran Terkirim!",
-        "message": "Permintaan pendaftaran RT {name} telah dikirim. Tim kami akan memverifikasi dan mengirimkan email aktivasi kepada ketua, admin, dan bendahara dalam waktu 1–2 hari kerja.",
-        "backToLogin": "Kembali ke Login"
-      },
-      "sections": {
-        "identity": "Identitas RT",
-        "bank": "Informasi Rekening (opsional)",
-        "officers": "Akun Pengurus",
-        "officersNote": "Link aktivasi akan dikirimkan ke email masing-masing. Harus berbeda satu sama lain."
-      },
-      "fields": {
-        "name": "Nama RT",
-        "code": "Kode RT",
-        "address": "Alamat",
-        "city": "Kota",
-        "province": "Provinsi",
-        "postalCode": "Kode Pos",
-        "monthlyFee": "Iuran / Bulan (Rp)",
-        "bankName": "Nama Bank",
-        "accountNumber": "Nomor Rekening",
-        "accountHolder": "Atas Nama",
-        "chairmanName": "Nama Ketua",
-        "chairmanEmail": "Email Ketua",
-        "adminName": "Nama Admin",
-        "adminEmail": "Email Admin",
-        "treasurerName": "Nama Bendahara",
-        "treasurerEmail": "Email Bendahara"
-      },
-      "submit": "Kirim Pendaftaran",
-      "submitting": "Mengirim...",
-      "back": "Kembali",
-      "generate": "Generate kode unik"
-    },
-    "warga": {
-      "title": "Daftar sebagai Warga",
-      "subtitle": "Butuh kode RT dari pengurus RT Anda.",
-      "fields": {
-        "fullName": "Nama Lengkap",
-        "email": "Email",
-        "rtCode": "Kode RT",
-        "rtCodeNote": "Tanyakan kode ini kepada pengurus RT Anda",
-        "extra": "Informasi Tambahan (opsional)",
-        "block": "Blok / Jalan",
-        "houseNumber": "Nomor Rumah",
-        "phone": "Nomor Telepon"
-      },
-      "success": {
-        "title": "Pendaftaran Terkirim!",
-        "message": "Permintaan pendaftaran Anda telah dikirim kepada pengurus RT. Setelah disetujui, link aktivasi akan dikirimkan ke email {email}.",
-        "backToLogin": "Kembali ke Login"
-      },
-      "submit": "Kirim Pendaftaran",
-      "submitting": "Mengirim...",
-      "back": "Kembali",
-      "errors": {
-        "submitFailed": "Gagal mengirim pendaftaran."
-      }
-    },
-    "landing": {
-      "title": "Pendaftaran",
-      "asRt": "Daftar sebagai RT baru",
-      "asWarga": "Daftar sebagai Warga"
-    }
-  },
-
-  "profilRt": {
-    "title": "Profil RT",
-    "subtitle": "Kelola informasi RT Anda",
-    "loading": "Memuat profil RT...",
-    "sections": {
-      "identity": "Identitas RT",
-      "address": "Alamat",
-      "bank": "Rekening Bank",
-      "media": "Aset Media"
-    },
-    "fields": {
-      "name": "Nama RT *",
-      "code": "Kode Unik RT",
-      "monthlyFee": "Iuran per Bulan (Rp)",
-      "address": "Alamat",
-      "city": "Kota",
-      "province": "Provinsi",
-      "postalCode": "Kode Pos",
-      "bankName": "Nama Bank",
-      "accountNumber": "Nomor Rekening",
-      "accountHolder": "Atas Nama",
-      "logo": "Logo RT",
-      "qris": "QRIS"
-    },
-    "save": "Simpan Perubahan",
-    "saving": "Menyimpan...",
-    "generateCode": "Generate kode unik",
-    "imageUpload": {
-      "change": "Ganti",
-      "clickToUpload": "Klik untuk upload",
-      "formatNote": "JPG, PNG, WebP · maks. 2 MB",
-      "uploadFailed": "Upload gagal"
-    }
-  },
-
-  "settings": {
-    "title": "Ganti Password",
-    "subtitle": "Perbarui password akun Anda",
-    "newPassword": "Password Baru",
-    "newPasswordPlaceholder": "Minimal 8 karakter",
-    "confirmPassword": "Konfirmasi Password Baru",
-    "confirmPasswordPlaceholder": "Ulangi password baru",
-    "save": "Simpan Password",
-    "saving": "Menyimpan...",
-    "errors": {
-      "minLength": "Password baru minimal 8 karakter.",
-      "mismatch": "Konfirmasi password tidak cocok.",
-      "success": "Password berhasil diubah.",
-      "failed": "Gagal mengubah password."
-    }
-  },
-
-  "import": {
-    "format": "Format yang didukung: CSV atau Excel (.xlsx)",
-    "templateNote": "Gunakan template agar format kolom sesuai.",
-    "downloadTemplate": "Unduh Template",
-    "clickToSelect": "Klik untuk memilih file",
-    "fileFormat": "CSV atau Excel (.xlsx / .xls)",
-    "columnGuide": "Kolom yang dikenali:",
-    "changeFile": "Ganti file",
-    "valid": "valid",
-    "skipped": "dilewati",
-    "invalidRowsNote": "Baris yang tidak valid tidak akan diimpor.",
-    "status": "Status",
-    "required": "wajib"
-  },
-
-  "aktivasi": {
+  "activation": {
     "backToLogin": "Kembali ke Login",
     "title": "Minta Link Aktivasi",
     "subtitle": "Masukkan email yang didaftarkan oleh pengurus RT. Kami akan mengirimkan link aktivasi baru ke email tersebut.",
@@ -695,18 +655,37 @@
       "fallback": "Aktivasi gagal. Silakan coba lagi atau hubungi pengurus RT."
     }
   },
-
-  "appShell": {
-    "noMembership": {
-      "title": "Akun Belum Aktif",
-      "description": "Akun Anda belum terhubung ke RT. Silakan cek email undangan Anda dan klik link aktivasi, atau kunjungi halaman aktivasi.",
-      "goToActivation": "Ke Halaman Aktivasi"
+  "rtRegistration": {
+    "title": "Pendaftaran RT",
+    "subtitle": "Kelola permintaan pendaftaran RT baru",
+    "empty": "Tidak ada pendaftaran",
+    "tabs": {
+      "pending": "Menunggu",
+      "approved": "Disetujui",
+      "rejected": "Ditolak",
+      "all": "Semua"
+    },
+    "card": {
+      "approve": "Setujui",
+      "reject": "Tolak",
+      "rejectConfirm": "Tolak pendaftaran RT ini?",
+      "loading": "Memuat...",
+      "viewLinks": "Lihat Link Aktivasi",
+      "address": "Alamat",
+      "postalCode": "Kode Pos",
+      "phone": "Telepon",
+      "approvedAt": "Disetujui",
+      "rejectedAt": "Ditolak",
+      "reason": "Alasan",
+      "devClose": "Tutup",
+      "roles": {
+        "ketua": "Ketua",
+        "admin": "Admin",
+        "bendahara": "Bendahara"
+      }
+    },
+    "pendingSection": {
+      "title": "Permintaan Pendaftaran RT"
     }
-  },
-
-  "fileUpload": {
-    "uploading": "Mengunggah...",
-    "clickToAttach": "Klik untuk lampirkan nota",
-    "uploadFailed": "Upload gagal"
   }
 }

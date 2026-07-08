@@ -25,7 +25,7 @@ export default function ExpenseImportModal({
     onDownloadTemplate,
     onReset,
 }) {
-    const t = useTranslations('pengeluaran')
+    const t = useTranslations('expenses')
 
     const columnGuide = (
         <>

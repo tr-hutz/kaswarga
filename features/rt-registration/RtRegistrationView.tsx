@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 const TAB_KEYS = ['pending', 'approved', 'rejected', 'all']
 
 export default function RtRegistrationView({ requests, loading, filter, setFilter, refresh }) {
-    const t = useTranslations('rtRegistrasi')
+    const t = useTranslations('rtRegistration')
 
     return (
         <div className="space-y-6">

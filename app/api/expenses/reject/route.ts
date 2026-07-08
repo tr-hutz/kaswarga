@@ -33,12 +33,12 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Hanya ketua RT yang dapat menolak pengeluaran' }, { status: 403 })
         }
 
-        const { id, alasan } = await req.json()
+        const { id, reason } = await req.json()
         if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
 
-        const { error } = await supabaseAdmin.rpc('reject_pengeluaran', {
+        const { error } = await supabaseAdmin.rpc('reject_expense', {
             p_id:      id,
-            p_alasan:  alasan || null,
+            p_reason:  reason || null,
             p_user_id: authData.user.id,
         })
 
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ ok: true })
 
     } catch (err) {
-        console.error('[pengeluaran/reject]', err)
+        console.error('[expenses/reject]', err)
         return NextResponse.json({ error: (err as Error).message || 'Gagal menolak' }, { status: 500 })
     }
 }

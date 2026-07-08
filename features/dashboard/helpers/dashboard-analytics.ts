@@ -1,135 +1,22 @@
-﻿// @ts-nocheck
-'use client'
+// @ts-nocheck
 
-import {
-  useEffect,
-  useMemo,
-  useState
-} from 'react'
+interface ResidentAnalyticsItem {
+    paidCount: number
+}
 
-import {
-  buildPaymentHealth
-} from '../helpers/dashboard-analytics'
+interface PaymentHealthInput {
+    residents: ResidentAnalyticsItem[]
+    currentMonth: number
+}
 
-import {
-  getDashboardData
-} from '../../../lib/services/dashboard.service'
+export function buildPaymentHealth({ residents, currentMonth }: PaymentHealthInput) {
+    const list = residents || []
 
-export function useDashboardAnalytics() {
-
-  const currentYear =
-    new Date().getFullYear()
-
-  const currentMonth =
-    new Date().getMonth() + 1
-
-  /*
-   |--------------------------------------------------------------------------
-   | STATE
-   |--------------------------------------------------------------------------
-   */
-
-  const [
-    loading,
-    setLoading
-  ] = useState(false)
-
-  const [
-    year,
-    setYear
-  ] = useState(currentYear)
-
-  const [
-    analytics,
-    setAnalytics
-  ] = useState(null)
-
-  /*
-   |--------------------------------------------------------------------------
-   | LOAD
-   |--------------------------------------------------------------------------
-   */
-
-  async function loadData() {
-
-    try {
-
-      setLoading(true)
-
-      const data =
-        await getDashboardAnalytics(
-          year
-        )
-
-      setAnalytics(data)
-
-    } catch (err) {
-
-      console.error(err)
-
-    } finally {
-
-      setLoading(false)
-
+    return {
+        totalResidents: list.length,
+        paid:       list.filter(r => r.paidCount >= currentMonth).length,
+        almostPaid: list.filter(r => r.paidCount >= currentMonth - 2 && r.paidCount < currentMonth).length,
+        delinquent: list.filter(r => r.paidCount > 0 && r.paidCount < currentMonth - 2).length,
+        neverPaid:  list.filter(r => r.paidCount === 0).length,
     }
-  }
-
-  /*
-   |--------------------------------------------------------------------------
-   | EFFECT
-   |--------------------------------------------------------------------------
-   */
-
-  useEffect(() => {
-
-    loadData()
-
-  }, [year])
-
-  /*
-   |--------------------------------------------------------------------------
-   | HEALTH
-   |--------------------------------------------------------------------------
-   */
-
-  const paymentHealth =
-    useMemo(() => {
-
-      if (!analytics) {
-
-        return null
-      }
-
-      return buildPaymentHealth({
-
-        warga:
-          analytics.warga,
-
-        currentMonth
-
-      })
-
-    }, [
-      analytics,
-      currentMonth
-    ])
-
-  /*
-   |--------------------------------------------------------------------------
-   | RETURN
-   |--------------------------------------------------------------------------
-   */
-
-  return {
-
-    loading,
-
-    year,
-    setYear,
-
-    analytics,
-
-    paymentHealth
-
-  }
 }

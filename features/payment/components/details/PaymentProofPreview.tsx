@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 'use client'
 
 import { useState } from 'react'
@@ -15,7 +15,7 @@ function NoBukti({ label }: { label: string }) {
 }
 
 export default function PaymentProofPreview({ url }) {
-    const t = useTranslations('pembayaran')
+    const t = useTranslations('payments')
     const [failed, setFailed] = useState(false)
 
     if (!url) {

@@ -42,7 +42,7 @@ export default function ResidentPaymentHistory({
 
                                             }) {
 
-    const t = useTranslations('warga.paymentHistory')
+    const t = useTranslations('residents.paymentHistory')
 
     return (
 

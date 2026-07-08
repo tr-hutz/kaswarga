@@ -9,7 +9,7 @@ export default function PaymentDetailSummary({
 
                                              }) {
 
-    const t = useTranslations('pembayaran')
+    const t = useTranslations('payments')
 
     if (!payment) {
         return null

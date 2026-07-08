@@ -9,7 +9,7 @@ export default function ResidentDetailSummary({
 
                                            }) {
 
-    const t = useTranslations('warga')
+    const t = useTranslations('residents')
 
     if (!warga) {
         return null

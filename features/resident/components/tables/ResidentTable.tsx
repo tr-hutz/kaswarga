@@ -17,7 +17,7 @@ export default function ResidentTable({
 
                                    }) {
 
-    const t = useTranslations('warga')
+    const t = useTranslations('residents')
     const tc = useTranslations('common')
 
     if (loading) {

@@ -1,11 +1,11 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
 
 export default function PaymentActions({ row, onApprove, onReject }) {
 
-    const t = useTranslations('pembayaran')
+    const t = useTranslations('payments')
 
     if (row.status !== 'pending') {
         return null

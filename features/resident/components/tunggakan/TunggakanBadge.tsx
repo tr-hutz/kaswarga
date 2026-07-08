@@ -10,7 +10,7 @@ export default function TunggakanBadge({
                                        }) {
 
     const tPaymentStatus = useTranslations('common.paymentStatus')
-    const tTunggakan     = useTranslations('warga.tunggakan')
+    const tTunggakan     = useTranslations('residents.tunggakan')
 
     if (total <= 0) {
 

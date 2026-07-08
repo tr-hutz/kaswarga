@@ -13,7 +13,7 @@ export default function PaymentRow({
 
                                    }) {
 
-    const t = useTranslations('pembayaran')
+    const t = useTranslations('payments')
 
     if (!row) {
         return null

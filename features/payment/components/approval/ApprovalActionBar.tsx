@@ -18,7 +18,7 @@ export default function ApprovalActionBar({
 
                                           }) {
 
-    const t = useTranslations('pembayaran')
+    const t = useTranslations('payments')
 
     if (
         !payment ||

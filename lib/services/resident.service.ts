@@ -72,7 +72,7 @@ export async function createResident(
         action:     'CREATE_RESIDENT',
         entityType: 'residents',
         entityId:   data.id,
-        description: `Tambah warga baru: ${data.name}`,
+        description: `Create resident: ${data.name}`,
         metadata:   {
             name:        data.name,
             block:       data.block,
@@ -109,7 +109,7 @@ export async function updateResident(
         action:     'UPDATE_RESIDENT',
         entityType: 'residents',
         entityId:   id,
-        description: `Update warga: ${data.name}`,
+        description: `Update resident: ${data.name}`,
         metadata:   {
             before: {
                 name:        before?.name,
@@ -151,7 +151,7 @@ export async function deleteResident(
         action:     'DEACTIVATE_RESIDENT',
         entityType: 'residents',
         entityId:   id,
-        description: `Nonaktifkan warga: ${before?.name}`,
+        description: `Deactivate resident: ${before?.name}`,
         metadata:   {
             name:        before?.name,
             block:       before?.block,

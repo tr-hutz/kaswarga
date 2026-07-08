@@ -26,7 +26,7 @@ export function usePaymentConfirmationRealtime({
             supabase
 
                 .channel(
-                    'konfirmasi-pembayaran-realtime'
+                    'payment-confirmation-realtime'
                 )
 
                 .on(
@@ -40,7 +40,7 @@ export function usePaymentConfirmationRealtime({
                         schema: 'public',
 
                         table:
-                            'konfirmasi_pembayaran'
+                            'payment_confirmations'
 
                     },
 
@@ -48,7 +48,7 @@ export function usePaymentConfirmationRealtime({
 
                         console.log(
 
-                            '[REALTIME KONFIRMASI PEMBAYARAN]',
+                            '[REALTIME PAYMENT CONFIRMATION]',
                             payload
 
                         )

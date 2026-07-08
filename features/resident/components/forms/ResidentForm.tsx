@@ -28,7 +28,7 @@ export default function ResidentForm({ open, onClose, warga, onSuccess }) {
         setForm(prev => ({ ...prev, [key]: val }))
     }
 
-    const t = useTranslations('warga')
+    const t = useTranslations('residents')
     const tc = useTranslations('common')
 
     async function handleSubmit(e) {

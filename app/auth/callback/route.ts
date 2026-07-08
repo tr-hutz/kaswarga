@@ -10,7 +10,7 @@ const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishab
 | GET /auth/callback
 |
 | Supabase PKCE callback — exchanges the one-time `code` query param for a
-| session, writes it to cookies, then redirects to /aktivasi.
+| session, writes it to cookies, then redirects to /activation.
 |
 | All invite and magic-link redirectTo values must point here so that the
 | session is established server-side before the activation page loads.
@@ -19,7 +19,7 @@ const SUPABASE_ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishab
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
     const code  = searchParams.get('code')
-    const next  = searchParams.get('next') ?? '/aktivasi'
+    const next  = searchParams.get('next') ?? '/activation'
 
     if (code) {
         const cookieStore = await cookies()
@@ -45,5 +45,5 @@ export async function GET(request: Request) {
         console.error('[auth/callback] exchangeCodeForSession error:', error.message)
     }
 
-    return NextResponse.redirect(`${origin}/aktivasi?error=link_invalid`)
+    return NextResponse.redirect(`${origin}/activation?error=link_invalid`)
 }

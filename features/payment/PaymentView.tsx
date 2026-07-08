@@ -70,7 +70,7 @@ export default function PaymentView({
      |-------------------------------------------------------------
      */
 
-    const t = useTranslations('pembayaran')
+    const t = useTranslations('payments')
     const { prompt } = useDialog()
 
     const {

@@ -104,7 +104,7 @@ export async function createExpense(
         action:     'CREATE_EXPENSE',
         entityType: 'expenses',
         entityId:   data.id,
-        description: `Tambah pengeluaran: ${data.description}`,
+        description: `Create expense: ${data.description}`,
         metadata:   {
             category:    data.category,
             description: data.description,
@@ -170,7 +170,7 @@ export async function updateExpense(
         action:     'UPDATE_EXPENSE',
         entityType: 'expenses',
         entityId:   id,
-        description: `Update pengeluaran: ${data.description}`,
+        description: `Update expense: ${data.description}`,
         metadata:   {
             before: {
                 category:    before?.category,
@@ -217,7 +217,7 @@ export async function deleteExpense(
         action:     'DELETE_EXPENSE',
         entityType: 'expenses',
         entityId:   id,
-        description: `Hapus pengeluaran: ${before?.description}`,
+        description: `Delete expense: ${before?.description}`,
         metadata:   {
             category:    before?.category,
             description: before?.description,

@@ -2,7 +2,7 @@
 'use client'
 
 import { useState }                   from 'react'
-import { submitWargaRegistration }     from '@/lib/services/registration.service'
+import { submitResidentRegistration }     from '@/lib/services/registration.service'
 import ResidentRegistrationView           from './ResidentRegistrationView'
 import { useTranslations }             from 'next-intl'
 
@@ -12,7 +12,7 @@ const EMPTY = {
 
 export default function ResidentRegistrationContainer() {
 
-    const t = useTranslations('registration.warga')
+    const t = useTranslations('registration.resident')
 
     const [form,       setForm]       = useState(EMPTY)
     const [submitting, setSubmitting] = useState(false)
@@ -30,7 +30,7 @@ export default function ResidentRegistrationContainer() {
         setSubmitting(true)
 
         try {
-            await submitWargaRegistration({
+            await submitResidentRegistration({
                 name:        form.name,
                 email:       form.email,
                 rtCode:      form.rtCode,

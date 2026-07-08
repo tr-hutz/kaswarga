@@ -13,7 +13,7 @@ export default function PaymentTable({
 
                                      }) {
 
-    const t = useTranslations('pembayaran')
+    const t = useTranslations('payments')
 
     return (
 

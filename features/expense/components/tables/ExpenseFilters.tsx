@@ -14,7 +14,7 @@ export default function ExpenseFilters({
 
                                            }) {
 
-    const t = useTranslations('pengeluaran')
+    const t = useTranslations('expenses')
     const { categories } = useExpenseCategories()
 
     return (

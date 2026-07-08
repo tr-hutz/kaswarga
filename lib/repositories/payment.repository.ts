@@ -333,8 +333,8 @@ export async function findConfirmationById(id: string) {
     return data
 }
 
-export async function callApproveKonfirmasi(confirmationId: string, userId: string) {
-    const { data, error } = await supabase.rpc('approve_konfirmasi', {
+export async function callApproveConfirmation(confirmationId: string, userId: string) {
+    const { data, error } = await supabase.rpc('approve_confirmation', {
         p_confirmation_id: confirmationId,
         p_user_id:         userId
     })
@@ -343,8 +343,8 @@ export async function callApproveKonfirmasi(confirmationId: string, userId: stri
     return data
 }
 
-export async function callRejectKonfirmasi(confirmationId: string, reason: string, userId: string) {
-    const { data, error } = await supabase.rpc('reject_konfirmasi', {
+export async function callRejectConfirmation(confirmationId: string, reason: string, userId: string) {
+    const { data, error } = await supabase.rpc('reject_confirmation', {
         p_confirmation_id: confirmationId,
         p_reason:          reason,
         p_user_id:         userId

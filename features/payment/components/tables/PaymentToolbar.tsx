@@ -17,7 +17,7 @@ export default function PaymentToolbar({
 
                                       }) {
 
-    const t = useTranslations('pembayaran')
+    const t = useTranslations('payments')
     const tc = useTranslations('common')
 
     return (

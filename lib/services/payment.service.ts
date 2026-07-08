@@ -15,8 +15,8 @@ import {
     findConfirmations,
     findPaymentConfirmations,
     findConfirmationById,
-    callApproveKonfirmasi,
-    callRejectKonfirmasi
+    callApproveConfirmation,
+    callRejectConfirmation
 } from '../repositories/payment.repository'
 
 /*
@@ -308,7 +308,7 @@ export async function approvePayment(
 
     const confirmation = await findConfirmationById(confirmationId)
 
-    const data = await callApproveKonfirmasi(confirmationId, user?.id ?? '')
+    const data = await callApproveConfirmation(confirmationId, user?.id ?? '')
 
     logActivity({
         rtId:       membership?.rt?.id,
@@ -317,7 +317,7 @@ export async function approvePayment(
         action:     'APPROVE_PAYMENT',
         entityType: 'payment_confirmations',
         entityId:   confirmationId,
-        description: `Setujui konfirmasi pembayaran`,
+        description: `Approve payment confirmation`,
         metadata:   {
             confirmationId,
             residentId:  confirmation?.resident_id,
@@ -345,7 +345,7 @@ export async function rejectPayment(
 
     const confirmation = await findConfirmationById(confirmationId)
 
-    const data = await callRejectKonfirmasi(confirmationId, reason ?? '', user?.id ?? '')
+    const data = await callRejectConfirmation(confirmationId, reason ?? '', user?.id ?? '')
 
     logActivity({
         rtId:       membership?.rt?.id,
@@ -354,7 +354,7 @@ export async function rejectPayment(
         action:     'REJECT_PAYMENT',
         entityType: 'payment_confirmations',
         entityId:   confirmationId,
-        description: `Tolak konfirmasi pembayaran${reason ? `: ${reason}` : ''}`,
+        description: `Reject payment confirmation${reason ? `: ${reason}` : ''}`,
         metadata:   {
             confirmationId,
             residentId:  confirmation?.resident_id,

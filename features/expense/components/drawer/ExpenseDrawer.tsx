@@ -16,7 +16,7 @@ export default function ExpenseDrawer({
     approvalLoading,
 }) {
 
-    const t = useTranslations('pengeluaran')
+    const t = useTranslations('expenses')
 
     if (!open || !row) return null
 

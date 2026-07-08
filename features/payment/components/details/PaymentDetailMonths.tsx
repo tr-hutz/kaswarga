@@ -1,11 +1,11 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
 import { MONTHS } from '../../../../constants/months'
 
 export default function PaymentDetailMonths({ details = [] }) {
-    const t = useTranslations('pembayaran')
+    const t = useTranslations('payments')
 
     return (
         <div>

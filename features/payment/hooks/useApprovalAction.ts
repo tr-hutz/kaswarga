@@ -45,7 +45,7 @@ export function useApprovalActions({
      */
 
     async function approve(
-        konfirmasiId
+        confirmationId
     ) {
 
         try {
@@ -53,7 +53,7 @@ export function useApprovalActions({
             setLoading(true)
 
             await approvePayment(
-                konfirmasiId
+                confirmationId
             )
 
             toast({
@@ -88,8 +88,8 @@ export function useApprovalActions({
      */
 
     async function reject(
-        konfirmasiId,
-        alasan
+        confirmationId,
+        reason
     ) {
 
         try {
@@ -97,8 +97,8 @@ export function useApprovalActions({
             setLoading(true)
 
             await rejectPayment(
-                konfirmasiId,
-                alasan
+                confirmationId,
+                reason
             )
 
             toast({

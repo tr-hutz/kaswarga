@@ -90,8 +90,8 @@ export function useHome() {
   ] = useState(currentYear)
 
   const [
-    wargaId,
-    setWargaId
+    residentId,
+    setResidentId
   ] = useState(null)
 
   const [
@@ -129,15 +129,15 @@ export function useHome() {
       const membership =
         await getCurrentMembership()
 
-      const wargaId =
-        membership.warga?.id || null
+      const residentId =
+        membership.resident?.id || null
 
       /*
        * optional
        */
 
-      setWargaId(
-        wargaId
+      setResidentId(
+        residentId
       )
 
       const monthlyFee = membership.rt?.monthly_fee || 0
@@ -151,17 +151,17 @@ export function useHome() {
       ] = await Promise.all([
 
         getApprovedPayments(
-          wargaId,
+          residentId,
           summaryYear
         ),
 
         getPendingPayments(
-          wargaId,
+          residentId,
           summaryYear
         ),
 
         getRejectedPayments(
-          wargaId,
+          residentId,
           summaryYear
         )
 
@@ -192,7 +192,7 @@ export function useHome() {
 
   async function loadFormData() {
 
-    if (!wargaId) return
+    if (!residentId) return
 
     try {
 
@@ -203,17 +203,17 @@ export function useHome() {
       ] = await Promise.all([
 
         getApprovedPayments(
-          wargaId,
+          residentId,
           paymentYear
         ),
 
         getPendingPayments(
-          wargaId,
+          residentId,
           paymentYear
         ),
 
         getRejectedPayments(
-          wargaId,
+          residentId,
           paymentYear
         )
 
@@ -246,7 +246,7 @@ export function useHome() {
 
     loadFormData()
 
-  }, [paymentYear, wargaId])
+  }, [paymentYear, residentId])
 
   /*
    |--------------------------------------------------------------------------

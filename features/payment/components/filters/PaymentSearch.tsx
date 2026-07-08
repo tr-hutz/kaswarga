@@ -1,10 +1,10 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
 
 export default function PaymentSearch({ search, setSearch }) {
-    const t = useTranslations('pembayaran')
+    const t = useTranslations('payments')
     return (
         <input
             type="text"

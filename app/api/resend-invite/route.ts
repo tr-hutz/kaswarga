@@ -35,7 +35,7 @@ export async function POST(req: Request) {
         }
 
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-        const redirectTo = `${siteUrl}/aktivasi`
+        const redirectTo = `${siteUrl}/activation`
 
         // Try invite first, fall back to magic link for existing users
         const { error: err1 } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, { redirectTo })
