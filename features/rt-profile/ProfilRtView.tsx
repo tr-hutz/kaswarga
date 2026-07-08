@@ -82,7 +82,7 @@ export default function ProfilRtView({ rt, loading, saving, onSave }) {
         setDirty(false)
     }
 
-    const t = useTranslations('profilRt')
+    const t = useTranslations('rtProfile')
 
     if (loading) {
         return (

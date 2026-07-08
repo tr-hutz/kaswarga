@@ -10,7 +10,7 @@ const BUCKET = 'rt-assets'
 
 export default function ImageUpload({ label, currentUrl, storagePath, accept = 'image/jpeg,image/png,image/webp', onUploaded }) {
 
-    const t = useTranslations('profilRt.imageUpload')
+    const t = useTranslations('rtProfile.imageUpload')
 
     const [preview,   setPreview]   = useState(currentUrl || '')
     const [uploading, setUploading] = useState(false)

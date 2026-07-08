@@ -8,11 +8,11 @@ export default function UserTable({ data, loading, currentUserId, onEditRole, on
     const t = useTranslations('users')
 
     const ROLE_COLORS = {
-        super_admin: 'bg-purple-50 text-purple-700',
-        ketua:       'bg-blue-50 text-blue-700',
-        admin:       'bg-indigo-50 text-indigo-700',
-        bendahara:   'bg-amber-50 text-amber-700',
-        warga:       'bg-gray-100 text-gray-600'
+        SUPER_ADMIN: 'bg-purple-50 text-purple-700',
+        CHAIR:       'bg-blue-50 text-blue-700',
+        ADMIN:       'bg-indigo-50 text-indigo-700',
+        TREASURER:   'bg-amber-50 text-amber-700',
+        RESIDENT:    'bg-gray-100 text-gray-600'
     }
 
     if (loading) {

@@ -67,13 +67,13 @@
   "nav": {
     "home": "Beranda",
     "dashboard": "Dashboard",
-    "warga": "Warga",
-    "pembayaran": "Pembayaran",
-    "pengeluaran": "Pengeluaran",
+    "residents": "Warga",
+    "payments": "Pembayaran",
+    "expenses": "Pengeluaran",
     "ledger": "Ledger",
     "notification": "Notifikasi",
     "activity": "Aktivitas",
-    "profilRt": "Profil RT",
+    "rtProfile": "Profil RT",
     "changePassword": "Ganti Password",
     "rt": "Kelola RT",
     "rtRegistration": "Pendaftaran RT",
@@ -141,7 +141,7 @@
       "financeSubtitle": "Ringkasan arus kas tahun {year}"
     },
     "cards": {
-      "totalWarga": "Total Warga",
+      "totalResidents": "Total Warga",
       "paid": "Lunas",
       "almostPaid": "Hampir Lunas",
       "delinquent": "Menunggak",
@@ -175,7 +175,7 @@
       "submit": "Ajukan Pembayaran",
       "submitting": "Mengirim..."
     },
-    "bukti": {
+    "receipt": {
       "label": "Bukti Pembayaran",
       "clickUpload": "Klik untuk upload bukti",
       "format": "JPG, PNG · maks. 5 MB",
@@ -275,11 +275,11 @@
       "system": "System"
     },
     "roles": {
-      "ketua": "Ketua",
-      "admin": "Admin",
-      "bendahara": "Bendahara",
-      "warga": "Warga",
-      "super_admin": "Super Admin"
+      "CHAIR": "Ketua",
+      "ADMIN": "Admin",
+      "TREASURER": "Bendahara",
+      "RESIDENT": "Warga",
+      "SUPER_ADMIN": "Super Admin"
     },
     "removeMembership": {
       "title": "Hapus Membership",
@@ -329,7 +329,7 @@
     "landing": {
       "title": "Pendaftaran",
       "asRt": "Daftar sebagai RT baru",
-      "asWarga": "Daftar sebagai Warga"
+      "asResident": "Daftar sebagai Warga"
     },
     "resident": {
       "title": "Daftar sebagai Warga",
@@ -357,7 +357,7 @@
       }
     }
   },
-  "profilRt": {
+  "rtProfile": {
     "title": "Profil RT",
     "subtitle": "Kelola informasi RT Anda",
     "loading": "Memuat profil RT...",
@@ -650,7 +650,7 @@
       "title": "Link Tidak Valid",
       "description": "Link aktivasi tidak ditemukan atau sudah digunakan. Pastikan Anda membuka link langsung dari email."
     },
-    "aktivasiError": {
+    "activationError": {
       "title": "Terjadi Kesalahan",
       "fallback": "Aktivasi gagal. Silakan coba lagi atau hubungi pengurus RT."
     }
@@ -679,9 +679,9 @@
       "reason": "Alasan",
       "devClose": "Tutup",
       "roles": {
-        "ketua": "Ketua",
+        "chair": "Ketua",
         "admin": "Admin",
-        "bendahara": "Bendahara"
+        "treasurer": "Bendahara"
       }
     },
     "pendingSection": {

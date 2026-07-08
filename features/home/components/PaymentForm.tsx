@@ -28,7 +28,7 @@ function BuktiUpload({ file, onChange }) {
 
     return (
         <div className="space-y-1.5">
-            <p className="text-sm font-medium text-gray-700">{t('bukti.label')}</p>
+            <p className="text-sm font-medium text-gray-700">{t('receipt.label')}</p>
 
             <div
                 onClick={() => inputRef.current?.click()}
@@ -58,15 +58,15 @@ function BuktiUpload({ file, onChange }) {
                         </button>
                         <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition flex items-end justify-center opacity-0 hover:opacity-100 pb-2">
                             <span className="text-xs text-white bg-black/60 rounded-lg px-2 py-1">
-                                {t('bukti.change')}
+                                {t('receipt.change')}
                             </span>
                         </div>
                     </>
                 ) : (
                     <div className="flex flex-col items-center gap-1.5 text-gray-400 py-4">
                         <ImageIcon size={28} strokeWidth={1.5} />
-                        <p className="text-xs font-medium">{t('bukti.clickUpload')}</p>
-                        <p className="text-[11px]">{t('bukti.format')}</p>
+                        <p className="text-xs font-medium">{t('receipt.clickUpload')}</p>
+                        <p className="text-[11px]">{t('receipt.format')}</p>
                     </div>
                 )}
             </div>
