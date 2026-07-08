@@ -1,7 +1,7 @@
 /*
  * =============================================================================
  * 003_REGISTRATION
- * Registration requests for new RTs and Warga, plus activation invite tracking.
+ * Registration requests for new RTs and Residents, plus activation invite tracking.
  * This is the entry point of the entire onboarding business flow.
  * Depends on: 000_foundation (rt, users)
  * =============================================================================
@@ -10,21 +10,21 @@
 
 /* ----------------------------------------------------------------------------
  * TABLE: registration_requests
- * Stores pending RT and Warga registration requests awaiting approval.
+ * Stores pending RT and Resident registration requests awaiting approval.
  *
  * For RT registrations:
- *   - email           = ketua's email (receives activation invite on approval)
- *   - nama_ketua      = ketua's full name
- *   - email_admin     = admin's email
- *   - nama_admin      = admin's full name
- *   - email_bendahara = bendahara's email
- *   - nama_bendahara  = bendahara's full name
- *   - rt_data         = full RT form data as JSON (nama, kode, alamat, etc.)
+ *   - chair_email      = chair's email (receives activation invite on approval)
+ *   - chair_name       = chair's full name
+ *   - admin_email      = admin's email
+ *   - admin_name       = admin's full name
+ *   - treasurer_email  = treasurer's email
+ *   - treasurer_name   = treasurer's full name
+ *   - rt_data          = full RT form data as JSON (name, code, address, etc.)
  *
- * For Warga registrations:
- *   - email   = warga's email
- *   - rt_kode = code of the target RT
- *   - rt_id   = resolved RT id (set on submit after validating rt_kode)
+ * For Resident registrations:
+ *   - resident_email = resident's email
+ *   - rt_code        = code of the target RT
+ *   - rt_id          = resolved RT id (set on submit after validating rt_code)
  * --------------------------------------------------------------------------- */
 
 create table registration_requests (
@@ -36,25 +36,25 @@ create table registration_requests (
                                  check (status in ('pending', 'approved', 'rejected', 'expired')),
 
     -- RT registration fields
-    rt_kode          text,
+    rt_code          text,
     rt_data          jsonb,
-    nama_ketua       text,
-    email_ketua      text,
-    nama_admin       text,
-    email_admin      text,
-    email_bendahara  text,
-    nama_bendahara   text,
+    chair_name       text,
+    chair_email      text,
+    admin_name       text,
+    admin_email      text,
+    treasurer_email  text,
+    treasurer_name   text,
 
-    -- Warga registration fields
+    -- Resident registration fields
     -- Requestor identity (null for RT registrations)
-    nama_warga       text,
-    email_warga      text,
+    resident_name    text,
+    resident_email   text,
 
-    blok             text,
-    no_rumah         text,
-    no_hp            text,
+    block            text,
+    house_number     text,
+    phone            text,
 
-    -- Linked RT (set on warga submit; created on RT approval)
+    -- Linked RT (set on resident submit; created on RT approval)
     rt_id            uuid        references rt (id) on delete set null,
 
     -- Approval / rejection tracking
@@ -122,16 +122,16 @@ begin
         ) values (
             '00000000-0000-0000-0000-000000000001',
             null,
-            new.rt_data->>'nama',
+            new.rt_data->>'name',
             'SUBMIT_RT_REGISTRATION',
             'registration_requests',
             new.id,
-            'New RT registration request submitted: "' || (new.rt_data->>'nama') || '"',
-            jsonb_build_object('rt_kode', new.rt_kode, 'email_ketua', new.email_ketua)
+            'New RT registration request submitted: "' || (new.rt_data->>'name') || '"',
+            jsonb_build_object('rt_code', new.rt_code, 'chair_email', new.chair_email)
         );
 
 for v_user in
-select user_id from user_membership where role = 'super_admin'
+select user_id from memberships where role = 'SUPER_ADMIN'
     loop
 insert into notifications (
     rt_id, type, title, message,
@@ -140,7 +140,7 @@ insert into notifications (
     '00000000-0000-0000-0000-000000000001',
     'registration',
     'New RT Registration Request',
-    'RT "' || (new.rt_data->>'nama') || '" (' || coalesce(new.rt_kode, '-') || ') submitted a registration request.',
+    'RT "' || (new.rt_data->>'name') || '" (' || coalesce(new.rt_code, '-') || ') submitted a registration request.',
     'registration_requests',
     new.id,
     v_user.user_id
@@ -159,18 +159,18 @@ end loop;
         ) values (
             new.rt_id,
             null,
-            new.nama_warga,
+            new.resident_name,
             'SUBMIT_WARGA_REGISTRATION',
             'registration_requests',
             new.id,
-            'New warga registration request submitted: "' || new.nama_warga || '"',
-            jsonb_build_object('email', new.email_warga, 'rt_kode', new.rt_kode)
+            'New resident registration request submitted: "' || new.resident_name || '"',
+            jsonb_build_object('email', new.resident_email, 'rt_code', new.rt_code)
         );
 
 for v_user in
-select user_id from user_membership
+select user_id from memberships
 where  rt_id = new.rt_id
-  and    role  in ('ketua', 'admin')
+  and    role  in ('CHAIR', 'ADMIN')
     loop
 insert into notifications (
     rt_id, type, title, message,
@@ -178,8 +178,8 @@ insert into notifications (
 ) values (
     new.rt_id,
     'registration',
-    'New Warga Registration Request',
-    '"' || new.nama_warga || '" has submitted a request to join your RT.',
+    'New Resident Registration Request',
+    '"' || new.resident_name || '" has submitted a request to join your RT.',
     'registration_requests',
     new.id,
     v_user.user_id

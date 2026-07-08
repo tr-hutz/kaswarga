@@ -8,77 +8,77 @@
 
 
 /* ----------------------------------------------------------------------------
- * KONFIRMASI PEMBAYARAN
+ * PAYMENT CONFIRMATIONS
  * --------------------------------------------------------------------------- */
 
-alter table konfirmasi_pembayaran
-    add constraint konfirmasi_status_check
+alter table payment_confirmations
+    add constraint payment_confirmations_status_check
         check (status in ('pending', 'processing', 'approved', 'rejected'));
 
-alter table konfirmasi_pembayaran
-    add constraint konfirmasi_total_bayar_check
-        check (total_bayar > 0);
+alter table payment_confirmations
+    add constraint payment_confirmations_total_amount_check
+        check (total_amount > 0);
 
-alter table konfirmasi_pembayaran
-    add constraint konfirmasi_tahun_check
-        check (tahun >= 2020 and tahun <= 2100);
+alter table payment_confirmations
+    add constraint payment_confirmations_year_check
+        check (year >= 2020 and year <= 2100);
 
 
 /* ----------------------------------------------------------------------------
- * DETAIL KONFIRMASI PEMBAYARAN
+ * CONFIRMATION DETAILS
  * --------------------------------------------------------------------------- */
 
-alter table detail_konfirmasi_pembayaran
-    add constraint detail_konfirmasi_bulan_check
-        check (bulan between 1 and 12);
+alter table confirmation_details
+    add constraint confirmation_details_month_check
+        check (month between 1 and 12);
 
-alter table detail_konfirmasi_pembayaran
-    add constraint detail_konfirmasi_nominal_check
-        check (nominal > 0);
+alter table confirmation_details
+    add constraint confirmation_details_amount_check
+        check (amount > 0);
 
--- NOTE: no unique constraint on (warga_id, tahun, bulan) here intentionally.
--- A warga must be able to resubmit after rejection, so drafts are allowed to
--- repeat a month.  The uniqueness constraint on detail_pembayaran (approved
+-- NOTE: no unique constraint on (resident_id, year, month) here intentionally.
+-- A resident must be able to resubmit after rejection, so drafts are allowed to
+-- repeat a month.  The uniqueness constraint on payment_details (approved
 -- payments) still prevents double-approval for the same period.
 
 
 /* ----------------------------------------------------------------------------
- * PEMBAYARAN
+ * PAYMENTS
  * --------------------------------------------------------------------------- */
 
-alter table pembayaran
-    add constraint pembayaran_jumlah_bayar_check
-        check (jumlah_bayar > 0);
+alter table payments
+    add constraint payments_total_amount_check
+        check (total_amount > 0);
 
-alter table pembayaran
-    add constraint pembayaran_tahun_check
-        check (tahun >= 2020 and tahun <= 2100);
+alter table payments
+    add constraint payments_year_check
+        check (year >= 2020 and year <= 2100);
 
 
 /* ----------------------------------------------------------------------------
- * DETAIL PEMBAYARAN
+ * PAYMENT DETAILS
  * --------------------------------------------------------------------------- */
 
-alter table detail_pembayaran
-    add constraint detail_pembayaran_bulan_check
-        check (bulan between 1 and 12);
+alter table payment_details
+    add constraint payment_details_month_check
+        check (month between 1 and 12);
 
-alter table detail_pembayaran
-    add constraint detail_pembayaran_nominal_check
-        check (nominal >= 0);
+alter table payment_details
+    add constraint payment_details_amount_check
+        check (amount >= 0);
 
-alter table detail_pembayaran
-    add constraint detail_pembayaran_unique
-        unique (warga_id, tahun, bulan);
+alter table payment_details
+    add constraint payment_details_unique
+        unique (resident_id, year, month);
 
 
 /* ----------------------------------------------------------------------------
- * PENGELUARAN
+ * EXPENSES
  * --------------------------------------------------------------------------- */
 
-alter table pengeluaran
-    add constraint pengeluaran_nominal_check
-        check (nominal > 0);
+alter table expenses
+    add constraint expenses_amount_check
+        check (amount > 0);
 
 
 /* ----------------------------------------------------------------------------
@@ -86,9 +86,9 @@ alter table pengeluaran
  * --------------------------------------------------------------------------- */
 
 create index idx_ledger_rt          on ledger (rt_id);
-create index idx_ledger_tanggal     on ledger (tanggal);
-create index idx_ledger_sumber      on ledger (sumber);
-create index idx_ledger_referensi   on ledger (referensi_id);
+create index idx_ledger_date        on ledger (date);
+create index idx_ledger_source      on ledger (source);
+create index idx_ledger_reference   on ledger (reference_id);
 
 
 /* ----------------------------------------------------------------------------
@@ -107,29 +107,29 @@ create index idx_notifications_created_at   on notifications (created_at desc);
  * RLS policies defined in 007_rls.sql.
  * --------------------------------------------------------------------------- */
 
--- user_membership: RLS helper functions scan by user_id
-create index idx_user_membership_user_id
-    on user_membership (user_id);
+-- memberships: RLS helper functions scan by user_id
+create index idx_memberships_user_id
+    on memberships (user_id);
 
 -- Core data tables: scanned by rt_id in RLS predicates
-create index idx_warga_rt_id
-    on warga (rt_id);
+create index idx_residents_rt_id
+    on residents (rt_id);
 
-create index idx_konfirmasi_rt_id
-    on konfirmasi_pembayaran (rt_id);
+create index idx_payment_confirmations_rt_id
+    on payment_confirmations (rt_id);
 
-create index idx_pembayaran_rt_id
-    on pembayaran (rt_id);
+create index idx_payments_rt_id
+    on payments (rt_id);
 
-create index idx_pengeluaran_rt_id
-    on pengeluaran (rt_id);
+create index idx_expenses_rt_id
+    on expenses (rt_id);
 
 create index idx_activity_logs_rt_id
     on activity_logs (rt_id);
 
 -- Detail tables: scanned by parent FK in RLS subquery
-create index idx_detail_konfirmasi_konfirmasi_id
-    on detail_konfirmasi_pembayaran (konfirmasi_id);
+create index idx_confirmation_details_confirmation_id
+    on confirmation_details (confirmation_id);
 
-create index idx_detail_pembayaran_pembayaran_id
-    on detail_pembayaran (pembayaran_id);
+create index idx_payment_details_payment_id
+    on payment_details (payment_id);

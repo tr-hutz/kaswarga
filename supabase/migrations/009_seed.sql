@@ -13,7 +13,7 @@
  * directly (prevent_system_rt_delete trigger).
  * --------------------------------------------------------------------------- */
 
-insert into rt (id, nama, kode, nominal_iuran, aktif)
+insert into rt (id, name, code, monthly_fee, active)
 values (
     '00000000-0000-0000-0000-000000000001',
     'System',

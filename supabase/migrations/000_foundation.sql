@@ -11,11 +11,11 @@
  * --------------------------------------------------------------------------- */
 
 create type user_role as enum (
-    'super_admin',
-    'ketua',
-    'admin',
-    'bendahara',
-    'warga'
+    'SUPER_ADMIN',
+    'CHAIR',
+    'ADMIN',
+    'TREASURER',
+    'RESIDENT'
 );
 
 
@@ -26,21 +26,21 @@ create type user_role as enum (
 
 create table rt (
     id             uuid        primary key default gen_random_uuid(),
-    nama           text        not null,
-    kode           text        unique,
-    alamat         text,
-    kota           text,
-    provinsi       text,
-    kode_pos       text,
+    name           text        not null,
+    code           text        unique,
+    address        text,
+    city           text,
+    province       text,
+    postal_code    text,
     email          text,
-    telepon        text,
-    nominal_iuran  numeric     not null default 0,
-    nama_bank      text,
-    nomor_rekening text,
-    atas_nama      text,
+    phone          text,
+    monthly_fee    numeric     not null default 0,
+    bank_name      text,
+    account_number text,
+    account_holder text,
     qris_url       text,
     logo_url       text,
-    aktif          boolean     not null default true,
+    active         boolean     not null default true,
     deleted_at     timestamptz,
     created_at     timestamptz not null default now(),
     updated_at     timestamptz not null default now()
@@ -55,45 +55,45 @@ create table rt (
 
 create table users (
     id         uuid        primary key,
-    nama       text,
+    name       text,
     email      text,
     created_at timestamptz not null default now()
 );
 
 
 /* ----------------------------------------------------------------------------
- * TABLE: warga
+ * TABLE: residents
  * Resident record linked to an RT.
  * --------------------------------------------------------------------------- */
 
-create table warga (
-    id         uuid        primary key default gen_random_uuid(),
-    rt_id      uuid        not null references rt (id) on delete cascade,
-    nama       text        not null,
-    blok       text,
-    no_rumah   text,
-    email      text,
-    no_hp      text,
-    aktif      boolean     not null default true,
-    created_at timestamptz not null default now()
+create table residents (
+    id           uuid        primary key default gen_random_uuid(),
+    rt_id        uuid        not null references rt (id) on delete cascade,
+    name         text        not null,
+    block        text,
+    house_number text,
+    email        text,
+    phone        text,
+    active       boolean     not null default true,
+    created_at   timestamptz not null default now()
 );
 
 
 /* ----------------------------------------------------------------------------
- * TABLE: user_membership
+ * TABLE: memberships
  * Links an auth user to an RT with a specific role.
- * rt_id is nullable for super_admin who operates at system level.
+ * rt_id is nullable for SUPER_ADMIN who operates at system level.
  * --------------------------------------------------------------------------- */
 
-create table user_membership (
-    id         uuid        primary key default gen_random_uuid(),
-    user_id    uuid        not null references users (id) on delete cascade,
-    rt_id      uuid        references rt (id) on delete cascade,
-    warga_id   uuid        references warga (id) on delete set null,
-    role       user_role   not null,
-    status     text        not null default 'active'
-                           check (status in ('active', 'deactivated')),
-    created_at timestamptz not null default now(),
+create table memberships (
+    id          uuid        primary key default gen_random_uuid(),
+    user_id     uuid        not null references users (id) on delete cascade,
+    rt_id       uuid        references rt (id) on delete cascade,
+    resident_id uuid        references residents (id) on delete set null,
+    role        user_role   not null,
+    status      text        not null default 'active'
+                            check (status in ('active', 'deactivated')),
+    created_at  timestamptz not null default now(),
 
     unique (user_id, rt_id)
 );

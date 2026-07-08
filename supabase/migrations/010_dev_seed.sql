@@ -13,7 +13,7 @@
  *
  * Quick start (run as service_role or postgres)
  * ---------------------------------------------
- *   -- Populate RT 01 with defaults (2025, 40 payments, 10 konfirmasi, 24 expenses)
+ *   -- Populate RT 01 with defaults (2025, 40 payments, 10 confirmations, 24 expenses)
  *   select seed_dev_data();
  *
  *   -- Custom amounts
@@ -41,10 +41,10 @@
  * Removes all financial and communication data for one RT (or every non-system
  * RT when called with no argument).
  *
- * Tables cleared  : notifications, activity_logs, ledger, pengeluaran,
- *                   pembayaran (→ detail_pembayaran via cascade),
- *                   konfirmasi_pembayaran (→ detail_konfirmasi via cascade)
- * Tables preserved: rt, warga, users, user_membership, registration_requests
+ * Tables cleared  : notifications, activity_logs, ledger, expenses,
+ *                   payments (→ payment_details via cascade),
+ *                   payment_confirmations (→ confirmation_details via cascade)
+ * Tables preserved: rt, residents, users, memberships, registration_requests
  * --------------------------------------------------------------------------- */
 
 create or replace function rollback_dev_data(p_rt_id uuid default null)
@@ -63,16 +63,16 @@ begin
         delete from notifications         where rt_id = p_rt_id;
         delete from activity_logs         where rt_id = p_rt_id;
         delete from ledger                where rt_id = p_rt_id;
-        delete from pengeluaran           where rt_id = p_rt_id;
-        delete from pembayaran            where rt_id = p_rt_id;  -- cascades → detail_pembayaran
-        delete from konfirmasi_pembayaran where rt_id = p_rt_id;  -- cascades → detail_konfirmasi_pembayaran
+        delete from expenses              where rt_id = p_rt_id;
+        delete from payments              where rt_id = p_rt_id;  -- cascades → payment_details
+        delete from payment_confirmations where rt_id = p_rt_id;  -- cascades → confirmation_details
     else
         delete from notifications         where rt_id != v_sys;
         delete from activity_logs         where rt_id != v_sys;
         delete from ledger                where rt_id != v_sys;
-        delete from pengeluaran           where rt_id != v_sys;
-        delete from pembayaran            where rt_id != v_sys;
-        delete from konfirmasi_pembayaran where rt_id != v_sys;
+        delete from expenses              where rt_id != v_sys;
+        delete from payments              where rt_id != v_sys;
+        delete from payment_confirmations where rt_id != v_sys;
     end if;
 end;
 $$;
@@ -83,24 +83,24 @@ $$;
  *
  * Generates near-realistic sample data for one RT and year:
  *
- *   Approved flow  konfirmasi_pembayaran (approved)
- *                  → detail_konfirmasi_pembayaran
- *                  → pembayaran + detail_pembayaran
+ *   Approved flow  payment_confirmations (approved)
+ *                  → confirmation_details
+ *                  → payments + payment_details
  *                  → ledger entry  (pemasukan)
- *                  → notification  (payment_approved → warga)
+ *                  → notification  (payment_approved → resident)
  *                  → activity_log  (pembayaran_disetujui)
  *
- *   Pending        konfirmasi_pembayaran (pending, recent months Oct–Dec)
- *                  → detail_konfirmasi_pembayaran
+ *   Pending        payment_confirmations (pending, recent months Oct–Dec)
+ *                  → confirmation_details
  *                  → notification  (new_konfirmasi → admin role)
  *                  → activity_log  (konfirmasi_diajukan)
  *
- *   Rejected       konfirmasi_pembayaran (rejected, mid-year months Apr–Jul)
- *                  → detail_konfirmasi_pembayaran
- *                  → notification  (payment_rejected → warga)
+ *   Rejected       payment_confirmations (rejected, mid-year months Apr–Jul)
+ *                  → confirmation_details
+ *                  → notification  (payment_rejected → resident)
  *                  → activity_log  (pembayaran_ditolak)
  *
- *   Pengeluaran    pengeluaran record (spread across the year)
+ *   Expenses       expenses record (spread across the year)
  *                  → ledger entry  (pengeluaran)
  *                  → activity_log  (pengeluaran_dicatat)
  *
@@ -109,22 +109,22 @@ $$;
  *   p_rt_id              RT to populate; null = first non-system RT
  *   p_tahun              Year to generate data for (default 2025)
  *   p_jumlah_pembayaran  Max total approved-payment records (default 40)
- *   p_jumlah_konfirmasi  Total pending + rejected konfirmasi (default 10)
+ *   p_jumlah_konfirmasi  Total pending + rejected confirmations (default 10)
  *   p_jumlah_pengeluaran Total expense records (default 24)
  *
- * Warga payment profiles (cyclic by position index % 4)
- * ------------------------------------------------------
- *   0 rajin  — pays months 1-12, 1 month per konfirmasi
- *   1 normal — pays months 1-9,  1-2 months per konfirmasi
- *   2 cukup  — pays months 1-6,  2-3 months per konfirmasi
- *   3 malas  — pays months 1-3,  3 months per konfirmasi
+ * Resident payment profiles (cyclic by position index % 4)
+ * --------------------------------------------------------
+ *   0 rajin  — pays months 1-12, 1 month per confirmation
+ *   1 normal — pays months 1-9,  1-2 months per confirmation
+ *   2 cukup  — pays months 1-6,  2-3 months per confirmation
+ *   3 malas  — pays months 1-3,  3 months per confirmation
  *
  * Constraint safety
  * -----------------
- * detail_konfirmasi_pembayaran has UNIQUE (warga_id, tahun, bulan).
- * detail_pembayaran            has UNIQUE (warga_id, tahun, bulan).
+ * confirmation_details: no UNIQUE constraint (dropped in 011).
+ * payment_details:      has UNIQUE (resident_id, year, month).
  * The function queries existing used months before each insert and skips any
- * month already occupied, regardless of the parent konfirmasi status.
+ * month already occupied, regardless of the parent confirmation status.
  *
  * Returns a human-readable summary string.
  * --------------------------------------------------------------------------- */
@@ -216,23 +216,23 @@ begin
     if not found then
         raise exception 'seed_dev_data: RT not found: %', p_rt_id;
     end if;
-    if v_rt.nominal_iuran = 0 then
-        raise exception 'seed_dev_data: RT % has nominal_iuran = 0 — set it first', v_rt.nama;
+    if v_rt.monthly_fee = 0 then
+        raise exception 'seed_dev_data: RT % has monthly_fee = 0 — set it first', v_rt.name;
     end if;
-    v_nominal_iuran := v_rt.nominal_iuran;
+    v_nominal_iuran := v_rt.monthly_fee;
 
     /* ---------------------------------------------------------------------- */
-    /* 2. Resolve actor (prefers ketua > admin > bendahara > any user)        */
+    /* 2. Resolve actor (prefers CHAIR > ADMIN > TREASURER > any user)        */
     /* ---------------------------------------------------------------------- */
-    select um.user_id, u.nama
+    select um.user_id, u.name
     into   v_actor_id, v_actor_name
-    from   user_membership um
+    from   memberships um
     join   users u on u.id = um.user_id
     where  um.rt_id = p_rt_id
     order  by case um.role
-                  when 'ketua'     then 1
-                  when 'admin'     then 2
-                  when 'bendahara' then 3
+                  when 'CHAIR'     then 1
+                  when 'ADMIN'     then 2
+                  when 'TREASURER' then 3
                   else 4
               end
     limit  1;
@@ -245,14 +245,14 @@ begin
     /* ---------------------------------------------------------------------- */
     /* 4. Phase A — Approved payments                                         */
     /*                                                                         */
-    /* Each warga gets a cyclical payment profile that controls how many       */
-    /* months they pay and how those months are batched into konfirmasi.       */
-    /* The outer loop stops once p_jumlah_pembayaran records are created.      */
+    /* Each resident gets a cyclical payment profile that controls how many   */
+    /* months they pay and how those months are batched into confirmations.   */
+    /* The outer loop stops once p_jumlah_pembayaran records are created.     */
     /* ---------------------------------------------------------------------- */
     for v_warga_rec in
-        select id, nama
-        from   warga
-        where  rt_id = p_rt_id and aktif = true
+        select id, name
+        from   residents
+        where  rt_id = p_rt_id and active = true
         order  by id
     loop
         exit when v_cnt_approved >= p_jumlah_pembayaran;
@@ -269,8 +269,8 @@ begin
         end case;
 
         select um.user_id into v_target_uid
-        from   user_membership um
-        where  um.warga_id = v_warga_rec.id
+        from   memberships um
+        where  um.resident_id = v_warga_rec.id
         limit  1;
 
         v_cur_bulan := 1;
@@ -306,19 +306,19 @@ begin
                 ', '
             );
 
-            -- konfirmasi_pembayaran (approved)
-            insert into konfirmasi_pembayaran (
-                warga_id, rt_id, tahun, total_bayar,
+            -- payment_confirmations (approved)
+            insert into payment_confirmations (
+                resident_id, rt_id, year, total_amount,
                 status, approved_at, created_at
             ) values (
                 v_warga_rec.id, p_rt_id, p_tahun, v_nominal,
                 'approved', v_tanggal + interval '4 hours', v_tanggal
             ) returning id into v_konfirmasi_id;
 
-            -- detail_konfirmasi_pembayaran
+            -- confirmation_details
             foreach v_bulan in array v_bulan_arr loop
-                insert into detail_konfirmasi_pembayaran (
-                    konfirmasi_id, warga_id, tahun, bulan, nominal, created_at
+                insert into confirmation_details (
+                    confirmation_id, resident_id, year, month, amount, created_at
                 ) values (
                     v_konfirmasi_id, v_warga_rec.id, p_tahun, v_bulan,
                     v_nominal_iuran, v_tanggal
@@ -326,10 +326,10 @@ begin
                 v_used_months := array_append(v_used_months, v_bulan);
             end loop;
 
-            -- pembayaran
-            insert into pembayaran (
-                warga_id, rt_id, tahun, jumlah_bayar, tanggal,
-                metode, keterangan, created_at
+            -- payments
+            insert into payments (
+                resident_id, rt_id, year, total_amount, date,
+                method, notes, created_at
             ) values (
                 v_warga_rec.id, p_rt_id, p_tahun, v_nominal,
                 v_tanggal + interval '4 hours',
@@ -338,10 +338,10 @@ begin
                 v_tanggal + interval '4 hours'
             ) returning id into v_pembayaran_id;
 
-            -- detail_pembayaran
+            -- payment_details
             foreach v_bulan in array v_bulan_arr loop
-                insert into detail_pembayaran (
-                    pembayaran_id, warga_id, tahun, bulan, nominal, created_at
+                insert into payment_details (
+                    payment_id, resident_id, year, month, amount, created_at
                 ) values (
                     v_pembayaran_id, v_warga_rec.id, p_tahun, v_bulan,
                     v_nominal_iuran, v_tanggal + interval '4 hours'
@@ -352,13 +352,13 @@ begin
             perform insert_ledger(
                 p_rt_id, 'pemasukan', 'pembayaran', v_pembayaran_id,
                 v_tanggal + interval '4 hours',
-                'Iuran ' || v_warga_rec.nama || ' — ' || v_bulan_str || ' ' || p_tahun,
+                'Iuran ' || v_warga_rec.name || ' — ' || v_bulan_str || ' ' || p_tahun,
                 v_nominal,
                 v_actor_id
             );
             v_total_masuk := v_total_masuk + v_nominal;
 
-            -- Notification to warga
+            -- Notification to resident
             if v_target_uid is not null then
                 insert into notifications (
                     rt_id, type, title, message,
@@ -367,7 +367,7 @@ begin
                 ) values (
                     p_rt_id, 'payment_approved', 'Pembayaran Disetujui',
                     'Iuran ' || v_bulan_str || ' ' || p_tahun || ' telah disetujui',
-                    'konfirmasi_pembayaran', v_konfirmasi_id, v_target_uid,
+                    'payment_confirmations', v_konfirmasi_id, v_target_uid,
                     (random() > 0.4),
                     v_tanggal + interval '4 hours'
                 );
@@ -379,8 +379,8 @@ begin
                 entity_type, entity_id, description, visibility, created_at
             ) values (
                 p_rt_id, v_actor_id, v_actor_name,
-                'pembayaran_disetujui', 'konfirmasi_pembayaran', v_konfirmasi_id,
-                'Iuran ' || v_warga_rec.nama || ' (' || v_bulan_str || ') disetujui',
+                'pembayaran_disetujui', 'payment_confirmations', v_konfirmasi_id,
+                'Iuran ' || v_warga_rec.name || ' (' || v_bulan_str || ') disetujui',
                 'internal', v_tanggal + interval '4 hours'
             );
 
@@ -390,26 +390,26 @@ begin
     end loop;
 
     /* ---------------------------------------------------------------------- */
-    /* 5. Phase B — Pending konfirmasi (recent months: Oct–Dec)               */
+    /* 5. Phase B — Pending confirmations (recent months: Oct–Dec)            */
     /*                                                                         */
-    /* Simulates warga who recently submitted but haven't been reviewed yet.   */
-    /* 70 % of p_jumlah_konfirmasi goes to pending, 30 % to rejected.         */
+    /* Simulates residents who recently submitted but haven't been reviewed.  */
+    /* 70 % of p_jumlah_konfirmasi goes to pending, 30 % to rejected.        */
     /* ---------------------------------------------------------------------- */
     v_pending_target  := (p_jumlah_konfirmasi * 0.7)::int;
     v_rejected_target := p_jumlah_konfirmasi - v_pending_target;
 
     for v_warga_rec in
-        select id, nama
-        from   warga
-        where  rt_id = p_rt_id and aktif = true
+        select id, name
+        from   residents
+        where  rt_id = p_rt_id and active = true
         order  by id
     loop
         exit when v_cnt_pending >= v_pending_target;
 
-        -- Reload months used by this warga (includes Phase A inserts)
-        select coalesce(array_agg(bulan), '{}') into v_used_months
-        from   detail_konfirmasi_pembayaran
-        where  warga_id = v_warga_rec.id and tahun = p_tahun;
+        -- Reload months used by this resident (includes Phase A inserts)
+        select coalesce(array_agg(month), '{}') into v_used_months
+        from   confirmation_details
+        where  resident_id = v_warga_rec.id and year = p_tahun;
 
         -- Find first free month scanning Dec → Oct
         v_avail_month := null;
@@ -425,8 +425,8 @@ begin
         continue when v_avail_month is null;
 
         select um.user_id into v_target_uid
-        from   user_membership um
-        where  um.warga_id = v_warga_rec.id limit 1;
+        from   memberships um
+        where  um.resident_id = v_warga_rec.id limit 1;
 
         v_tanggal := (
             make_date(p_tahun, v_avail_month, 1)
@@ -434,14 +434,14 @@ begin
             + ((floor(random() * 10) + 8)::int || ' hours')::interval
         )::timestamptz;
 
-        insert into konfirmasi_pembayaran (
-            warga_id, rt_id, tahun, total_bayar, status, created_at
+        insert into payment_confirmations (
+            resident_id, rt_id, year, total_amount, status, created_at
         ) values (
             v_warga_rec.id, p_rt_id, p_tahun, v_nominal_iuran, 'pending', v_tanggal
         ) returning id into v_konfirmasi_id;
 
-        insert into detail_konfirmasi_pembayaran (
-            konfirmasi_id, warga_id, tahun, bulan, nominal, created_at
+        insert into confirmation_details (
+            confirmation_id, resident_id, year, month, amount, created_at
         ) values (
             v_konfirmasi_id, v_warga_rec.id, p_tahun, v_avail_month, v_nominal_iuran, v_tanggal
         );
@@ -453,9 +453,9 @@ begin
             is_read, created_at
         ) values (
             p_rt_id, 'new_konfirmasi', 'Konfirmasi Pembayaran Baru',
-            v_warga_rec.nama || ' mengajukan iuran '
+            v_warga_rec.name || ' mengajukan iuran '
                 || v_bulan_names[v_avail_month] || ' ' || p_tahun,
-            'konfirmasi_pembayaran', v_konfirmasi_id, 'admin',
+            'payment_confirmations', v_konfirmasi_id, 'admin',
             false, v_tanggal
         );
 
@@ -463,9 +463,9 @@ begin
             rt_id, actor_id, actor_name, action,
             entity_type, entity_id, description, visibility, created_at
         ) values (
-            p_rt_id, v_target_uid, v_warga_rec.nama,
-            'konfirmasi_diajukan', 'konfirmasi_pembayaran', v_konfirmasi_id,
-            v_warga_rec.nama || ' mengajukan konfirmasi iuran '
+            p_rt_id, v_target_uid, v_warga_rec.name,
+            'konfirmasi_diajukan', 'payment_confirmations', v_konfirmasi_id,
+            v_warga_rec.name || ' mengajukan konfirmasi iuran '
                 || v_bulan_names[v_avail_month],
             'public', v_tanggal
         );
@@ -474,21 +474,21 @@ begin
     end loop;
 
     /* ---------------------------------------------------------------------- */
-    /* 6. Phase C — Rejected konfirmasi (mid-year: Apr–Jul)                   */
+    /* 6. Phase C — Rejected confirmations (mid-year: Apr–Jul)                */
     /*                                                                         */
-    /* Simulates warga who uploaded unclear proof and got rejected.            */
+    /* Simulates residents who uploaded unclear proof and got rejected.       */
     /* ---------------------------------------------------------------------- */
     for v_warga_rec in
-        select id, nama
-        from   warga
-        where  rt_id = p_rt_id and aktif = true
+        select id, name
+        from   residents
+        where  rt_id = p_rt_id and active = true
         order  by id
     loop
         exit when v_cnt_rejected >= v_rejected_target;
 
-        select coalesce(array_agg(bulan), '{}') into v_used_months
-        from   detail_konfirmasi_pembayaran
-        where  warga_id = v_warga_rec.id and tahun = p_tahun;
+        select coalesce(array_agg(month), '{}') into v_used_months
+        from   confirmation_details
+        where  resident_id = v_warga_rec.id and year = p_tahun;
 
         -- Find first free month scanning Apr → Jul
         v_avail_month := null;
@@ -504,15 +504,15 @@ begin
         continue when v_avail_month is null;
 
         select um.user_id into v_target_uid
-        from   user_membership um
-        where  um.warga_id = v_warga_rec.id limit 1;
+        from   memberships um
+        where  um.resident_id = v_warga_rec.id limit 1;
 
         -- Fixed submission date (5th of the month, 10:00)
         v_tanggal := make_timestamptz(p_tahun, v_avail_month, 5, 10, 0, 0);
 
-        insert into konfirmasi_pembayaran (
-            warga_id, rt_id, tahun, total_bayar,
-            status, rejected_at, alasan_penolakan, created_at
+        insert into payment_confirmations (
+            resident_id, rt_id, year, total_amount,
+            status, rejected_at, rejection_reason, created_at
         ) values (
             v_warga_rec.id, p_rt_id, p_tahun, v_nominal_iuran,
             'rejected',
@@ -521,13 +521,13 @@ begin
             v_tanggal
         ) returning id into v_konfirmasi_id;
 
-        insert into detail_konfirmasi_pembayaran (
-            konfirmasi_id, warga_id, tahun, bulan, nominal, created_at
+        insert into confirmation_details (
+            confirmation_id, resident_id, year, month, amount, created_at
         ) values (
             v_konfirmasi_id, v_warga_rec.id, p_tahun, v_avail_month, v_nominal_iuran, v_tanggal
         );
 
-        -- Notify warga of rejection (mark as already-read, it's mid-year)
+        -- Notify resident of rejection (mark as already-read, it's mid-year)
         if v_target_uid is not null then
             insert into notifications (
                 rt_id, type, title, message,
@@ -537,7 +537,7 @@ begin
                 p_rt_id, 'payment_rejected', 'Pembayaran Ditolak',
                 'Konfirmasi iuran ' || v_bulan_names[v_avail_month]
                     || ' ' || p_tahun || ' ditolak',
-                'konfirmasi_pembayaran', v_konfirmasi_id, v_target_uid,
+                'payment_confirmations', v_konfirmasi_id, v_target_uid,
                 true, v_tanggal + interval '1 day'
             );
         end if;
@@ -547,8 +547,8 @@ begin
             entity_type, entity_id, description, visibility, created_at
         ) values (
             p_rt_id, v_actor_id, v_actor_name,
-            'pembayaran_ditolak', 'konfirmasi_pembayaran', v_konfirmasi_id,
-            'Konfirmasi ' || v_warga_rec.nama || ' ditolak: bukti tidak valid',
+            'pembayaran_ditolak', 'payment_confirmations', v_konfirmasi_id,
+            'Konfirmasi ' || v_warga_rec.name || ' ditolak: bukti tidak valid',
             'internal', v_tanggal + interval '1 day'
         );
 
@@ -556,10 +556,10 @@ begin
     end loop;
 
     /* ---------------------------------------------------------------------- */
-    /* 7. Phase D — Pengeluaran (spread evenly across the year)               */
+    /* 7. Phase D — Expenses (spread evenly across the year)                  */
     /*                                                                         */
-    /* Categories cycle: kebersihan → keamanan → operasional → sosial →       */
-    /* kegiatan → repeat.  Nominal = random multiplier × nominal_iuran.       */
+    /* Categories cycle: kebersihan → keamanan → operasional → sosial →      */
+    /* kegiatan → repeat.  Amount = random multiplier × monthly_fee.         */
     /* ---------------------------------------------------------------------- */
     for i in 1..p_jumlah_pengeluaran loop
         v_kat_idx   := ((i - 1) % 5) + 1;
@@ -576,8 +576,8 @@ begin
             + ((floor(random() * 8) + 8)::int || ' hours')::interval
         )::timestamptz;
 
-        insert into pengeluaran (
-            rt_id, tanggal, kategori, nominal, deskripsi, aktif, created_at
+        insert into expenses (
+            rt_id, date, category, amount, description, active, created_at
         ) values (
             p_rt_id,
             v_tanggal::date,
@@ -602,7 +602,7 @@ begin
             entity_type, entity_id, description, visibility, created_at
         ) values (
             p_rt_id, v_actor_id, v_actor_name,
-            'pengeluaran_dicatat', 'pengeluaran', v_pengeluaran_id,
+            'pengeluaran_dicatat', 'expenses', v_pengeluaran_id,
             v_kat_name[v_kat_idx] || ': ' || v_kat_desc[v_kat_idx]
                 || ' (Rp' || to_char(v_exp_nom, 'FM999,999,999') || ')',
             'internal', v_tanggal
@@ -623,7 +623,7 @@ begin
         || '  Total pemasukan      : Rp%s\n'
         || '  Total pengeluaran    : Rp%s\n'
         || '  Saldo akhir          : Rp%s',
-        v_rt.nama, v_rt.kode, p_tahun,
+        v_rt.name, v_rt.code, p_tahun,
         v_cnt_approved, v_cnt_pending, v_cnt_rejected, v_cnt_expense,
         to_char(v_total_masuk,                  'FM999,999,999'),
         to_char(v_total_keluar,                 'FM999,999,999'),

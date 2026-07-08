@@ -2,78 +2,78 @@
  * =============================================================================
  * 001_FINANCIAL
  * Payment confirmation, approved payment, expense, and ledger tables.
- * Depends on: 000_foundation (rt, warga)
+ * Depends on: 000_foundation (rt, residents)
  * =============================================================================
  */
 
 
 /* ----------------------------------------------------------------------------
- * TABLE: konfirmasi_pembayaran
- * A warga submits this record as proof of payment, pending admin approval.
+ * TABLE: payment_confirmations
+ * A resident submits this record as proof of payment, pending admin approval.
  * --------------------------------------------------------------------------- */
 
-create table konfirmasi_pembayaran (
+create table payment_confirmations (
     id               uuid        primary key default gen_random_uuid(),
-    warga_id         uuid        not null references warga (id) on delete cascade,
+    resident_id      uuid        not null references residents (id) on delete cascade,
     rt_id            uuid        not null references rt (id) on delete cascade,
-    tahun            integer     not null,
-    total_bayar      bigint      not null,
+    year             integer     not null,
+    total_amount     bigint      not null,
     status           text        not null default 'pending',
-    bukti_url        text,
+    proof_url        text,
     approved_at      timestamptz,
     rejected_at      timestamptz,
-    alasan_penolakan text,
+    rejection_reason text,
     created_at       timestamptz not null default now()
 );
 
 
 /* ----------------------------------------------------------------------------
- * TABLE: detail_konfirmasi_pembayaran
+ * TABLE: confirmation_details
  * Monthly breakdown of a payment confirmation (normalised).
  * --------------------------------------------------------------------------- */
 
-create table detail_konfirmasi_pembayaran (
-    id            uuid        primary key default gen_random_uuid(),
-    konfirmasi_id uuid        not null references konfirmasi_pembayaran (id) on delete cascade,
-    warga_id      uuid        not null references warga (id) on delete cascade,
-    tahun         integer     not null,
-    bulan         integer     not null,
-    nominal       bigint      not null,
-    created_at    timestamptz not null default now()
+create table confirmation_details (
+    id              uuid        primary key default gen_random_uuid(),
+    confirmation_id uuid        not null references payment_confirmations (id) on delete cascade,
+    resident_id     uuid        not null references residents (id) on delete cascade,
+    year            integer     not null,
+    month           integer     not null,
+    amount          bigint      not null,
+    created_at      timestamptz not null default now()
 );
 
 
 /* ----------------------------------------------------------------------------
- * TABLE: pembayaran
+ * TABLE: payments
  * Approved payment record (kas masuk). Created by approve_konfirmasi().
  * --------------------------------------------------------------------------- */
 
-create table pembayaran (
+create table payments (
     id           uuid        primary key default gen_random_uuid(),
-    warga_id     uuid        not null references warga (id) on delete cascade,
+    resident_id  uuid        not null references residents (id) on delete cascade,
     rt_id        uuid        not null references rt (id) on delete cascade,
-    tahun        integer     not null,
-    tanggal      timestamptz not null default now(),
-    jumlah_bayar bigint      not null,
-    metode       text,
-    keterangan   text,
+    year         integer     not null,
+    date         timestamptz not null default now(),
+    total_amount bigint      not null,
+    method       text,
+    notes        text,
     created_at   timestamptz not null default now()
 );
 
 
 /* ----------------------------------------------------------------------------
- * TABLE: detail_pembayaran
+ * TABLE: payment_details
  * Monthly breakdown of an approved payment (normalised).
  * --------------------------------------------------------------------------- */
 
-create table detail_pembayaran (
-    id            uuid        primary key default gen_random_uuid(),
-    pembayaran_id uuid        not null references pembayaran (id) on delete cascade,
-    warga_id      uuid        not null references warga (id) on delete cascade,
-    tahun         integer     not null,
-    bulan         integer     not null,
-    nominal       bigint      not null,
-    created_at    timestamptz not null default now()
+create table payment_details (
+    id          uuid        primary key default gen_random_uuid(),
+    payment_id  uuid        not null references payments (id) on delete cascade,
+    resident_id uuid        not null references residents (id) on delete cascade,
+    year        integer     not null,
+    month       integer     not null,
+    amount      bigint      not null,
+    created_at  timestamptz not null default now()
 );
 
 /*
@@ -82,51 +82,50 @@ create table detail_pembayaran (
  * =============================================================================
  */
 
-create table pengeluaran_kategori (
-                                      id     serial      primary key,
-                                      nama   text        not null unique,
-                                      urutan smallint    not null default 0
+create table expense_categories (
+    id         serial      primary key,
+    name       text        not null unique,
+    sort_order smallint    not null default 0
 );
 
-insert into pengeluaran_kategori (nama, urutan) values
-                                                    ('Keamanan',             1),
-                                                    ('Kebersihan',           2),
-                                                    ('Perawatan Lingkungan', 3),
-                                                    ('Administrasi',         4),
-                                                    ('Operasional Pengurus', 5),
-                                                    ('Kegiatan Warga',       6),
-                                                    ('Sosial & Bantuan',     7),
-                                                    ('Utilitas',             8),
-                                                    ('Inventaris',           9),
-                                                    ('Biaya Bank',          10),
-                                                    ('Dana Darurat',        11),
-                                                    ('Lain-lain',           12)
-    on conflict (nama) do nothing;
+insert into expense_categories (name, sort_order) values
+    ('Keamanan',             1),
+    ('Kebersihan',           2),
+    ('Perawatan Lingkungan', 3),
+    ('Administrasi',         4),
+    ('Operasional Pengurus', 5),
+    ('Kegiatan Warga',       6),
+    ('Sosial & Bantuan',     7),
+    ('Utilitas',             8),
+    ('Inventaris',           9),
+    ('Biaya Bank',          10),
+    ('Dana Darurat',        11),
+    ('Lain-lain',           12)
+    on conflict (name) do nothing;
 
 
 /* ----------------------------------------------------------------------------
- * TABLE: pengeluaran
+ * TABLE: expenses
  * Expense records (kas keluar).
  * --------------------------------------------------------------------------- */
 
-create table pengeluaran (
-
-    id           uuid        primary key default gen_random_uuid(),
-    rt_id        uuid        not null references rt (id) on delete cascade,
-    nomor_bukti  text,
-    tanggal      date,
-    kategori     text,
-    nominal      integer,
-    penerima     text,
-    deskripsi    text,
-    nota_url              text,
-    aktif                 boolean     not null default true,
-    status                text        not null default 'pending',
-    created_by            uuid,
-    approved_by           uuid,
-    approved_at           timestamptz,
-    catatan_penolakan     text,
-    created_at            timestamptz not null default now()
+create table expenses (
+    id               uuid        primary key default gen_random_uuid(),
+    rt_id            uuid        not null references rt (id) on delete cascade,
+    receipt_number   text,
+    date             date,
+    category         text,
+    amount           integer,
+    recipient        text,
+    description      text,
+    receipt_url      text,
+    active           boolean     not null default true,
+    status           text        not null default 'pending',
+    created_by       uuid,
+    approved_by      uuid,
+    approved_at      timestamptz,
+    rejection_note   text,
+    created_at       timestamptz not null default now()
 );
 
 
@@ -138,14 +137,14 @@ create table pengeluaran (
 create table ledger (
     id            uuid        primary key default gen_random_uuid(),
     rt_id         uuid        not null references rt (id) on delete restrict,
-    jenis         varchar(20) not null,
-    sumber        varchar(50) not null,
-    referensi_id  uuid,
-    tanggal       timestamptz not null default now(),
-    deskripsi     text,
-    nominal       bigint      not null default 0,
-    saldo_setelah bigint      not null default 0,
+    type          varchar(20) not null,
+    source        varchar(50) not null,
+    reference_id  uuid,
+    date          timestamptz not null default now(),
+    description   text,
+    amount        bigint      not null default 0,
+    balance_after bigint      not null default 0,
     created_by    uuid,
     created_at    timestamptz not null default now(),
-    aktif         boolean     not null default true
+    active        boolean     not null default true
 );

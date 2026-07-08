@@ -5,11 +5,11 @@
  * =============================================================================
  */
 
-alter publication supabase_realtime add table konfirmasi_pembayaran;
-alter publication supabase_realtime add table pembayaran;
-alter publication supabase_realtime add table pengeluaran;
+alter publication supabase_realtime add table payment_confirmations;
+alter publication supabase_realtime add table payments;
+alter publication supabase_realtime add table expenses;
 alter publication supabase_realtime add table ledger;
-alter publication supabase_realtime add table warga;
+alter publication supabase_realtime add table residents;
 alter publication supabase_realtime add table activity_logs;
 
 -- notifications requires FULL replica identity so UPDATE events include the

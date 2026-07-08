@@ -22,20 +22,20 @@
  * Enable RLS on all tables
  * --------------------------------------------------------------------------- */
 
-alter table rt                           enable row level security;
-alter table users                        enable row level security;
-alter table warga                        enable row level security;
-alter table user_membership              enable row level security;
-alter table konfirmasi_pembayaran        enable row level security;
-alter table detail_konfirmasi_pembayaran enable row level security;
-alter table pembayaran                   enable row level security;
-alter table detail_pembayaran            enable row level security;
-alter table pengeluaran                  enable row level security;
-alter table ledger                       enable row level security;
-alter table notifications                enable row level security;
-alter table activity_logs                enable row level security;
-alter table registration_requests        enable row level security;
-alter table activation_invites           enable row level security;
+alter table rt                      enable row level security;
+alter table users                   enable row level security;
+alter table residents               enable row level security;
+alter table memberships             enable row level security;
+alter table payment_confirmations   enable row level security;
+alter table confirmation_details    enable row level security;
+alter table payments                enable row level security;
+alter table payment_details         enable row level security;
+alter table expenses                enable row level security;
+alter table ledger                  enable row level security;
+alter table notifications           enable row level security;
+alter table activity_logs           enable row level security;
+alter table registration_requests   enable row level security;
+alter table activation_invites      enable row level security;
 
 
 /* ----------------------------------------------------------------------------
@@ -48,18 +48,18 @@ create policy "rt: authenticated can read"
     on rt for select to authenticated
     using (true);
 
--- Only super_admin may create RT records (via approveRtRegistration).
+-- Only SUPER_ADMIN may create RT records (via approveRtRegistration).
 create policy "rt: super_admin can insert"
     on rt for insert to authenticated
     with check (is_super_admin());
 
--- Members of an RT (chair / admin) or super_admin may update its profile.
+-- Members of an RT (chair / admin) or SUPER_ADMIN may update its profile.
 create policy "rt: members can update own rt"
     on rt for update to authenticated
     using     (id in (select get_user_rt_ids()) or is_super_admin())
     with check (id in (select get_user_rt_ids()) or is_super_admin());
 
--- Only super_admin may delete an RT (trigger also guards the system RT row).
+-- Only SUPER_ADMIN may delete an RT (trigger also guards the system RT row).
 create policy "rt: super_admin can delete"
     on rt for delete to authenticated
     using (is_super_admin());
@@ -77,89 +77,89 @@ create policy "users: authenticated can read"
 
 
 /* ----------------------------------------------------------------------------
- * WARGA
+ * RESIDENTS
  * --------------------------------------------------------------------------- */
 
 create policy "warga: read own rt"
-    on warga for select to authenticated
+    on residents for select to authenticated
     using (rt_id in (select get_user_rt_ids()) or is_super_admin());
 
 create policy "warga: insert own rt"
-    on warga for insert to authenticated
+    on residents for insert to authenticated
     with check (is_member_of_rt(rt_id) or is_super_admin());
 
 create policy "warga: update own rt"
-    on warga for update to authenticated
+    on residents for update to authenticated
     using     (rt_id in (select get_user_rt_ids()) or is_super_admin())
     with check (is_member_of_rt(rt_id) or is_super_admin());
 
 
 /* ----------------------------------------------------------------------------
- * USER MEMBERSHIP
+ * MEMBERSHIPS
  * Two permissive SELECT policies (Postgres ORs them):
  *   1. Any user may read their own membership row
  *   2. super_admin may read all membership rows
  * --------------------------------------------------------------------------- */
 
 create policy "membership: read own"
-    on user_membership for select to authenticated
+    on memberships for select to authenticated
     using (user_id = auth.uid());
 
 create policy "membership: super_admin read all"
-    on user_membership for select to authenticated
+    on memberships for select to authenticated
     using (is_super_admin());
 
 create policy "membership: super_admin insert"
-    on user_membership for insert to authenticated
+    on memberships for insert to authenticated
     with check (is_super_admin());
 
 create policy "membership: super_admin update"
-    on user_membership for update to authenticated
+    on memberships for update to authenticated
     using (is_super_admin());
 
 create policy "membership: super_admin delete"
-    on user_membership for delete to authenticated
+    on memberships for delete to authenticated
     using (is_super_admin());
 
 
 /* ----------------------------------------------------------------------------
- * KONFIRMASI PEMBAYARAN
+ * PAYMENT CONFIRMATIONS
  * --------------------------------------------------------------------------- */
 
 create policy "konfirmasi: read own rt"
-    on konfirmasi_pembayaran for select to authenticated
+    on payment_confirmations for select to authenticated
     using (rt_id in (select get_user_rt_ids()) or is_super_admin());
 
 create policy "konfirmasi: insert own rt"
-    on konfirmasi_pembayaran for insert to authenticated
+    on payment_confirmations for insert to authenticated
     with check (is_member_of_rt(rt_id) or is_super_admin());
 
 create policy "konfirmasi: update own rt"
-    on konfirmasi_pembayaran for update to authenticated
+    on payment_confirmations for update to authenticated
     using     (rt_id in (select get_user_rt_ids()) or is_super_admin())
     with check (is_member_of_rt(rt_id) or is_super_admin());
 
 
 /* ----------------------------------------------------------------------------
- * DETAIL KONFIRMASI PEMBAYARAN
- * No direct rt_id — scoped through the parent konfirmasi row.
+ * CONFIRMATION DETAILS
+ * No direct rt_id — scoped through the parent payment_confirmations row.
  * --------------------------------------------------------------------------- */
 
 create policy "detail konfirmasi: read own rt"
-    on detail_konfirmasi_pembayaran for select to authenticated
+    on confirmation_details for select to authenticated
     using (
-        konfirmasi_id in (
-            select id from konfirmasi_pembayaran
+        confirmation_id in (
+            select id from payment_confirmations
             where  rt_id in (select get_user_rt_ids())
         )
         or is_super_admin()
     );
 
 create policy "detail konfirmasi: insert own rt"
-    on detail_konfirmasi_pembayaran for insert to authenticated
+    on confirmation_details for insert to authenticated
     with check (
-        konfirmasi_id in (
-            select id from konfirmasi_pembayaran
+        confirmation_id in (
+            select id from payment_confirmations
             where  rt_id in (select get_user_rt_ids())
         )
         or is_super_admin()
@@ -167,40 +167,40 @@ create policy "detail konfirmasi: insert own rt"
 
 
 /* ----------------------------------------------------------------------------
- * PEMBAYARAN
+ * PAYMENTS
  * Approved payment rows are immutable; no update policy is added.
  * --------------------------------------------------------------------------- */
 
 create policy "pembayaran: read own rt"
-    on pembayaran for select to authenticated
+    on payments for select to authenticated
     using (rt_id in (select get_user_rt_ids()) or is_super_admin());
 
 -- approve_konfirmasi (security_definer) is the normal insert path.
 create policy "pembayaran: insert own rt"
-    on pembayaran for insert to authenticated
+    on payments for insert to authenticated
     with check (is_member_of_rt(rt_id) or is_super_admin());
 
 
 /* ----------------------------------------------------------------------------
- * DETAIL PEMBAYARAN
- * No direct rt_id — scoped through the parent pembayaran row.
+ * PAYMENT DETAILS
+ * No direct rt_id — scoped through the parent payments row.
  * --------------------------------------------------------------------------- */
 
 create policy "detail pembayaran: read own rt"
-    on detail_pembayaran for select to authenticated
+    on payment_details for select to authenticated
     using (
-        pembayaran_id in (
-            select id from pembayaran
+        payment_id in (
+            select id from payments
             where  rt_id in (select get_user_rt_ids())
         )
         or is_super_admin()
     );
 
 create policy "detail pembayaran: insert own rt"
-    on detail_pembayaran for insert to authenticated
+    on payment_details for insert to authenticated
     with check (
-        pembayaran_id in (
-            select id from pembayaran
+        payment_id in (
+            select id from payments
             where  rt_id in (select get_user_rt_ids())
         )
         or is_super_admin()
@@ -208,20 +208,20 @@ create policy "detail pembayaran: insert own rt"
 
 
 /* ----------------------------------------------------------------------------
- * PENGELUARAN
+ * EXPENSES
  * --------------------------------------------------------------------------- */
 
 create policy "pengeluaran: read own rt"
-    on pengeluaran for select to authenticated
+    on expenses for select to authenticated
     using (rt_id in (select get_user_rt_ids()) or is_super_admin());
 
 create policy "pengeluaran: insert own rt"
-    on pengeluaran for insert to authenticated
+    on expenses for insert to authenticated
     with check (is_member_of_rt(rt_id) or is_super_admin());
 
 -- Allows treasurers to edit pending expense records before approval.
 create policy "pengeluaran: update own rt"
-    on pengeluaran for update to authenticated
+    on expenses for update to authenticated
     using     (rt_id in (select get_user_rt_ids()) or is_super_admin())
     with check (is_member_of_rt(rt_id) or is_super_admin());
 
@@ -263,7 +263,7 @@ create policy "notifications: update own"
 /* ----------------------------------------------------------------------------
  * ACTIVITY LOGS
  * RT members see their own RT's logs.
- * System RT (00000000-...-0001) logs are visible to super_admin only.
+ * System RT (00000000-...-0001) logs are visible to SUPER_ADMIN only.
  * --------------------------------------------------------------------------- */
 
 create policy "activity_logs: read own rt"
@@ -293,16 +293,16 @@ create policy "registration: super_admin read rt requests"
     on registration_requests for select to authenticated
     using (type = 'rt' and is_super_admin());
 
--- admin / ketua reads warga requests for their own RT
+-- admin / chair reads resident requests for their own RT
 create policy "registration: admin read warga requests for own rt"
     on registration_requests for select to authenticated
     using (
         type  = 'warga'
         and rt_id in (
             select rt_id
-            from   user_membership
+            from   memberships
             where  user_id = auth.uid()
-            and    role    in ('admin', 'ketua')
+            and    role    in ('ADMIN', 'CHAIR')
         )
     );
 

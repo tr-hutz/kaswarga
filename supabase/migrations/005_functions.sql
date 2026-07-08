@@ -19,11 +19,11 @@ as $$
 declare
     v_saldo bigint;
 begin
-    select saldo_setelah
+    select balance_after
     into   v_saldo
     from   ledger
     where  rt_id = p_rt_id
-    order  by tanggal desc
+    order  by date desc
     limit  1;
 
     return coalesce(v_saldo, 0);
@@ -38,49 +38,49 @@ $$;
 
 create or replace function insert_ledger(
     p_rt_id        uuid,
-    p_jenis        varchar,
-    p_sumber       varchar,
-    p_referensi_id uuid,
-    p_tanggal      timestamptz,
-    p_deskripsi    text,
-    p_nominal      bigint,
+    p_type         varchar,
+    p_source       varchar,
+    p_reference_id uuid,
+    p_date         timestamptz,
+    p_description  text,
+    p_amount       bigint,
     p_created_by   uuid
 )
 returns uuid
 language plpgsql
 as $$
 declare
-    v_last_saldo bigint;
-    v_new_saldo  bigint;
-    v_id         uuid;
+    v_last_balance bigint;
+    v_new_balance  bigint;
+    v_id           uuid;
 begin
-    v_last_saldo := get_last_saldo(p_rt_id);
+    v_last_balance := get_last_saldo(p_rt_id);
 
-    if p_jenis = 'pemasukan' then
-        v_new_saldo := v_last_saldo + p_nominal;
+    if p_type = 'pemasukan' then
+        v_new_balance := v_last_balance + p_amount;
     else
-        v_new_saldo := v_last_saldo - p_nominal;
+        v_new_balance := v_last_balance - p_amount;
     end if;
 
     insert into ledger (
         rt_id,
-        jenis,
-        sumber,
-        referensi_id,
-        tanggal,
-        deskripsi,
-        nominal,
-        saldo_setelah,
+        type,
+        source,
+        reference_id,
+        date,
+        description,
+        amount,
+        balance_after,
         created_by
     ) values (
         p_rt_id,
-        p_jenis,
-        p_sumber,
-        p_referensi_id,
-        p_tanggal,
-        p_deskripsi,
-        p_nominal,
-        v_new_saldo,
+        p_type,
+        p_source,
+        p_reference_id,
+        p_date,
+        p_description,
+        p_amount,
+        v_new_balance,
         p_created_by
     )
     returning id into v_id;
@@ -92,9 +92,9 @@ $$;
 
 /* ----------------------------------------------------------------------------
  * is_super_admin
- * Returns true when the currently authenticated user holds the super_admin role.
+ * Returns true when the currently authenticated user holds the SUPER_ADMIN role.
  *
- * SECURITY DEFINER is required here: querying user_membership from within its
+ * SECURITY DEFINER is required here: querying memberships from within its
  * own RLS policies would create a circular dependency. This function bypasses
  * RLS to perform the check safely.
  * --------------------------------------------------------------------------- */
@@ -107,9 +107,9 @@ stable
 as $$
     select exists (
         select 1
-        from   user_membership
+        from   memberships
         where  user_id = auth.uid()
-        and    role    = 'super_admin'
+        and    role    = 'SUPER_ADMIN'
     )
 $$;
 
@@ -127,7 +127,7 @@ security definer
 stable
 as $$
     select rt_id
-    from   user_membership
+    from   memberships
     where  user_id = auth.uid()
     and    status  = 'active'
     and    rt_id   is not null
@@ -148,7 +148,7 @@ stable
 as $$
     select exists (
         select 1
-        from   user_membership
+        from   memberships
         where  user_id = auth.uid()
         and    rt_id   = p_rt_id
         and    status  = 'active'
@@ -223,15 +223,15 @@ begin
     select coalesce(
         max(
             case
-                when kode ~ '^RT-[0-9]{4}$'
-                then substring(kode from 4)::integer
+                when code ~ '^RT-[0-9]{4}$'
+                then substring(code from 4)::integer
                 else 0
             end
         ), 0
     ) + 1
     into next_num
     from rt
-    where kode ~ '^RT-[0-9]{4}$';
+    where code ~ '^RT-[0-9]{4}$';
 
     -- Also account for codes reserved by in-flight registration requests
     select greatest(
@@ -240,8 +240,8 @@ begin
             (
                 select max(
                     case
-                        when (rt_data->>'kode') ~ '^RT-[0-9]{4}$'
-                        then substring(rt_data->>'kode' from 4)::integer
+                        when (rt_data->>'code') ~ '^RT-[0-9]{4}$'
+                        then substring(rt_data->>'code' from 4)::integer
                         else 0
                     end
                 )
@@ -287,43 +287,43 @@ $$;
  * approve_konfirmasi
  *
  * Flow:
- *   1. Lock the konfirmasi row
+ *   1. Lock the payment_confirmations row
  *   2. Validate status is still pending
  *   3. Validate no month in the request has already been paid
  *   4. Validate total matches expected amount
- *   5. Insert pembayaran header
- *   6. Copy monthly detail rows to detail_pembayaran
- *   7. Mark konfirmasi as approved
+ *   5. Insert payments header
+ *   6. Copy monthly detail rows to payment_details
+ *   7. Mark payment_confirmations as approved
  *   8. Append a ledger entry
- *   9. Send in-app notification to warga
+ *   9. Send in-app notification to resident
  * --------------------------------------------------------------------------- */
 
 create or replace function approve_konfirmasi(
-    p_konfirmasi_id uuid,
-    p_user_id       uuid
+    p_confirmation_id uuid,
+    p_user_id         uuid
 )
 returns void
 language plpgsql
 security definer
 as $$
 declare
-    v_konfirmasi     record;
-    v_warga          record;
-    v_pembayaran_id  uuid;
-    v_nominal_iuran  bigint;
-    v_jumlah_bulan   integer;
+    v_confirmation   record;
+    v_member         record;
+    v_payment_id     uuid;
+    v_monthly_fee    bigint;
+    v_month_count    integer;
     v_expected_total bigint;
-    v_bulan_str      text;
-    v_bulan_names    text[] := array[
+    v_month_str      text;
+    v_month_names    text[] := array[
         'Januari', 'Februari', 'Maret',    'April',   'Mei',      'Juni',
         'Juli',    'Agustus',  'September', 'Oktober', 'November', 'Desember'
     ];
 begin
     -- 1. Lock row
     select *
-    into   v_konfirmasi
-    from   konfirmasi_pembayaran
-    where  id = p_konfirmasi_id
+    into   v_confirmation
+    from   payment_confirmations
+    where  id = p_confirmation_id
     for update;
 
     if not found then
@@ -332,100 +332,100 @@ begin
     end if;
 
     -- 2. Status check
-    if v_konfirmasi.status != 'pending' then
+    if v_confirmation.status != 'pending' then
         raise exception 'Konfirmasi sudah diproses'
             using errcode = 'KW002';
     end if;
 
-    -- Fetch the warga's user account scoped to this specific RT to avoid
-    -- picking the wrong row when a warga belongs to multiple RTs.
-    select * into v_warga
-    from   user_membership
-    where  warga_id = v_konfirmasi.warga_id
-    and    rt_id    = v_konfirmasi.rt_id;
+    -- Fetch the resident's user account scoped to this specific RT to avoid
+    -- picking the wrong row when a resident belongs to multiple RTs.
+    select * into v_member
+    from   memberships
+    where  resident_id = v_confirmation.resident_id
+    and    rt_id       = v_confirmation.rt_id;
 
     -- 3. Duplicate month check
     if exists (
         select 1
-        from   detail_pembayaran            dp
-        join   detail_konfirmasi_pembayaran dkp on dkp.konfirmasi_id = p_konfirmasi_id
-        where  dp.warga_id = v_konfirmasi.warga_id
-        and    dp.tahun    = v_konfirmasi.tahun
-        and    dp.bulan    = dkp.bulan
+        from   payment_details      pd
+        join   confirmation_details cd on cd.confirmation_id = p_confirmation_id
+        where  pd.resident_id = v_confirmation.resident_id
+        and    pd.year        = v_confirmation.year
+        and    pd.month       = cd.month
     ) then
         raise exception 'Beberapa bulan yang dikonfirmasi sudah memiliki data pembayaran yang disetujui'
             using errcode = 'KW003';
     end if;
 
     -- 4. Total validation
-    select nominal_iuran into v_nominal_iuran from rt where id = v_konfirmasi.rt_id;
+    select monthly_fee into v_monthly_fee from rt where id = v_confirmation.rt_id;
 
-    select count(*) into v_jumlah_bulan
-    from   detail_konfirmasi_pembayaran
-    where  konfirmasi_id = p_konfirmasi_id;
+    select count(*) into v_month_count
+    from   confirmation_details
+    where  confirmation_id = p_confirmation_id;
 
-    v_expected_total := v_nominal_iuran * v_jumlah_bulan;
+    v_expected_total := v_monthly_fee * v_month_count;
 
-    if v_konfirmasi.total_bayar > v_expected_total then
+    if v_confirmation.total_amount > v_expected_total then
         raise exception 'Total pembayaran (%) melebihi jumlah yang seharusnya (% x % bulan = %). Selisih: %',
-            v_konfirmasi.total_bayar, v_nominal_iuran, v_jumlah_bulan, v_expected_total,
-            (v_konfirmasi.total_bayar - v_expected_total)
+            v_confirmation.total_amount, v_monthly_fee, v_month_count, v_expected_total,
+            (v_confirmation.total_amount - v_expected_total)
             using errcode = 'KW004';
     end if;
 
-    if v_konfirmasi.total_bayar < v_expected_total then
+    if v_confirmation.total_amount < v_expected_total then
         raise exception 'Total pembayaran (%) kurang dari jumlah yang seharusnya (% x % bulan = %). Selisih: %',
-            v_konfirmasi.total_bayar, v_nominal_iuran, v_jumlah_bulan, v_expected_total,
-            (v_expected_total - v_konfirmasi.total_bayar)
+            v_confirmation.total_amount, v_monthly_fee, v_month_count, v_expected_total,
+            (v_expected_total - v_confirmation.total_amount)
             using errcode = 'KW005';
     end if;
 
-    -- 5. Insert pembayaran header
-    insert into pembayaran (warga_id, rt_id, tahun, jumlah_bayar, tanggal, created_at)
-    values (v_konfirmasi.warga_id, v_konfirmasi.rt_id, v_konfirmasi.tahun,
-            v_konfirmasi.total_bayar, now(), now())
-    returning id into v_pembayaran_id;
+    -- 5. Insert payment header
+    insert into payments (resident_id, rt_id, year, total_amount, date, created_at)
+    values (v_confirmation.resident_id, v_confirmation.rt_id, v_confirmation.year,
+            v_confirmation.total_amount, now(), now())
+    returning id into v_payment_id;
 
     -- 6. Copy monthly detail
-    insert into detail_pembayaran (pembayaran_id, warga_id, tahun, bulan, nominal, created_at)
-    select v_pembayaran_id, d.warga_id, d.tahun, d.bulan, d.nominal, now()
-    from   detail_konfirmasi_pembayaran d
-    where  d.konfirmasi_id = p_konfirmasi_id;
+    insert into payment_details (payment_id, resident_id, year, month, amount, created_at)
+    select v_payment_id, d.resident_id, d.year, d.month, d.amount, now()
+    from   confirmation_details d
+    where  d.confirmation_id = p_confirmation_id;
 
     -- 7. Mark approved
-    update konfirmasi_pembayaran
+    update payment_confirmations
     set    status      = 'approved',
            approved_at = now()
-    where  id = p_konfirmasi_id;
+    where  id = p_confirmation_id;
 
     -- 8. Ledger entry
     perform insert_ledger(
-        v_konfirmasi.rt_id,
+        v_confirmation.rt_id,
         'pemasukan',
         'pembayaran',
-        v_pembayaran_id,
+        v_payment_id,
         now(),
         'Pembayaran iuran warga',
-        v_konfirmasi.total_bayar,
+        v_confirmation.total_amount,
         p_user_id
     );
 
-    -- 9. Notify warga
-    select string_agg(v_bulan_names[bulan], ', ' order by bulan)
-    into   v_bulan_str
-    from   detail_konfirmasi_pembayaran
-    where  konfirmasi_id = p_konfirmasi_id;
+    -- 9. Notify resident
+    select string_agg(v_month_names[month], ', ' order by month)
+    into   v_month_str
+    from   confirmation_details
+    where  confirmation_id = p_confirmation_id;
 
     insert into notifications (
         rt_id, type, title, message, entity_type, entity_id, target_user_id
     ) values (
-        v_konfirmasi.rt_id,
+        v_confirmation.rt_id,
         'payment_approved',
         'Pembayaran Disetujui',
-        'Pembayaran iuran ' || v_bulan_str || ' ' || v_konfirmasi.tahun || ' telah disetujui',
-        'konfirmasi_pembayaran',
-        v_konfirmasi.id,
-        v_warga.user_id
+        'Pembayaran iuran ' || v_month_str || ' ' || v_confirmation.year || ' telah disetujui',
+        'payment_confirmations',
+        v_confirmation.id,
+        v_member.user_id
     );
 end;
 $$;
@@ -435,80 +435,80 @@ $$;
  * reject_konfirmasi
  *
  * Flow:
- *   1. Lock the konfirmasi row
+ *   1. Lock the payment_confirmations row
  *   2. Validate status is still pending
  *   3. Mark as rejected with reason
- *   4. Send in-app notification to warga
+ *   4. Send in-app notification to resident
  * --------------------------------------------------------------------------- */
 
 create or replace function reject_konfirmasi(
-    p_konfirmasi_id uuid,
-    p_alasan        text,
-    p_user_id       uuid
+    p_confirmation_id uuid,
+    p_reason          text,
+    p_user_id         uuid
 )
 returns void
 language plpgsql
 security definer
 as $$
 declare
-    v_konfirmasi  record;
-    v_warga       record;
-    v_bulan_str   text;
-    v_bulan_names text[] := array[
+    v_confirmation record;
+    v_member       record;
+    v_month_str    text;
+    v_month_names  text[] := array[
         'Januari', 'Februari', 'Maret',    'April',   'Mei',      'Juni',
         'Juli',    'Agustus',  'September', 'Oktober', 'November', 'Desember'
     ];
 begin
     -- 1. Lock row
-    select * into v_konfirmasi
-    from   konfirmasi_pembayaran
-    where  id = p_konfirmasi_id
+    select * into v_confirmation
+    from   payment_confirmations
+    where  id = p_confirmation_id
     for update;
 
-    -- Fetch the warga's user account scoped to this RT.
-    select * into v_warga
-    from   user_membership
-    where  warga_id = v_konfirmasi.warga_id
-    and    rt_id    = v_konfirmasi.rt_id;
-
-    -- 2. Status check
     if not found then
         raise exception 'Konfirmasi pembayaran tidak ditemukan'
             using errcode = 'KW001';
     end if;
 
-    if v_konfirmasi.status != 'pending' then
+    -- 2. Status check
+    if v_confirmation.status != 'pending' then
         raise exception 'Konfirmasi sudah diproses'
             using errcode = 'KW002';
     end if;
 
+    -- Fetch the resident's user account scoped to this RT.
+    select * into v_member
+    from   memberships
+    where  resident_id = v_confirmation.resident_id
+    and    rt_id       = v_confirmation.rt_id;
+
     -- 3. Mark rejected
-    update konfirmasi_pembayaran
+    update payment_confirmations
     set    status           = 'rejected',
            rejected_at      = now(),
-           alasan_penolakan = p_alasan
-    where  id = p_konfirmasi_id;
+           rejection_reason = p_reason
+    where  id = p_confirmation_id;
 
-    -- 4. Notify warga
-    select string_agg(v_bulan_names[bulan], ', ' order by bulan)
-    into   v_bulan_str
-    from   detail_konfirmasi_pembayaran
-    where  konfirmasi_id = p_konfirmasi_id;
+    -- 4. Notify resident
+    select string_agg(v_month_names[month], ', ' order by month)
+    into   v_month_str
+    from   confirmation_details
+    where  confirmation_id = p_confirmation_id;
 
     insert into notifications (
         rt_id, type, title, message, entity_type, entity_id, target_user_id
     ) values (
-        v_konfirmasi.rt_id,
+        v_confirmation.rt_id,
         'payment_rejected',
         'Pembayaran Ditolak',
-        'Pembayaran iuran ' || v_bulan_str || ' ' || v_konfirmasi.tahun || ' ditolak' ||
-            case when p_alasan is not null and p_alasan != ''
-                 then '. Alasan: ' || p_alasan
+        'Pembayaran iuran ' || v_month_str || ' ' || v_confirmation.year || ' ditolak' ||
+            case when p_reason is not null and p_reason != ''
+                 then '. Alasan: ' || p_reason
                  else ''
             end,
-        'konfirmasi_pembayaran',
-        v_konfirmasi.id,
-        v_warga.user_id
+        'payment_confirmations',
+        v_confirmation.id,
+        v_member.user_id
     );
 end;
 $$;
@@ -521,7 +521,7 @@ grant  execute on function reject_konfirmasi(uuid, text, uuid) to authenticated;
 
 /* ----------------------------------------------------------------------------
  * populate_cashflow  — development / seeding utility
- * Generates synthetic pembayaran and pengeluaran records for testing.
+ * Generates synthetic payments and expenses records for testing.
  * Restricted to service_role so it cannot be called from the browser client.
  * --------------------------------------------------------------------------- */
 
@@ -535,93 +535,93 @@ returns void
 language plpgsql
 as $$
 declare
-    v_warga_id            uuid;
-    v_pembayaran_id       uuid;
-    v_jumlah_bulan        int;
+    v_resident_id         uuid;
+    v_payment_id          uuid;
+    v_month_count         int;
     v_rt                  record;
-    v_jumlah_bayar        bigint;
-    v_total_masuk         bigint  := 0;
-    v_target_pengeluaran  bigint;
-    v_current_pengeluaran bigint  := 0;
-    v_kategori            text[]  := array['sosial', 'operasional', 'kebersihan', 'keamanan', 'kegiatan'];
-    v_deskripsi           text[]  := array[
+    v_total_amount        bigint;
+    v_total_income        bigint  := 0;
+    v_target_expense      bigint;
+    v_current_expense     bigint  := 0;
+    v_categories          text[]  := array['sosial', 'operasional', 'kebersihan', 'keamanan', 'kegiatan'];
+    v_descriptions        text[]  := array[
         'Bantuan warga sakit', 'Pembelian alat kebersihan',
         'Konsumsi rapat',      'Perbaikan fasilitas',       'Honor keamanan'
     ];
-    v_bulan               int;
-    v_selected_bulan      int[]   := '{}';
-    v_random_bulan        int;
-    v_tanggal             timestamp;
+    v_month               int;
+    v_selected_months     int[]   := '{}';
+    v_random_month        int;
+    v_date                timestamp;
 begin
-    select id, nominal_iuran into v_rt from rt limit 1;
+    select id, monthly_fee into v_rt from rt limit 1;
 
-    if v_rt.nominal_iuran is null then
+    if v_rt.monthly_fee is null then
         raise exception 'Nominal iuran pada RT belum diatur';
     end if;
 
     -- Clear existing data for the year
-    delete from detail_pembayaran where tahun = p_tahun;
-    delete from pembayaran         where tahun = p_tahun;
-    delete from pengeluaran        where extract(year from tanggal) = p_tahun;
+    delete from payment_details where year = p_tahun;
+    delete from payments        where year = p_tahun;
+    delete from expenses        where extract(year from date) = p_tahun;
 
     -- Generate payments
     for i in 1..p_jumlah_data loop
-        select id into v_warga_id from warga order by random() limit 1;
+        select id into v_resident_id from residents order by random() limit 1;
 
-        v_jumlah_bulan   := floor(random() * p_max_bulan + 1);
-        v_selected_bulan := '{}';
+        v_month_count     := floor(random() * p_max_bulan + 1);
+        v_selected_months := '{}';
 
-        while array_length(v_selected_bulan, 1) is null
-           or array_length(v_selected_bulan, 1) < v_jumlah_bulan loop
+        while array_length(v_selected_months, 1) is null
+           or array_length(v_selected_months, 1) < v_month_count loop
 
-            v_random_bulan := floor(random() * 12 + 1);
+            v_random_month := floor(random() * 12 + 1);
 
-            if not (v_random_bulan = any(v_selected_bulan)) then
+            if not (v_random_month = any(v_selected_months)) then
                 if not exists (
-                    select 1 from detail_pembayaran
-                    where  warga_id = v_warga_id
-                    and    tahun    = p_tahun
-                    and    bulan    = v_random_bulan
+                    select 1 from payment_details
+                    where  resident_id = v_resident_id
+                    and    year        = p_tahun
+                    and    month       = v_random_month
                 ) then
-                    v_selected_bulan := array_append(v_selected_bulan, v_random_bulan);
+                    v_selected_months := array_append(v_selected_months, v_random_month);
                 end if;
             end if;
         end loop;
 
-        v_jumlah_bayar := v_jumlah_bulan * v_rt.nominal_iuran;
-        v_tanggal      := now() - (floor(random() * 120) || ' days')::interval;
+        v_total_amount := v_month_count * v_rt.monthly_fee;
+        v_date         := now() - (floor(random() * 120) || ' days')::interval;
 
-        insert into pembayaran (warga_id, rt_id, tahun, jumlah_bayar, tanggal, created_at)
-        values (v_warga_id, v_rt.id, p_tahun, v_jumlah_bayar, v_tanggal, now())
-        returning id into v_pembayaran_id;
+        insert into payments (resident_id, rt_id, year, total_amount, date, created_at)
+        values (v_resident_id, v_rt.id, p_tahun, v_total_amount, v_date, now())
+        returning id into v_payment_id;
 
-        foreach v_bulan in array v_selected_bulan loop
-            insert into detail_pembayaran (pembayaran_id, warga_id, tahun, bulan, nominal, created_at)
-            values (v_pembayaran_id, v_warga_id, p_tahun, v_bulan, v_rt.nominal_iuran, now());
+        foreach v_month in array v_selected_months loop
+            insert into payment_details (payment_id, resident_id, year, month, amount, created_at)
+            values (v_payment_id, v_resident_id, p_tahun, v_month, v_rt.monthly_fee, now());
         end loop;
 
-        v_total_masuk := v_total_masuk + v_jumlah_bayar;
+        v_total_income := v_total_income + v_total_amount;
     end loop;
 
     -- Generate expenses proportional to total income
-    v_target_pengeluaran := (v_total_masuk * p_rasio_pengeluaran)::bigint;
+    v_target_expense := (v_total_income * p_rasio_pengeluaran)::bigint;
 
-    while v_current_pengeluaran < v_target_pengeluaran loop
-        v_jumlah_bayar := (floor(random() * 5) + 1) * v_rt.nominal_iuran;
+    while v_current_expense < v_target_expense loop
+        v_total_amount := (floor(random() * 5) + 1) * v_rt.monthly_fee;
 
-        exit when (v_current_pengeluaran + v_jumlah_bayar) > v_target_pengeluaran;
+        exit when (v_current_expense + v_total_amount) > v_target_expense;
 
-        insert into pengeluaran (rt_id, kategori, deskripsi, nominal, tanggal, created_at)
+        insert into expenses (rt_id, category, description, amount, date, created_at)
         values (
             v_rt.id,
-            v_kategori[floor(random() * 5) + 1],
-            v_deskripsi[floor(random() * 5) + 1],
-            v_jumlah_bayar,
+            v_categories[floor(random() * 5) + 1],
+            v_descriptions[floor(random() * 5) + 1],
+            v_total_amount,
             now() - (floor(random() * 120) || ' days')::interval,
             now()
         );
 
-        v_current_pengeluaran := v_current_pengeluaran + v_jumlah_bayar;
+        v_current_expense := v_current_expense + v_total_amount;
     end loop;
 end;
 $$;
@@ -640,7 +640,7 @@ grant  execute on function get_last_saldo(uuid)                                 
  * approve_pengeluaran
  *
  * Flow:
- *   1. Lock the pengeluaran row
+ *   1. Lock the expenses row
  *   2. Validate status is still pending
  *   3. Mark as approved with timestamp and approver
  *   4. Append a ledger debit entry
@@ -660,7 +660,7 @@ declare
 begin
     -- 1. Lock row
     select * into v_row
-    from   pengeluaran
+    from   expenses
     where  id = p_id
     for update;
 
@@ -676,7 +676,7 @@ begin
     end if;
 
     -- 3. Mark approved
-    update pengeluaran
+    update expenses
     set    status      = 'approved',
            approved_by = p_user_id,
            approved_at = now()
@@ -689,8 +689,8 @@ begin
         'pengeluaran',
         p_id,
         now(),
-        coalesce(v_row.deskripsi, 'Pengeluaran RT'),
-        v_row.nominal::bigint,
+        coalesce(v_row.description, 'Pengeluaran RT'),
+        v_row.amount::bigint,
         p_user_id
     );
 
@@ -702,8 +702,8 @@ begin
             v_row.rt_id,
             'expense_approved',
             'Pengeluaran Disetujui',
-            'Pengeluaran ' || coalesce(v_row.nomor_bukti, '') || ' telah disetujui',
-            'pengeluaran',
+            'Pengeluaran ' || coalesce(v_row.receipt_number, '') || ' telah disetujui',
+            'expenses',
             p_id,
             v_row.created_by
         );
@@ -716,7 +716,7 @@ $$;
  * reject_pengeluaran
  *
  * Flow:
- *   1. Lock the pengeluaran row
+ *   1. Lock the expenses row
  *   2. Validate status is still pending
  *   3. Mark as rejected with reason
  *   4. Notify the expense creator
@@ -736,7 +736,7 @@ declare
 begin
     -- 1. Lock row
     select * into v_row
-    from   pengeluaran
+    from   expenses
     where  id = p_id
     for update;
 
@@ -752,10 +752,10 @@ begin
     end if;
 
     -- 3. Mark rejected
-    update pengeluaran
-    set    status             = 'rejected',
-           approved_by        = p_user_id,
-           catatan_penolakan  = p_alasan
+    update expenses
+    set    status          = 'rejected',
+           approved_by     = p_user_id,
+           rejection_note  = p_alasan
     where  id = p_id;
 
     -- 4. Notify creator
@@ -766,12 +766,12 @@ begin
             v_row.rt_id,
             'expense_rejected',
             'Pengeluaran Ditolak',
-            'Pengeluaran ' || coalesce(v_row.nomor_bukti, '') || ' ditolak' ||
+            'Pengeluaran ' || coalesce(v_row.receipt_number, '') || ' ditolak' ||
                 case when p_alasan is not null and p_alasan != ''
                      then '. Alasan: ' || p_alasan
                      else ''
                 end,
-            'pengeluaran',
+            'expenses',
             p_id,
             v_row.created_by
         );
@@ -788,7 +788,7 @@ grant  execute on function reject_pengeluaran(uuid, text, uuid)  to authenticate
 /* ----------------------------------------------------------------------------
  * approve_all_pending_pengeluaran
  *
- * Approves every pending pengeluaran for the given RT atomically.
+ * Approves every pending expense for the given RT atomically.
  * Returns the count of rows approved.
  * --------------------------------------------------------------------------- */
 
@@ -806,13 +806,13 @@ declare
 begin
     for v_row in
         select *
-        from   pengeluaran
+        from   expenses
         where  rt_id  = p_rt_id
         and    status = 'pending'
-        and    aktif  = true
+        and    active = true
         for update skip locked
     loop
-        update pengeluaran
+        update expenses
         set    status      = 'approved',
                approved_by = p_user_id,
                approved_at = now()
@@ -823,9 +823,9 @@ begin
             'pengeluaran',
             'pengeluaran',
             v_row.id,
-            coalesce(v_row.tanggal::timestamptz, now()),
-            coalesce(v_row.deskripsi, v_row.kategori, 'Pengeluaran'),
-            v_row.nominal::bigint,
+            coalesce(v_row.date::timestamptz, now()),
+            coalesce(v_row.description, v_row.category, 'Pengeluaran'),
+            v_row.amount::bigint,
             p_user_id
         );
 
@@ -836,9 +836,9 @@ begin
                 v_row.rt_id,
                 'expense_approved',
                 'Pengeluaran Disetujui',
-                'Pengeluaran ' || coalesce(v_row.nomor_bukti, '') ||
-                    ' sebesar Rp ' || v_row.nominal || ' telah disetujui.',
-                'pengeluaran',
+                'Pengeluaran ' || coalesce(v_row.receipt_number, '') ||
+                    ' sebesar Rp ' || v_row.amount || ' telah disetujui.',
+                'expenses',
                 v_row.id,
                 v_row.created_by
             );
