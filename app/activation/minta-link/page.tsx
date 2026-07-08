@@ -1,5 +1,5 @@
-import MintaLinkAktivasi from '@/features/activation/MintaLinkAktivasi'
+﻿import RequestActivationLink from '@/features/activation/RequestActivationLink'
 
 export default function Page() {
-    return <MintaLinkAktivasi />
+    return <RequestActivationLink />
 }

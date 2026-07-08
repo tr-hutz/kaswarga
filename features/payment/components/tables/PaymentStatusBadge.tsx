@@ -1,8 +1,8 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { getStatusClass } from '../../services/pembayaran-status'
+import { getStatusClass } from '../../services/payment-status'
 
 export default function PaymentStatusBadge({ status }) {
     const t = useTranslations('common')

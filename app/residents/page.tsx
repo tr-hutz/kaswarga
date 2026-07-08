@@ -1,8 +1,8 @@
-import WargaContainer from "../../features/resident/WargaContainer";
+﻿import ResidentContainer from "../../features/resident/ResidentContainer";
 
 export default function Page() {
 
   return (
-      <WargaContainer />
+      <ResidentContainer />
   )
 }

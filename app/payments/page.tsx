@@ -1,9 +1,9 @@
-import PembayaranContainer
-  from '../../features/payment/PembayaranContainer'
+﻿import PaymentContainer
+  from '../../features/payment/PaymentContainer'
 
 export default function Page() {
 
   return (
-      <PembayaranContainer />
+      <PaymentContainer />
   )
 }

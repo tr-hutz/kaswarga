@@ -1,9 +1,9 @@
-import PengeluaranContainer
-  from '../../features/expense/PengeluaranContainer'
+﻿import ExpenseContainer
+  from '../../features/expense/ExpenseContainer'
 
 export default function Page() {
 
   return (
-      <PengeluaranContainer />
+      <ExpenseContainer />
   )
 }

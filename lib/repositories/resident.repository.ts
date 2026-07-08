@@ -1,6 +1,6 @@
-import { supabase } from '../supabase'
+﻿import { supabase } from '../supabase'
 import type { Database } from '../../types/database'
-import { applyResidentFilters } from '../helpers/filter-warga'
+import { applyResidentFilters } from '../helpers/filter-resident'
 
 type ResidentInsert = Database['public']['Tables']['residents']['Insert']
 type ResidentUpdate = Database['public']['Tables']['residents']['Update']

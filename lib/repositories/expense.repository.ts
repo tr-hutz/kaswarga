@@ -1,6 +1,6 @@
-import { supabase } from '../supabase'
+﻿import { supabase } from '../supabase'
 import type { Database } from '../../types/database'
-import { applyExpenseFilters } from '../helpers/filter-pengeluaran'
+import { applyExpenseFilters } from '../helpers/filter-expense'
 
 type ExpenseInsert = Database['public']['Tables']['expenses']['Insert']
 type ExpenseUpdate = Database['public']['Tables']['expenses']['Update']
