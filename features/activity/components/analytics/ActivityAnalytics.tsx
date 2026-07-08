@@ -8,7 +8,7 @@ export default function ActivityAnalytics({ rows = [] }) {
 
     const total         = rows.length
     const approvals     = rows.filter(r => r.action === 'APPROVE_PEMBAYARAN').length
-    const expenseCount  = rows.filter(r => r.entityType === 'pengeluaran').length
+    const expenseCount  = rows.filter(r => r.entityType === 'expenses').length
     const residentCount = rows.filter(r => r.entityType === 'warga').length
 
     return (
