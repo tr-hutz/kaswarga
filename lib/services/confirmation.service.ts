@@ -1,8 +1,8 @@
 import {
     findPendingConfirmationDetails,
     findRejectedConfirmationDetails,
-    callApproveKonfirmasi,
-    callRejectKonfirmasi
+    callApproveConfirmation,
+    callRejectConfirmation
 } from '../repositories/confirmation.repository'
 
 export async function getPendingPayments(
@@ -22,12 +22,12 @@ export async function getRejectedPayments(
 export async function approveConfirmation(
     confirmationId: string
 ): Promise<void> {
-    return callApproveKonfirmasi(confirmationId)
+    return callApproveConfirmation(confirmationId)
 }
 
 export async function rejectConfirmation(
     confirmationId: string,
     reason: string
 ): Promise<void> {
-    return callRejectKonfirmasi(confirmationId, reason)
+    return callRejectConfirmation(confirmationId, reason)
 }
