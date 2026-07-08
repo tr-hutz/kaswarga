@@ -294,10 +294,10 @@ create policy "registration: super_admin read rt requests"
     using (type = 'rt' and is_super_admin());
 
 -- admin / chair reads resident requests for their own RT
-create policy "registration: admin read warga requests for own rt"
+create policy "registration: admin read resident requests for own rt"
     on registration_requests for select to authenticated
     using (
-        type  = 'warga'
+        type  = 'resident'
         and rt_id in (
             select rt_id
             from   memberships

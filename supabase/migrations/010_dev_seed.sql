@@ -93,7 +93,7 @@ $$;
  *   Pending        payment_confirmations (pending, recent months Oct–Dec)
  *                  → confirmation_details
  *                  → notification  (new_konfirmasi → admin role)
- *                  → activity_log  (konfirmasi_diajukan)
+ *                  → activity_log  (CREATE_PAYMENT)
  *
  *   Rejected       payment_confirmations (rejected, mid-year months Apr–Jul)
  *                  → confirmation_details
@@ -455,7 +455,7 @@ begin
             p_rt_id, 'new_konfirmasi', 'Konfirmasi Pembayaran Baru',
             v_warga_rec.name || ' mengajukan iuran '
                 || v_bulan_names[v_avail_month] || ' ' || p_tahun,
-            'payment_confirmations', v_konfirmasi_id, 'admin',
+            'payment_confirmations', v_konfirmasi_id, 'ADMIN',
             false, v_tanggal
         );
 
@@ -464,7 +464,7 @@ begin
             entity_type, entity_id, description, visibility, created_at
         ) values (
             p_rt_id, v_target_uid, v_warga_rec.name,
-            'konfirmasi_diajukan', 'payment_confirmations', v_konfirmasi_id,
+            'CREATE_PAYMENT', 'payment_confirmations', v_konfirmasi_id,
             v_warga_rec.name || ' mengajukan konfirmasi iuran '
                 || v_bulan_names[v_avail_month],
             'public', v_tanggal

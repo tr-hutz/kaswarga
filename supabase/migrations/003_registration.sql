@@ -31,7 +31,7 @@ create table registration_requests (
     id               uuid        primary key default gen_random_uuid(),
 
     -- Request type and lifecycle status
-    type             text        not null check (type in ('rt', 'warga')),
+    type             text        not null check (type in ('rt', 'resident')),
     status           text        not null default 'pending'
                                  check (status in ('pending', 'approved', 'rejected', 'expired')),
 
@@ -151,7 +151,7 @@ end loop;
     /* WARGA REGISTRATION                                                       */
     /* ---------------------------------------------------------------------- */
 
-    elsif new.type = 'warga' and new.rt_id is not null then
+    elsif new.type = 'resident' and new.rt_id is not null then
 
         insert into activity_logs (
             rt_id, actor_id, actor_name, action,
@@ -160,7 +160,7 @@ end loop;
             new.rt_id,
             null,
             new.resident_name,
-            'SUBMIT_WARGA_REGISTRATION',
+            'RESIDENT_REGISTER_REQUEST',
             'registration_requests',
             new.id,
             'New resident registration request submitted: "' || new.resident_name || '"',

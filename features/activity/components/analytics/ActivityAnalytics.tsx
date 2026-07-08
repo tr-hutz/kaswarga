@@ -9,7 +9,7 @@ export default function ActivityAnalytics({ rows = [] }) {
     const total         = rows.length
     const approvals     = rows.filter(r => r.action === 'APPROVE_PEMBAYARAN').length
     const expenseCount  = rows.filter(r => r.entityType === 'expenses').length
-    const residentCount = rows.filter(r => r.entityType === 'warga').length
+    const residentCount = rows.filter(r => r.entityType === 'residents').length
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

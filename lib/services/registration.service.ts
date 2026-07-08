@@ -83,7 +83,7 @@ export async function submitWargaRegistration({
     if (!rt) throw new Error(`RT dengan kode "${rtCode}" tidak ditemukan.`)
 
     const data = await insertRegistrationRequest({
-        type:           'warga',
+        type:           'resident',
         resident_name:  name,
         resident_email: email,
         rt_code:        rtCode.trim().toUpperCase(),
