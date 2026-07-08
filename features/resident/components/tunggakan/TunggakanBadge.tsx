@@ -1,11 +1,16 @@
 ﻿// @ts-nocheck
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 export default function TunggakanBadge({
 
                                            total = 0
 
                                        }) {
+
+    const tPaymentStatus = useTranslations('common.paymentStatus')
+    const tTunggakan     = useTranslations('warga.tunggakan')
 
     if (total <= 0) {
 
@@ -21,7 +26,7 @@ export default function TunggakanBadge({
           text-emerald-700
         "
             >
-        Lunas
+        {tPaymentStatus('paid')}
       </span>
         )
     }
@@ -38,7 +43,7 @@ export default function TunggakanBadge({
         text-rose-700
       "
         >
-      {total} bulan menunggak
+      {tTunggakan('badge', { total })}
     </span>
     )
 }

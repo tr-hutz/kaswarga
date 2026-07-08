@@ -1,11 +1,15 @@
 ﻿// @ts-nocheck
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 export default function TunggakanAlert({
 
                                            arrears = 0
 
                                        }) {
+
+    const t = useTranslations('warga.tunggakan')
 
     if (arrears <= 0) {
         return null
@@ -24,12 +28,7 @@ export default function TunggakanAlert({
       "
         >
 
-            Anda memiliki tunggakan
-            sebanyak
-            <strong>
-                {' '}
-                {arrears} bulan
-            </strong>
+            {t('alert', { months: arrears })}
 
         </div>
     )

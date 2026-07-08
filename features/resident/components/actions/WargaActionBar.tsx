@@ -4,6 +4,8 @@
 import ExportButtons
     from '../../../pembayaran/components/exports/ExportButtons'
 
+import { useTranslations } from 'next-intl'
+
 export default function WargaActionBar({
 
                                            rows,
@@ -11,6 +13,8 @@ export default function WargaActionBar({
                                            onCreate
 
                                        }) {
+
+    const t = useTranslations('warga')
 
     return (
 
@@ -33,7 +37,7 @@ export default function WargaActionBar({
                         font-bold
                     "
                 >
-                    Warga
+                    {t('title')}
                 </h1>
 
                 <p
@@ -42,7 +46,7 @@ export default function WargaActionBar({
                         text-slate-500
                     "
                 >
-                    Data warga cluster
+                    {t('clusterSubtitle')}
                 </p>
 
             </div>
@@ -67,7 +71,7 @@ export default function WargaActionBar({
                         font-medium
                     "
                 >
-                    Tambah Warga
+                    {t('form.addTitle')}
                 </button>
 
                 <ExportButtons

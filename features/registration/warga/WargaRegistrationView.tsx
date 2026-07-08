@@ -4,10 +4,12 @@
 import { useState }   from 'react'
 import { ChevronDown, ChevronUp, CheckCircle } from 'lucide-react'
 import Link           from 'next/link'
+import { useTranslations } from 'next-intl'
 
 export default function WargaRegistrationView({
     form, set, submitting, error, success, onSubmit
 }) {
+    const t = useTranslations('registration.warga')
     const [extraOpen, setExtraOpen] = useState(false)
 
     if (success) {
@@ -17,16 +19,15 @@ export default function WargaRegistrationView({
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600">
                         <CheckCircle size={32} />
                     </div>
-                    <h1 className="text-xl font-bold">Pendaftaran Terkirim!</h1>
+                    <h1 className="text-xl font-bold">{t('success.title')}</h1>
                     <p className="text-sm text-gray-600">
-                        Permintaan pendaftaran Anda telah dikirim kepada pengurus RT.
-                        Setelah disetujui, link aktivasi akan dikirimkan ke email <strong>{form.email}</strong>.
+                        {t('success.message', { email: form.email })}
                     </p>
                     <Link
                         href="/login"
                         className="inline-block mt-2 bg-black text-white rounded-xl px-6 py-2.5 text-sm font-medium"
                     >
-                        Kembali ke Login
+                        {t('success.backToLogin')}
                     </Link>
                 </div>
             </div>
@@ -40,16 +41,16 @@ export default function WargaRegistrationView({
                 className="w-full max-w-md space-y-5"
             >
                 <div>
-                    <h1 className="text-2xl font-bold">Daftar sebagai Warga</h1>
+                    <h1 className="text-2xl font-bold">{t('title')}</h1>
                     <p className="text-sm text-gray-500 mt-1">
-                        Butuh kode RT dari pengurus RT Anda.
+                        {t('subtitle')}
                     </p>
                 </div>
 
                 <div className="bg-white rounded-2xl border p-6 space-y-4">
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Nama Lengkap <span className="text-red-500">*</span></label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('fields.fullName')} <span className="text-red-500">*</span></label>
                         <input
                             required
                             value={form.name}
@@ -60,7 +61,7 @@ export default function WargaRegistrationView({
                     </div>
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Email <span className="text-red-500">*</span></label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('fields.email')} <span className="text-red-500">*</span></label>
                         <input
                             required
                             type="email"
@@ -72,7 +73,7 @@ export default function WargaRegistrationView({
                     </div>
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">Kode RT <span className="text-red-500">*</span></label>
+                        <label className="text-xs text-gray-500 mb-1 block">{t('fields.rtCode')} <span className="text-red-500">*</span></label>
                         <input
                             required
                             value={form.rtCode}
@@ -80,7 +81,7 @@ export default function WargaRegistrationView({
                             placeholder="RT-0001"
                             className="w-full border rounded-xl px-4 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
-                        <p className="text-xs text-gray-400 mt-1">Tanyakan kode ini kepada pengurus RT Anda</p>
+                        <p className="text-xs text-gray-400 mt-1">{t('fields.rtCodeNote')}</p>
                     </div>
 
                     {/* Extra fields (collapsible) */}
@@ -90,14 +91,14 @@ export default function WargaRegistrationView({
                             onClick={() => setExtraOpen(o => !o)}
                             className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-600"
                         >
-                            Informasi Tambahan (opsional)
+                            {t('fields.extra')}
                             {extraOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                         </button>
 
                         {extraOpen && (
                             <div className="px-4 pb-4 space-y-3 border-t">
                                 <div className="mt-3">
-                                    <label className="text-xs text-gray-500 mb-1 block">Blok / Jalan</label>
+                                    <label className="text-xs text-gray-500 mb-1 block">{t('fields.block')}</label>
                                     <input
                                         value={form.block}
                                         onChange={e => set('block', e.target.value)}
@@ -106,7 +107,7 @@ export default function WargaRegistrationView({
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-500 mb-1 block">Nomor Rumah</label>
+                                    <label className="text-xs text-gray-500 mb-1 block">{t('fields.houseNumber')}</label>
                                     <input
                                         value={form.houseNumber}
                                         onChange={e => set('houseNumber', e.target.value)}
@@ -115,7 +116,7 @@ export default function WargaRegistrationView({
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-gray-500 mb-1 block">Nomor Telepon</label>
+                                    <label className="text-xs text-gray-500 mb-1 block">{t('fields.phone')}</label>
                                     <input
                                         value={form.phone}
                                         onChange={e => set('phone', e.target.value)}
@@ -137,14 +138,14 @@ export default function WargaRegistrationView({
 
                 <div className="flex items-center justify-between">
                     <Link href="/daftar" className="text-sm text-gray-500 hover:underline">
-                        Kembali
+                        {t('back')}
                     </Link>
                     <button
                         type="submit"
                         disabled={submitting}
                         className="bg-black text-white rounded-xl px-6 py-2.5 text-sm font-medium disabled:opacity-50"
                     >
-                        {submitting ? 'Mengirim...' : 'Kirim Pendaftaran'}
+                        {submitting ? t('submitting') : t('submit')}
                     </button>
                 </div>
 

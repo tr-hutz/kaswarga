@@ -4,12 +4,15 @@
 import { useState }                   from 'react'
 import { submitWargaRegistration }     from '@/lib/services/registration.service'
 import WargaRegistrationView           from './WargaRegistrationView'
+import { useTranslations }             from 'next-intl'
 
 const EMPTY = {
     name: '', email: '', rtCode: '', block: '', houseNumber: '', phone: ''
 }
 
 export default function WargaRegistrationContainer() {
+
+    const t = useTranslations('registration.warga')
 
     const [form,       setForm]       = useState(EMPTY)
     const [submitting, setSubmitting] = useState(false)
@@ -37,7 +40,7 @@ export default function WargaRegistrationContainer() {
             })
             setSuccess(true)
         } catch (err) {
-            setError(err.message || 'Gagal mengirim pendaftaran.')
+            setError(err.message || t('errors.submitFailed'))
         } finally {
             setSubmitting(false)
         }

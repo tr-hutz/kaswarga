@@ -4,10 +4,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { ImageIcon, Loader2, Upload, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { useTranslations } from 'next-intl'
 
 const BUCKET = 'rt-assets'
 
 export default function ImageUpload({ label, currentUrl, storagePath, accept = 'image/jpeg,image/png,image/webp', onUploaded }) {
+
+    const t = useTranslations('profilRt.imageUpload')
 
     const [preview,   setPreview]   = useState(currentUrl || '')
     const [uploading, setUploading] = useState(false)
@@ -41,7 +44,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
             setPreview(url)
             onUploaded(url)
         } catch (err) {
-            setError(err.message || 'Upload gagal')
+            setError(err.message || t('uploadFailed'))
         } finally {
             setUploading(false)
             // reset input so same file can be re-selected
@@ -90,15 +93,15 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
                         )}
                         <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition flex items-center justify-center opacity-0 hover:opacity-100">
                             <span className="text-xs text-white bg-black/60 rounded-lg px-2 py-1 flex items-center gap-1">
-                                <Upload size={11} /> Ganti
+                                <Upload size={11} /> {t('change')}
                             </span>
                         </div>
                     </>
                 ) : (
                     <div className="flex flex-col items-center gap-1.5 text-gray-400 py-4">
                         <ImageIcon size={28} strokeWidth={1.5} />
-                        <p className="text-xs font-medium">Klik untuk upload</p>
-                        <p className="text-[11px]">JPG, PNG, WebP · maks. 2 MB</p>
+                        <p className="text-xs font-medium">{t('clickToUpload')}</p>
+                        <p className="text-[11px]">{t('formatNote')}</p>
                     </div>
                 )}
 

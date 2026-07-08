@@ -5,6 +5,8 @@ import {
     MONTHS
 } from '../../../../constants/months'
 
+import { useTranslations } from 'next-intl'
+
 function getMonthName(month) {
 
     const found =
@@ -40,6 +42,8 @@ export default function WargaPaymentHistory({
 
                                             }) {
 
+    const t = useTranslations('warga.paymentHistory')
+
     return (
 
         <div
@@ -57,7 +61,7 @@ export default function WargaPaymentHistory({
             text-slate-700
           "
                 >
-                    Histori Pembayaran
+                    {t('title')}
                 </h3>
 
             </div>
@@ -74,7 +78,7 @@ export default function WargaPaymentHistory({
               p-4
             "
                     >
-                        Belum ada histori pembayaran
+                        {t('empty')}
                     </div>
                 )
             }

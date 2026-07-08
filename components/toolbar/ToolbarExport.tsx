@@ -5,12 +5,16 @@ import {
     Download
 } from 'lucide-react'
 
+import { useTranslations } from 'next-intl'
+
 export default function ToolbarExport({
 
                                           onExportCSV,
                                           onExportExcel
 
                                       }) {
+
+    const t = useTranslations('common.actions')
 
     return (
 
@@ -43,7 +47,7 @@ export default function ToolbarExport({
                 <Download size={16} />
 
                 <span>
-                    CSV
+                    {t('exportCsv')}
                 </span>
 
             </button>
@@ -69,7 +73,7 @@ export default function ToolbarExport({
                 <Download size={16} />
 
                 <span>
-                    Excel
+                    {t('exportExcel')}
                 </span>
 
             </button>

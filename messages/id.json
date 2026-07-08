@@ -17,7 +17,8 @@
       "exportCsv": "Export CSV",
       "generate": "Generate",
       "search": "Cari",
-      "confirm": "Konfirmasi"
+      "confirm": "Konfirmasi",
+      "change": "Ganti"
     },
     "states": {
       "saving": "Menyimpan...",
@@ -46,7 +47,10 @@
       "date": "Tanggal",
       "name": "Nama",
       "email": "Email",
-      "noData": "Tidak ada data"
+      "noData": "Tidak ada data",
+      "month": "Bulan",
+      "year": "Tahun",
+      "amount": "Nominal"
     },
     "filter": {
       "all": "Semua",
@@ -149,6 +153,20 @@
       "title": "Import Data Warga",
       "buttonLabel": "Warga",
       "required": "wajib"
+    },
+    "clusterSubtitle": "Data warga cluster",
+    "analytics": {
+      "totalPaid": "Total Bayar",
+      "arrears": "Tunggakan",
+      "totalAmount": "Total Nominal"
+    },
+    "paymentHistory": {
+      "title": "Histori Pembayaran",
+      "empty": "Belum ada histori pembayaran"
+    },
+    "tunggakan": {
+      "alert": "Anda memiliki tunggakan sebanyak {months} bulan",
+      "badge": "{total} bulan menunggak"
     }
   },
 
@@ -540,7 +558,10 @@
       },
       "submit": "Kirim Pendaftaran",
       "submitting": "Mengirim...",
-      "back": "Kembali"
+      "back": "Kembali",
+      "errors": {
+        "submitFailed": "Gagal mengirim pendaftaran."
+      }
     },
     "landing": {
       "title": "Pendaftaran",
@@ -575,7 +596,13 @@
     },
     "save": "Simpan Perubahan",
     "saving": "Menyimpan...",
-    "generateCode": "Generate kode unik"
+    "generateCode": "Generate kode unik",
+    "imageUpload": {
+      "change": "Ganti",
+      "clickToUpload": "Klik untuk upload",
+      "formatNote": "JPG, PNG, WebP · maks. 2 MB",
+      "uploadFailed": "Upload gagal"
+    }
   },
 
   "settings": {
@@ -586,7 +613,13 @@
     "confirmPassword": "Konfirmasi Password Baru",
     "confirmPasswordPlaceholder": "Ulangi password baru",
     "save": "Simpan Password",
-    "saving": "Menyimpan..."
+    "saving": "Menyimpan...",
+    "errors": {
+      "minLength": "Password baru minimal 8 karakter.",
+      "mismatch": "Konfirmasi password tidak cocok.",
+      "success": "Password berhasil diubah.",
+      "failed": "Gagal mengubah password."
+    }
   },
 
   "import": {
@@ -620,6 +653,60 @@
       "title": "Link Dikirim!",
       "message": "Link aktivasi baru telah dikirim ke {email}. Cek inbox (dan folder spam) Anda. Link berlaku selama 24 jam.",
       "backToLogin": "Kembali ke Login"
+    },
+    "loading": {
+      "title": "Mengaktifkan Akun...",
+      "description": "Mohon tunggu sebentar."
+    },
+    "setPassword": {
+      "activated": "Akun berhasil diaktifkan",
+      "title": "Buat Password",
+      "description": "Buat password untuk mulai menggunakan aplikasi.",
+      "passwordLabel": "Password",
+      "confirmLabel": "Konfirmasi Password",
+      "passwordPlaceholder": "Minimal 8 karakter",
+      "confirmPlaceholder": "Ulangi password",
+      "submitting": "Masuk...",
+      "submit": "Buat Password & Masuk",
+      "minLength": "Password minimal 8 karakter.",
+      "mismatch": "Password dan konfirmasi tidak cocok."
+    },
+    "expired": {
+      "title": "Link Aktivasi Kedaluwarsa",
+      "description": "Link aktivasi untuk {email} sudah tidak berlaku (berlaku 1 hari).",
+      "resendDone": "Link aktivasi baru telah dikirim ke {email}. Cek inbox Anda.",
+      "resending": "Mengirim...",
+      "resend": "Kirim Ulang Link Aktivasi"
+    },
+    "already": {
+      "badge": "Akun sudah terdaftar",
+      "title": "Akun Sudah Aktif",
+      "description": "Akun ini sudah diaktifkan sebelumnya. Buat atau perbarui password untuk masuk.",
+      "submitting": "Menyimpan...",
+      "submit": "Simpan Password & Masuk",
+      "hasPassword": "Sudah punya password? Masuk di sini"
+    },
+    "noToken": {
+      "title": "Link Tidak Valid",
+      "description": "Link aktivasi tidak ditemukan atau sudah digunakan. Pastikan Anda membuka link langsung dari email."
+    },
+    "aktivasiError": {
+      "title": "Terjadi Kesalahan",
+      "fallback": "Aktivasi gagal. Silakan coba lagi atau hubungi pengurus RT."
     }
+  },
+
+  "appShell": {
+    "noMembership": {
+      "title": "Akun Belum Aktif",
+      "description": "Akun Anda belum terhubung ke RT. Silakan cek email undangan Anda dan klik link aktivasi, atau kunjungi halaman aktivasi.",
+      "goToActivation": "Ke Halaman Aktivasi"
+    }
+  },
+
+  "fileUpload": {
+    "uploading": "Mengunggah...",
+    "clickToAttach": "Klik untuk lampirkan nota",
+    "uploadFailed": "Upload gagal"
   }
 }

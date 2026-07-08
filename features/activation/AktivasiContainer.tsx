@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { supabase }            from '@/lib/supabase'
 import { resendInvite }        from '@/lib/services/approval.service'
 import { CheckCircle, AlertCircle, Clock, RefreshCw, Eye, EyeOff } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const STATE = {
     LOADING:      'loading',
@@ -16,6 +17,8 @@ const STATE = {
 }
 
 export default function AktivasiContainer() {
+
+    const t = useTranslations('aktivasi')
 
     const [state,         setState]         = useState(STATE.LOADING)
     const [email,         setEmail]         = useState(null)
@@ -115,11 +118,11 @@ export default function AktivasiContainer() {
         setPwError('')
 
         if (password.length < 8) {
-            setPwError('Password minimal 8 karakter.')
+            setPwError(t('setPassword.minLength'))
             return
         }
         if (password !== confirmPw) {
-            setPwError('Password dan konfirmasi tidak cocok.')
+            setPwError(t('setPassword.mismatch'))
             return
         }
 
@@ -163,8 +166,8 @@ export default function AktivasiContainer() {
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-50">
                             <div className="w-6 h-6 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
                         </div>
-                        <h1 className="text-xl font-bold">Mengaktifkan Akun...</h1>
-                        <p className="text-sm text-gray-500">Mohon tunggu sebentar.</p>
+                        <h1 className="text-xl font-bold">{t('loading.title')}</h1>
+                        <p className="text-sm text-gray-500">{t('loading.description')}</p>
                     </>
                 )}
 
@@ -172,9 +175,9 @@ export default function AktivasiContainer() {
                     <>
                         <div className="inline-flex items-center gap-1.5 justify-center text-green-600 mb-1">
                             <CheckCircle size={14} />
-                            <span className="text-xs font-medium">Akun berhasil diaktifkan</span>
+                            <span className="text-xs font-medium">{t('setPassword.activated')}</span>
                         </div>
-                        <h1 className="text-xl font-bold">Buat Password</h1>
+                        <h1 className="text-xl font-bold">{t('setPassword.title')}</h1>
                         {(displayName || rtName) && (
                             <p className="text-sm font-medium text-gray-700">
                                 {displayName && <span>{displayName}</span>}
@@ -183,12 +186,12 @@ export default function AktivasiContainer() {
                             </p>
                         )}
                         <p className="text-sm text-gray-500">
-                            Buat password untuk mulai menggunakan aplikasi.
+                            {t('setPassword.description')}
                         </p>
 
                         <form onSubmit={handleSetPassword} className="text-left space-y-4 pt-2">
                             <div>
-                                <label className="block text-sm font-medium mb-1.5">Password</label>
+                                <label className="block text-sm font-medium mb-1.5">{t('setPassword.passwordLabel')}</label>
                                 <div className="relative">
                                     <input
                                         type={showPw ? 'text' : 'password'}
@@ -196,7 +199,7 @@ export default function AktivasiContainer() {
                                         autoFocus
                                         value={password}
                                         onChange={e => setPassword(e.target.value)}
-                                        placeholder="Minimal 8 karakter"
+                                        placeholder={t('setPassword.passwordPlaceholder')}
                                         className="w-full border rounded-xl px-4 py-3 pr-10 outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     />
                                     <button
@@ -209,13 +212,13 @@ export default function AktivasiContainer() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1.5">Konfirmasi Password</label>
+                                <label className="block text-sm font-medium mb-1.5">{t('setPassword.confirmLabel')}</label>
                                 <input
                                     type={showPw ? 'text' : 'password'}
                                     required
                                     value={confirmPw}
                                     onChange={e => setConfirmPw(e.target.value)}
-                                    placeholder="Ulangi password"
+                                    placeholder={t('setPassword.confirmPlaceholder')}
                                     className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                 />
                             </div>
@@ -227,7 +230,7 @@ export default function AktivasiContainer() {
                                 disabled={savingPw}
                                 className="w-full bg-black text-white rounded-xl py-3 text-sm font-medium disabled:opacity-50"
                             >
-                                {savingPw ? 'Masuk...' : 'Buat Password & Masuk'}
+                                {savingPw ? t('setPassword.submitting') : t('setPassword.submit')}
                             </button>
                         </form>
                     </>
@@ -238,13 +241,13 @@ export default function AktivasiContainer() {
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 text-amber-600">
                             <Clock size={32} />
                         </div>
-                        <h1 className="text-xl font-bold">Link Aktivasi Kedaluwarsa</h1>
+                        <h1 className="text-xl font-bold">{t('expired.title')}</h1>
                         <p className="text-sm text-gray-600">
-                            Link aktivasi untuk <strong>{email}</strong> sudah tidak berlaku (berlaku 1 hari).
+                            {t('expired.description', { email })}
                         </p>
                         {resendDone ? (
                             <div className="bg-green-50 border border-green-200 text-green-700 rounded-xl px-4 py-3 text-sm">
-                                Link aktivasi baru telah dikirim ke {email}. Cek inbox Anda.
+                                {t('expired.resendDone', { email })}
                             </div>
                         ) : (
                             <>
@@ -255,7 +258,7 @@ export default function AktivasiContainer() {
                                     className="flex items-center gap-2 mx-auto bg-black text-white rounded-xl px-6 py-2.5 text-sm font-medium disabled:opacity-50"
                                 >
                                     <RefreshCw size={14} className={resending ? 'animate-spin' : ''} />
-                                    {resending ? 'Mengirim...' : 'Kirim Ulang Link Aktivasi'}
+                                    {resending ? t('expired.resending') : t('expired.resend')}
                                 </button>
                             </>
                         )}
@@ -266,19 +269,19 @@ export default function AktivasiContainer() {
                     <>
                         <div className="inline-flex items-center gap-1.5 justify-center text-blue-600 mb-1">
                             <CheckCircle size={14} />
-                            <span className="text-xs font-medium">Akun sudah terdaftar</span>
+                            <span className="text-xs font-medium">{t('already.badge')}</span>
                         </div>
-                        <h1 className="text-xl font-bold">Akun Sudah Aktif</h1>
+                        <h1 className="text-xl font-bold">{t('already.title')}</h1>
                         {email && (
                             <p className="text-sm font-medium text-gray-700">{email}</p>
                         )}
                         <p className="text-sm text-gray-500">
-                            Akun ini sudah diaktifkan sebelumnya. Buat atau perbarui password untuk masuk.
+                            {t('already.description')}
                         </p>
 
                         <form onSubmit={handleSetPassword} className="text-left space-y-4 pt-2">
                             <div>
-                                <label className="block text-sm font-medium mb-1.5">Password</label>
+                                <label className="block text-sm font-medium mb-1.5">{t('setPassword.passwordLabel')}</label>
                                 <div className="relative">
                                     <input
                                         type={showPw ? 'text' : 'password'}
@@ -286,7 +289,7 @@ export default function AktivasiContainer() {
                                         autoFocus
                                         value={password}
                                         onChange={e => setPassword(e.target.value)}
-                                        placeholder="Minimal 8 karakter"
+                                        placeholder={t('setPassword.passwordPlaceholder')}
                                         className="w-full border rounded-xl px-4 py-3 pr-10 outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                     />
                                     <button
@@ -299,13 +302,13 @@ export default function AktivasiContainer() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1.5">Konfirmasi Password</label>
+                                <label className="block text-sm font-medium mb-1.5">{t('setPassword.confirmLabel')}</label>
                                 <input
                                     type={showPw ? 'text' : 'password'}
                                     required
                                     value={confirmPw}
                                     onChange={e => setConfirmPw(e.target.value)}
-                                    placeholder="Ulangi password"
+                                    placeholder={t('setPassword.confirmPlaceholder')}
                                     className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                                 />
                             </div>
@@ -317,7 +320,7 @@ export default function AktivasiContainer() {
                                 disabled={savingPw}
                                 className="w-full bg-black text-white rounded-xl py-3 text-sm font-medium disabled:opacity-50"
                             >
-                                {savingPw ? 'Menyimpan...' : 'Simpan Password & Masuk'}
+                                {savingPw ? t('already.submitting') : t('already.submit')}
                             </button>
                         </form>
 
@@ -325,7 +328,7 @@ export default function AktivasiContainer() {
                             href="/login"
                             className="block text-sm text-gray-400 hover:underline"
                         >
-                            Sudah punya password? Masuk di sini
+                            {t('already.hasPassword')}
                         </a>
                     </>
                 )}
@@ -335,10 +338,9 @@ export default function AktivasiContainer() {
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-600">
                             <AlertCircle size={32} />
                         </div>
-                        <h1 className="text-xl font-bold">Link Tidak Valid</h1>
+                        <h1 className="text-xl font-bold">{t('noToken.title')}</h1>
                         <p className="text-sm text-gray-600">
-                            Link aktivasi tidak ditemukan atau sudah digunakan.
-                            Pastikan Anda membuka link langsung dari email.
+                            {t('noToken.description')}
                         </p>
                     </>
                 )}
@@ -348,9 +350,9 @@ export default function AktivasiContainer() {
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-600">
                             <AlertCircle size={32} />
                         </div>
-                        <h1 className="text-xl font-bold">Terjadi Kesalahan</h1>
+                        <h1 className="text-xl font-bold">{t('aktivasiError.title')}</h1>
                         <p className="text-sm text-gray-600">
-                            {errMsg || 'Aktivasi gagal. Silakan coba lagi atau hubungi pengurus RT.'}
+                            {errMsg || t('aktivasiError.fallback')}
                         </p>
                     </>
                 )}

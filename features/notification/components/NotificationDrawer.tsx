@@ -18,6 +18,8 @@ import {
     useRouter
 } from 'next/navigation'
 
+import { useTranslations } from 'next-intl'
+
 import {
 
     markNotificationRead
@@ -44,6 +46,8 @@ export default function NotificationDrawer({
 
     const router =
         useRouter()
+
+    const t = useTranslations('notification')
 
     async function handleClick(
         notification
@@ -135,7 +139,7 @@ export default function NotificationDrawer({
                                 text-lg
                             "
                         >
-                            Notifications
+                            {t('title')}
                         </h2>
 
                     </div>

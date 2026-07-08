@@ -5,6 +5,8 @@ import {
     Funnel
 } from 'lucide-react'
 
+import { useTranslations } from 'next-intl'
+
 export default function ToolbarFilter({
 
                                           value,
@@ -12,10 +14,12 @@ export default function ToolbarFilter({
 
                                           options = [],
 
-                                          placeholder =
-                                          'Filter'
+                                          placeholder
 
                                       }) {
+
+    const t = useTranslations('common.filter')
+    const resolvedPlaceholder = placeholder ?? t('placeholder')
 
     return (
 
@@ -67,7 +71,7 @@ export default function ToolbarFilter({
             >
 
                 <option value="all">
-                    {placeholder}
+                    {resolvedPlaceholder}
                 </option>
 
                 {

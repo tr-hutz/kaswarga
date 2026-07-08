@@ -1,5 +1,7 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
+
+import { useTranslations } from 'next-intl'
 
 export default function WargaAnalyticsCards({
 
@@ -9,20 +11,22 @@ export default function WargaAnalyticsCards({
 
                                             }) {
 
+    const t = useTranslations('warga.analytics')
+
     const cards = [
 
         {
-            label: 'Total Bayar',
+            label: t('totalPaid'),
             value: paidCount
         },
 
         {
-            label: 'Tunggakan',
+            label: t('arrears'),
             value: arrears
         },
 
         {
-            label: 'Total Nominal',
+            label: t('totalAmount'),
             value:
                 `Rp ${totalAmount.toLocaleString('id-ID')}`
         }

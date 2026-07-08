@@ -5,15 +5,19 @@ import {
     Search
 } from 'lucide-react'
 
+import { useTranslations } from 'next-intl'
+
 export default function ToolbarSearch({
 
                                           value,
                                           onChange,
 
-                                          placeholder =
-                                          'Cari...'
+                                          placeholder
 
                                       }) {
+
+    const t = useTranslations('common.actions')
+    const resolvedPlaceholder = placeholder ?? (t('search') + '...')
 
     return (
 
@@ -47,7 +51,7 @@ export default function ToolbarSearch({
                     )
                 }
 
-                placeholder={placeholder}
+                placeholder={resolvedPlaceholder}
 
                 className="
                     w-full

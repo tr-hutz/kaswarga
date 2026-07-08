@@ -2,12 +2,15 @@
 'use client'
 
 import PaymentHistoryRow from './PaymentHistoryRow'
+import { useTranslations } from 'next-intl'
 
 export default function PaymentHistoryTable({
 
                                                 data = []
 
                                             }) {
+
+    const t = useTranslations('common.table')
 
     return (
 
@@ -32,19 +35,19 @@ export default function PaymentHistoryTable({
                 >
 
                     <th className="p-4 text-left">
-                        Bulan
+                        {t('month')}
                     </th>
 
                     <th className="p-4 text-left">
-                        Tahun
+                        {t('year')}
                     </th>
 
                     <th className="p-4 text-left">
-                        Nominal
+                        {t('amount')}
                     </th>
 
                     <th className="p-4 text-left">
-                        Tanggal
+                        {t('date')}
                     </th>
 
                 </tr>

@@ -4,8 +4,11 @@
 import { useRef, useState } from 'react'
 import { File, Loader2, Paperclip, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import { useTranslations } from 'next-intl'
 
 export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUploaded, bucket = 'nota-pengeluaran' }) {
+
+    const t = useTranslations('fileUpload')
 
     const [fileLabel, setFileLabel] = useState(
         currentUrl
@@ -38,7 +41,7 @@ export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUp
             setFileLabel(file.name)
             onUploaded(data.publicUrl)
         } catch (err) {
-            setError(err.message || 'Upload gagal')
+            setError(err.message || t('uploadFailed'))
         } finally {
             setUploading(false)
             if (inputRef.current) inputRef.current.value = ''
@@ -85,7 +88,7 @@ export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUp
                         : <Paperclip size={16} className="text-gray-400 shrink-0" />
                     }
                     <span className="text-sm text-gray-500">
-                        {uploading ? 'Mengunggah...' : 'Klik untuk lampirkan nota'}
+                        {uploading ? t('uploading') : t('clickToAttach')}
                     </span>
                 </div>
             )}
