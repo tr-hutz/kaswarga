@@ -80,21 +80,21 @@ export const NAVIGATION: NavItem[] = [
         label: 'warga',
         href: '/residents',
         icon: Users,
-        permission: PERMISSIONS.VIEW_WARGA
+        permission: PERMISSIONS.VIEW_RESIDENTS
     },
 
     {
         label: 'pembayaran',
         href: '/payments',
         icon: Wallet,
-        permission: PERMISSIONS.VIEW_PEMBAYARAN
+        permission: PERMISSIONS.VIEW_PAYMENTS
     },
 
     {
         label: 'pengeluaran',
         href: '/expenses',
         icon: Receipt,
-        permission: PERMISSIONS.VIEW_PENGELUARAN
+        permission: PERMISSIONS.VIEW_EXPENSES
     },
 
     {

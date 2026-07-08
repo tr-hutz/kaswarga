@@ -21,7 +21,7 @@ export const PERMISSIONS = {
 
     /*
      |-------------------------------------------------------------
-     | RT PROFILE (ketua / admin / bendahara — own RT only)
+     | RT PROFILE (chair / admin / treasurer — own RT only)
      |-------------------------------------------------------------
      */
 
@@ -39,42 +39,42 @@ export const PERMISSIONS = {
 
     /*
      |-------------------------------------------------------------
-     | WARGA
+     | RESIDENTS
      |-------------------------------------------------------------
      */
 
-    VIEW_WARGA:
-        'view_warga',
+    VIEW_RESIDENTS:
+        'view_residents',
 
-    MANAGE_WARGA:
-        'manage_warga',
+    MANAGE_RESIDENTS:
+        'manage_residents',
 
     /*
      |-------------------------------------------------------------
-     | PEMBAYARAN
+     | PAYMENTS
      |-------------------------------------------------------------
      */
 
-    VIEW_PEMBAYARAN:
-        'view_pembayaran',
+    VIEW_PAYMENTS:
+        'view_payments',
 
-    APPROVE_PEMBAYARAN:
-        'approve_pembayaran',
+    APPROVE_PAYMENTS:
+        'approve_payments',
 
     /*
      |-------------------------------------------------------------
-     | PENGELUARAN
+     | EXPENSES
      |-------------------------------------------------------------
      */
 
-    VIEW_PENGELUARAN:
-        'view_pengeluaran',
+    VIEW_EXPENSES:
+        'view_expenses',
 
-    MANAGE_PENGELUARAN:
-        'manage_pengeluaran',
+    MANAGE_EXPENSES:
+        'manage_expenses',
 
-    APPROVE_PENGELUARAN:
-        'approve_pengeluaran',
+    APPROVE_EXPENSES:
+        'approve_expenses',
 
     /*
      |-------------------------------------------------------------
