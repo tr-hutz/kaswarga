@@ -37,7 +37,7 @@ export default function RegisterLanding() {
                                     <Users size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="font-semibold">{t('landing.asWarga')}</h2>
+                                    <h2 className="font-semibold">{t('landing.asResident')}</h2>
                                 </div>
                             </div>
                         </div>

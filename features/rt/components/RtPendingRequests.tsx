@@ -147,25 +147,25 @@ function RequestCard({ req, onAction }) {
 
                             {/* Management */}
                             <div className="space-y-1.5 border-t pt-2">
-                                {(req.nama_ketua || req.email_ketua) && (
+                                {(req.chair_name || req.chair_email) && (
                                     <div>
                                         <p className="font-medium text-gray-700">Ketua</p>
-                                        {req.nama_ketua  && <p>{req.nama_ketua}</p>}
-                                        {req.email_ketua && <p className="text-gray-400">{req.email_ketua}</p>}
+                                        {req.chair_name  && <p>{req.chair_name}</p>}
+                                        {req.chair_email && <p className="text-gray-400">{req.chair_email}</p>}
                                     </div>
                                 )}
-                                {(req.nama_admin || req.email_admin) && (
+                                {(req.admin_name || req.admin_email) && (
                                     <div>
                                         <p className="font-medium text-gray-700">Admin</p>
-                                        {req.nama_admin  && <p>{req.nama_admin}</p>}
-                                        {req.email_admin && <p className="text-gray-400">{req.email_admin}</p>}
+                                        {req.admin_name  && <p>{req.admin_name}</p>}
+                                        {req.admin_email && <p className="text-gray-400">{req.admin_email}</p>}
                                     </div>
                                 )}
-                                {(req.nama_bendahara || req.email_bendahara) && (
+                                {(req.treasurer_name || req.treasurer_email) && (
                                     <div>
                                         <p className="font-medium text-gray-700">Bendahara</p>
-                                        {req.nama_bendahara  && <p>{req.nama_bendahara}</p>}
-                                        {req.email_bendahara && <p className="text-gray-400">{req.email_bendahara}</p>}
+                                        {req.treasurer_name  && <p>{req.treasurer_name}</p>}
+                                        {req.treasurer_email && <p className="text-gray-400">{req.treasurer_email}</p>}
                                     </div>
                                 )}
                             </div>

@@ -136,8 +136,8 @@ export default function DashboardView({
         >
 
           <InsightCard
-            title={t('cards.totalWarga')}
-            value={paymentHealth.totalWarga}
+            title={t('cards.totalResidents')}
+            value={paymentHealth.totalResidents}
           />
 
           <InsightCard

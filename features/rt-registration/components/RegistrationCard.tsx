@@ -202,25 +202,25 @@ export default function RegistrationCard({ req, onAction }) {
 
                             {/* Management */}
                             <div className="space-y-2 border-t pt-2">
-                                {(req.nama_ketua || req.email_ketua) && (
+                                {(req.chair_name || req.chair_email) && (
                                     <div>
-                                        <p className="font-medium text-gray-700">{t('card.roles.ketua')}</p>
-                                        {req.nama_ketua  && <p>{req.nama_ketua}</p>}
-                                        {req.email_ketua && <p className="text-gray-400">{req.email_ketua}</p>}
+                                        <p className="font-medium text-gray-700">{t('card.roles.chair')}</p>
+                                        {req.chair_name  && <p>{req.chair_name}</p>}
+                                        {req.chair_email && <p className="text-gray-400">{req.chair_email}</p>}
                                     </div>
                                 )}
-                                {(req.nama_admin || req.email_admin) && (
+                                {(req.admin_name || req.admin_email) && (
                                     <div>
                                         <p className="font-medium text-gray-700">{t('card.roles.admin')}</p>
-                                        {req.nama_admin  && <p>{req.nama_admin}</p>}
-                                        {req.email_admin && <p className="text-gray-400">{req.email_admin}</p>}
+                                        {req.admin_name  && <p>{req.admin_name}</p>}
+                                        {req.admin_email && <p className="text-gray-400">{req.admin_email}</p>}
                                     </div>
                                 )}
-                                {(req.nama_bendahara || req.email_bendahara) && (
+                                {(req.treasurer_name || req.treasurer_email) && (
                                     <div>
-                                        <p className="font-medium text-gray-700">{t('card.roles.bendahara')}</p>
-                                        {req.nama_bendahara  && <p>{req.nama_bendahara}</p>}
-                                        {req.email_bendahara && <p className="text-gray-400">{req.email_bendahara}</p>}
+                                        <p className="font-medium text-gray-700">{t('card.roles.treasurer')}</p>
+                                        {req.treasurer_name  && <p>{req.treasurer_name}</p>}
+                                        {req.treasurer_email && <p className="text-gray-400">{req.treasurer_email}</p>}
                                     </div>
                                 )}
                             </div>

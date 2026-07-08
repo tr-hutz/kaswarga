@@ -350,9 +350,9 @@ export default function ActivationContainer() {
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-600">
                             <AlertCircle size={32} />
                         </div>
-                        <h1 className="text-xl font-bold">{t('aktivasiError.title')}</h1>
+                        <h1 className="text-xl font-bold">{t('activationError.title')}</h1>
                         <p className="text-sm text-gray-600">
-                            {errMsg || t('aktivasiError.fallback')}
+                            {errMsg || t('activationError.fallback')}
                         </p>
                     </>
                 )}

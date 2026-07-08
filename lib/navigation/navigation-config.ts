@@ -77,21 +77,21 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
-        label: 'warga',
+        label: 'residents',
         href: '/residents',
         icon: Users,
         permission: PERMISSIONS.VIEW_RESIDENTS
     },
 
     {
-        label: 'pembayaran',
+        label: 'payments',
         href: '/payments',
         icon: Wallet,
         permission: PERMISSIONS.VIEW_PAYMENTS
     },
 
     {
-        label: 'pengeluaran',
+        label: 'expenses',
         href: '/expenses',
         icon: Receipt,
         permission: PERMISSIONS.VIEW_EXPENSES
@@ -119,7 +119,7 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
-        label: 'profilRt',
+        label: 'rtProfile',
         href: '/rt-profile',
         icon: Settings,
         permission: PERMISSIONS.EDIT_RT_PROFILE
