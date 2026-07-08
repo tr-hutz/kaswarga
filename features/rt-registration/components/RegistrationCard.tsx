@@ -82,7 +82,7 @@ export default function RegistrationCard({ req, onAction }) {
     const [loadingLinks,  setLoadingLinks]  = useState(false)
     const { membership }                    = useAuth()
     const { toast }                         = useToast()
-    const t                                 = useTranslations('rtRegistrasi')
+    const t                                 = useTranslations('rtRegistration')
 
     const rtData = req.rt_data || {}
 

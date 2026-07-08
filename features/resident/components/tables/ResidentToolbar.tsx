@@ -21,7 +21,7 @@ export default function ResidentToolbar({
 
                                      }) {
 
-    const t = useTranslations('warga')
+    const t = useTranslations('residents')
     const tc = useTranslations('common')
 
     return (

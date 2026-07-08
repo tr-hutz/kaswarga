@@ -9,28 +9,28 @@ export function getNotificationLink(
 
         case 'payment_submitted':
 
-            return '/pembayaran?status=pending'
+            return '/payments?status=pending'
 
         case 'payment_approved':
 
-            return '/pembayaran?status=approved'
+            return '/payments?status=approved'
 
         case 'payment_rejected':
 
-            return '/pembayaran?status=rejected'
+            return '/payments?status=rejected'
 
         case 'expense_created':
         case 'expense_pending':
 
-            return '/pengeluaran?status=pending'
+            return '/expenses?status=pending'
 
         case 'expense_approved':
 
-            return '/pengeluaran?status=approved'
+            return '/expenses?status=approved'
 
         case 'expense_rejected':
 
-            return '/pengeluaran?status=rejected'
+            return '/expenses?status=rejected'
 
         case 'ledger_created':
 

@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         const { id } = await req.json()
         if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
 
-        const { error } = await supabaseAdmin.rpc('approve_pengeluaran', {
+        const { error } = await supabaseAdmin.rpc('approve_expense', {
             p_id:      id,
             p_user_id: authData.user.id,
         })
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ ok: true })
 
     } catch (err) {
-        console.error('[pengeluaran/approve]', err)
+        console.error('[expenses/approve]', err)
         return NextResponse.json({ error: (err as Error).message || 'Gagal menyetujui' }, { status: 500 })
     }
 }

@@ -42,7 +42,7 @@ export default function ExpenseForm({
     const [saving,     setSaving]     = useState(false)
     const [generating, setGenerating] = useState(false)
 
-    const t = useTranslations('pengeluaran')
+    const t = useTranslations('expenses')
     const tc = useTranslations('common')
 
     if (!open) return null

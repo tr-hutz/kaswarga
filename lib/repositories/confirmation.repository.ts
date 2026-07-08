@@ -50,9 +50,9 @@ export async function findRejectedConfirmationDetails(residentId: string, year: 
     }))
 }
 
-export async function callApproveKonfirmasi(confirmationId: string, userId?: string): Promise<void> {
+export async function callApproveConfirmation(confirmationId: string, userId?: string): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.rpc as any)('approve_konfirmasi', {
+    const { error } = await (supabase.rpc as any)('approve_confirmation', {
         p_confirmation_id: confirmationId,
         ...(userId ? { p_user_id: userId } : {})
     })
@@ -60,9 +60,9 @@ export async function callApproveKonfirmasi(confirmationId: string, userId?: str
     if (error) throw error
 }
 
-export async function callRejectKonfirmasi(confirmationId: string, reason: string, userId?: string): Promise<void> {
+export async function callRejectConfirmation(confirmationId: string, reason: string, userId?: string): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabase.rpc as any)('reject_konfirmasi', {
+    const { error } = await (supabase.rpc as any)('reject_confirmation', {
         p_confirmation_id: confirmationId,
         p_reason:          reason,
         ...(userId ? { p_user_id: userId } : {})

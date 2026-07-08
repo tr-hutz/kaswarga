@@ -37,7 +37,7 @@ export default function PaymentDetailDrawer({
 
                                             }) {
 
-    const t = useTranslations('pembayaran')
+    const t = useTranslations('payments')
 
     useKeyDown(open, { Escape: onClose })
 

@@ -10,6 +10,10 @@ import {
   getDashboardData
 } from '../../../lib/services/dashboard.service'
 
+import {
+  buildPaymentHealth
+} from '../helpers/dashboard-analytics'
+
 export function useDashboardAnalytics() {
 
   /*
@@ -82,62 +86,15 @@ export function useDashboardAnalytics() {
          * payment health
          */
 
-        const residents =
-          data.wargaAnalytics || []
-
         const currentMonth =
             new Date()
                 .getMonth() + 1
 
-        const paymentHealth = {
-
-          totalWarga:
-          residents.length,
-
-          paid:
-          residents.filter(item =>
-
-              item.paidCount >=
-              currentMonth
-
-          ).length,
-
-          almostPaid:
-          residents.filter(item =>
-
-              item.paidCount >=
-              currentMonth - 2
-
-              &&
-
-              item.paidCount <
-              currentMonth
-
-          ).length,
-
-          delinquent:
-          residents.filter(item =>
-
-              item.paidCount > 0
-
-              &&
-
-              item.paidCount <
-              currentMonth - 2
-
-          ).length,
-
-          neverPaid:
-          residents.filter(item =>
-
-              item.paidCount === 0
-
-          ).length
-
-        }
-
         setPaymentHealth(
-          paymentHealth
+          buildPaymentHealth({
+            residents: data.residentAnalytics || [],
+            currentMonth
+          })
         )
 
         setFinancialInsight({

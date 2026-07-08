@@ -28,13 +28,13 @@ export function useExpenseApproval({ onSuccess } = {}) {
         }
     }
 
-    async function reject(id, alasan) {
+    async function reject(id, reason) {
         setLoading(true)
         try {
             const res = await fetch('/api/expenses/reject', {
                 method:  'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({ id, alasan }),
+                body:    JSON.stringify({ id, reason }),
             })
             const body = await res.json()
             if (!res.ok) throw new Error(body.error || 'Gagal menolak')

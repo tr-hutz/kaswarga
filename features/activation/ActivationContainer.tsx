@@ -18,7 +18,7 @@ const STATE = {
 
 export default function ActivationContainer() {
 
-    const t = useTranslations('aktivasi')
+    const t = useTranslations('activation')
 
     const [state,         setState]         = useState(STATE.LOADING)
     const [email,         setEmail]         = useState(null)

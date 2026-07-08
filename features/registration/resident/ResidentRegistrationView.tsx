@@ -9,7 +9,7 @@ import { useTranslations } from 'next-intl'
 export default function ResidentRegistrationView({
     form, set, submitting, error, success, onSubmit
 }) {
-    const t = useTranslations('registration.warga')
+    const t = useTranslations('registration.resident')
     const [extraOpen, setExtraOpen] = useState(false)
 
     if (success) {

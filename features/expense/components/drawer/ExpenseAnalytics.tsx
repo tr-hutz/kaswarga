@@ -12,7 +12,7 @@ export default function ExpenseAnalytics({
 
                                              }) {
 
-    const t = useTranslations('pengeluaran')
+    const t = useTranslations('expenses')
 
     /*
      |-------------------------------------------------------------

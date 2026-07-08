@@ -8,7 +8,7 @@ import { useTranslations } from 'next-intl'
 
 export default function RequestActivationLink() {
 
-    const t = useTranslations('aktivasi')
+    const t = useTranslations('activation')
     const [email,   setEmail]   = useState('')
     const [loading, setLoading] = useState(false)
     const [done,    setDone]    = useState(false)

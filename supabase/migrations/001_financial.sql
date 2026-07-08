@@ -45,7 +45,7 @@ create table confirmation_details (
 
 /* ----------------------------------------------------------------------------
  * TABLE: payments
- * Approved payment record (kas masuk). Created by approve_konfirmasi().
+ * Approved payment record (income). Created by approve_confirmation().
  * --------------------------------------------------------------------------- */
 
 create table payments (

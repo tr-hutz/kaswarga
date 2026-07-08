@@ -358,7 +358,7 @@ export async function getDashboardData(
   const { data: currentBalance = 0 } =
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await (supabase.rpc as any)(
-      'get_last_saldo',
+      'get_last_balance',
       { p_rt_id: rtId }
     )
 

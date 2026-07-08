@@ -7,7 +7,7 @@ export default function ActivityAnalytics({ rows = [] }) {
     const t = useTranslations('activity')
 
     const total         = rows.length
-    const approvals     = rows.filter(r => r.action === 'APPROVE_PEMBAYARAN').length
+    const approvals     = rows.filter(r => r.action === 'APPROVE_PAYMENT').length
     const expenseCount  = rows.filter(r => r.entityType === 'expenses').length
     const residentCount = rows.filter(r => r.entityType === 'residents').length
 
@@ -16,7 +16,7 @@ export default function ActivityAnalytics({ rows = [] }) {
             <Card title={t('analytics.total')}        value={total} />
             <Card title={t('analytics.approvals')}    value={approvals} />
             <Card title={t('analytics.expense')}      value={expenseCount} />
-            <Card title={t('analytics.wargaUpdates')} value={residentCount} />
+            <Card title={t('analytics.residentUpdates')} value={residentCount} />
         </div>
     )
 }

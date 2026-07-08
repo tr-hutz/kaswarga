@@ -11,7 +11,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 |
 | Body:
 |   email                  string   required
-|   role                   string   required  (ketua|admin|bendahara|warga)
+|   role                   string   required  (CHAIR|ADMIN|TREASURER|RESIDENT)
 |   rtId                   string   optional  UUID of the RT
 |   registrationRequestId  string   optional  inserts activation_invites row
 |
@@ -21,7 +21,7 @@ import { supabaseAdmin } from '@/lib/supabase-admin'
 | Example (curl):
 |   curl -X POST http://localhost:3000/api/dev/invite-link \
 |     -H "Content-Type: application/json" \
-|     -d '{"email":"test@example.com","role":"warga","rtId":"11111111-1111-1111-1111-111111111111"}'
+|     -d '{"email":"test@example.com","role":"RESIDENT","rtId":"11111111-1111-1111-1111-111111111111"}'
 |--------------------------------------------------------------------------
 */
 
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
         }
 
         const siteUrl    = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-        const redirectTo = `${siteUrl}/aktivasi`
+        const redirectTo = `${siteUrl}/activation`
 
         // generateLink: creates/updates the user and returns the link without sending email
         const { data, error } = await supabaseAdmin.auth.admin.generateLink({

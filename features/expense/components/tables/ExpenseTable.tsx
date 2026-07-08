@@ -13,7 +13,7 @@ export default function ExpenseTable({
     onDelete,
 }) {
 
-    const t = useTranslations('pengeluaran')
+    const t = useTranslations('expenses')
 
     if (loading) {
         return <div className="p-6 text-sm text-gray-400">{t('table.loading')}</div>

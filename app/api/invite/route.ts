@@ -29,7 +29,7 @@ export async function POST(req: Request) {
         }
 
         const siteUrl    = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-        const redirectTo = `${siteUrl}/aktivasi`
+        const redirectTo = `${siteUrl}/activation`
 
         // ----------------------------------------------------------------
         // Send auth invite / generate link
@@ -86,7 +86,7 @@ export async function POST(req: Request) {
 
         // ----------------------------------------------------------------
         // Record activation invite using the caller's session (RLS-safe).
-        // This is the record the /aktivasi page reads — it must always be
+        // This is the record the /activation page reads — it must always be
         // written regardless of whether the auth link generation succeeded.
         // ----------------------------------------------------------------
         const cookieStore = await cookies()

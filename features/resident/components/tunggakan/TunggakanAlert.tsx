@@ -9,7 +9,7 @@ export default function TunggakanAlert({
 
                                        }) {
 
-    const t = useTranslations('warga.tunggakan')
+    const t = useTranslations('residents.tunggakan')
 
     if (arrears <= 0) {
         return null

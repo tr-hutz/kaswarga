@@ -246,7 +246,7 @@ export default function LoginView({
 
         <p className="text-center text-sm text-gray-500 mt-2">
           {t('hasInvitation')}{' '}
-          <Link href="/aktivasi/minta-link" className="text-blue-600 hover:underline font-medium">
+          <Link href="/activation/minta-link" className="text-blue-600 hover:underline font-medium">
             {t('requestNewLink')}
           </Link>
         </p>

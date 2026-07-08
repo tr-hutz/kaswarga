@@ -22,7 +22,7 @@ export default function ExpenseToolbar({
     onImport,
 }) {
 
-    const t = useTranslations('pengeluaran')
+    const t = useTranslations('expenses')
     const { categories } = useExpenseCategories()
 
     const filterOptions = categories.map(k => ({

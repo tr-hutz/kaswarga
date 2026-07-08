@@ -175,7 +175,7 @@ create policy "pembayaran: read own rt"
     on payments for select to authenticated
     using (rt_id in (select get_user_rt_ids()) or is_super_admin());
 
--- approve_konfirmasi (security_definer) is the normal insert path.
+-- approve_confirmation (security_definer) is the normal insert path.
 create policy "pembayaran: insert own rt"
     on payments for insert to authenticated
     with check (is_member_of_rt(rt_id) or is_super_admin());

@@ -33,7 +33,7 @@ export async function POST() {
             return NextResponse.json({ error: 'Hanya ketua RT yang dapat menyetujui pengeluaran' }, { status: 403 })
         }
 
-        const { data, error } = await (supabaseAdmin as any).rpc('approve_all_pending_pengeluaran', {
+        const { data, error } = await (supabaseAdmin as any).rpc('approve_all_pending_expenses', {
             p_rt_id:   membership.rt_id,
             p_user_id: authData.user.id,
         })
@@ -43,7 +43,7 @@ export async function POST() {
         return NextResponse.json({ approved: data })
 
     } catch (err) {
-        console.error('[pengeluaran/approve-all]', err)
+        console.error('[expenses/approve-all]', err)
         return NextResponse.json({ error: (err as Error).message || 'Gagal menyetujui semua' }, { status: 500 })
     }
 }

@@ -2,7 +2,7 @@
 'use client'
 
 import ExportButtons
-    from '../../../pembayaran/components/exports/ExportButtons'
+    from '../../../payment/components/exports/ExportButtons'
 
 import { useTranslations } from 'next-intl'
 
@@ -14,7 +14,7 @@ export default function ResidentActionBar({
 
                                        }) {
 
-    const t = useTranslations('warga')
+    const t = useTranslations('residents')
 
     return (
 

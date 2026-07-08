@@ -13,7 +13,7 @@ export default function ResidentFilters({
 
                                      }) {
 
-    const t = useTranslations('warga')
+    const t = useTranslations('residents')
     const tc = useTranslations('common')
 
     return (

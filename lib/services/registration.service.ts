@@ -60,7 +60,7 @@ export async function submitRtRegistration({
 |--------------------------------------------------------------------------
 */
 
-interface WargaRegistrationPayload {
+interface ResidentRegistrationPayload {
     name: string
     email: string
     rtCode: string
@@ -69,14 +69,14 @@ interface WargaRegistrationPayload {
     phone?: string | null
 }
 
-export async function submitWargaRegistration({
+export async function submitResidentRegistration({
     name,
     email,
     rtCode,
     block,
     houseNumber,
     phone
-}: WargaRegistrationPayload) {
+}: ResidentRegistrationPayload) {
     // Validate RT code exists
     const rt = await findRtByCode(rtCode.trim().toUpperCase())
 

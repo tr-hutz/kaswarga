@@ -11,7 +11,7 @@ export default function ResidentAnalyticsCards({
 
                                             }) {
 
-    const t = useTranslations('warga.analytics')
+    const t = useTranslations('residents.analytics')
 
     const cards = [
 

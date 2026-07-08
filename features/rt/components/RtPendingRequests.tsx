@@ -205,7 +205,7 @@ function RequestCard({ req, onAction }) {
 
 export default function RtPendingRequests({ requests, loading, onAction }) {
     const [open, setOpen] = useState(true)
-    const t = useTranslations('rtRegistrasi')
+    const t = useTranslations('rtRegistration')
 
     if (loading) return null
     if (!requests || requests.length === 0) return null

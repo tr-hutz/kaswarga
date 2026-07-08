@@ -22,7 +22,7 @@ export default function ResidentDetailDrawer({
 
                                           }) {
 
-    const t = useTranslations('warga')
+    const t = useTranslations('residents')
 
     if (!open || !warga) {
         return null
