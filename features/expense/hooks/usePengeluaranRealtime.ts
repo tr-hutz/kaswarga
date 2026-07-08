@@ -34,7 +34,7 @@ export function useExpenseRealtime({
 
                         schema: 'public',
 
-                        table: 'pengeluaran'
+                        table: 'expenses'
 
                     },
 
