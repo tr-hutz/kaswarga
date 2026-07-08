@@ -23,7 +23,11 @@ create table notifications (
     target_role    varchar(50),
     target_user_id uuid,
     is_read        boolean     not null default false,
-    created_at     timestamptz not null default now()
+    created_at     timestamptz not null default now(),
+    updated_at     timestamptz,
+    updated_by     uuid        references users (id),
+    deleted_at     timestamptz,
+    deleted_by     uuid        references users (id)
 );
 
 

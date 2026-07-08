@@ -203,6 +203,26 @@ create trigger trg_registration_requests_updated_at
     for each row
     execute function set_updated_at();
 
+create trigger trg_users_updated_at
+    before update on users
+    for each row execute function set_updated_at();
+
+create trigger trg_residents_updated_at
+    before update on residents
+    for each row execute function set_updated_at();
+
+create trigger trg_notifications_updated_at
+    before update on notifications
+    for each row execute function set_updated_at();
+
+create trigger trg_expenses_updated_at
+    before update on expenses
+    for each row execute function set_updated_at();
+
+create trigger trg_expense_categories_updated_at
+    before update on expense_categories
+    for each row execute function set_updated_at();
+
 
 /* ----------------------------------------------------------------------------
  * generate_rt_code

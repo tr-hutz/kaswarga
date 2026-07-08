@@ -133,3 +133,14 @@ create index idx_confirmation_details_confirmation_id
 
 create index idx_payment_details_payment_id
     on payment_details (payment_id);
+
+
+/* ----------------------------------------------------------------------------
+ * INDEXES — soft delete
+ * --------------------------------------------------------------------------- */
+
+create index idx_users_deleted_at              on users              (deleted_at) where deleted_at is null;
+create index idx_residents_deleted_at          on residents          (deleted_at) where deleted_at is null;
+create index idx_notifications_deleted_at      on notifications      (deleted_at) where deleted_at is null;
+create index idx_expenses_deleted_at           on expenses           (deleted_at) where deleted_at is null;
+create index idx_expense_categories_deleted_at on expense_categories (deleted_at) where deleted_at is null;

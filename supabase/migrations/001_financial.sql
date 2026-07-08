@@ -85,7 +85,12 @@ create table payment_details (
 create table expense_categories (
     id         serial      primary key,
     name       text        not null unique,
-    sort_order smallint    not null default 0
+    sort_order smallint    not null default 0,
+    created_at timestamptz not null default now(),
+    updated_at timestamptz,
+    updated_by uuid        references users (id),
+    deleted_at timestamptz,
+    deleted_by uuid        references users (id)
 );
 
 insert into expense_categories (name, sort_order) values
@@ -125,7 +130,11 @@ create table expenses (
     approved_by      uuid,
     approved_at      timestamptz,
     rejection_note   text,
-    created_at       timestamptz not null default now()
+    created_at       timestamptz not null default now(),
+    updated_at       timestamptz,
+    updated_by       uuid        references users (id),
+    deleted_at       timestamptz,
+    deleted_by       uuid        references users (id)
 );
 
 

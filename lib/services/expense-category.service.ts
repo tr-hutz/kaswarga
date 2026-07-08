@@ -4,6 +4,7 @@ export async function getExpenseCategories() {
     const { data, error } = await supabase
         .from('expense_categories')
         .select('id, name')
+        .is('deleted_at', null)
         .order('sort_order')
 
     if (error) throw error

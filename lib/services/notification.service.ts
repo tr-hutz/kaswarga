@@ -34,6 +34,8 @@ export async function getNotifications() {
             user?.id ?? ''
         )
 
+        .is('deleted_at', null)
+
         .order(
             'created_at',
             {

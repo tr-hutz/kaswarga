@@ -190,19 +190,34 @@ export type Database = {
       }
       expense_categories: {
         Row: {
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           id: number
           name: string
           sort_order: number
+          updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: number
           name: string
           sort_order?: number
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: number
           name?: string
           sort_order?: number
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -216,6 +231,8 @@ export type Database = {
           created_at: string | null
           created_by: string | null
           date: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description: string | null
           id: string
           receipt_number: string | null
@@ -224,6 +241,8 @@ export type Database = {
           rejection_note: string | null
           rt_id: string
           status: string | null
+          updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
           active?: boolean | null
@@ -234,6 +253,8 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           date?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           id?: string
           receipt_number?: string | null
@@ -242,6 +263,8 @@ export type Database = {
           rejection_note?: string | null
           rt_id: string
           status?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
           active?: boolean | null
@@ -252,6 +275,8 @@ export type Database = {
           created_at?: string | null
           created_by?: string | null
           date?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           id?: string
           receipt_number?: string | null
@@ -260,6 +285,8 @@ export type Database = {
           rejection_note?: string | null
           rt_id?: string
           status?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -386,6 +413,8 @@ export type Database = {
       notifications: {
         Row: {
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           entity_id: string | null
           entity_type: string | null
           id: string
@@ -396,9 +425,13 @@ export type Database = {
           target_user_id: string | null
           title: string
           type: string
+          updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           entity_id?: string | null
           entity_type?: string | null
           id?: string
@@ -409,9 +442,13 @@ export type Database = {
           target_user_id?: string | null
           title: string
           type: string
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           entity_id?: string | null
           entity_type?: string | null
           id?: string
@@ -422,6 +459,8 @@ export type Database = {
           target_user_id?: string | null
           title?: string
           type?: string
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -697,34 +736,46 @@ export type Database = {
           active: boolean | null
           block: string | null
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           email: string | null
           house_number: string | null
           id: string
           name: string
           phone: string | null
           rt_id: string
+          updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
           active?: boolean | null
           block?: string | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           email?: string | null
           house_number?: string | null
           id?: string
           name: string
           phone?: string | null
           rt_id: string
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
           active?: boolean | null
           block?: string | null
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           email?: string | null
           house_number?: string | null
           id?: string
           name?: string
           phone?: string | null
           rt_id?: string
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -805,21 +856,33 @@ export type Database = {
       users: {
         Row: {
           created_at: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           email: string | null
           id: string
           name: string | null
+          updated_at: string | null
+          updated_by: string | null
         }
         Insert: {
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           email?: string | null
           id: string
           name?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Update: {
           created_at?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           email?: string | null
           id?: string
           name?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
         }
         Relationships: []
       }

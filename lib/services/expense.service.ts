@@ -110,6 +110,8 @@ export async function getExpenses({
 
       `)
 
+            .is('deleted_at', null)
+
             .order(
                 'date',
                 {
@@ -327,7 +329,13 @@ export async function updateExpense(
             payload.date,
 
             receipt_url:
-            payload.receiptUrl || null
+            payload.receiptUrl || null,
+
+            updated_at:
+            new Date().toISOString(),
+
+            updated_by:
+            membership?.user?.id ?? null
 
         })
 
@@ -399,7 +407,13 @@ export async function deleteExpense(
 
         .from('expenses')
 
-        .delete()
+        .update({
+
+            deleted_at: new Date().toISOString(),
+            deleted_by: membership?.user?.id ?? null,
+            active:     false
+
+        })
 
         .eq(
             'id',

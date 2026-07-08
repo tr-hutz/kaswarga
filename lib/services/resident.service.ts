@@ -81,6 +81,8 @@ export async function getResidents({
 
             `)
 
+            .is('deleted_at', null)
+
             .order(
                 'name',
                 {
@@ -292,7 +294,13 @@ export async function updateResident(
             payload.houseNumber,
 
             phone:
-            payload.phone
+            payload.phone,
+
+            updated_at:
+            new Date().toISOString(),
+
+            updated_by:
+            membership?.user?.id ?? null
 
         })
 
@@ -358,7 +366,9 @@ export async function deleteResident(
 
         .update({
 
-            active: false
+            active:     false,
+            deleted_at: new Date().toISOString(),
+            deleted_by: membership?.user?.id ?? null
 
         })
 

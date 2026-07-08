@@ -57,7 +57,11 @@ create table users (
     id         uuid        primary key,
     name       text,
     email      text,
-    created_at timestamptz not null default now()
+    created_at timestamptz not null default now(),
+    updated_at timestamptz,
+    updated_by uuid,
+    deleted_at timestamptz,
+    deleted_by uuid
 );
 
 
@@ -75,7 +79,11 @@ create table residents (
     email        text,
     phone        text,
     active       boolean     not null default true,
-    created_at   timestamptz not null default now()
+    created_at   timestamptz not null default now(),
+    updated_at   timestamptz,
+    updated_by   uuid        references users (id),
+    deleted_at   timestamptz,
+    deleted_by   uuid        references users (id)
 );
 
 
