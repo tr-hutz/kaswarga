@@ -1,6 +1,12 @@
-import { supabase } from '../supabase'
 import { getCurrentMembership } from '../auth/getCurrentMembership'
 import { logActivity } from './activity-logger'
+import {
+    findAllRt,
+    findRtById,
+    findRtSnapshot,
+    insertRt,
+    updateRtById
+} from '../repositories/rt.repository'
 
 const SYSTEM_RT_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -11,17 +17,7 @@ const SYSTEM_RT_ID = '00000000-0000-0000-0000-000000000001'
 */
 
 export async function getAllRt() {
-
-    const { data, error } = await supabase
-        .from('rt')
-        .select('id, name, code, address, city, province, postal_code, email, phone, monthly_fee, active, created_at')
-        .neq('id', SYSTEM_RT_ID)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false })
-
-    if (error) throw error
-
-    return data || []
+    return findAllRt(SYSTEM_RT_ID)
 }
 
 /*
@@ -37,15 +33,7 @@ export async function getOwnRt() {
 
     if (!rtId) throw new Error('RT tidak ditemukan')
 
-    const { data, error } = await supabase
-        .from('rt')
-        .select('*')
-        .eq('id', rtId)
-        .single()
-
-    if (error) throw error
-
-    return data
+    return findRtById(rtId)
 }
 
 /*
@@ -75,27 +63,21 @@ export async function createRt(payload: RtPayload) {
 
     const membership = await getCurrentMembership()
 
-    const { data, error } = await supabase
-        .from('rt')
-        .insert({
-            name:           payload.name,
-            code:           payload.code,
-            address:        payload.address,
-            city:           payload.city,
-            province:       payload.province,
-            postal_code:    payload.postalCode,
-            email:          payload.email,
-            phone:          payload.phone,
-            monthly_fee:    payload.monthlyFee ?? 0,
-            bank_name:      payload.bankName,
-            account_number: payload.accountNumber,
-            account_holder: payload.accountHolder,
-            active:         true
-        })
-        .select()
-        .single()
-
-    if (error) throw error
+    const data = await insertRt({
+        name:           payload.name,
+        code:           payload.code,
+        address:        payload.address,
+        city:           payload.city,
+        province:       payload.province,
+        postal_code:    payload.postalCode,
+        email:          payload.email,
+        phone:          payload.phone,
+        monthly_fee:    payload.monthlyFee ?? 0,
+        bank_name:      payload.bankName,
+        account_number: payload.accountNumber,
+        account_holder: payload.accountHolder,
+        active:         true
+    })
 
     logActivity({
         rtId:       SYSTEM_RT_ID,
@@ -122,36 +104,25 @@ export async function updateRt(id: string, payload: RtPayload) {
 
     const membership = await getCurrentMembership()
 
-    const { data: before } = await supabase
-        .from('rt')
-        .select('name, code, monthly_fee, bank_name, account_number')
-        .eq('id', id)
-        .single()
+    const before = await findRtSnapshot(id)
 
-    const { data, error } = await supabase
-        .from('rt')
-        .update({
-            name:           payload.name,
-            code:           payload.code,
-            address:        payload.address,
-            city:           payload.city,
-            province:       payload.province,
-            postal_code:    payload.postalCode,
-            email:          payload.email,
-            phone:          payload.phone,
-            monthly_fee:    payload.monthlyFee,
-            bank_name:      payload.bankName,
-            account_number: payload.accountNumber,
-            account_holder: payload.accountHolder,
-            qris_url:       payload.qrisUrl,
-            logo_url:       payload.logoUrl,
-            updated_at:     new Date().toISOString()
-        })
-        .eq('id', id)
-        .select()
-        .single()
-
-    if (error) throw error
+    const data = await updateRtById(id, {
+        name:           payload.name,
+        code:           payload.code,
+        address:        payload.address,
+        city:           payload.city,
+        province:       payload.province,
+        postal_code:    payload.postalCode,
+        email:          payload.email,
+        phone:          payload.phone,
+        monthly_fee:    payload.monthlyFee,
+        bank_name:      payload.bankName,
+        account_number: payload.accountNumber,
+        account_holder: payload.accountHolder,
+        qris_url:       payload.qrisUrl,
+        logo_url:       payload.logoUrl,
+        updated_at:     new Date().toISOString()
+    })
 
     logActivity({
         rtId:       membership?.rt?.id ?? SYSTEM_RT_ID,

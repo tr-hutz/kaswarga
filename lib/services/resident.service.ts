@@ -1,24 +1,13 @@
+import { getCurrentMembership } from '../auth/getCurrentMembership'
+import { logActivity } from './activity-logger'
+import { transformResident } from '../../features/resident/services/resident-transform'
 import {
-    supabase
-} from '../supabase'
-
-import {
-    getCurrentMembership
-} from '../auth/getCurrentMembership'
-
-import {
-    logActivity
-} from './activity-logger'
-
-import {
-    applyResidentFilters
-} from '../helpers/filter-warga'
-
-import {
-
-    transformResident
-
-} from '../../features/resident/services/resident-transform'
+    findResidents,
+    findResidentSnapshot,
+    findResidentPaymentHistory,
+    insertResident,
+    updateResidentById
+} from '../repositories/resident.repository'
 
 /*
  |-------------------------------------------------------------
@@ -34,146 +23,19 @@ export async function getResidents({
     status?: string | null
 } = {}) {
 
-    /*
-     |---------------------------------------------------------
-     | MEMBERSHIP
-     |---------------------------------------------------------
-     */
+    const membership = await getCurrentMembership()
+    const rtId = membership?.rt?.id
 
-    const membership =
-        await getCurrentMembership()
+    const data = await findResidents({ rtId, search, status })
 
-    const rtId =
-        membership?.rt?.id
-
-    /*
-     |---------------------------------------------------------
-     | QUERY
-     |---------------------------------------------------------
-     */
-
-    let query =
-        supabase
-
-            .from('residents')
-
-            .select(`
-
-                id,
-                name,
-                block,
-                house_number,
-                phone,
-                rt_id,
-                active,
-                created_at,
-
-                payments:payments (
-                  id,
-                  year,
-
-                  payment_details (
-                    id,
-                    month,
-                    amount
-                  )
-                )
-
-            `)
-
-            .is('deleted_at', null)
-
-            .order(
-                'name',
-                {
-                    ascending: true
-                }
-            )
-
-    /*
-     |---------------------------------------------------------
-     | FILTER
-     |---------------------------------------------------------
-     */
-
-    query =
-        applyResidentFilters(
-            query,
-            {
-                rtId,
-                search,
-                status
-            }
-        )
-
-    /*
-     |---------------------------------------------------------
-     | EXECUTE
-     |---------------------------------------------------------
-     */
-
-    const {
-        data,
-        error
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    /*
-     |---------------------------------------------------------
-     | TRANSFORM
-     |---------------------------------------------------------
-     */
-
-    return transformResident(
-        data || []
-    )
+    return transformResident(data)
 }
 
 export async function getResidentPaymentHistory(
     residentId: string,
     year?: number | null
 ) {
-
-    let query =
-        supabase
-            .from('payments')
-            .select(`
-        id,
-        date,
-        year,
-        resident_id,
-
-        payment_details (
-          id,
-          month,
-          amount
-        )
-      `)
-            .eq('resident_id', residentId)
-            .order('date', {
-                ascending: false
-            })
-
-    if (year) {
-        query = query.eq(
-            'year',
-            year
-        )
-    }
-
-    const {
-        data,
-        error
-    } = await query
-
-    if (error) {
-        throw error
-    }
-
-    return data || []
+    return findResidentPaymentHistory(residentId, year)
 }
 
 interface ResidentPayload {
@@ -187,59 +49,21 @@ export async function createResident(
     payload: ResidentPayload
 ) {
 
-    /*
-   |-------------------------------------------------------------
-   | MEMBERSHIP
-   |-------------------------------------------------------------
-   */
-
-    const membership =
-        await getCurrentMembership()
-
-    const rtId =
-        membership?.rt?.id
+    const membership = await getCurrentMembership()
+    const rtId = membership?.rt?.id
 
     if (!rtId) {
-
-        throw new Error(
-            'RT tidak ditemukan'
-        )
+        throw new Error('RT tidak ditemukan')
     }
 
-    const {
-        data,
-        error
-    } = await supabase
-
-        .from('residents')
-
-        .insert({
-
-            name:
-            payload.name,
-
-            block:
-            payload.block,
-
-            house_number:
-            payload.houseNumber,
-
-            phone:
-            payload.phone,
-
-            rt_id:
-            rtId,
-
-            active: true
-
-        })
-
-        .select()
-        .single()
-
-    if (error) {
-        throw error
-    }
+    const data = await insertResident({
+        name:         payload.name,
+        block:        payload.block,
+        house_number: payload.houseNumber,
+        phone:        payload.phone,
+        rt_id:        rtId,
+        active:       true
+    })
 
     logActivity({
         rtId:       membership?.rt?.id,
@@ -265,56 +89,18 @@ export async function updateResident(
     payload: ResidentPayload
 ) {
 
-    const membership =
-        await getCurrentMembership()
+    const membership = await getCurrentMembership()
 
-    const { data: before } =
-        await supabase
-            .from('residents')
-            .select('name, block, house_number, phone')
-            .eq('id', id)
-            .single()
+    const before = await findResidentSnapshot(id)
 
-    const {
-        data,
-        error
-    } = await supabase
-
-        .from('residents')
-
-        .update({
-
-            name:
-            payload.name,
-
-            block:
-            payload.block,
-
-            house_number:
-            payload.houseNumber,
-
-            phone:
-            payload.phone,
-
-            updated_at:
-            new Date().toISOString(),
-
-            updated_by:
-            membership?.user?.id ?? null
-
-        })
-
-        .eq(
-            'id',
-            id
-        )
-
-        .select()
-        .single()
-
-    if (error) {
-        throw error
-    }
+    const data = await updateResidentById(id, {
+        name:         payload.name,
+        block:        payload.block,
+        house_number: payload.houseNumber,
+        phone:        payload.phone,
+        updated_at:   new Date().toISOString(),
+        updated_by:   membership?.user?.id ?? null
+    })
 
     logActivity({
         rtId:       membership?.rt?.id,
@@ -348,38 +134,15 @@ export async function deleteResident(
     id: string
 ): Promise<true> {
 
-    const membership =
-        await getCurrentMembership()
+    const membership = await getCurrentMembership()
 
-    const { data: before } =
-        await supabase
-            .from('residents')
-            .select('name, block, house_number')
-            .eq('id', id)
-            .single()
+    const before = await findResidentSnapshot(id)
 
-    const {
-        error
-    } = await supabase
-
-        .from('residents')
-
-        .update({
-
-            active:     false,
-            deleted_at: new Date().toISOString(),
-            deleted_by: membership?.user?.id ?? null
-
-        })
-
-        .eq(
-            'id',
-            id
-        )
-
-    if (error) {
-        throw error
-    }
+    await updateResidentById(id, {
+        active:     false,
+        deleted_at: new Date().toISOString(),
+        deleted_by: membership?.user?.id ?? null
+    })
 
     logActivity({
         rtId:       membership?.rt?.id,

@@ -1,6 +1,12 @@
-import { supabase } from '../supabase'
 import { logActivity } from './activity-logger'
 import type { UserRole } from '../../types'
+import {
+    findAllUsersWithMemberships,
+    findMembershipById,
+    updateMembershipRoleById,
+    insertMembership,
+    deleteMembershipById
+} from '../repositories/user.repository'
 
 const SYSTEM_RT_ID = '00000000-0000-0000-0000-000000000001'
 
@@ -11,30 +17,7 @@ const SYSTEM_RT_ID = '00000000-0000-0000-0000-000000000001'
 */
 
 export async function getAllUsers() {
-
-    const { data, error } = await supabase
-        .from('users')
-        .select(`
-            id,
-            name,
-            email,
-            created_at,
-            memberships:memberships (
-                id,
-                role,
-                rt:rt (
-                    id,
-                    name,
-                    code
-                )
-            )
-        `)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false })
-
-    if (error) throw error
-
-    return data || []
+    return findAllUsersWithMemberships()
 }
 
 /*
@@ -45,20 +28,9 @@ export async function getAllUsers() {
 
 export async function updateMembershipRole(membershipId: string, newRole: UserRole, actorMembership: { user?: { id?: string; name?: string } | null } | null) {
 
-    const { data: before } = await supabase
-        .from('memberships')
-        .select('role, user_id, rt_id')
-        .eq('id', membershipId)
-        .single()
+    const before = await findMembershipById(membershipId)
 
-    const { data, error } = await supabase
-        .from('memberships')
-        .update({ role: newRole })
-        .eq('id', membershipId)
-        .select()
-        .single()
-
-    if (error) throw error
+    const data = await updateMembershipRoleById(membershipId, newRole)
 
     logActivity({
         rtId:       SYSTEM_RT_ID,
@@ -85,13 +57,7 @@ export async function assignUserToRt(
     actorMembership: { user?: { id?: string; name?: string } | null } | null
 ) {
 
-    const { data, error } = await supabase
-        .from('memberships')
-        .insert({ user_id: userId, rt_id: rtId, role })
-        .select()
-        .single()
-
-    if (error) throw error
+    const data = await insertMembership({ user_id: userId, rt_id: rtId, role })
 
     logActivity({
         rtId:       SYSTEM_RT_ID,
@@ -115,18 +81,9 @@ export async function assignUserToRt(
 
 export async function removeMembership(membershipId: string, actorMembership: { user?: { id?: string; name?: string } | null } | null): Promise<true> {
 
-    const { data: before } = await supabase
-        .from('memberships')
-        .select('role, user_id, rt_id')
-        .eq('id', membershipId)
-        .single()
+    const before = await findMembershipById(membershipId)
 
-    const { error } = await supabase
-        .from('memberships')
-        .delete()
-        .eq('id', membershipId)
-
-    if (error) throw error
+    await deleteMembershipById(membershipId)
 
     logActivity({
         rtId:       SYSTEM_RT_ID,

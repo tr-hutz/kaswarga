@@ -1,5 +1,14 @@
-import { supabase } from '@/lib/supabase'
 import { logActivity } from '@/lib/services/activity-logger'
+import {
+    findRegistrationRequestById,
+    findExistingRtByCode,
+    insertRt,
+    updateRtById,
+    updateRegistrationRequestById,
+    updateRegistrationRequestApprovedById,
+    deleteRegistrationRequestById,
+    findRegistrationRequestSnapshot
+} from '@/lib/repositories/registration.repository'
 
 async function sendInvite({
     registrationRequestId,
@@ -39,13 +48,9 @@ interface Actor {
 
 export async function approveRtRegistration(requestId: string, actor: Actor | null) {
     // Fetch the request
-    const { data: req, error: fetchError } = await supabase
-        .from('registration_requests')
-        .select('*')
-        .eq('id', requestId)
-        .single()
+    const req = await findRegistrationRequestById(requestId)
 
-    if (fetchError || !req) throw new Error('Permintaan tidak ditemukan')
+    if (!req) throw new Error('Permintaan tidak ditemukan')
     if (req.status !== 'pending') throw new Error('Permintaan sudah diproses')
 
     const rtData = (req.rt_data || {}) as Record<string, unknown>
@@ -68,41 +73,23 @@ export async function approveRtRegistration(requestId: string, actor: Actor | nu
     }
 
     // If an RT with this code already exists, update it; otherwise insert a new one
-    const { data: existing } = await supabase
-        .from('rt')
-        .select('id')
-        .eq('code', rtData.code as string)
-        .maybeSingle()
+    const existing = await findExistingRtByCode(rtData.code as string)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let rt: any, rtError: any
+    let rt: any
     if (existing) {
-        ;({ data: rt, error: rtError } = await supabase
-            .from('rt')
-            .update({ ...rtPayload, updated_at: new Date().toISOString() })
-            .eq('id', existing.id)
-            .select()
-            .single())
+        rt = await updateRtById(existing.id, { ...rtPayload, updated_at: new Date().toISOString() })
     } else {
-        ;({ data: rt, error: rtError } = await supabase
-            .from('rt')
-            .insert(rtPayload)
-            .select()
-            .single())
+        rt = await insertRt(rtPayload)
     }
 
-    if (rtError) throw rtError
-
     // Mark request approved
-    await supabase
-        .from('registration_requests')
-        .update({
-            status:      'approved',
-            rt_id:       rt.id,
-            approved_by: actor?.user?.id || null,
-            approved_at: new Date().toISOString()
-        })
-        .eq('id', requestId)
+    await updateRegistrationRequestById(requestId, {
+        status:      'approved',
+        rt_id:       rt.id,
+        approved_by: actor?.user?.id || null,
+        approved_at: new Date().toISOString()
+    })
 
     // Send invites — chair required, admin required, treasurer optional
     const invites = [
@@ -144,17 +131,12 @@ export async function approveRtRegistration(requestId: string, actor: Actor | nu
 */
 
 export async function rejectRtRegistration(requestId: string, reason: string | null, actor: Actor | null) {
-    const { error } = await supabase
-        .from('registration_requests')
-        .update({
-            status:           'rejected',
-            rejected_by:      actor?.user?.id || null,
-            rejected_at:      new Date().toISOString(),
-            rejection_reason: reason || null
-        })
-        .eq('id', requestId)
-
-    if (error) throw error
+    await updateRegistrationRequestById(requestId, {
+        status:           'rejected',
+        rejected_by:      actor?.user?.id || null,
+        rejected_at:      new Date().toISOString(),
+        rejection_reason: reason || null
+    })
 
     logActivity({
         rtId:        null,
@@ -177,25 +159,17 @@ export async function rejectRtRegistration(requestId: string, reason: string | n
 
 export async function approveResidentRegistration(requestId: string, actor: Actor | null) {
     // Re-fetch to enforce first-approver-wins
-    const { data: req, error: fetchError } = await supabase
-        .from('registration_requests')
-        .select('*')
-        .eq('id', requestId)
-        .single()
+    const req = await findRegistrationRequestById(requestId)
 
-    if (fetchError || !req) throw new Error('Permintaan tidak ditemukan')
+    if (!req) throw new Error('Permintaan tidak ditemukan')
     if (req.status !== 'pending') throw new Error('Permintaan sudah diproses oleh orang lain')
 
     // Mark approved
-    await supabase
-        .from('registration_requests')
-        .update({
-            status:      'approved',
-            approved_by: actor?.user?.id || null,
-            approved_at: new Date().toISOString()
-        })
-        .eq('id', requestId)
-        .eq('status', 'pending') // extra guard
+    await updateRegistrationRequestApprovedById(requestId, {
+        status:      'approved',
+        approved_by: actor?.user?.id || null,
+        approved_at: new Date().toISOString()
+    })
 
     // Send invite to resident
     const devLink = await sendInvite({
@@ -226,18 +200,9 @@ export async function approveResidentRegistration(requestId: string, actor: Acto
 */
 
 export async function rejectResidentRegistration(requestId: string, actor: Actor | null) {
-    const { data: req } = await supabase
-        .from('registration_requests')
-        .select('resident_name, rt_id')
-        .eq('id', requestId)
-        .single()
+    const req = await findRegistrationRequestSnapshot(requestId)
 
-    const { error } = await supabase
-        .from('registration_requests')
-        .delete()
-        .eq('id', requestId)
-
-    if (error) throw error
+    await deleteRegistrationRequestById(requestId)
 
     logActivity({
         rtId:        req?.rt_id || null,
