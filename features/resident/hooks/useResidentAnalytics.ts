@@ -11,23 +11,23 @@ import {
 } from '../../../lib/services/resident.service'
 
 import {
-    transformPaymentHistory
-} from '../services/resident-history-transform'
+    transformResidentAnalytics
+} from '../services/resident-analytics-transform'
 
-export function usePaymentHistory(
+export function useResidentAnalytics(
     wargaId,
     year
 ) {
 
     const [
+        analytics,
+        setAnalytics
+    ] = useState([])
+
+    const [
         loading,
         setLoading
     ] = useState(true)
-
-    const [
-        history,
-        setHistory
-    ] = useState([])
 
     useEffect(() => {
 
@@ -37,14 +37,16 @@ export function usePaymentHistory(
 
             try {
 
-                const data =
+                const payments =
                     await getResidentPaymentHistory(
                         wargaId,
                         year
                     )
 
-                setHistory(
-                    transformPaymentHistory(data)
+                setAnalytics(
+                    transformResidentAnalytics(
+                        payments
+                    )
                 )
 
             } catch (err) {
@@ -65,6 +67,6 @@ export function usePaymentHistory(
 
     return {
         loading,
-        history
+        analytics
     }
 }

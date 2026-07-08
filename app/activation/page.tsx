@@ -1,5 +1,5 @@
-import AktivasiContainer from '../../features/activation/AktivasiContainer'
+﻿import ActivationContainer from '../../features/activation/ActivationContainer'
 
 export default function Page() {
-    return <AktivasiContainer />
+    return <ActivationContainer />
 }

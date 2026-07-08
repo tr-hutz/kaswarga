@@ -1,5 +1,5 @@
-import RtRegistrasiContainer from '../../../features/rt-registration/RtRegistrasiContainer'
+﻿import RtRegistrationContainer from '../../../features/rt-registration/RtRegistrationContainer'
 
 export default function Page() {
-    return <RtRegistrasiContainer />
+    return <RtRegistrationContainer />
 }

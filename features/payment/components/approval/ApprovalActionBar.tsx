@@ -4,7 +4,7 @@
 import { useTranslations } from 'next-intl'
 import {
     isPending
-} from '../../services/pembayaran-status'
+} from '../../services/payment-status'
 
 export default function ApprovalActionBar({
 
