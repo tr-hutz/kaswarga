@@ -52,7 +52,7 @@ export default function SidebarMenu({ onClose }) {
             supabase
                 .from('registration_requests')
                 .select('*', { count: 'exact', head: true })
-                .eq('type', 'warga')
+                .eq('type', 'resident')
                 .eq('status', 'pending')
                 .eq('rt_id', rtId)
                 .then(({ count }) => setPendingWargaCount(count || 0))
@@ -66,7 +66,7 @@ export default function SidebarMenu({ onClose }) {
                 event:  '*',
                 schema: 'public',
                 table:  'registration_requests',
-                filter: 'type=eq.warga',
+                filter: 'type=eq.resident',
             }, fetchCount)
             .subscribe()
 

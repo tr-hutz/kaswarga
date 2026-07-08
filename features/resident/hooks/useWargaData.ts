@@ -31,7 +31,7 @@ export function useResidentData({ search = '', status = 'aktif' } = {}) {
                 event:  'INSERT',
                 schema: 'public',
                 table:  'registration_requests',
-                filter: `type=eq.warga`,
+                filter: `type=eq.resident`,
             }, () => loadPending())
             .subscribe()
 
@@ -57,7 +57,7 @@ export function useResidentData({ search = '', status = 'aktif' } = {}) {
             const { data: rows, error } = await supabase
                 .from('registration_requests')
                 .select('*')
-                .eq('type', 'warga')
+                .eq('type', 'resident')
                 .eq('status', 'pending')
                 .eq('rt_id', membership.rt.id)
                 .order('created_at', { ascending: false })
