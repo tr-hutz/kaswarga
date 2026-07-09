@@ -42,3 +42,9 @@ next-env.d.ts
 
 # WebStorm / JetBrains project files
 /.idea
+
+# AI
+/.claude
+
+# Database
+/supabase/.temp
