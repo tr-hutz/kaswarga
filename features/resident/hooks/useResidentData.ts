@@ -26,7 +26,7 @@ export function useResidentData({ search = '', status = 'aktif' } = {}) {
         if (!rtId) return
 
         const channel = supabase
-            .channel('warga-pending-requests')
+            .channel('resident-pending-requests')
             .on('postgres_changes', {
                 event:  'INSERT',
                 schema: 'public',

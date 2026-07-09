@@ -21,7 +21,7 @@ export function useExpenseRealtime({
             supabase
 
                 .channel(
-                    'pengeluaran-realtime'
+                    'expense-realtime'
                 )
 
                 .on(

@@ -138,7 +138,8 @@
       "paymentStatus": "Status Iuran Warga",
       "paymentStatusSubtitle": "Rekap kepatuhan pembayaran iuran bulanan",
       "finance": "Keuangan RT",
-      "financeSubtitle": "Ringkasan arus kas tahun {year}"
+      "financeSubtitle": "Ringkasan arus kas tahun {year}",
+      "cashflowSubtitle": "Pemasukan vs pengeluaran bulanan"
     },
     "cards": {
       "totalResidents": "Total Warga",
@@ -499,6 +500,9 @@
     "arrears": {
       "alert": "Anda memiliki tunggakan sebanyak {months} bulan",
       "badge": "{total} bulan menunggak"
+    },
+    "detail": {
+      "blockLabel": "Blok"
     }
   },
   "payments": {
@@ -523,6 +527,7 @@
       "blockPrefix": "Blok",
       "monthsPaid": "Bulan Dibayar",
       "proofTitle": "Bukti Pembayaran",
+      "proofUnavailable": "Bukti pembayaran tidak tersedia",
       "proofError": "Bukti tidak dapat dimuat"
     },
     "reject": {

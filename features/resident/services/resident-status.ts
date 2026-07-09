@@ -1,15 +1,15 @@
 ﻿// @ts-nocheck
 export function getResidentStatus(
 
-    warga
+    resident
 
 ) {
 
-    if (!warga) {
+    if (!resident) {
         return 'inactive'
     }
 
-    return warga.active
+    return resident.active
         ? 'active'
         : 'inactive'
 }
@@ -21,10 +21,10 @@ export function getResidentStatusLabel(
     switch (status) {
 
         case 'active':
-            return 'Aktif'
+            return 'Active'
 
         case 'inactive':
-            return 'Nonaktif'
+            return 'Inactive'
 
         default:
             return '-'

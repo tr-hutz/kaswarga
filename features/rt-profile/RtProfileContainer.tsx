@@ -1,7 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import { useRtProfile }  from './hooks/useProfilRt'
+import { useRtProfile }  from './hooks/useRtProfile'
 import RtProfileView     from './ProfilRtView'
 
 export default function RtProfileContainer() {

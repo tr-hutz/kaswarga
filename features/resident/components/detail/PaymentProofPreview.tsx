@@ -1,52 +1,30 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
-export default function PaymentProofPreview({
+import { useTranslations } from 'next-intl'
 
-                                                url
+export default function PaymentProofPreview({ url }) {
 
-                                            }) {
+    const t = useTranslations('payments.detail')
 
     if (!url) {
-
         return (
-
-            <div
-                className="
-                    text-sm
-                    text-slate-500
-                "
-            >
-                Bukti pembayaran tidak tersedia
+            <div className="text-sm text-slate-500">
+                {t('proofUnavailable')}
             </div>
         )
     }
 
     return (
-
         <div>
-
-            <h3
-                className="
-                    text-sm
-                    font-semibold
-                    mb-3
-                "
-            >
-                Bukti Pembayaran
+            <h3 className="text-sm font-semibold mb-3">
+                {t('proofTitle')}
             </h3>
-
             <img
                 src={url}
-                alt="Bukti Pembayaran"
-                className="
-                    w-full
-                    rounded-2xl
-                    border
-                    object-cover
-                "
+                alt={t('proofTitle')}
+                className="w-full rounded-2xl border object-cover"
             />
-
         </div>
     )
 }

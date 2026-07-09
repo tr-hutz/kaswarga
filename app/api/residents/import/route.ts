@@ -10,8 +10,8 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publi
 |--------------------------------------------------------------------------
 | POST /api/residents/import
 |
-| Bulk-inserts warga rows for the caller's RT.
-| Restricted to ketua and admin.
+| Bulk-inserts resident rows for the caller's RT.
+| Restricted to chair and admin.
 |--------------------------------------------------------------------------
 */
 

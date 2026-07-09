@@ -52,7 +52,7 @@ export default function ExpenseContainer() {
 
         onImportSuccess: (inserted) => {
             refresh()
-            toast({ message: `${inserted} data pengeluaran berhasil diimpor.`, type: 'success' })
+            toast({ message: `${inserted} expenses imported successfully.`, type: 'success' })
         },
 
         onApprovalSuccess: () => {

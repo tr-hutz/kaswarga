@@ -73,7 +73,7 @@ export default function ExpenseForm({
         }
     }
 
-    const storagePath = rtId ? `pengeluaran/${rtId}` : 'pengeluaran/general'
+    const storagePath = rtId ? `expenses/${rtId}` : 'expenses/general'
 
     return (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">

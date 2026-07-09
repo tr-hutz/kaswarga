@@ -14,11 +14,15 @@ import {
 
 } from 'recharts'
 
+import { useTranslations } from 'next-intl'
+
 export default function CashflowChart({
 
   data = []
 
 }) {
+
+  const t = useTranslations('dashboard.sections')
 
   return (
 
@@ -53,7 +57,7 @@ export default function CashflowChart({
             text-slate-500
           "
         >
-          Pemasukan vs pengeluaran bulanan
+          {t('cashflowSubtitle')}
         </p>
 
       </div>

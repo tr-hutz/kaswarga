@@ -141,7 +141,7 @@ export default function ResidentView({
 
                 onClose={closeDrawer}
 
-                warga={selectedResident}
+                resident={selectedResident}
 
             />
 
@@ -151,7 +151,7 @@ export default function ResidentView({
 
                 onClose={closeForm}
 
-                warga={selectedResident}
+                resident={selectedResident}
 
                 onSuccess={() => {
 

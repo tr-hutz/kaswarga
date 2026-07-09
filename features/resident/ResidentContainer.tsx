@@ -69,7 +69,7 @@ export default function ResidentContainer() {
 
     const actions = useResidentActions((inserted) => {
         refresh()
-        toast({ message: `${inserted} data warga berhasil diimpor.`, type: 'success' })
+        toast({ message: `${inserted} residents imported successfully.`, type: 'success' })
     })
 
     return (

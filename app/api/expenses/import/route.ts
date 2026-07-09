@@ -10,8 +10,8 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publi
 |--------------------------------------------------------------------------
 | POST /api/expenses/import
 |
-| Bulk-inserts pengeluaran rows for the caller's RT.
-| Restricted to ketua, admin, and bendahara.
+| Bulk-inserts expense rows for the caller's RT.
+| Restricted to chair, admin, and treasurer.
 |--------------------------------------------------------------------------
 */
 
@@ -93,16 +93,16 @@ export async function POST(req: Request) {
         })
 
         // Notify all CHAIR users with ONE grouped notification
-        const { data: ketuaMembers } = await supabaseAdmin
+        const { data: chairMembers } = await supabaseAdmin
             .from('memberships')
             .select('user_id')
             .eq('rt_id', membership.rt_id)
             .eq('role', 'CHAIR')
             .eq('status', 'active')
 
-        if (ketuaMembers?.length && data.length > 0) {
+        if (chairMembers?.length && data.length > 0) {
             await supabaseAdmin.from('notifications').insert(
-                ketuaMembers.map(m => ({
+                chairMembers.map(m => ({
                     rt_id:          membership.rt_id,
                     type:           'expense_pending',
                     title:          'New Expenses Pending Approval',

@@ -29,7 +29,7 @@ export async function GET(req: Request) {
   const start = `${year}-01-01`
   const end = `${parseInt(year) + 1}-01-01`
 
-  const { data: profil } = await supabase
+  const { data: rt } = await supabase
     .from('rt')
     .select('*')
     .limit(1)
@@ -38,7 +38,7 @@ export async function GET(req: Request) {
   const { data: members } = await supabase
     .from('memberships')
     .select('role, user:users(name)')
-    .eq('rt_id', profil?.id ?? '')
+    .eq('rt_id', rt?.id ?? '')
     .in('role', ['ADMIN', 'TREASURER'])
 
   const chairmanName =
@@ -53,14 +53,14 @@ export async function GET(req: Request) {
     .from('payment_details')
     .select(`month, amount, payments!inner(date, rt_id, resident_id, residents(name, block, house_number))`)
     .eq('year', parseInt(year))
-    .eq('payments.rt_id', profil?.id ?? '')
+    .eq('payments.rt_id', rt?.id ?? '')
     .gte('payments.date', start)
     .lt('payments.date', end)
 
   const { data: expenseRows } = await supabase
     .from('expenses')
     .select('*')
-    .eq('rt_id', profil?.id ?? '')
+    .eq('rt_id', rt?.id ?? '')
     .gte('date', start)
     .lt('date', end)
 
@@ -82,9 +82,9 @@ export async function GET(req: Request) {
 
   // ===== logo =====
   let logoImage = null
-  if (profil?.logo_url) {
+  if (rt?.logo_url) {
     try {
-      const res = await fetch(profil.logo_url)
+      const res = await fetch(rt.logo_url)
       const bytes = await res.arrayBuffer()
       try {
         logoImage = await pdfDoc.embedPng(bytes)
@@ -144,13 +144,13 @@ export async function GET(req: Request) {
 
     const infoX = rightX + 50
 
-    page.drawText(profil?.name || '-', {
+    page.drawText(rt?.name || '-', {
       x: infoX, y: topY, size: 12, font: bold
     })
-    page.drawText(`RT ${profil?.code || '-'}`, {
+    page.drawText(`RT ${rt?.code || '-'}`, {
       x: infoX, y: topY - 15, size: 10, font
     })
-    page.drawText(profil?.address || '-', {
+    page.drawText(rt?.address || '-', {
       x: infoX, y: topY - 28, size: 9, font
     })
 
@@ -178,13 +178,13 @@ export async function GET(req: Request) {
       x: rightX, y: sY, size: 12, font: bold
     })
     page.drawText('Bank', { x: rightX, y: sY - 16, size: 10, font })
-    drawTextRight(profil?.bank_name || '-', COL_RIGHT, sY - 16)
+    drawTextRight(rt?.bank_name || '-', COL_RIGHT, sY - 16)
 
     page.drawText('No. Rek', { x: rightX, y: sY - 32, size: 10, font })
-    drawTextRight(maskAccountNumber(profil?.account_number ?? null), COL_RIGHT, sY - 32)
+    drawTextRight(maskAccountNumber(rt?.account_number ?? null), COL_RIGHT, sY - 32)
 
     page.drawText('A.n', { x: rightX, y: sY - 48, size: 10, font })
-    drawTextRight(profil?.account_holder || '-', COL_RIGHT, sY - 48)
+    drawTextRight(rt?.account_holder || '-', COL_RIGHT, sY - 48)
 
     y -= 70
     drawDivider(y + 10)
@@ -371,7 +371,7 @@ export async function GET(req: Request) {
 
   const pdfBytes = await pdfDoc.save()
 
-  const rtSlug = (profil?.code || profil?.name || 'rt')
+  const rtSlug = (rt?.code || rt?.name || 'rt')
     .toLowerCase()
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '')

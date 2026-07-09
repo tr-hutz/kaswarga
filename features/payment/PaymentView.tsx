@@ -167,8 +167,8 @@ export default function PaymentView({
                     status={status}
                     setStatus={setStatus}
 
-                    onExportCSV={() => exportToCSV({data: rows, fileName: 'pembayaran.csv'})}
-                    onExportExcel={() => exportToExcel({data: rows, fileName: 'pembayaran.xlsx'})}
+                    onExportCSV={() => exportToCSV({data: rows, fileName: 'payments.csv'})}
+                    onExportExcel={() => exportToExcel({data: rows, fileName: 'payments.xlsx'})}
                 />
             </div>
 

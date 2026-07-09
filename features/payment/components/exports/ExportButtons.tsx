@@ -47,10 +47,10 @@ export default function ExportButtons({
                 getExportData(),
 
             fileName:
-                `pembayaran.xlsx`,
+                `payments.xlsx`,
 
             sheetName:
-                'Pembayaran'
+                'Payments'
         })
     }
 
@@ -68,7 +68,7 @@ export default function ExportButtons({
                 getExportData(),
 
             fileName:
-                `pembayaran.csv`
+                `payments.csv`
         })
     }
 
