@@ -365,42 +365,42 @@ create policy "rt-assets: authenticated delete"
     using (bucket_id = 'rt-assets');
 
 /*
- * bukti-pembayaran
+ * payment-proof
  */
 
-create policy "bukti-pembayaran: public read"
+create policy "payment-proof: public read"
     on storage.objects for select to public
-    using (bucket_id = 'bukti-pembayaran');
+    using (bucket_id = 'payment-proof');
 
-create policy "bukti-pembayaran: authenticated upload"
+create policy "payment-proof: authenticated upload"
     on storage.objects for insert to authenticated
-    with check (bucket_id = 'bukti-pembayaran');
+    with check (bucket_id = 'payment-proof');
 
-create policy "bukti-pembayaran: authenticated update"
+create policy "payment-proof: authenticated update"
     on storage.objects for update to authenticated
-    using (bucket_id = 'bukti-pembayaran');
+    using (bucket_id = 'payment-proof');
 
-create policy "bukti-pembayaran: authenticated delete"
+create policy "payment-proof: authenticated delete"
     on storage.objects for delete to authenticated
-    using (bucket_id = 'bukti-pembayaran');
+    using (bucket_id = 'payment-proof');
 
 
 /*
- * nota-pengeluaran
+ * expense-receipts
 */
 
-create policy "nota-pengeluaran: public read"
+create policy "expense-receipts: public read"
     on storage.objects for select to public
-    using (bucket_id = 'nota-pengeluaran');
+    using (bucket_id = 'expense-receipts');
 
-create policy "nota-pengeluaran: authenticated upload"
+create policy "expense-receipts: authenticated upload"
     on storage.objects for insert to authenticated
-    with check (bucket_id = 'nota-pengeluaran');
+    with check (bucket_id = 'expense-receipts');
 
-create policy "nota-pengeluaran: authenticated update"
+create policy "expense-receipts: authenticated update"
     on storage.objects for update to authenticated
-    using (bucket_id = 'nota-pengeluaran');
+    using (bucket_id = 'expense-receipts');
 
-create policy "nota-pengeluaran: authenticated delete"
+create policy "expense-receipts: authenticated delete"
     on storage.objects for delete to authenticated
-    using (bucket_id = 'nota-pengeluaran');
+    using (bucket_id = 'expense-receipts');
