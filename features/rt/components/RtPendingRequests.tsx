@@ -96,11 +96,11 @@ function RequestCard({ req, onAction }) {
     }
 
     async function handleReject() {
-        if (!window.confirm('Tolak pendaftaran RT ini?')) return
+        if (!window.confirm(t('card.rejectConfirm'))) return
         setProcessing(true)
         try {
             await rejectRtRegistration(req.id, '', membership)
-            toast({ message: 'Pendaftaran RT ditolak.', type: 'success' })
+            toast({ message: 'RT registration rejected.', type: 'success' })
         } catch (err) {
             toast({ message: err.message, type: 'error' })
         } finally {

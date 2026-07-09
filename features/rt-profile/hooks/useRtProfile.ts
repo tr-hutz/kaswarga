@@ -21,7 +21,7 @@ export function useRtProfile() {
             const data = await getOwnRt()
             setRt(data)
         } catch (err) {
-            console.error('[useProfilRt]', err)
+            console.error('[useRtProfile]', err)
             toast({ message: 'Failed to load RT data.', type: 'error' })
         } finally {
             setLoading(false)

@@ -57,7 +57,7 @@ export function useApprovalActions({
             )
 
             toast({
-                message: 'Konfirmasi pembayaran berhasil disetujui.',
+                message: 'Payment approved.',
                 type: 'success'
             })
 
@@ -102,7 +102,7 @@ export function useApprovalActions({
             )
 
             toast({
-                message: 'Konfirmasi pembayaran berhasil ditolak.',
+                message: 'Payment rejected.',
                 type: 'success'
             })
 

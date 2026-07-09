@@ -30,7 +30,7 @@ export default function RegisterLanding() {
                         </div>
                     </Link>
 
-                    <Link href="/daftar/warga" className="block">
+                    <Link href="/register/resident" className="block">
                         <div className="bg-white border rounded-2xl p-6 hover:shadow-md transition cursor-pointer">
                             <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 rounded-xl bg-green-100 text-green-700 flex items-center justify-center shrink-0">

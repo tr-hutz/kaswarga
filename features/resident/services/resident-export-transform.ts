@@ -55,12 +55,12 @@ export async function exportResidentsToExcel(
     XLSX.utils.book_append_sheet(
         workbook,
         worksheet,
-        'Warga'
+        'Residents'
     )
 
     XLSX.writeFile(
         workbook,
-        'data-warga.xlsx'
+        'residents.xlsx'
     )
 }
 
@@ -101,7 +101,7 @@ export async function exportResidentsToCSV(
     link.href = url
 
     link.download =
-        'data-warga.csv'
+        'residents.csv'
 
     link.click()
 }

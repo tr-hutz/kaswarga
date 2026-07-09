@@ -43,7 +43,7 @@ function RequestRow({ req, onAction }) {
         setProcessing(true)
         try {
             const { inviteLink } = await approveResidentRegistration(req.id, membership)
-            toast({ message: t('approvedToast', { name: req.nama_warga }), type: 'success' })
+            toast({ message: t('approvedToast', { name: req.resident_name }), type: 'success' })
             if (IS_DEV && inviteLink) {
                 setDevLink(inviteLink)
                 // Don't call onAction yet — user must dismiss the dev link row
@@ -59,7 +59,7 @@ function RequestRow({ req, onAction }) {
     }
 
     async function handleReject() {
-        if (!window.confirm(t('rejectConfirm', { name: req.nama_warga }))) return
+        if (!window.confirm(t('rejectConfirm', { name: req.resident_name }))) return
         setProcessing(true)
         try {
             await rejectResidentRegistration(req.id, membership)
@@ -111,7 +111,7 @@ function RequestRow({ req, onAction }) {
                 <tr className="bg-amber-50 border-t border-amber-200">
                     <td colSpan={5} className="px-4 py-3 space-y-2">
                         <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
-                            [DEV] Activation Link — {req.email_warga}
+                            [DEV] Activation Link — {req.resident_email}
                         </p>
                         <div className="flex items-center gap-2">
                             <input

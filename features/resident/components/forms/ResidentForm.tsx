@@ -7,22 +7,22 @@ import { useTranslations } from 'next-intl'
 
 const EMPTY = { name: '', block: '', houseNumber: '', phone: '' }
 
-export default function ResidentForm({ open, onClose, warga, onSuccess }) {
+export default function ResidentForm({ open, onClose, resident, onSuccess }) {
 
-    const isEdit = !!warga
+    const isEdit = !!resident
 
     const [form,    setForm]    = useState(EMPTY)
     const [saving,  setSaving]  = useState(false)
 
     useEffect(() => {
-        if (!warga) { setForm(EMPTY); return }
+        if (!resident) { setForm(EMPTY); return }
         setForm({
-            name:        warga.name        || '',
-            block:       warga.block       || '',
-            houseNumber: warga.houseNumber || '',
-            phone:       warga.phone       || ''
+            name:        resident.name        || '',
+            block:       resident.block       || '',
+            houseNumber: resident.houseNumber || '',
+            phone:       resident.phone       || ''
         })
-    }, [warga])
+    }, [resident])
 
     function set(key, val) {
         setForm(prev => ({ ...prev, [key]: val }))
@@ -36,7 +36,7 @@ export default function ResidentForm({ open, onClose, warga, onSuccess }) {
         setSaving(true)
         try {
             if (isEdit) {
-                await updateResident(warga.id, form)
+                await updateResident(resident.id, form)
             } else {
                 await createResident(form)
             }

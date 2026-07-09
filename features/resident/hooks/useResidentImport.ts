@@ -37,8 +37,8 @@ export function useResidentImport(onSuccess) {
             { name: 'Siti Rahma',   block: 'B',  house_number: '5',  phone: ''            },
             { name: 'Ahmad Fauzi',  block: '',   house_number: '12', phone: '08987654321' },
         ],
-        templateSheetName: 'Warga',
-        templateFileName:  'template-import-warga.xlsx',
+        templateSheetName: 'Residents',
+        templateFileName:  'resident-import-template.xlsx',
         onSuccess,
     })
 }

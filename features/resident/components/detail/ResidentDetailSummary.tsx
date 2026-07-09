@@ -5,13 +5,13 @@ import { useTranslations } from 'next-intl'
 
 export default function ResidentDetailSummary({
 
-                                               warga
+                                               resident
 
                                            }) {
 
     const t = useTranslations('residents')
 
-    if (!warga) {
+    if (!resident) {
         return null
     }
 
@@ -31,7 +31,7 @@ export default function ResidentDetailSummary({
                         font-bold
                     "
                 >
-                    {warga.name}
+                    {resident.name}
                 </h2>
 
                 <p
@@ -40,7 +40,7 @@ export default function ResidentDetailSummary({
                         text-slate-500
                     "
                 >
-                    Blok {warga.block} / {warga.houseNumber}
+                    {t('detail.blockLabel')} {resident.block} / {resident.houseNumber}
                 </p>
 
             </div>
@@ -69,7 +69,7 @@ export default function ResidentDetailSummary({
                             font-medium
                         "
                     >
-                        {warga.phone}
+                        {resident.phone}
                     </p>
 
                 </div>
@@ -90,7 +90,7 @@ export default function ResidentDetailSummary({
                             font-medium
                         "
                     >
-                        {warga.status}
+                        {resident.status}
                     </p>
 
                 </div>

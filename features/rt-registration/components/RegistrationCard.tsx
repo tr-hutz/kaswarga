@@ -123,7 +123,7 @@ export default function RegistrationCard({ req, onAction }) {
 
             if (error) throw error
             if (!invites?.length) {
-                toast({ message: 'Tidak ada invite ditemukan untuk pendaftaran ini.', type: 'info' })
+                toast({ message: 'No invite found for this registration.', type: 'info' })
                 return
             }
 

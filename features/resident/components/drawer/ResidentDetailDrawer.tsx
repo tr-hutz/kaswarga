@@ -16,7 +16,7 @@ export default function ResidentDetailDrawer({
 
                                               open,
 
-                                              warga,
+                                              resident,
 
                                               onClose
 
@@ -24,7 +24,7 @@ export default function ResidentDetailDrawer({
 
     const t = useTranslations('residents')
 
-    if (!open || !warga) {
+    if (!open || !resident) {
         return null
     }
 
@@ -82,12 +82,12 @@ export default function ResidentDetailDrawer({
                 </div>
 
                 <ResidentDetailSummary
-                    warga={warga}
+                    resident={resident}
                 />
 
                 <ResidentPaymentHistory
                     paymentHistory={
-                        warga?.paymentHistory || []
+                        resident?.paymentHistory || []
                     }
                 />
 

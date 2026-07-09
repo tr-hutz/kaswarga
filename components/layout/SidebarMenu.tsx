@@ -61,7 +61,7 @@ export default function SidebarMenu({ onClose }) {
         fetchCount()
 
         const channel = supabase
-            .channel('sidebar-warga-pending-count')
+            .channel('sidebar-resident-pending-count')
             .on('postgres_changes', {
                 event:  '*',
                 schema: 'public',
