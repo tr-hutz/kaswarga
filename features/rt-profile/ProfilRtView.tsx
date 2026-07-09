@@ -30,7 +30,7 @@ function SectionTitle({ children }) {
     )
 }
 
-export default function ProfilRtView({ rt, loading, saving, onSave }) {
+export default function RtProfileView({ rt, loading, saving, onSave }) {
 
     const [form,       setForm]       = useState(EMPTY)
     const [dirty,      setDirty]      = useState(false)

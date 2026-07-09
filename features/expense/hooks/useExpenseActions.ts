@@ -162,7 +162,7 @@ export function useExpenseActions({
             )
 
             alert(
-                'Gagal menyimpan data'
+                'Failed to save'
             )
 
         } finally {
@@ -183,7 +183,7 @@ export function useExpenseActions({
 
         const confirmed =
             confirm(
-                `Hapus pengeluaran "${row.deskripsi}" ?`
+                `Delete expense "${row.description}"?`
             )
 
         if (!confirmed) {
@@ -206,7 +206,7 @@ export function useExpenseActions({
             )
 
             alert(
-                'Gagal menghapus data'
+                'Failed to delete'
             )
         }
     }
@@ -254,9 +254,9 @@ export function useExpenseActions({
 
     const {
         loading:    approvalLoading,
-        approve:    approvePengeluaran,
-        reject:     rejectPengeluaran,
-        approveAll: approveAllPengeluaran,
+        approve:    approveExpense,
+        reject:     rejectExpense,
+        approveAll: approveAllExpenses,
     } = useExpenseApproval({
         onSuccess: () => {
             closeDrawer()
@@ -331,8 +331,8 @@ export function useExpenseActions({
          */
 
         approvalLoading,
-        approvePengeluaran,
-        rejectPengeluaran,
-        approveAllPengeluaran,
+        approveExpense,
+        rejectExpense,
+        approveAllExpenses,
     }
 }

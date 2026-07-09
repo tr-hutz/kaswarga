@@ -39,7 +39,7 @@ export async function updateMembershipRole(membershipId: string, newRole: UserRo
         action:     'UPDATE_USER_ROLE',
         entityType: 'memberships',
         entityId:   membershipId,
-        description: `Ubah role user dari ${before?.role} menjadi ${newRole}`,
+        description: `Change user role from ${before?.role} to ${newRole}`,
         metadata:   { before: before?.role, after: newRole, rt_id: before?.rt_id }
     })
 
@@ -66,7 +66,7 @@ export async function assignUserToRt(
         action:     'ASSIGN_USER_RT',
         entityType: 'memberships',
         entityId:   data.id,
-        description: `Assign user ke RT dengan role ${role}`,
+        description: `Assign user to RT with role ${role}`,
         metadata:   { user_id: userId, rt_id: rtId, role }
     })
 
@@ -92,7 +92,7 @@ export async function removeMembership(membershipId: string, actorMembership: { 
         action:     'REMOVE_USER_RT',
         entityType: 'memberships',
         entityId:   membershipId,
-        description: `Hapus membership user dari RT`,
+        description: `Remove user membership from RT`,
         metadata:   { user_id: before?.user_id, rt_id: before?.rt_id, role: before?.role }
     })
 

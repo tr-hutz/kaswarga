@@ -1,11 +1,11 @@
 interface PaymentFilters {
     year?: number | string | null
     rtId?: string | null
-    wargaId?: string | null
+    residentId?: string | null
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function applyPaymentFilters(query: any, { year, rtId, wargaId }: PaymentFilters = {}): any {
+export function applyPaymentFilters(query: any, { year, rtId, residentId }: PaymentFilters = {}): any {
 
   if (year) {
 
@@ -25,12 +25,12 @@ export function applyPaymentFilters(query: any, { year, rtId, wargaId }: Payment
         )
   }
 
-  if (wargaId) {
+  if (residentId) {
 
     query =
         query.eq(
             'resident_id',
-            wargaId
+            residentId
         )
   }
 

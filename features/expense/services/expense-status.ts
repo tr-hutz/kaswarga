@@ -1,9 +1,9 @@
 ﻿// @ts-nocheck
 export function getStatusLabel(status) {
     switch (status) {
-        case 'approved': return 'Disetujui'
-        case 'pending':  return 'Menunggu'
-        case 'rejected': return 'Ditolak'
+        case 'approved': return 'Approved'
+        case 'pending':  return 'Pending'
+        case 'rejected': return 'Rejected'
         default:         return '-'
     }
 }

@@ -85,14 +85,14 @@ export async function POST(req: Request) {
             action:      'IMPORT_RESIDENTS',
             entity_type: 'residents',
             entity_id:   membership.rt_id,
-            description: `Import ${data.length} data warga`,
+            description: `Import ${data.length} residents`,
             metadata:    { count: data.length }
         })
 
         return NextResponse.json({ inserted: data.length })
 
     } catch (err) {
-        console.error('[warga/import]', err)
-        return NextResponse.json({ error: (err as Error).message || 'Import gagal' }, { status: 500 })
+        console.error('[residents/import]', err)
+        return NextResponse.json({ error: (err as Error).message || 'Import failed' }, { status: 500 })
     }
 }

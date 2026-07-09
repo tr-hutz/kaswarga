@@ -15,7 +15,7 @@ export default function SidebarMenu({ onClose }) {
     const { role, membership } = useAuth()
 
     const [pendingRtCount,    setPendingRtCount]    = useState(0)
-    const [pendingWargaCount, setPendingWargaCount] = useState(0)
+    const [pendingResidentCount, setPendingResidentCount] = useState(0)
 
     useEffect(() => {
         if (role !== 'SUPER_ADMIN') return
@@ -55,7 +55,7 @@ export default function SidebarMenu({ onClose }) {
                 .eq('type', 'resident')
                 .eq('status', 'pending')
                 .eq('rt_id', rtId)
-                .then(({ count }) => setPendingWargaCount(count || 0))
+                .then(({ count }) => setPendingResidentCount(count || 0))
         }
 
         fetchCount()
@@ -88,7 +88,7 @@ export default function SidebarMenu({ onClose }) {
                     active={pathname === item.href}
                     badge={
                         item.href === '/rt/registration' ? pendingRtCount :
-                        item.href === '/residents'       ? pendingWargaCount :
+                        item.href === '/residents'       ? pendingResidentCount :
                         0
                     }
                     onClick={onClose}

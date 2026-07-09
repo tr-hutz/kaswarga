@@ -11,22 +11,22 @@ export async function exportLedgerToCSV(
     const data =
         rows.map(item => ({
 
-            Tanggal:
+            Date:
             item.date,
 
-            Jenis:
+            Type:
             item.type,
 
-            Sumber:
+            Source:
             item.source,
 
-            Deskripsi:
+            Description:
             item.description,
 
-            Nominal:
+            Amount:
             item.amount,
 
-            Saldo:
+            Balance:
             item.balance
 
         }))
@@ -77,22 +77,22 @@ export async function exportLedgerToExcel(
     const data =
         rows.map(item => ({
 
-            Tanggal:
+            Date:
             item.date,
 
-            Jenis:
+            Type:
             item.type,
 
-            Sumber:
+            Source:
             item.source,
 
-            Deskripsi:
+            Description:
             item.description,
 
-            Nominal:
+            Amount:
             item.amount,
 
-            Saldo:
+            Balance:
             item.balance
 
         }))

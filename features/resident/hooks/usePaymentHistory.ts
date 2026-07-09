@@ -15,7 +15,7 @@ import {
 } from '../services/resident-history-transform'
 
 export function usePaymentHistory(
-    wargaId,
+    residentId,
     year
 ) {
 
@@ -39,7 +39,7 @@ export function usePaymentHistory(
 
                 const data =
                     await getResidentPaymentHistory(
-                        wargaId,
+                        residentId,
                         year
                     )
 
@@ -57,11 +57,11 @@ export function usePaymentHistory(
             }
         }
 
-        if (wargaId) {
+        if (residentId) {
             loadData()
         }
 
-    }, [wargaId, year])
+    }, [residentId, year])
 
     return {
         loading,

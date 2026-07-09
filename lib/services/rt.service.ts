@@ -152,7 +152,7 @@ export async function deleteRt(id: string): Promise<true> {
     const res = await fetch(`/api/rt/${id}`, { method: 'DELETE' })
     if (!res.ok) {
         const body = await res.json().catch(() => ({}))
-        throw new Error(body.error || 'Gagal menghapus RT.')
+        throw new Error(body.error || 'Failed to delete RT.')
     }
     return true
 }

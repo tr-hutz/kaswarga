@@ -230,6 +230,6 @@ export async function resendInvite(email: string): Promise<void> {
     })
     if (!res.ok) {
         const err = await res.json()
-        throw new Error(err.error || 'Gagal mengirim ulang undangan')
+        throw new Error(err.error || 'Failed to resend invitation')
     }
 }

@@ -105,8 +105,8 @@ export async function POST(req: Request) {
                 ketuaMembers.map(m => ({
                     rt_id:          membership.rt_id,
                     type:           'expense_pending',
-                    title:          'Pengeluaran Baru Menunggu Persetujuan',
-                    message:        `${data.length} pengeluaran baru diimpor dan perlu disetujui.`,
+                    title:          'New Expenses Pending Approval',
+                    message:        `${data.length} new expense(s) imported and require approval.`,
                     entity_type:    'expenses',
                     entity_id:      membership.rt_id,
                     target_user_id: m.user_id,
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ inserted: data.length })
 
     } catch (err) {
-        console.error('[pengeluaran/import]', err)
-        return NextResponse.json({ error: (err as Error).message || 'Import gagal' }, { status: 500 })
+        console.error('[expenses/import]', err)
+        return NextResponse.json({ error: (err as Error).message || 'Import failed' }, { status: 500 })
     }
 }

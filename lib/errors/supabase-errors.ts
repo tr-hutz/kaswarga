@@ -1,16 +1,16 @@
 // KW = Kaswarga application errors raised from DB functions (003_function.sql)
 // Standard PostgreSQL error codes (23xxx, 42xxx, P0xxx, etc.)
 const ERROR_MAP = {
-    '23505': 'Data ini sudah terdaftar. Pembayaran untuk bulan tersebut sudah ada.',
-    '23503': 'Data terkait tidak ditemukan atau sudah dihapus.',
-    '42501': 'Anda tidak memiliki izin untuk melakukan tindakan ini.',
-    '42883': 'Fungsi internal tidak ditemukan.',
-    'PGRST116': 'Data tidak ditemukan.',
+    '23505': 'This record already exists. A payment for that month is already recorded.',
+    '23503': 'Related data not found or has already been deleted.',
+    '42501': 'You do not have permission to perform this action.',
+    '42883': 'Internal function not found.',
+    'PGRST116': 'Record not found.',
 }
 
 export function getErrorMessage(
     err: { code?: string; message?: string; details?: { code?: string } } | null | undefined,
-    fallback = 'Terjadi kesalahan. Silakan coba lagi.'
+    fallback = 'An error occurred. Please try again.'
 ): string {
     if (!err) return fallback
     const code = err.code || err?.details?.code

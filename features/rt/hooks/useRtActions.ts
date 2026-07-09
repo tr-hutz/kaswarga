@@ -34,16 +34,16 @@ export function useRtActions(refresh) {
         try {
             if (selected) {
                 await updateRt(selected.id, payload)
-                toast({ message: 'RT berhasil diperbarui.', type: 'success' })
+                toast({ message: 'RT updated.', type: 'success' })
             } else {
                 await createRt(payload)
-                toast({ message: 'RT baru berhasil dibuat.', type: 'success' })
+                toast({ message: 'RT created.', type: 'success' })
             }
             closeForm()
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: err.message || 'Gagal menyimpan RT.', type: 'error' })
+            toast({ message: err.message || 'Failed to save RT.', type: 'error' })
         }
     }
 
@@ -55,12 +55,12 @@ export function useRtActions(refresh) {
 
         try {
             await deleteRt(delTarget.id)
-            toast({ message: `RT "${delTarget.name}" berhasil dihapus.`, type: 'success' })
+            toast({ message: `RT "${delTarget.name}" deleted.`, type: 'success' })
             setDelTarget(null)
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: err.message || 'Gagal menghapus RT.', type: 'error' })
+            toast({ message: err.message || 'Failed to delete RT.', type: 'error' })
         } finally {
             setDeleting(false)
         }

@@ -18,8 +18,8 @@ export function useExpenseApproval({ onSuccess } = {}) {
                 body:    JSON.stringify({ id }),
             })
             const body = await res.json()
-            if (!res.ok) throw new Error(body.error || 'Gagal menyetujui')
-            toast({ message: 'Pengeluaran berhasil disetujui.', type: 'success' })
+            if (!res.ok) throw new Error(body.error || 'Failed to approve')
+            toast({ message: 'Expense approved.', type: 'success' })
             onSuccess?.()
         } catch (err) {
             toast({ message: err.message, type: 'error' })
@@ -37,8 +37,8 @@ export function useExpenseApproval({ onSuccess } = {}) {
                 body:    JSON.stringify({ id, reason }),
             })
             const body = await res.json()
-            if (!res.ok) throw new Error(body.error || 'Gagal menolak')
-            toast({ message: 'Pengeluaran berhasil ditolak.', type: 'success' })
+            if (!res.ok) throw new Error(body.error || 'Failed to reject')
+            toast({ message: 'Expense rejected.', type: 'success' })
             onSuccess?.()
         } catch (err) {
             toast({ message: err.message, type: 'error' })
@@ -55,8 +55,8 @@ export function useExpenseApproval({ onSuccess } = {}) {
                 headers: { 'Content-Type': 'application/json' },
             })
             const body = await res.json()
-            if (!res.ok) throw new Error(body.error || 'Gagal menyetujui semua')
-            toast({ message: `${body.approved} pengeluaran berhasil disetujui.`, type: 'success' })
+            if (!res.ok) throw new Error(body.error || 'Failed to approve all')
+            toast({ message: `${body.approved} expense(s) approved.`, type: 'success' })
             onSuccess?.()
         } catch (err) {
             toast({ message: err.message, type: 'error' })

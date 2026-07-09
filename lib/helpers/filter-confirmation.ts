@@ -1,12 +1,12 @@
 interface ConfirmationFilters {
     year?: number | string | null
     rtId?: string | null
-    wargaId?: string | null
+    residentId?: string | null
     status?: string | null
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function applyConfirmationFilters(query: any, { year, rtId, wargaId, status }: ConfirmationFilters): any {
+export function applyConfirmationFilters(query: any, { year, rtId, residentId, status }: ConfirmationFilters): any {
 
     /*
      |--------------------------------------------------------------------------
@@ -44,12 +44,12 @@ export function applyConfirmationFilters(query: any, { year, rtId, wargaId, stat
      |--------------------------------------------------------------------------
      */
 
-    if (wargaId) {
+    if (residentId) {
 
         query =
             query.eq(
                 'resident_id',
-                wargaId
+                residentId
             )
     }
 
