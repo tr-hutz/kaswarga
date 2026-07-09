@@ -3,14 +3,14 @@
 
 import { useTranslations } from 'next-intl'
 
-export default function TunggakanBadge({
+export default function ArrearsBadge({
 
                                            total = 0
 
                                        }) {
 
     const tPaymentStatus = useTranslations('common.paymentStatus')
-    const tTunggakan     = useTranslations('residents.tunggakan')
+    const tArrears       = useTranslations('residents.arrears')
 
     if (total <= 0) {
 
@@ -43,7 +43,7 @@ export default function TunggakanBadge({
         text-rose-700
       "
         >
-      {tTunggakan('badge', { total })}
+      {tArrears('badge', { total })}
     </span>
     )
 }
