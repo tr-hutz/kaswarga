@@ -18,12 +18,12 @@ export default function LedgerReport() {
     async function handleGenerate() {
         setLoading(true)
         try {
-            const res = await fetch(`/api/ledger/laporan?year=${year}`)
+            const res = await fetch(`/api/ledger/report?year=${year}`)
             if (!res.ok) throw new Error(t('report.errorFailed'))
 
             const disposition = res.headers.get('Content-Disposition')
             const match       = disposition?.match(/filename="?([^"]+)"?/)
-            const filename    = match?.[1] || `laporan-kas-${year}.pdf`
+            const filename    = match?.[1] || `kas-report-${year}.pdf`
 
             const blob = await res.blob()
             const url  = URL.createObjectURL(blob)

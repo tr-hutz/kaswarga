@@ -376,7 +376,7 @@ export async function GET(req: Request) {
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '')
 
-  const filename = `laporan-kas-${year}-${rtSlug}.pdf`
+  const filename = `kas-report-${year}-${rtSlug}.pdf`
 
   return new NextResponse(pdfBytes as BodyInit, {
     headers: {
