@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 007_STORAGE
+ * 006_STORAGE
  * Supabase Storage buckets for file uploads.
  * =============================================================================
  */
@@ -24,16 +24,16 @@ insert into storage.buckets (
          );
 
 /* ----------------------------------------------------------------------------
- * bukti-pembayaran
- * Proof-of-payment images / PDFs uploaded by warga.
+ * payment-proof
+ * Proof-of-payment images / PDFs uploaded by residents.
  * --------------------------------------------------------------------------- */
 
 insert into storage.buckets (
     id, name, created_at, public,
     avif_autodetection, file_size_limit, allowed_mime_types, type
 ) values (
-    'bukti-pembayaran',
-    'bukti-pembayaran',
+    'payment-proof',
+    'payment-proof',
     now(),
     true,
     false,
@@ -44,16 +44,16 @@ insert into storage.buckets (
 
 
 /* ----------------------------------------------------------------------------
- * nota-pengeluaran
- * Expense receipt images / PDFs attached to pengeluaran records.
+ * expense-receipts
+ * Expense receipt images / PDFs attached to expense records.
  * --------------------------------------------------------------------------- */
 
 insert into storage.buckets (
     id, name, created_at, public,
     avif_autodetection, file_size_limit, allowed_mime_types, type
 ) values (
-    'nota-pengeluaran',
-    'nota-pengeluaran',
+    'expense-receipts',
+    'expense-receipts',
     now(),
     true,
     false,

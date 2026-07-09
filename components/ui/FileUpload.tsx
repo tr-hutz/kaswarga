@@ -6,7 +6,7 @@ import { File, Loader2, Paperclip, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useTranslations } from 'next-intl'
 
-export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUploaded, bucket = 'nota-pengeluaran' }) {
+export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUploaded, bucket = 'expense-receipts' }) {
 
     const t = useTranslations('fileUpload')
 
