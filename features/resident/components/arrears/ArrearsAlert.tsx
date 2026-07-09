@@ -3,13 +3,13 @@
 
 import { useTranslations } from 'next-intl'
 
-export default function TunggakanAlert({
+export default function ArrearsAlert({
 
                                            arrears = 0
 
                                        }) {
 
-    const t = useTranslations('residents.tunggakan')
+    const t = useTranslations('residents.arrears')
 
     if (arrears <= 0) {
         return null

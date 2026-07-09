@@ -328,7 +328,7 @@
     },
     "landing": {
       "title": "Pendaftaran",
-      "asRt": "Daftar sebagai RT baru",
+      "asRt": "Daftarkan RT baru",
       "asResident": "Daftar sebagai Warga"
     },
     "resident": {
@@ -496,7 +496,7 @@
       "title": "Histori Pembayaran",
       "empty": "Belum ada histori pembayaran"
     },
-    "tunggakan": {
+    "arrears": {
       "alert": "Anda memiliki tunggakan sebanyak {months} bulan",
       "badge": "{total} bulan menunggak"
     }
