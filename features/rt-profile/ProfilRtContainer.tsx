@@ -1,15 +1,15 @@
 ﻿// @ts-nocheck
 'use client'
 
-import { useProfilRt }  from './hooks/useProfilRt'
-import ProfilRtView     from './ProfilRtView'
+import { useRtProfile }  from './hooks/useProfilRt'
+import RtProfileView     from './ProfilRtView'
 
-export default function ProfilRtContainer() {
+export default function RtProfileContainer() {
 
-    const { rt, loading, saving, handleSave } = useProfilRt()
+    const { rt, loading, saving, handleSave } = useRtProfile()
 
     return (
-        <ProfilRtView
+        <RtProfileView
             rt={rt}
             loading={loading}
             saving={saving}

@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useToast } from '@/components/ui/ToastProvider'
 import { getOwnRt, updateRt } from '@/lib/services/rt.service'
 
-export function useProfilRt() {
+export function useRtProfile() {
 
     const { toast } = useToast()
 
@@ -22,7 +22,7 @@ export function useProfilRt() {
             setRt(data)
         } catch (err) {
             console.error('[useProfilRt]', err)
-            toast({ message: 'Gagal memuat data RT.', type: 'error' })
+            toast({ message: 'Failed to load RT data.', type: 'error' })
         } finally {
             setLoading(false)
         }
@@ -40,10 +40,10 @@ export function useProfilRt() {
         try {
             const updated = await updateRt(rt.id, payload)
             setRt(updated)
-            toast({ message: 'Profil RT berhasil diperbarui.', type: 'success' })
+            toast({ message: 'RT profile updated.', type: 'success' })
         } catch (err) {
             console.error(err)
-            toast({ message: err.message || 'Gagal menyimpan perubahan.', type: 'error' })
+            toast({ message: err.message || 'Failed to save changes.', type: 'error' })
         } finally {
             setSaving(false)
         }

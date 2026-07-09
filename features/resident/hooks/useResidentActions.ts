@@ -24,8 +24,8 @@ export function useResidentActions(onImportSuccess) {
 
     const [
 
-        selectedWarga,
-        setSelectedWarga
+        selectedResident,
+        setSelectedResident
 
     ] = useState(null)
 
@@ -50,11 +50,11 @@ export function useResidentActions(onImportSuccess) {
      */
 
     function openDrawer(
-        warga
+        resident
     ) {
 
-        setSelectedWarga(
-            warga
+        setSelectedResident(
+            resident
         )
 
         setDrawerOpen(true)
@@ -64,7 +64,7 @@ export function useResidentActions(onImportSuccess) {
 
         setDrawerOpen(false)
 
-        setSelectedWarga(null)
+        setSelectedResident(null)
     }
 
     /*
@@ -75,17 +75,17 @@ export function useResidentActions(onImportSuccess) {
 
     function openCreateForm() {
 
-        setSelectedWarga(null)
+        setSelectedResident(null)
 
         setFormOpen(true)
     }
 
     function openEditForm(
-        warga
+        resident
     ) {
 
-        setSelectedWarga(
-            warga
+        setSelectedResident(
+            resident
         )
 
         setFormOpen(true)
@@ -126,7 +126,7 @@ export function useResidentActions(onImportSuccess) {
 
     return {
 
-        selectedWarga,
+        selectedResident,
 
         drawerOpen,
         openDrawer,

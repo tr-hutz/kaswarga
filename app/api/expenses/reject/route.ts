@@ -30,7 +30,7 @@ export async function POST(req: Request) {
         }
 
         if (membership.role !== 'CHAIR') {
-            return NextResponse.json({ error: 'Hanya ketua RT yang dapat menolak pengeluaran' }, { status: 403 })
+            return NextResponse.json({ error: 'Only the RT chair can reject expenses' }, { status: 403 })
         }
 
         const { id, reason } = await req.json()
@@ -48,6 +48,6 @@ export async function POST(req: Request) {
 
     } catch (err) {
         console.error('[expenses/reject]', err)
-        return NextResponse.json({ error: (err as Error).message || 'Gagal menolak' }, { status: 500 })
+        return NextResponse.json({ error: (err as Error).message || 'Failed to reject' }, { status: 500 })
     }
 }

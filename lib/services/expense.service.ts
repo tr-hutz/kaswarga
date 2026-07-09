@@ -121,8 +121,8 @@ export async function createExpense(
             const notifRows = chairList.map(k => ({
                 rt_id:          rtId ?? '',
                 type:           'expense_pending',
-                title:          'Pengeluaran Baru',
-                message:        `Pengeluaran ${data.receipt_number || ''} perlu persetujuan Anda`,
+                title:          'New Expense',
+                message:        `Expense ${data.receipt_number || ''} requires your approval`,
                 entity_type:    'expenses',
                 entity_id:      data.id,
                 target_user_id: k.user_id,

@@ -9,22 +9,22 @@ export async function exportExpenseToExcel(
     const rows =
         data.map(item => ({
 
-            'Nomor Bukti':
+            'Receipt Number':
             item.receiptNumber || '',
 
-            Tanggal:
+            Date:
             item.dateLabel,
 
-            Kategori:
+            Category:
             item.category,
 
-            'Mitra / Penerima':
+            'Partner / Recipient':
             item.recipient || '',
 
-            Deskripsi:
+            Description:
             item.description,
 
-            Nominal:
+            Amount:
             item.amount,
 
             Status:
@@ -44,13 +44,13 @@ export async function exportExpenseToExcel(
 
         workbook,
         worksheet,
-        'Pengeluaran'
+        'Expenses'
 
     )
 
     XLSX.writeFile(
         workbook,
-        'pengeluaran.xlsx'
+        'expenses.xlsx'
     )
 }
 
@@ -61,22 +61,22 @@ export async function exportExpenseToCSV(
     const rows =
         data.map(item => ({
 
-            nomor_bukti:
+            receipt_number:
             item.receiptNumber || '',
 
-            tanggal:
+            date:
             item.dateLabel,
 
-            kategori:
+            category:
             item.category,
 
-            penerima:
+            recipient:
             item.recipient || '',
 
-            deskripsi:
+            description:
             item.description,
 
-            nominal:
+            amount:
             item.amount,
 
             status:
@@ -116,7 +116,7 @@ export async function exportExpenseToCSV(
     link.href = url
 
     link.download =
-        'pengeluaran.csv'
+        'expenses.csv'
 
     link.click()
 }

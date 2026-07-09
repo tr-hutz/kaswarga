@@ -57,9 +57,9 @@ export default function ExpenseView({
 
     /* approval */
     approvalLoading,
-    approvePengeluaran,
-    rejectPengeluaran,
-    approveAllPengeluaran,
+    approveExpense,
+    rejectExpense,
+    approveAllExpenses,
 
 }) {
 
@@ -76,7 +76,7 @@ export default function ExpenseView({
                     setKategori={setKategori}
                     role={role}
                     pendingCount={pendingCount}
-                    onApproveAll={approveAllPengeluaran}
+                    onApproveAll={approveAllExpenses}
                     onCreate={openCreateForm}
                     onExportCSV={() => exportCSV(rows)}
                     onExportExcel={() => exportExcel(rows)}
@@ -98,8 +98,8 @@ export default function ExpenseView({
                 row={selectedRow}
                 role={role}
                 onClose={closeDrawer}
-                onApprove={approvePengeluaran}
-                onReject={rejectPengeluaran}
+                onApprove={approveExpense}
+                onReject={rejectExpense}
                 approvalLoading={approvalLoading}
             />
 

@@ -15,7 +15,7 @@ import {
 } from '../services/resident-analytics-transform'
 
 export function useResidentAnalytics(
-    wargaId,
+    residentId,
     year
 ) {
 
@@ -39,7 +39,7 @@ export function useResidentAnalytics(
 
                 const payments =
                     await getResidentPaymentHistory(
-                        wargaId,
+                        residentId,
                         year
                     )
 
@@ -59,11 +59,11 @@ export function useResidentAnalytics(
             }
         }
 
-        if (wargaId) {
+        if (residentId) {
             loadData()
         }
 
-    }, [wargaId, year])
+    }, [residentId, year])
 
     return {
         loading,

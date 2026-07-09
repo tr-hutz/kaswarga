@@ -116,7 +116,7 @@ export async function findRejectedConfirmationDetailsForHome(options: {
 export async function findPaymentsForDashboard(options: {
     year: number
     rtId?: string | null
-    wargaId?: string | null
+    residentId?: string | null
 }) {
     let query = supabase
         .from('payments')
@@ -175,7 +175,7 @@ export async function findResidentIdsByRt(rtId?: string | null) {
 export async function findPaymentsForHealth(options: {
     year: number
     rtId?: string | null
-    wargaId?: string | null
+    residentId?: string | null
 }) {
     let query = supabase
         .from('payments')
@@ -198,7 +198,7 @@ export async function findPaymentsForHealth(options: {
 export async function findPayments(options: {
     year: number
     rtId?: string | null
-    wargaId?: string | null
+    residentId?: string | null
 }) {
     let query = supabase
         .from('payments')
@@ -233,7 +233,7 @@ export async function findConfirmations(options: {
     year: number
     status: string
     rtId?: string | null
-    wargaId?: string | null
+    residentId?: string | null
 }) {
     let query = supabase
         .from('payment_confirmations')

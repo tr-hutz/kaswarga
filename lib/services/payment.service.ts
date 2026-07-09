@@ -101,7 +101,7 @@ export async function getDashboardAnalytics(
         findPaymentsForDashboard({
             year,
             rtId:    rt?.id,
-            wargaId: role === 'RESIDENT' ? resident?.id : null
+            residentId: role === 'RESIDENT' ? resident?.id : null
         }),
         findExpensesForDashboard({
             year,
@@ -181,7 +181,7 @@ export async function getPaymentHealth(
         findPaymentsForHealth({
             year,
             rtId:    rt?.id,
-            wargaId: role === 'RESIDENT' ? resident?.id : null
+            residentId: role === 'RESIDENT' ? resident?.id : null
         }),
         findResidentIdsByRt(rt?.id)
     ])
@@ -253,7 +253,7 @@ export async function getPayments(
     const data = await findPayments({
         year,
         rtId:    rt?.id,
-        wargaId: role === 'RESIDENT' ? resident?.id : null
+        residentId: role === 'RESIDENT' ? resident?.id : null
     })
 
     return transformPayment(data)
@@ -282,7 +282,7 @@ async function getConfirmations(
         year,
         status,
         rtId:    rt?.id,
-        wargaId: role === 'RESIDENT' ? resident?.id : null
+        residentId: role === 'RESIDENT' ? resident?.id : null
     })
 
     return transformConfirmation(data)

@@ -30,7 +30,7 @@ export async function POST() {
         }
 
         if (membership.role !== 'CHAIR') {
-            return NextResponse.json({ error: 'Hanya ketua RT yang dapat menyetujui pengeluaran' }, { status: 403 })
+            return NextResponse.json({ error: 'Only the RT chair can approve expenses' }, { status: 403 })
         }
 
         const { data, error } = await (supabaseAdmin as any).rpc('approve_all_pending_expenses', {
@@ -44,6 +44,6 @@ export async function POST() {
 
     } catch (err) {
         console.error('[expenses/approve-all]', err)
-        return NextResponse.json({ error: (err as Error).message || 'Gagal menyetujui semua' }, { status: 500 })
+        return NextResponse.json({ error: (err as Error).message || 'Failed to approve all' }, { status: 500 })
     }
 }

@@ -68,13 +68,13 @@ export function useImport({
                 const wb     = XLSX.read(e.target.result, { type: 'array' })
                 const parsed = parseWorkbook(wb, normalizeKey)
                 if (parsed.length === 0) {
-                    setError('File tidak memiliki data.')
+                    setError('File has no data.')
                     return
                 }
                 setRows(parsed)
                 setFileName(file.name)
             } catch {
-                setError('Gagal membaca file. Pastikan format CSV atau Excel yang valid.')
+                setError('Failed to read file. Ensure it is a valid CSV or Excel format.')
             }
         }
         reader.readAsArrayBuffer(file)
@@ -90,7 +90,7 @@ export function useImport({
     async function handleImport() {
         const valid = rows.filter(isValidRow)
         if (!valid.length) {
-            setError('Tidak ada data valid untuk diimpor.')
+            setError('No valid rows to import.')
             return
         }
 
@@ -104,7 +104,7 @@ export function useImport({
                 body:    JSON.stringify({ rows: valid }),
             })
             const body = await res.json()
-            if (!res.ok) throw new Error(body.error || 'Import gagal')
+            if (!res.ok) throw new Error(body.error || 'Import failed')
             closeImport()
             onSuccess?.(body.inserted)
         } catch (err) {

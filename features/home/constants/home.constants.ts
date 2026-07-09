@@ -12,18 +12,3 @@ export const STATUS_STYLE = {
   unpaid:
     'bg-gray-100 border-gray-300 text-gray-700'
 }
-
-export const STATUS_TEXT = {
-
-  approved:
-    'Lunas',
-
-  pending:
-    'Menunggu Persetujuan',
-
-  rejected:
-    'Ditolak',
-
-  unpaid:
-    'Belum Bayar'
-}

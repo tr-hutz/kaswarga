@@ -21,12 +21,12 @@ export function useUsersActions(refresh) {
         try {
             const actor = await getCurrentMembership()
             await updateMembershipRole(membershipId, newRole, actor)
-            toast({ message: 'Role berhasil diperbarui.', type: 'success' })
+            toast({ message: 'Role updated.', type: 'success' })
             setEditTarget(null)
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: err.message || 'Gagal memperbarui role.', type: 'error' })
+            toast({ message: err.message || 'Failed to update role.', type: 'error' })
         } finally {
             setSaving(false)
         }
@@ -41,12 +41,12 @@ export function useUsersActions(refresh) {
         try {
             const actor = await getCurrentMembership()
             await removeMembership(delTarget.id, actor)
-            toast({ message: 'Membership berhasil dihapus.', type: 'success' })
+            toast({ message: 'Membership removed.', type: 'success' })
             setDelTarget(null)
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: err.message || 'Gagal menghapus membership.', type: 'error' })
+            toast({ message: err.message || 'Failed to remove membership.', type: 'error' })
         } finally {
             setSaving(false)
         }

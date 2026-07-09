@@ -22,7 +22,7 @@ export type DbActivityLog          = Database['public']['Tables']['activity_logs
 // ─── Enums ──────────────────────────────────────────────────────────────────
 
 export type UserRole         = Database['public']['Enums']['user_role']
-export type StatusKonfirmasi = Database['public']['Enums']['status_konfirmasi']
+export type ConfirmationStatus = Database['public']['Enums']['status_konfirmasi']
 
 // ─── Membership ─────────────────────────────────────────────────────────────
 
@@ -85,7 +85,7 @@ export interface PaymentDetail {
 export interface Payment {
   id:          string
   year:        number
-  status:      StatusKonfirmasi
+  status:      ConfirmationStatus
   totalAmount: number
   createdAt:   string
   proofUrl:    string | null

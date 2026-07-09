@@ -52,7 +52,7 @@ export default function MonthlyCollectionChart({
             text-slate-500
           "
         >
-          Jumlah pembayaran per bulan
+          Number of payments per month
         </p>
 
       </div>

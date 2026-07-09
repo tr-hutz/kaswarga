@@ -1,5 +1,5 @@
-import ProfilRtContainer from '../../features/rt-profile/ProfilRtContainer'
+import RtProfileContainer from '../../features/rt-profile/ProfilRtContainer'
 
 export default function Page() {
-    return <ProfilRtContainer />
+    return <RtProfileContainer />
 }

@@ -32,7 +32,7 @@ export default function RtRegistrationContainer() {
             const code = await generateRtCode()
             set('code', code)
         } catch (err) {
-            setError('Gagal generate kode: ' + err.message)
+            setError('Failed to generate code: ' + err.message)
         } finally {
             setGenerating(false)
         }
@@ -46,12 +46,12 @@ export default function RtRegistrationContainer() {
         const emails = [form.chairmanEmail, form.adminEmail, form.treasurerEmail].filter(Boolean)
         const unique  = new Set(emails.map(e => e.toLowerCase()))
         if (unique.size !== emails.length) {
-            setError('Email ketua, admin, dan bendahara harus berbeda satu sama lain.')
+            setError('Chair, admin, and treasurer emails must all be different.')
             return
         }
 
         if (!form.code) {
-            setError('Kode RT wajib diisi. Gunakan tombol Generate atau isi manual.')
+            setError('RT code is required. Use the Generate button or fill it in manually.')
             return
         }
 
@@ -79,7 +79,7 @@ export default function RtRegistrationContainer() {
             })
             setSuccess(true)
         } catch (err) {
-            setError(err.message || 'Gagal mengirim pendaftaran.')
+            setError(err.message || 'Failed to submit registration.')
         } finally {
             setSubmitting(false)
         }

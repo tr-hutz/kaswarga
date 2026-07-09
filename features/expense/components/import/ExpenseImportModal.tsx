@@ -5,11 +5,11 @@ import { useTranslations } from 'next-intl'
 import ImportModal from '@/components/import/ImportModal'
 
 const COLUMNS = [
-    { key: 'tanggal',   label: 'Tanggal' },
-    { key: 'kategori',  label: 'Kategori' },
-    { key: 'nominal',   label: 'Nominal' },
-    { key: 'penerima',  label: 'Penerima' },
-    { key: 'deskripsi', label: 'Deskripsi' },
+    { key: 'date',        label: 'Date' },
+    { key: 'category',    label: 'Category' },
+    { key: 'amount',      label: 'Amount' },
+    { key: 'recipient',   label: 'Recipient' },
+    { key: 'description', label: 'Description' },
 ]
 
 export default function ExpenseImportModal({
@@ -29,15 +29,15 @@ export default function ExpenseImportModal({
 
     const columnGuide = (
         <>
-            <span className="font-mono bg-gray-100 px-1 rounded">tanggal</span> ({t('import.required')}){' '}
+            <span className="font-mono bg-gray-100 px-1 rounded">date</span> ({t('import.required')}){' '}
             &nbsp;·&nbsp;
-            <span className="font-mono bg-gray-100 px-1 rounded">nominal</span> ({t('import.required')}){' '}
+            <span className="font-mono bg-gray-100 px-1 rounded">amount</span> ({t('import.required')}){' '}
             &nbsp;·&nbsp;
-            <span className="font-mono bg-gray-100 px-1 rounded">kategori</span>{' '}
+            <span className="font-mono bg-gray-100 px-1 rounded">category</span>{' '}
             &nbsp;·&nbsp;
-            <span className="font-mono bg-gray-100 px-1 rounded">penerima</span>{' '}
+            <span className="font-mono bg-gray-100 px-1 rounded">recipient</span>{' '}
             &nbsp;·&nbsp;
-            <span className="font-mono bg-gray-100 px-1 rounded">deskripsi</span>
+            <span className="font-mono bg-gray-100 px-1 rounded">description</span>
         </>
     )
 
@@ -47,7 +47,7 @@ export default function ExpenseImportModal({
             title={t('import.title')}
             onClose={onClose}
             columns={COLUMNS}
-            isValid={r => !!r.tanggal?.trim() && !!r.nominal?.trim()}
+            isValid={r => !!r.date?.trim() && !!r.amount?.trim()}
             columnGuideText={columnGuide}
             rows={rows}
             fileName={fileName}
