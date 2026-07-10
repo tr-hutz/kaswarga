@@ -289,7 +289,7 @@ export default function RtRegistrationView({
                 )}
 
                 <div className="flex items-center justify-between pb-4">
-                    <Link href="/daftar" className="text-sm text-gray-500 hover:underline">
+                    <Link href="/register" className="text-sm text-gray-500 hover:underline">
                         {t('back')}
                     </Link>
                     <button

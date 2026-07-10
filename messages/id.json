@@ -330,7 +330,9 @@
     "landing": {
       "title": "Pendaftaran",
       "asRt": "Daftarkan RT baru",
-      "asResident": "Daftar sebagai Warga"
+      "asResident": "Daftar sebagai Warga",
+      "hasAccount": "Sudah punya akun?",
+      "signIn": "Masuk"
     },
     "resident": {
       "title": "Daftar sebagai Warga",

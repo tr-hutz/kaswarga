@@ -137,7 +137,7 @@ export default function ResidentRegistrationView({
                 )}
 
                 <div className="flex items-center justify-between">
-                    <Link href="/daftar" className="text-sm text-gray-500 hover:underline">
+                    <Link href="/register" className="text-sm text-gray-500 hover:underline">
                         {t('back')}
                     </Link>
                     <button
