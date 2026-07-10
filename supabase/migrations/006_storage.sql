@@ -13,15 +13,18 @@ insert into storage.buckets (
     id, name, created_at, public,
     avif_autodetection, file_size_limit, allowed_mime_types, type
 ) values (
-             'rt-assets',
-             'rt-assets',
-             now(),
-             true,
-             false,
-             2097152,
-             array['image/jpeg', 'image/png', 'image/webp'],
-             'STANDARD'
-         );
+    'rt-assets',
+    'rt-assets',
+    now(),
+    true,
+    false,
+    2097152,
+    array['image/jpeg', 'image/png', 'image/webp'],
+    'STANDARD'
+) on conflict (id) do update set
+    public             = excluded.public,
+    file_size_limit    = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
 
 /* ----------------------------------------------------------------------------
  * payment-proof
@@ -40,7 +43,10 @@ insert into storage.buckets (
     5242880,
     array['image/jpeg', 'image/png', 'application/pdf'],
     'STANDARD'
-);
+) on conflict (id) do update set
+    public             = excluded.public,
+    file_size_limit    = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
 
 
 /* ----------------------------------------------------------------------------
@@ -60,4 +66,7 @@ insert into storage.buckets (
     5242880,
     array['image/jpeg', 'image/png', 'application/pdf'],
     'STANDARD'
-);
+) on conflict (id) do update set
+    public             = excluded.public,
+    file_size_limit    = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
