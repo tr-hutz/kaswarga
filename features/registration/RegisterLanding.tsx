@@ -17,7 +17,7 @@ export default function RegisterLanding() {
 
                 <div className="grid gap-4">
 
-                    <Link href="/daftar/rt" className="block">
+                    <Link href="/register/rt" className="block">
                         <div className="bg-white border rounded-2xl p-6 hover:shadow-md transition cursor-pointer">
                             <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
@@ -46,9 +46,9 @@ export default function RegisterLanding() {
                 </div>
 
                 <p className="text-center text-sm text-gray-500">
-                    Sudah punya akun?{' '}
+                    {t('landing.hasAccount')}{' '}
                     <Link href="/login" className="text-blue-600 hover:underline font-medium">
-                        Masuk
+                        {t('landing.signIn')}
                     </Link>
                 </p>
 
