@@ -8,14 +8,17 @@ export function useRtData() {
 
     const [data,    setData]    = useState([])
     const [loading, setLoading] = useState(true)
+    const [error,   setError]   = useState(false)
 
     const load = useCallback(async () => {
         setLoading(true)
+        setError(false)
         try {
             const rows = await getAllRt()
             setData(rows)
         } catch (err) {
             console.error('[useRtData]', err)
+            setError(true)
         } finally {
             setLoading(false)
         }
@@ -25,5 +28,5 @@ export function useRtData() {
 
     function refresh() { load() }
 
-    return { data, loading, refresh }
+    return { data, loading, error, refresh }
 }

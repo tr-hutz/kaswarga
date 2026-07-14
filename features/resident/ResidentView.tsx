@@ -7,6 +7,8 @@ import ResidentToolbar
 import ResidentTable
     from './components/tables/ResidentTable'
 
+import ErrorState from '@/components/ui/ErrorState'
+
 import ResidentDetailDrawer
     from './components/drawer/ResidentDetailDrawer'
 
@@ -28,6 +30,7 @@ export default function ResidentView({
                                        */
                                       data,
                                       loading,
+                                      error,
                                       refresh,
 
                                       pendingRequests,
@@ -121,19 +124,22 @@ export default function ResidentView({
 
             </div>
 
-            <ResidentTable
+            {error
+                ? <ErrorState onRetry={refresh} />
+                : <ResidentTable
 
-                data={data}
+                    data={data}
 
-                loading={loading}
+                    loading={loading}
 
-                onDetail={openDrawer}
+                    onDetail={openDrawer}
 
-                onEdit={openEditForm}
+                    onEdit={openEditForm}
 
-                refresh={refresh}
+                    refresh={refresh}
 
-            />
+                />
+            }
 
             <ResidentDetailDrawer
 

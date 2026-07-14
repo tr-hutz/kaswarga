@@ -30,6 +30,8 @@ export function useNotifications() {
 
     ] = useState([])
 
+    const [error, setError] = useState(false)
+
     useEffect(() => {
 
         loadData()
@@ -37,6 +39,8 @@ export function useNotifications() {
     }, [])
 
     async function loadData() {
+
+        setError(false)
 
         try {
 
@@ -47,6 +51,11 @@ export function useNotifications() {
                 data
             )
 
+        } catch (err) {
+
+            console.error('[NOTIFICATION]', err)
+            setError(true)
+
         } finally {
 
             setLoading(false)
@@ -56,6 +65,8 @@ export function useNotifications() {
     return {
 
         loading,
+
+        error,
 
         notifications,
 

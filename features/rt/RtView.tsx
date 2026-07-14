@@ -6,10 +6,13 @@ import RtTable         from './components/RtTable'
 import RtForm          from './components/RtForm'
 import RtDeleteConfirm from './components/RtDeleteConfirm'
 import { useTranslations } from 'next-intl'
+import ErrorState from '@/components/ui/ErrorState'
 
 export default function RtView({
     data,
     loading,
+    error,
+    onRetry,
     selected,
     formOpen,
     openCreate,
@@ -46,12 +49,15 @@ export default function RtView({
             </div>
 
             {/* Table */}
-            <RtTable
-                data={data}
-                loading={loading}
-                onEdit={openEdit}
-                onDelete={setDelTarget}
-            />
+            {error
+                ? <ErrorState onRetry={onRetry} />
+                : <RtTable
+                    data={data}
+                    loading={loading}
+                    onEdit={openEdit}
+                    onDelete={setDelTarget}
+                />
+            }
 
             {/* Form Modal */}
             <RtForm

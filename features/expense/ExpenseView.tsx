@@ -6,6 +6,7 @@ import ExpenseTable      from './components/tables/ExpenseTable'
 import ExpenseDrawer     from './components/drawer/ExpenseDrawer'
 import ExpenseForm       from './components/forms/ExpenseForm'
 import ExpenseImportModal from './components/import/ExpenseImportModal'
+import ErrorState        from '@/components/ui/ErrorState'
 
 export default function ExpenseView({
 
@@ -61,6 +62,10 @@ export default function ExpenseView({
     rejectExpense,
     approveAllExpenses,
 
+    /* data error */
+    error,
+    onRetry,
+
 }) {
 
     const pendingCount = rows.filter(r => r.status === 'pending').length
@@ -84,14 +89,17 @@ export default function ExpenseView({
                 />
             </div>
 
-            <ExpenseTable
-                rows={rows}
-                loading={loading}
-                role={role}
-                onSelect={openDrawer}
-                onEdit={openEditForm}
-                onDelete={removeRow}
-            />
+            {error
+                ? <ErrorState onRetry={onRetry} />
+                : <ExpenseTable
+                    rows={rows}
+                    loading={loading}
+                    role={role}
+                    onSelect={openDrawer}
+                    onEdit={openEditForm}
+                    onDelete={removeRow}
+                />
+            }
 
             <ExpenseDrawer
                 open={drawerOpen}

@@ -35,7 +35,7 @@ export default function ExpenseContainer() {
      |-------------------------------------------------------------
      */
 
-    const { rows, loading, refresh } = useExpenseData({ search, category })
+    const { rows, loading, error, refresh } = useExpenseData({ search, category })
     useExpenseRealtime({ onReload: refresh })
 
     /*
@@ -76,6 +76,8 @@ export default function ExpenseContainer() {
             role={role}
             rows={rows}
             loading={loading}
+            error={error}
+            onRetry={refresh}
             {...actions}
         />
     )

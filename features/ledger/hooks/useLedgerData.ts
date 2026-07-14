@@ -34,6 +34,8 @@ export function useLedgerData({
 
     ] = useState([])
 
+    const [error, setError] = useState(false)
+
     /*
      |-------------------------------------------------------------
      | LOAD
@@ -59,6 +61,7 @@ export function useLedgerData({
     async function loadData() {
 
         setLoading(true)
+        setError(false)
 
         try {
 
@@ -79,6 +82,7 @@ export function useLedgerData({
                 '[LEDGER]',
                 err
             )
+            setError(true)
 
         } finally {
 
@@ -89,6 +93,8 @@ export function useLedgerData({
     return {
 
         loading,
+
+        error,
 
         rows,
 

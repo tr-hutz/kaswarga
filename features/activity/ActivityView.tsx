@@ -6,8 +6,9 @@ import { useTranslations } from 'next-intl'
 import ActivityTable from './components/tables/ActivityTable'
 import ActivityDrawer from './components/drawer/ActivityDrawer'
 import ActivityAnalytics from './components/analytics/ActivityAnalytics'
+import ErrorState from '@/components/ui/ErrorState'
 
-export default function ActivityView({ rows, loading }) {
+export default function ActivityView({ rows, loading, error, onRetry }) {
 
     const [selectedRow, setSelectedRow] = useState(null)
     const [drawerOpen, setDrawerOpen] = useState(false)
@@ -41,7 +42,10 @@ export default function ActivityView({ rows, loading }) {
 
             <ActivityAnalytics rows={rows} />
 
-            <ActivityTable rows={rows} onSelect={openDrawer} />
+            {error
+                ? <ErrorState onRetry={onRetry} />
+                : <ActivityTable rows={rows} onSelect={openDrawer} />
+            }
 
             <ActivityDrawer open={drawerOpen} row={selectedRow} onClose={closeDrawer} />
 

@@ -14,6 +14,7 @@ export function useResidentData({ search = '', status = 'aktif' } = {}) {
     const [data,            setData]            = useState([])
     const [pendingRequests, setPendingRequests] = useState([])
     const [pendingLoading,  setPendingLoading]  = useState(true)
+    const [error,           setError]           = useState(false)
 
     useEffect(() => { loadData() }, [search, status])
 
@@ -40,11 +41,13 @@ export function useResidentData({ search = '', status = 'aktif' } = {}) {
 
     async function loadData() {
         setLoading(true)
+        setError(false)
         try {
             const result = await getResidents({ search, status })
             setData(result || [])
         } catch (err) {
             console.error('[WARGA]', err)
+            setError(true)
         } finally {
             setLoading(false)
         }
@@ -54,17 +57,18 @@ export function useResidentData({ search = '', status = 'aktif' } = {}) {
         if (!membership?.rt?.id) return
         setPendingLoading(true)
         try {
-            const { data: rows, error } = await supabase
+            const { data: rows, error: fetchError } = await supabase
                 .from('registration_requests')
                 .select('*')
                 .eq('type', 'resident')
                 .eq('status', 'pending')
                 .eq('rt_id', membership.rt.id)
                 .order('created_at', { ascending: false })
-            if (error) throw error
+            if (fetchError) throw fetchError
             setPendingRequests(rows || [])
         } catch (err) {
             console.error('[WARGA] pending:', err)
+            setError(true)
         } finally {
             setPendingLoading(false)
         }
@@ -74,6 +78,7 @@ export function useResidentData({ search = '', status = 'aktif' } = {}) {
 
     return {
         loading,
+        error,
         data,
         pendingRequests,
         pendingLoading,

@@ -8,7 +8,7 @@ import UsersView           from './UsersView'
 
 export default function UsersContainer() {
 
-    const { data, loading, refresh } = useUsersData()
+    const { data, loading, error, refresh } = useUsersData()
     const { user } = useAuth()
 
     const actions = useUsersActions(refresh)
@@ -17,6 +17,8 @@ export default function UsersContainer() {
         <UsersView
             data={data}
             loading={loading}
+            error={error}
+            onRetry={refresh}
             currentUserId={user?.id}
             {...actions}
         />

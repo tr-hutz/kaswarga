@@ -3,10 +3,11 @@
 
 import RegistrationCard from './components/RegistrationCard'
 import { useTranslations } from 'next-intl'
+import ErrorState from '@/components/ui/ErrorState'
 
 const TAB_KEYS = ['pending', 'approved', 'rejected', 'all']
 
-export default function RtRegistrationView({ requests, loading, filter, setFilter, refresh }) {
+export default function RtRegistrationView({ requests, loading, error, filter, setFilter, refresh }) {
     const t = useTranslations('rtRegistration')
 
     return (
@@ -48,7 +49,9 @@ export default function RtRegistrationView({ requests, loading, filter, setFilte
             </div>
 
             {/* Content */}
-            {loading ? (
+            {error ? (
+                <ErrorState onRetry={refresh} />
+            ) : loading ? (
                 <div className="flex items-center justify-center py-16">
                     <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
                 </div>

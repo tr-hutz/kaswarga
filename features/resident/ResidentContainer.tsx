@@ -48,6 +48,7 @@ export default function ResidentContainer() {
 
         data,
         loading,
+        error,
         pendingRequests,
         pendingLoading,
         refresh
@@ -85,6 +86,8 @@ export default function ResidentContainer() {
             data={data}
 
             loading={loading}
+
+            error={error}
 
             refresh={refresh}
 

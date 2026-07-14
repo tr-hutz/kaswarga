@@ -5,10 +5,13 @@ import { AlertTriangle } from 'lucide-react'
 import UserTable   from './components/UserTable'
 import EditRoleForm from './components/EditRoleForm'
 import { useTranslations } from 'next-intl'
+import ErrorState from '@/components/ui/ErrorState'
 
 export default function UsersView({
     data,
     loading,
+    error,
+    onRetry,
     currentUserId,
     editTarget,
     setEditTarget,
@@ -35,13 +38,16 @@ export default function UsersView({
             </div>
 
             {/* Table */}
-            <UserTable
-                data={data}
-                loading={loading}
-                currentUserId={currentUserId}
-                onEditRole={setEditTarget}
-                onRemoveMembership={setDelTarget}
-            />
+            {error
+                ? <ErrorState onRetry={onRetry} />
+                : <UserTable
+                    data={data}
+                    loading={loading}
+                    currentUserId={currentUserId}
+                    onEditRole={setEditTarget}
+                    onRemoveMembership={setDelTarget}
+                />
+            }
 
             {/* Edit Role Modal */}
             <EditRoleForm

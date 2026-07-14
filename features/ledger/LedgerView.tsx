@@ -16,6 +16,8 @@ import LedgerAnalytics
 import LedgerReport
     from './components/LedgerReport'
 
+import ErrorState from '@/components/ui/ErrorState'
+
 export default function LedgerView({
 
                                        /*
@@ -35,6 +37,8 @@ export default function LedgerView({
 
                                        rows,
                                        loading,
+                                       error,
+                                       onRetry,
 
                                        /*
                                         |-------------------------------------------------------------
@@ -83,17 +87,20 @@ export default function LedgerView({
 
             />
 
-            <LedgerTable
+            {error
+                ? <ErrorState onRetry={onRetry} />
+                : <LedgerTable
 
-                rows={rows}
+                    rows={rows}
 
-                loading={loading}
+                    loading={loading}
 
-                onSelect={
-                    openDrawer
-                }
+                    onSelect={
+                        openDrawer
+                    }
 
-            />
+                />
+            }
 
             <LedgerDrawer
 

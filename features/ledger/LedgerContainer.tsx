@@ -43,6 +43,7 @@ export default function LedgerContainer() {
 
         rows,
         loading,
+        error,
         refresh
 
     } = useLedgerData({
@@ -96,6 +97,8 @@ export default function LedgerContainer() {
 
             rows={rows}
             loading={loading}
+            error={error}
+            onRetry={refresh}
 
             /*
              * actions

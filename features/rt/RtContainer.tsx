@@ -7,7 +7,7 @@ import RtView           from './RtView'
 
 export default function RtContainer() {
 
-    const { data, loading, refresh } = useRtData()
+    const { data, loading, error, refresh } = useRtData()
 
     const actions = useRtActions(refresh)
 
@@ -15,6 +15,8 @@ export default function RtContainer() {
         <RtView
             data={data}
             loading={loading}
+            error={error}
+            onRetry={refresh}
             {...actions}
         />
     )
