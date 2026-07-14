@@ -1,7 +1,13 @@
-import { NextResponse } from 'next/server'
-import { supabase } from '../../../../lib/supabase'
+import { NextResponse }      from 'next/server'
+import { cookies }            from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
+import { supabase }           from '../../../../lib/supabase'
+import { supabaseAdmin }      from '../../../../lib/supabase-admin'
 import { monthList, formatMonths, formatAccounting } from '../../../../lib/utils'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
+
+const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || ''
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 const maskAccountNumber = (num: string | number | null) => {
   if (!num) return '-'
@@ -22,6 +28,31 @@ const groupByMonth = (rows: any[] = []): Record<number, any[]> => {
 }
 
 export async function GET(req: Request) {
+  const cookieStore  = await cookies()
+  const serverClient = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} }
+  })
+
+  const { data: authData, error: authError } = await serverClient.auth.getUser()
+  if (authError || !authData?.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { data: membership, error: membershipError } = await supabaseAdmin
+    .from('memberships')
+    .select('role')
+    .eq('user_id', authData.user.id)
+    .eq('status', 'active')
+    .maybeSingle()
+
+  if (membershipError || !membership) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  if (!['CHAIR', 'TREASURER'].includes(membership.role)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   const { searchParams } = new URL(req.url)
   const yearParam = searchParams.get('year') || String(new Date().getFullYear())
   const year = yearParam
