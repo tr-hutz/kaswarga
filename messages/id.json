@@ -18,7 +18,8 @@
       "generate": "Generate",
       "search": "Cari",
       "confirm": "Konfirmasi",
-      "change": "Ganti"
+      "change": "Ganti",
+      "retry": "Coba Lagi"
     },
     "states": {
       "saving": "Menyimpan...",
@@ -61,7 +62,9 @@
     },
     "errors": {
       "generic": "Terjadi kesalahan",
-      "saveFailed": "Gagal menyimpan data"
+      "saveFailed": "Gagal menyimpan data",
+      "forbidden": "Akses Ditolak",
+      "forbiddenDescription": "Kamu tidak memiliki izin untuk mengakses halaman ini."
     }
   },
   "nav": {
@@ -701,5 +704,15 @@
     "pendingSection": {
       "title": "Permintaan Pendaftaran RT"
     }
+  },
+  "notFound": {
+    "title": "Halaman Tidak Ditemukan",
+    "description": "Halaman yang kamu cari tidak ada atau telah dipindahkan.",
+    "back": "Kembali ke Beranda"
+  },
+  "error": {
+    "title": "Terjadi Kesalahan",
+    "description": "Terjadi kesalahan yang tidak terduga. Silakan coba lagi.",
+    "retry": "Coba Lagi"
   }
 }
