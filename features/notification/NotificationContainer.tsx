@@ -25,6 +25,7 @@ export default function NotificationContainer() {
     const {
         notifications,
         loading,
+        error,
         reload
     } = useNotifications()
 
@@ -57,6 +58,10 @@ export default function NotificationContainer() {
             }
 
             loading={loading}
+
+            error={error}
+
+            onRetry={reload}
 
             onMarkAllRead={
                 handleMarkAllRead

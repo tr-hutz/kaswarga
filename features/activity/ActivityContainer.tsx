@@ -22,6 +22,7 @@ export default function ActivityContainer() {
 
         rows,
         loading,
+        error,
         refresh
 
     } = useActivityData()
@@ -39,6 +40,10 @@ export default function ActivityContainer() {
             rows={rows}
 
             loading={loading}
+
+            error={error}
+
+            onRetry={refresh}
 
         />
 

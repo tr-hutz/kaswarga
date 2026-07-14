@@ -30,6 +30,8 @@ export function useActivityData() {
 
     ] = useState([])
 
+    const [error, setError] = useState(false)
+
     useEffect(() => {
 
         loadData()
@@ -39,6 +41,7 @@ export function useActivityData() {
     async function loadData() {
 
         setLoading(true)
+        setError(false)
 
         try {
 
@@ -55,6 +58,7 @@ export function useActivityData() {
                 '[ACTIVITY]',
                 err
             )
+            setError(true)
 
         } finally {
 
@@ -65,6 +69,8 @@ export function useActivityData() {
     return {
 
         loading,
+
+        error,
 
         rows,
 

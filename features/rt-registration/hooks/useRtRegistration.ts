@@ -9,9 +9,11 @@ export function useRtRegistration() {
     const [requests, setRequests] = useState([])
     const [loading,  setLoading]  = useState(true)
     const [filter,   setFilter]   = useState('pending')
+    const [error,    setError]    = useState(false)
 
     const load = useCallback(async () => {
         setLoading(true)
+        setError(false)
         try {
             let query = supabase
                 .from('registration_requests')
@@ -23,11 +25,12 @@ export function useRtRegistration() {
                 query = query.eq('status', filter)
             }
 
-            const { data, error } = await query
-            if (error) throw error
+            const { data, error: fetchError } = await query
+            if (fetchError) throw fetchError
             setRequests(data || [])
         } catch (err) {
             console.error('[useRtRegistration]', err)
+            setError(true)
         } finally {
             setLoading(false)
         }
@@ -51,5 +54,5 @@ export function useRtRegistration() {
 
     function refresh() { load() }
 
-    return { requests, loading, filter, setFilter, refresh }
+    return { requests, loading, error, filter, setFilter, refresh }
 }

@@ -3,6 +3,7 @@
 
 import PaymentTable
     from './components/tables/PaymentTable'
+import ErrorState from '@/components/ui/ErrorState'
 
 import PaymentDetailDrawer
     from './components/details/PaymentDetailDrawer'
@@ -43,6 +44,7 @@ export default function PaymentView({
                                             */
                                            rows,
                                            loading,
+                                           error,
                                            reloadData
 
                                        }) {
@@ -173,11 +175,14 @@ export default function PaymentView({
                 />
             </div>
 
-            <PaymentTable
-                rows={rows}
-                loading={loading}
-                onSelect={openDetail}
-            />
+            {error
+                ? <ErrorState onRetry={reloadData} />
+                : <PaymentTable
+                    rows={rows}
+                    loading={loading}
+                    onSelect={openDetail}
+                />
+            }
 
             <PaymentDetailDrawer
                 open={open}

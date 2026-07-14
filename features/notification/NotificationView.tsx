@@ -14,10 +14,14 @@ import NotificationToolbar
 import NotificationList
     from './components/NotificationList'
 
+import ErrorState from '@/components/ui/ErrorState'
+
 export default function NotificationView({
 
                                              notifications,
                                              loading,
+                                             error,
+                                             onRetry,
                                              onMarkAllRead
 
                                          }) {
@@ -90,6 +94,10 @@ export default function NotificationView({
                 {t('loading')}
             </div>
         )
+    }
+
+    if (error) {
+        return <ErrorState onRetry={onRetry} />
     }
 
     return (

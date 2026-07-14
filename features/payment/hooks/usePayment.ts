@@ -61,6 +61,8 @@ export function usePayment() {
         setRows
     ] = useState([])
 
+    const [error, setError] = useState(false)
+
     useEffect(() => {
 
         loadData()
@@ -74,6 +76,7 @@ export function usePayment() {
     async function loadData() {
 
         setLoading(true)
+        setError(false)
 
         try {
 
@@ -91,6 +94,7 @@ export function usePayment() {
         } catch (err) {
 
             console.error(err)
+            setError(true)
 
         } finally {
 
@@ -101,6 +105,8 @@ export function usePayment() {
     return {
 
         loading,
+
+        error,
 
         year,
         setYear,

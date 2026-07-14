@@ -8,16 +8,19 @@ export function useUsersData() {
 
     const [data,    setData]    = useState([])
     const [loading, setLoading] = useState(true)
+    const [error,   setError]   = useState(false)
 
     const load = useCallback(async () => {
 
         setLoading(true)
+        setError(false)
 
         try {
             const rows = await getAllUsers()
             setData(rows)
         } catch (err) {
             console.error('[useUsersData]', err)
+            setError(true)
         } finally {
             setLoading(false)
         }
@@ -26,5 +29,5 @@ export function useUsersData() {
 
     useEffect(() => { load() }, [load])
 
-    return { data, loading, refresh: load }
+    return { data, loading, error, refresh: load }
 }

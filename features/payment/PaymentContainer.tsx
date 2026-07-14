@@ -23,6 +23,7 @@ export default function PaymentContainer() {
 
             rows={payment.rows}
             loading={payment.loading}
+            error={payment.error}
             reloadData={payment.loadData}
         />
     )

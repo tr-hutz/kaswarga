@@ -35,6 +35,8 @@ export function useExpenseData({
 
     ] = useState([])
 
+    const [error, setError] = useState(false)
+
     /*
      |-------------------------------------------------------------
      | LOAD
@@ -63,6 +65,7 @@ export function useExpenseData({
     async function loadData() {
 
         setLoading(true)
+        setError(false)
 
         try {
 
@@ -84,6 +87,7 @@ export function useExpenseData({
                 '[PENGELUARAN]',
                 err
             )
+            setError(true)
 
         } finally {
 
@@ -94,6 +98,8 @@ export function useExpenseData({
     return {
 
         loading,
+
+        error,
 
         rows,
 
