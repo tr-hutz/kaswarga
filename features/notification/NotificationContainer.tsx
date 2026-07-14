@@ -24,10 +24,13 @@ export default function NotificationContainer() {
 
     const {
         notifications,
+        loading,
         reload
     } = useNotifications()
 
     async function handleMarkAllRead() {
+
+        if (!membership?.user?.id) return
 
         try {
 
@@ -52,6 +55,8 @@ export default function NotificationContainer() {
             notifications={
                 notifications
             }
+
+            loading={loading}
 
             onMarkAllRead={
                 handleMarkAllRead

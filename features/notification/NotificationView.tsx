@@ -6,6 +6,8 @@ import {
     useState
 } from 'react'
 
+import { useTranslations } from 'next-intl'
+
 import NotificationToolbar
     from './components/NotificationToolbar'
 
@@ -15,9 +17,12 @@ import NotificationList
 export default function NotificationView({
 
                                              notifications,
+                                             loading,
                                              onMarkAllRead
 
                                          }) {
+
+    const t = useTranslations('notification')
 
     const [
         search,
@@ -78,6 +83,14 @@ export default function NotificationView({
             filter
 
         ])
+
+    if (loading) {
+        return (
+            <div className="p-6 text-sm text-gray-400">
+                {t('loading')}
+            </div>
+        )
+    }
 
     return (
 
