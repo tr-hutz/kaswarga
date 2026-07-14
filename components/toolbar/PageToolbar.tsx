@@ -104,6 +104,7 @@ export default function PageToolbar({
 
                 { onCreate !== undefined &&
                 <button
+                    aria-label={t('actions.add')}
                     onClick={onCreate}
                     className="
                         h-11
