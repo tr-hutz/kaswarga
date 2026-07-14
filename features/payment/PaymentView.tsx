@@ -42,6 +42,7 @@ export default function PaymentView({
                                             |-------------------------------------------------------------
                                             */
                                            rows,
+                                           loading,
                                            reloadData
 
                                        }) {
@@ -75,7 +76,7 @@ export default function PaymentView({
 
     const {
 
-        loading,
+        loading: approvalLoading,
 
         approve,
 
@@ -174,6 +175,7 @@ export default function PaymentView({
 
             <PaymentTable
                 rows={rows}
+                loading={loading}
                 onSelect={openDetail}
             />
 
@@ -183,7 +185,7 @@ export default function PaymentView({
                 onClose={closeDetail}
                 onApprove={handleApprove}
                 onReject={handleReject}
-                loading={loading}
+                loading={approvalLoading}
             />
 
         </div>
