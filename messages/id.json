@@ -655,11 +655,13 @@
     },
     "noToken": {
       "title": "Link Tidak Valid",
-      "description": "Link aktivasi tidak ditemukan atau sudah digunakan. Pastikan Anda membuka link langsung dari email."
+      "description": "Link aktivasi tidak ditemukan atau sudah digunakan. Pastikan Anda membuka link langsung dari email.",
+      "requestLink": "Minta link aktivasi baru"
     },
     "activationError": {
       "title": "Terjadi Kesalahan",
-      "fallback": "Aktivasi gagal. Silakan coba lagi atau hubungi pengurus RT."
+      "fallback": "Aktivasi gagal. Silakan coba lagi atau hubungi pengurus RT.",
+      "requestLink": "Minta link aktivasi baru"
     }
   },
   "rtRegistration": {

@@ -342,6 +342,12 @@ export default function ActivationContainer() {
                         <p className="text-sm text-gray-600">
                             {t('noToken.description')}
                         </p>
+                        <a
+                            href="/activation/request-link"
+                            className="inline-block text-sm text-blue-600 hover:underline"
+                        >
+                            {t('noToken.requestLink')}
+                        </a>
                     </>
                 )}
 
@@ -354,6 +360,12 @@ export default function ActivationContainer() {
                         <p className="text-sm text-gray-600">
                             {errMsg || t('activationError.fallback')}
                         </p>
+                        <a
+                            href="/activation/request-link"
+                            className="inline-block text-sm text-blue-600 hover:underline"
+                        >
+                            {t('activationError.requestLink')}
+                        </a>
                     </>
                 )}
 
