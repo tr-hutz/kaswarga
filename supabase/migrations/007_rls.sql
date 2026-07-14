@@ -312,33 +312,62 @@ create policy "registration: anyone can submit"
     to anon, authenticated
     with check (true);
 
--- Authenticated users (admins / super_admin) update status
-create policy "registration: authenticated can update"
+-- Only SUPER_ADMIN may update RT registration requests.
+-- Only ADMIN or CHAIR of the same RT may update resident registration requests.
+create policy "registration: authorized can update"
     on registration_requests for update to authenticated
-    using (true);
+    using (
+        (type = 'rt' and is_super_admin())
+        or (
+            type  = 'resident'
+            and rt_id in (
+                select rt_id
+                from   memberships
+                where  user_id = auth.uid()
+                and    role    in ('ADMIN', 'CHAIR')
+                and    status  = 'active'
+            )
+        )
+    );
 
--- Hard-delete allowed for authenticated (e.g. rejected warga requests)
-create policy "registration: authenticated can delete"
+-- Mirror the UPDATE restriction for hard-deletes (rejected resident requests).
+create policy "registration: authorized can delete"
     on registration_requests for delete to authenticated
-    using (true);
+    using (
+        (type = 'rt' and is_super_admin())
+        or (
+            type  = 'resident'
+            and rt_id in (
+                select rt_id
+                from   memberships
+                where  user_id = auth.uid()
+                and    role    in ('ADMIN', 'CHAIR')
+                and    status  = 'active'
+            )
+        )
+    );
 
 
 /* ----------------------------------------------------------------------------
  * ACTIVATION INVITES
  * --------------------------------------------------------------------------- */
 
-create policy "activation_invites: anyone can read"
-    on activation_invites for select
-    to anon, authenticated
-    using (true);
-
-create policy "activation_invites: authenticated can insert"
-    on activation_invites for insert to authenticated
-    with check (true);
-
-create policy "activation_invites: authenticated can update"
-    on activation_invites for update to authenticated
-    using (true);
+-- SUPER_ADMIN can read all invites (RT registration management page).
+-- ADMIN/CHAIR can read invites for their own RT (resend-invite flows).
+-- All writes go through supabase_admin (service_role) which bypasses RLS —
+-- no authenticated INSERT/UPDATE policy is needed.
+create policy "activation_invites: authorized can read"
+    on activation_invites for select to authenticated
+    using (
+        is_super_admin()
+        or rt_id in (
+            select rt_id
+            from   memberships
+            where  user_id = auth.uid()
+            and    role    in ('ADMIN', 'CHAIR')
+            and    status  = 'active'
+        )
+    );
 
 /* ----------------------------------------------------------------------------
  * Storage policies
