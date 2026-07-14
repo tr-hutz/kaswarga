@@ -60,7 +60,7 @@ export default function AppShell({
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div data-testid="shell-spinner" className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
       </div>
     )
@@ -74,7 +74,7 @@ export default function AppShell({
 
   if (membership?.status === 'no_membership' && !isPublicPath(pathname)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div data-testid="shell-no-membership" className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-8 text-center space-y-4">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 mb-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -142,6 +142,7 @@ export default function AppShell({
         />
 
         <main
+            data-testid="shell-ready"
             className="
                 lg:pl-72
                 min-h-screen
