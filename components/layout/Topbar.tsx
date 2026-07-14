@@ -225,6 +225,7 @@ export default function Topbar({
                             handleLogout
                         }
 
+                        data-testid="btn-logout"
                         className="
                             p-2
                             rounded-lg
