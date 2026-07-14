@@ -7,6 +7,14 @@ import ActivityRow from './ActivityRow'
 export default function ActivityTable({ rows = [], onSelect }) {
     const t = useTranslations('activity')
 
+    if (rows.length === 0) {
+        return (
+            <div className="bg-white rounded-xl border p-8 text-center text-sm text-gray-400">
+                {t('table.empty')}
+            </div>
+        )
+    }
+
     return (
         <div className="bg-white rounded-xl border overflow-hidden">
             <table className="w-full text-sm">
