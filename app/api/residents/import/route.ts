@@ -59,7 +59,7 @@ export async function POST(req: Request) {
         const toInsert = rows
             .filter(r => r.name?.trim())
             .map(r => ({
-                rt_id:        membership.rt_id,
+                rt_id:        membership.rt_id!,
                 name:         r.name.trim(),
                 block:        r.block?.trim()        || null,
                 house_number: r.house_number?.trim() || null,

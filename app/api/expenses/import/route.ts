@@ -59,7 +59,7 @@ export async function POST(req: Request) {
         const toInsert = rows
             .filter(r => r.date?.trim() && r.amount?.trim())
             .map(r => ({
-                rt_id:       membership.rt_id,
+                rt_id:       membership.rt_id!,
                 date:        r.date.trim(),
                 category:    r.category?.trim()     || null,
                 amount:      parseInt(r.amount.replace(/[^0-9]/g, ''), 10) || 0,
@@ -103,7 +103,7 @@ export async function POST(req: Request) {
         if (chairMembers?.length && data.length > 0) {
             await supabaseAdmin.from('notifications').insert(
                 chairMembers.map(m => ({
-                    rt_id:          membership.rt_id,
+                    rt_id:          membership.rt_id!,
                     type:           'expense_pending',
                     title:          'New Expenses Pending Approval',
                     message:        `${data.length} new expense(s) imported and require approval.`,

@@ -106,7 +106,8 @@
       "description": "Deskripsi",
       "amount": "Nominal",
       "balance": "Saldo",
-      "loading": "Loading..."
+      "loading": "Memuat data...",
+      "empty": "Belum ada transaksi."
     },
     "analytics": {
       "income": "Total Pemasukan",
@@ -191,6 +192,7 @@
       "all": "Semua",
       "unread": "Belum Dibaca"
     },
+    "loading": "Memuat notifikasi...",
     "markAllRead": "Tandai Semua Dibaca",
     "empty": "Tidak ada notifikasi"
   },
@@ -203,7 +205,8 @@
       "action": "Aksi",
       "entity": "Entitas",
       "description": "Deskripsi",
-      "time": "Waktu"
+      "time": "Waktu",
+      "empty": "Belum ada aktivitas."
     },
     "analytics": {
       "total": "Total Activity",
@@ -517,7 +520,9 @@
       "house": "Rumah",
       "month": "Bulan",
       "total": "Total",
-      "status": "Status"
+      "status": "Status",
+      "loading": "Memuat data pembayaran...",
+      "empty": "Belum ada data pembayaran."
     },
     "detail": {
       "title": "Detail Pembayaran",
