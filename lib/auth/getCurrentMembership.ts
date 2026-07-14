@@ -9,15 +9,18 @@ export async function getCurrentMembership(): Promise<Membership> {
    |--------------------------------------------------------------------------
    */
 
+  // getSession() auto-refreshes an expired access token using the stored refresh token.
+  // getUser() makes a live server call and returns 401 immediately if the access token
+  // is expired — causing auth to break until the background refresh completes.
   const {
-    data: authData,
-    error: authError
+    data: { session },
+    error: sessionError
   } =
-    await supabase.auth.getUser()
+    await supabase.auth.getSession()
 
   if (
-    authError ||
-    !authData?.user
+    sessionError ||
+    !session?.user
   ) {
 
     throw new Error(
@@ -26,7 +29,7 @@ export async function getCurrentMembership(): Promise<Membership> {
   }
 
   const authUser =
-    authData.user
+    session.user
 
   /*
    |--------------------------------------------------------------------------
