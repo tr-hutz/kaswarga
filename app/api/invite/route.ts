@@ -3,8 +3,10 @@ import { cookies }             from 'next/headers'
 import { createServerClient }  from '@supabase/ssr'
 import { supabaseAdmin }       from '@/lib/supabase-admin'
 
-const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || 'https://bftwjxpotkmpofdruiqc.supabase.co'
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_9S7keXBfOvJqzVOBRIxK4w_pjQ2UhXt'
+const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || ''
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+
+const ALLOWED_ROLES = ['SUPER_ADMIN', 'ADMIN', 'CHAIR'] as const
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +24,31 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publi
 
 export async function POST(req: Request) {
     try {
+        const cookieStore  = await cookies()
+        const serverClient = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} }
+        })
+
+        const { data: authData, error: authError } = await serverClient.auth.getUser()
+        if (authError || !authData?.user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        const { data: membership, error: membershipError } = await supabaseAdmin
+            .from('memberships')
+            .select('role')
+            .eq('user_id', authData.user.id)
+            .eq('status', 'active')
+            .maybeSingle()
+
+        if (membershipError || !membership) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        }
+
+        if (!(ALLOWED_ROLES as readonly string[]).includes(membership.role)) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        }
+
         const { registrationRequestId, email, role, rtId } = await req.json()
 
         if (!registrationRequestId || !email || !role) {
@@ -85,24 +112,14 @@ export async function POST(req: Request) {
         }
 
         // ----------------------------------------------------------------
-        // Record activation invite using the caller's session (RLS-safe).
+        // Record activation invite via service role (no RLS insert policy
+        // for authenticated users — all writes go through supabaseAdmin).
         // This is the record the /activation page reads — it must always be
         // written regardless of whether the auth link generation succeeded.
         // ----------------------------------------------------------------
-        const cookieStore = await cookies()
-        const supabase    = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            cookies: {
-                getAll()                { return cookieStore.getAll() },
-                setAll(cookiesToSet)    {
-                    try { cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options)) }
-                    catch {}
-                }
-            }
-        })
-
         const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
 
-        const { error: insertError } = await supabase
+        const { error: insertError } = await supabaseAdmin
             .from('activation_invites')
             .insert({
                 registration_request_id: registrationRequestId,
