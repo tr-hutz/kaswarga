@@ -8,12 +8,29 @@ import { useTranslations } from 'next-intl'
 export default function PaymentTable({
 
                                          rows = [],
+                                         loading,
 
                                          onSelect
 
                                      }) {
 
     const t = useTranslations('payments')
+
+    if (loading) {
+        return (
+            <div className="bg-white rounded-2xl border p-8 text-center text-sm text-gray-400">
+                {t('table.loading')}
+            </div>
+        )
+    }
+
+    if (rows.length === 0) {
+        return (
+            <div className="bg-white rounded-2xl border p-8 text-center text-sm text-gray-400">
+                {t('table.empty')}
+            </div>
+        )
+    }
 
     return (
 
