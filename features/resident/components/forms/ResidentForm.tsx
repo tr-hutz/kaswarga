@@ -11,8 +11,9 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }) {
 
     const isEdit = !!resident
 
-    const [form,    setForm]    = useState(EMPTY)
-    const [saving,  setSaving]  = useState(false)
+    const [form,      setForm]      = useState(EMPTY)
+    const [saving,    setSaving]    = useState(false)
+    const [saveError, setSaveError] = useState('')
 
     useEffect(() => {
         if (!resident) { setForm(EMPTY); return }
@@ -34,6 +35,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }) {
     async function handleSubmit(e) {
         e.preventDefault()
         setSaving(true)
+        setSaveError('')
         try {
             if (isEdit) {
                 await updateResident(resident.id, form)
@@ -43,7 +45,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }) {
             onSuccess()
         } catch (err) {
             console.error(err)
-            alert(t('form.saveFailed'))
+            setSaveError(t('form.saveFailed'))
         } finally {
             setSaving(false)
         }
@@ -105,6 +107,10 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }) {
                     </div>
 
                 </div>
+
+                {saveError && (
+                    <p className="text-red-500 text-sm">{saveError}</p>
+                )}
 
                 <div className="flex justify-end gap-2 pt-1">
                     <button

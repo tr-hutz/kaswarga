@@ -23,7 +23,7 @@ export default function ResidentTable({
     if (loading) {
 
         return (
-            <div>
+            <div data-testid="resident-table-loading">
                 {tc('states.loading')}
             </div>
         )
