@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronUp, ChevronDown } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 
 interface Props {
     column: string
@@ -35,10 +35,10 @@ export default function SortButton({
         >
             {children}
             <span className="flex flex-col -space-y-1">
-                <ChevronUp
+                <Icon name="chevron-up"
                     className={`w-3 h-3 ${isActive && currentDirection === 'asc' ? 'text-gray-900' : 'text-gray-300'}`}
                 />
-                <ChevronDown
+                <Icon name="chevron-down"
                     className={`w-3 h-3 ${isActive && currentDirection === 'desc' ? 'text-gray-900' : 'text-gray-300'}`}
                 />
             </span>

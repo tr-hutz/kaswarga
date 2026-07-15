@@ -2,13 +2,13 @@
 'use client'
 
 import { useState } from 'react'
-import { ImageOff } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 function NoBukti({ label }: { label: string }) {
     return (
         <div className="w-full rounded-2xl border border-dashed border-slate-300 bg-slate-50 flex flex-col items-center justify-center gap-2 py-12 text-slate-400">
-            <ImageOff className="w-10 h-10" />
+            <Icon name="image-off" className="w-10 h-10" />
             <span className="text-sm">{label}</span>
         </div>
     )

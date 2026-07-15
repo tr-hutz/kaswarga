@@ -3,7 +3,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Mail, ArrowLeft, CheckCircle } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 export default function RequestActivationLink() {
@@ -51,7 +51,7 @@ export default function RequestActivationLink() {
                     href="/login"
                     className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
                 >
-                    <ArrowLeft size={14} />
+                    <Icon name="arrow-left" size={14} />
                     {t('backToLogin')}
                 </Link>
 
@@ -59,7 +59,7 @@ export default function RequestActivationLink() {
                     <>
                         <div>
                             <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 mb-3">
-                                <Mail size={22} />
+                                <Icon name="mail" size={22} />
                             </div>
                             <h1 className="text-xl font-bold">{t('title')}</h1>
                             <p className="text-sm text-gray-500 mt-1">
@@ -99,7 +99,7 @@ export default function RequestActivationLink() {
                 ) : (
                     <div className="text-center space-y-3 py-4">
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600">
-                            <CheckCircle size={32} />
+                            <Icon name="check-circle" size={32} />
                         </div>
                         <h1 className="text-xl font-bold">{t('success.title')}</h1>
                         <p className="text-sm text-gray-600">

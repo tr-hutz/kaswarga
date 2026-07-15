@@ -2,7 +2,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Building2, Users } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 export default function RegisterLanding() {
@@ -21,7 +21,7 @@ export default function RegisterLanding() {
                         <div className="bg-white border rounded-2xl p-6 hover:shadow-md transition cursor-pointer">
                             <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-                                    <Building2 size={24} />
+                                    <Icon name="building2" size={24} />
                                 </div>
                                 <div>
                                     <h2 className="font-semibold">{t('landing.asRt')}</h2>
@@ -34,7 +34,7 @@ export default function RegisterLanding() {
                         <div className="bg-white border rounded-2xl p-6 hover:shadow-md transition cursor-pointer">
                             <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 rounded-xl bg-green-100 text-green-700 flex items-center justify-center shrink-0">
-                                    <Users size={24} />
+                                    <Icon name="users" size={24} />
                                 </div>
                                 <div>
                                     <h2 className="font-semibold">{t('landing.asResident')}</h2>

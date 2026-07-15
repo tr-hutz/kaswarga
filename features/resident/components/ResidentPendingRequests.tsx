@@ -2,7 +2,7 @@
 'use client'
 
 import { useState }                                              from 'react'
-import { ChevronDown, ChevronUp, Check, X, UserPlus, Copy, CheckCheck } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { approveResidentRegistration, rejectResidentRegistration } from '@/lib/services/approval.service'
 import { useAuth }                                               from '@/lib/auth/useAuth'
 import { useToast }                                              from '@/components/ui/ToastProvider'
@@ -26,7 +26,7 @@ function CopyButton({ text }) {
             onClick={handleCopy}
             className="shrink-0 flex items-center gap-1 text-xs border rounded-lg px-2 py-1 hover:bg-gray-50 text-gray-600"
         >
-            {copied ? <CheckCheck size={12} className="text-green-600" /> : <Copy size={12} />}
+            {copied ? <Icon name="check-check" size={12} className="text-green-600" /> : <Icon name="copy" size={12} />}
             {copied ? 'Copied' : 'Copy'}
         </button>
     )
@@ -89,7 +89,7 @@ function RequestRow({ req, onAction }) {
                                 disabled={processing}
                                 className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white rounded-lg px-2.5 py-1 text-xs font-medium disabled:opacity-50"
                             >
-                                <Check size={11} />
+                                <Icon name="check" size={11} />
                                 {t('approve')}
                             </button>
                             <button
@@ -97,7 +97,7 @@ function RequestRow({ req, onAction }) {
                                 disabled={processing}
                                 className="flex items-center gap-1 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg px-2.5 py-1 text-xs font-medium disabled:opacity-50"
                             >
-                                <X size={11} />
+                                <Icon name="x" size={11} />
                                 {t('reject')}
                             </button>
                         </div>
@@ -150,13 +150,13 @@ export default function ResidentPendingRequests({ requests, loading, onAction })
                 className="w-full flex items-center justify-between px-5 py-4 text-sm font-semibold text-amber-800"
             >
                 <span className="flex items-center gap-2">
-                    <UserPlus size={16} />
+                    <Icon name="user-plus" size={16} />
                     {t('title')}
                     <span className="bg-amber-200 text-amber-800 rounded-full px-2 py-0.5 text-xs font-medium">
                         {requests.length}
                     </span>
                 </span>
-                {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {open ? <Icon name="chevron-up" size={16} /> : <Icon name="chevron-down" size={16} />}
             </button>
 
             {open && (

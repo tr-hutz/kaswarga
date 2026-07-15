@@ -1,9 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import {
-    Funnel
-} from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 
 import { useTranslations } from 'next-intl'
 
@@ -32,7 +30,8 @@ export default function ToolbarFilter({
             "
         >
 
-            <Funnel
+            <Icon
+                name="funnel"
                 size={16}
                 className="
                     absolute

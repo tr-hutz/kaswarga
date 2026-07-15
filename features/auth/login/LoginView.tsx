@@ -2,7 +2,7 @@
 'use client'
 
 import Link from 'next/link'
-import { LogIn } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 export default function LoginView({
@@ -71,7 +71,7 @@ export default function LoginView({
             "
           >
 
-            <LogIn size={28} />
+            <Icon name="log-in" size={28} />
 
           </div>
 

@@ -1,9 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import {
-    X
-} from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 import ResidentDetailSummary
@@ -76,7 +74,7 @@ export default function ResidentDetailDrawer({
                     <button
                         onClick={onClose}
                     >
-                        <X className="w-5 h-5" />
+                        <Icon name="x" className="w-5 h-5" />
                     </button>
 
                 </div>

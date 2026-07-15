@@ -1,13 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import {
-
-    Menu,
-    X,
-    LogOut
-
-} from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 
 import {
 
@@ -130,9 +124,9 @@ export default function Topbar({
 
                             mobileOpen
 
-                                ? <X size={22} />
+                                ? <Icon name="x" size={22} />
 
-                                : <Menu size={22} />
+                                : <Icon name="menu" size={22} />
                         }
 
                     </button>
@@ -233,9 +227,7 @@ export default function Topbar({
                         "
                     >
 
-                        <LogOut
-                            size={18}
-                        />
+                        <Icon name="log-out" size={18} />
 
                     </button>
 

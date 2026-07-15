@@ -5,11 +5,7 @@ import {
     useKeyDown
 } from '../../../lib/hooks/useKeyDown'
 
-import {
-
-    X
-
-} from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 
 import NotificationList
     from './NotificationList'
@@ -148,12 +144,7 @@ export default function NotificationDrawer({
                         onClick={onClose}
                     >
 
-                        <X
-                            className="
-                                w-5
-                                h-5
-                            "
-                        />
+                        <Icon name="x" className="w-5 h-5" />
 
                     </button>
 

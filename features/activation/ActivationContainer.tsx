@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { supabase }            from '@/lib/supabase'
 import { resendInvite }        from '@/lib/services/approval.service'
-import { CheckCircle, AlertCircle, Clock, RefreshCw, Eye, EyeOff } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 const STATE = {
@@ -174,7 +174,7 @@ export default function ActivationContainer() {
                 {state === STATE.SET_PASSWORD && (
                     <>
                         <div className="inline-flex items-center gap-1.5 justify-center text-green-600 mb-1">
-                            <CheckCircle size={14} />
+                            <Icon name="check-circle" size={14} />
                             <span className="text-xs font-medium">{t('setPassword.activated')}</span>
                         </div>
                         <h1 className="text-xl font-bold">{t('setPassword.title')}</h1>
@@ -207,7 +207,7 @@ export default function ActivationContainer() {
                                         onClick={() => setShowPw(v => !v)}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                     >
-                                        {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                                        {showPw ? <Icon name="eye-off" size={16} /> : <Icon name="eye" size={16} />}
                                     </button>
                                 </div>
                             </div>
@@ -239,7 +239,7 @@ export default function ActivationContainer() {
                 {state === STATE.EXPIRED && (
                     <>
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 text-amber-600">
-                            <Clock size={32} />
+                            <Icon name="clock" size={32} />
                         </div>
                         <h1 className="text-xl font-bold">{t('expired.title')}</h1>
                         <p className="text-sm text-gray-600">
@@ -257,7 +257,7 @@ export default function ActivationContainer() {
                                     disabled={resending}
                                     className="flex items-center gap-2 mx-auto bg-black text-white rounded-xl px-6 py-2.5 text-sm font-medium disabled:opacity-50"
                                 >
-                                    <RefreshCw size={14} className={resending ? 'animate-spin' : ''} />
+                                    <Icon name="refresh-cw" size={14} className={resending ? 'animate-spin' : ''} />
                                     {resending ? t('expired.resending') : t('expired.resend')}
                                 </button>
                             </>
@@ -268,7 +268,7 @@ export default function ActivationContainer() {
                 {state === STATE.ALREADY && (
                     <>
                         <div className="inline-flex items-center gap-1.5 justify-center text-blue-600 mb-1">
-                            <CheckCircle size={14} />
+                            <Icon name="check-circle" size={14} />
                             <span className="text-xs font-medium">{t('already.badge')}</span>
                         </div>
                         <h1 className="text-xl font-bold">{t('already.title')}</h1>
@@ -297,7 +297,7 @@ export default function ActivationContainer() {
                                         onClick={() => setShowPw(v => !v)}
                                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                                     >
-                                        {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+                                        {showPw ? <Icon name="eye-off" size={16} /> : <Icon name="eye" size={16} />}
                                     </button>
                                 </div>
                             </div>
@@ -336,7 +336,7 @@ export default function ActivationContainer() {
                 {state === STATE.NO_TOKEN && (
                     <>
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-600">
-                            <AlertCircle size={32} />
+                            <Icon name="alert-circle" size={32} />
                         </div>
                         <h1 className="text-xl font-bold">{t('noToken.title')}</h1>
                         <p className="text-sm text-gray-600">
@@ -354,7 +354,7 @@ export default function ActivationContainer() {
                 {state === STATE.ERROR && (
                     <>
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-600">
-                            <AlertCircle size={32} />
+                            <Icon name="alert-circle" size={32} />
                         </div>
                         <h1 className="text-xl font-bold">{t('activationError.title')}</h1>
                         <p className="text-sm text-gray-600">

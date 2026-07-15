@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, RefreshCw } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 
 import FileUpload from '@/components/ui/FileUpload'
 import { useAuth } from '@/lib/auth/useAuth'
@@ -112,8 +112,8 @@ export default function ExpenseForm({
                             "
                         >
                             {generating
-                                ? <Loader2 size={15} className="animate-spin text-gray-500" />
-                                : <RefreshCw size={15} className="text-gray-500" />
+                                ? <Icon name="loader2" size={15} className="animate-spin text-gray-500" />
+                                : <Icon name="refresh-cw" size={15} className="text-gray-500" />
                             }
                         </button>
                     </div>
@@ -218,7 +218,7 @@ export default function ExpenseForm({
                         disabled={saving}
                         className="bg-black text-white rounded-xl px-4 py-2 text-sm disabled:opacity-50 flex items-center gap-2"
                     >
-                        {saving && <Loader2 size={14} className="animate-spin" />}
+                        {saving && <Icon name="loader2" size={14} className="animate-spin" />}
                         {tc('actions.save')}
                     </button>
 

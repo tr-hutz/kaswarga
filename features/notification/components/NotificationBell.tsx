@@ -1,9 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import {
-    Bell
-} from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 
 export default function NotificationBell({
 
@@ -30,7 +28,7 @@ export default function NotificationBell({
             "
         >
 
-            <Bell size={20} />
+            <Icon name="bell" size={20} />
 
             {
                 unreadCount > 0 && (
