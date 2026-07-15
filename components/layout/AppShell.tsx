@@ -17,7 +17,7 @@ import MobileOverlay from './MobileOverlay'
 
 import { useAuth } from '../../lib/auth/useAuth'
 
-const PUBLIC_PATHS = ['/login', '/register', '/activation']
+const PUBLIC_PATHS = ['/login', '/register', '/activation', '/test']
 
 function isPublicPath(pathname) {
   return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))

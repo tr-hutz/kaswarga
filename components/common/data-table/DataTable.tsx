@@ -98,6 +98,7 @@ export default function DataTable<T>({
                             result.data.map((row, i) => (
                                 <tr
                                     key={i}
+                                    data-testid="dt-row"
                                     onClick={() => onRowClick?.(row)}
                                     className={`
                                         border-t border-gray-100 transition-colors

@@ -1,140 +1,560 @@
 # AGENTS.md
 
-## Stack
+# KasWarga AI Agent Guide
+
+> This document is the entry point for every AI agent working on the KasWarga project.
+>
+> AI MUST read this document before analyzing, generating, modifying, or reviewing any source code.
+>
+> This document defines the global project rules and points AI to the relevant documentation.
+
+---
+
+# Stack
+
 - Next.js (App Router)
+- React
 - TypeScript (strict mode)
-- Supabase (Auth, DB, Storage)
+- Supabase (Auth, Database, Storage)
 - Node.js
+- Tailwind CSS
+- next-intl
+- Playwright
 
 ---
 
-## Core Rules
+# Core Principles
 
-- ALWAYS read Next.js docs from:
-  node_modules/next/dist/docs/
-- NEVER rely on outdated knowledge or guess APIs
-- PREFER server components unless interactivity is required
-- USE server actions or API routes for mutations
-- DO NOT access Supabase directly from client unless required
-
----
-
-## Architecture
-
-- Follow layered structure:
-    - UI (components)
-    - Services (business logic)
-    - Data layer (Supabase calls)
-
-- DO:
-    - isolate Supabase logic in `services/` or `lib/`
-    - keep components thin
-    - reuse service functions
-
-- DO NOT:
-    - put DB logic inside React components
-    - mix UI logic with business logic
+- Preserve the existing architecture.
+- Prefer consistency to cleverness.
+- Reuse existing implementations.
+- Make the smallest possible change that solves the requested problem.
+- Do not refactor unrelated code.
+- Do not introduce new frameworks or libraries unless explicitly requested.
 
 ---
 
-## Supabase Usage
+# Mandatory Documentation
 
-- Use a centralized client:
-    - `lib/supabaseClient.ts`
-    - `lib/supabaseServer.ts`
+Before writing code, identify the task type and read the relevant documentation.
 
-- Always:
-    - validate inputs before DB calls
-    - handle null / empty responses
-    - use typed responses
+## Always Read
 
-- Avoid:
-    - direct queries inside UI
-    - duplicating query logic
+- docs/development/CODING_STANDARD.md
+- docs/development/GLOSSARY.md
 
----
+## UI / Components
 
-## Data & Error Handling
+Read when modifying components, layouts or pages.
 
-- ALWAYS handle null/undefined
-- NEVER assume API success
-- RETURN safe defaults when possible
+- docs/architecture/ARCHITECTURE.md
+- docs/architecture/MODULE_DEPENDENCY.md
 
-Example:
-- return `null` or `[]` instead of throwing in UI layer
-- throw only inside service layer
+## Business Features
 
----
+Read when changing workflows, permissions or business logic.
 
-## Feature Flags (if used)
+- docs/business/BUSINESS_RULES.md
+- docs/business/PERMISSION_MATRIX.md
+- docs/business/WORKFLOW.md
 
-- Wrap optional logic behind flags
-- DO NOT hardcode feature switches
-- Prefer config-driven behavior
+## Database
 
----
+Read when modifying database schema, SQL, migrations or RLS.
 
-## File Conventions
+- docs/database/DATABASE_SCHEMA.md
+- docs/database/DATA_DICTIONARY.md
+- docs/database/DATABASE_DECISIONS.md
+- docs/database/RLS_POLICY.md
 
-- Components: `PascalCase.tsx`
-- Services: `camelCase.ts`
-- Hooks: `useSomething.ts`
-- Constants: `UPPER_SNAKE_CASE`
+## API
+
+Read when creating or modifying APIs.
+
+- docs/api/API_CONVENTION.md
+
+Never modify code before reading the relevant documentation.
 
 ---
 
-## Commands
+# Framework Rules
 
-- Dev:
-  npm run dev
+When implementing framework-specific functionality:
 
-- Build:
-  npm run build
-
-- Lint:
-  npm run lint
-
-- Test:
-  npm test
+- Prefer official framework documentation.
+- Never assume APIs from memory.
+- Verify APIs before introducing new patterns.
+- Follow current Next.js App Router conventions.
 
 ---
 
-## Constraints
+# Architecture
 
-- DO NOT modify:
-    - generated files
-    - environment configs
-    - migration history
+Follow the layered architecture.
 
-- DO NOT:
-    - introduce new libraries without need
-    - change project structure unnecessarily
+Business Features
 
----
+↓
 
-## Security
+Common Components
 
-- NEVER expose:
-    - service role keys
-    - private env variables
+↓
 
-- Always:
-    - use server-side Supabase client for sensitive operations
+UI Components
+
+↓
+
+Third-party Libraries
+
+Business modules MUST NOT import third-party UI libraries directly.
 
 ---
 
-## Output Expectations
+# Reuse Existing Code
 
-- Write clean, minimal, production-ready code
-- Prefer readability to cleverness
-- Follow existing patterns in the repo
-- Avoid over-engineering
+Before creating any:
 
-## Language Policy
+- Component
+- Hook
+- Service
+- Repository
+- Dialog
+- Table
+- Form
+- Utility
+- Type
+- Interface
 
-- All code must be in English: variable names, function names,                                                                                   
-  comments, activity log messages, type names, constants, enums
-- UI strings are in Bahasa Indonesia (default locale)
-- Build i18n with next-intl from the start — no hardcoded UI strings
-- Domain terms follow the mapping in docs/development/GLOSSARY.md — always check it                                                                               
-  before naming anything domain-related  
+Search the project first.
+
+Reuse existing implementations whenever possible.
+
+Avoid duplicate functionality.
+
+---
+
+# UI Component Layer
+
+Business modules MUST import UI components only from:
+
+```
+@/components/ui
+```
+
+Business modules MUST NOT import UI libraries directly.
+
+Examples:
+
+NOT ALLOWED
+
+```
+@headlessui/react
+@radix-ui/*
+lucide-react
+react-icons
+react-hot-toast
+```
+
+Those libraries should only be imported inside:
+
+```
+components/ui
+```
+
+---
+
+# Common Components
+
+Reusable business-independent components belong in:
+
+```
+components/common
+```
+
+Examples:
+
+- DataTable
+- SearchBox
+- FilterBar
+- Pagination
+- Toolbar
+- EmptyState
+- LoadingState
+- ErrorState
+
+Do not duplicate them inside feature modules.
+
+---
+
+# Layout Components
+
+Application layouts belong in:
+
+```
+components/layout
+```
+
+Examples:
+
+- AppShell
+- Sidebar
+- Header
+- Footer
+- Breadcrumb
+
+Feature modules should not implement their own layouts.
+
+---
+
+# Generic Data Table
+
+All table-based pages should use the shared DataTable.
+
+Location:
+
+```
+components/common/data-table
+```
+
+Do not create feature-specific table implementations unless explicitly required.
+
+Prefer:
+
+- server-side pagination
+- server-side filtering
+- server-side sorting
+- server-side search
+
+---
+
+# Business Logic
+
+Business logic belongs inside feature modules.
+
+UI Components MUST NEVER:
+
+- access Supabase
+- execute SQL
+- implement business rules
+- perform permission checks
+
+UI Components receive data via props only.
+
+---
+
+# Supabase Usage
+
+Use centralized clients only.
+
+```
+lib/supabaseClient.ts
+lib/supabaseServer.ts
+```
+
+Always:
+
+- validate inputs
+- use typed responses
+- handle null responses
+- isolate query logic
+
+Never:
+
+- query Supabase directly from UI
+- duplicate query logic
+
+---
+
+# Data & Error Handling
+
+Always:
+
+- handle null
+- handle undefined
+- handle empty arrays
+
+Prefer safe defaults.
+
+UI should not crash because data is missing.
+
+Throw exceptions only when appropriate inside service layer.
+
+---
+
+# Performance
+
+Avoid:
+
+- N+1 queries
+- duplicate fetches
+- fetching unnecessary columns
+- repeated renders
+
+Prefer:
+
+- pagination
+- lazy loading
+- caching
+- memoization where appropriate
+- server-side filtering
+
+---
+
+# Feature Flags
+
+If feature flags are used:
+
+- use configuration
+- never hardcode flags
+- keep features isolated
+
+---
+
+# TypeScript
+
+Strict mode is required.
+
+Avoid:
+
+```
+any
+```
+
+Prefer:
+
+- interface
+- generic
+- utility types
+- discriminated unions where appropriate
+
+---
+
+# Naming Convention
+
+All source code MUST use English.
+
+Including:
+
+- folders
+- files
+- variables
+- functions
+- interfaces
+- enums
+- database objects
+- migrations
+
+Human-facing text uses i18n.
+
+Never hardcode UI strings.
+
+---
+
+# Domain Terminology
+
+Always follow:
+
+```
+docs/development/GLOSSARY.md
+```
+
+Never invent new business terminology.
+
+If introducing a new domain concept:
+
+Update GLOSSARY.md first.
+
+---
+
+# Permissions
+
+Never hardcode role names.
+
+Follow:
+
+```
+docs/business/PERMISSION_MATRIX.md
+```
+
+Always use centralized authorization.
+
+---
+
+# Activity Log
+
+Whenever a business action changes system state,
+
+evaluate whether an Activity Log entry should be created.
+
+Examples:
+
+- Create
+- Update
+- Delete
+- Approve
+- Reject
+- Login
+- Registration
+- Payment
+- Expense
+- Resident
+
+---
+
+# Notifications
+
+Whenever a business action affects another user,
+
+evaluate whether a notification should be created.
+
+---
+
+# Testing
+
+Whenever behavior changes,
+
+evaluate whether Playwright tests require updates.
+
+Prefer updating existing tests rather than removing them.
+
+---
+
+# Documentation
+
+Whenever changing:
+
+- architecture
+- database
+- API
+- business workflow
+
+evaluate whether these documents need updates:
+
+- ARCHITECTURE.md
+- DATABASE_SCHEMA.md
+- BUSINESS_RULES.md
+- API_CONVENTION.md
+- GLOSSARY.md
+
+Documentation should remain synchronized with the implementation.
+
+---
+
+# File Conventions
+
+Components
+
+```
+PascalCase.tsx
+```
+
+Hooks
+
+```
+useSomething.ts
+```
+
+Services
+
+```
+camelCase.ts
+```
+
+Constants
+
+```
+UPPER_SNAKE_CASE
+```
+
+---
+
+# Commands
+
+Development
+
+```
+npm run dev
+```
+
+Build
+
+```
+npm run build
+```
+
+Lint
+
+```
+npm run lint
+```
+
+Tests
+
+```
+npm test
+```
+
+Playwright
+
+```
+npm run test:e2e
+```
+
+---
+
+# Constraints
+
+Never modify:
+
+- generated files
+- environment configuration
+- migration history
+
+Never:
+
+- introduce unnecessary libraries
+- change project structure without reason
+- perform unrelated refactoring
+
+---
+
+# Security
+
+Never expose:
+
+- Service Role Key
+- private environment variables
+- secrets
+
+Always use server-side Supabase client for sensitive operations.
+
+---
+
+# Completion Checklist
+
+Before completing any task verify:
+
+- Existing components reused
+- Coding Standard followed
+- Glossary followed
+- Layered architecture preserved
+- No forbidden imports
+- Business rules respected
+- Permissions respected
+- Tests updated if necessary
+- Documentation updated if necessary
+
+---
+
+# Expected Output
+
+Produce code that is:
+
+- clean
+- minimal
+- production-ready
+- consistent
+- readable
+- maintainable
+
+Always preserve the existing project architecture.

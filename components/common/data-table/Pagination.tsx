@@ -32,6 +32,7 @@ export default function Pagination({
                     <>
                         <span className="whitespace-nowrap">{t('rowsPerPage')}:</span>
                         <select
+                            data-testid="dt-page-size"
                             value={pageSize}
                             onChange={(e) => onPageSizeChange(Number(e.target.value))}
                             className="rounded-lg border border-gray-200 px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-black/10"
