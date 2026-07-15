@@ -1,50 +1,32 @@
-﻿// @ts-nocheck
 'use client'
 
 import { useEffect, useState } from 'react'
-import { getResidents }        from '../../../lib/services/resident.service'
-import { supabase }            from '../../../lib/supabase'
-import { useAuth }             from '../../../lib/auth/useAuth'
+import { findResidentsPaginated } from '@/lib/repositories/resident.repository'
+import { useAuth } from '@/lib/auth/useAuth'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
+import type { Database } from '@/types/database'
 
-export function useResidentData({ search = '', status = 'aktif' } = {}) {
+type ResidentRow = Database['public']['Tables']['residents']['Row']
 
-    const { membership } = useAuth()
+export function useResidentData(query: QueryOptions) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { membership } = (useAuth() as any) ?? {}
+    const rtId = membership?.rt?.id as string | undefined
 
-    const [loading,         setLoading]         = useState(true)
-    const [data,            setData]            = useState([])
-    const [pendingRequests, setPendingRequests] = useState([])
-    const [pendingLoading,  setPendingLoading]  = useState(true)
-    const [error,           setError]           = useState(false)
+    const [result,  setResult]  = useState<PageResult<ResidentRow> | null>(null)
+    const [loading, setLoading] = useState(false)
+    const [error,   setError]   = useState(false)
 
-    useEffect(() => { loadData() }, [search, status])
+    // Serialize query to stable key so the effect fires only when values change
+    const queryKey = JSON.stringify(query)
 
-    useEffect(() => {
-        if (membership?.rt?.id) loadPending()
-    }, [membership?.rt?.id])
-
-    useEffect(() => {
-        const rtId = membership?.rt?.id
+    async function load() {
         if (!rtId) return
-
-        const channel = supabase
-            .channel('resident-pending-requests')
-            .on('postgres_changes', {
-                event:  'INSERT',
-                schema: 'public',
-                table:  'registration_requests',
-                filter: `type=eq.resident`,
-            }, () => loadPending())
-            .subscribe()
-
-        return () => { supabase.removeChannel(channel) }
-    }, [membership?.rt?.id])
-
-    async function loadData() {
         setLoading(true)
         setError(false)
         try {
-            const result = await getResidents({ search, status })
-            setData(result || [])
+            const page = await findResidentsPaginated(rtId, query)
+            setResult(page)
         } catch (err) {
             console.error('[WARGA]', err)
             setError(true)
@@ -53,35 +35,8 @@ export function useResidentData({ search = '', status = 'aktif' } = {}) {
         }
     }
 
-    async function loadPending() {
-        if (!membership?.rt?.id) return
-        setPendingLoading(true)
-        try {
-            const { data: rows, error: fetchError } = await supabase
-                .from('registration_requests')
-                .select('*')
-                .eq('type', 'resident')
-                .eq('status', 'pending')
-                .eq('rt_id', membership.rt.id)
-                .order('created_at', { ascending: false })
-            if (fetchError) throw fetchError
-            setPendingRequests(rows || [])
-        } catch (err) {
-            console.error('[WARGA] pending:', err)
-            setError(true)
-        } finally {
-            setPendingLoading(false)
-        }
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => { load() }, [rtId, queryKey])
 
-    function refresh() { loadData(); loadPending() }
-
-    return {
-        loading,
-        error,
-        data,
-        pendingRequests,
-        pendingLoading,
-        refresh
-    }
+    return { result, loading, error, reload: load }
 }
