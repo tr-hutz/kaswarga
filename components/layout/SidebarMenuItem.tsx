@@ -3,12 +3,11 @@
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import Icon from '@/components/ui/Icon'
 
 export default function SidebarMenuItem({ item, active, badge = 0, onClick }) {
 
     const t = useTranslations('nav')
-    const Icon = item.icon
-
     return (
         <Link
             href={item.href}
@@ -28,7 +27,7 @@ export default function SidebarMenuItem({ item, active, badge = 0, onClick }) {
                 }
             `}
         >
-            <Icon size={18} />
+            <Icon name={item.icon} size={18} />
 
             <span className="flex-1">{t(item.label)}</span>
 
