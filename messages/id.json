@@ -714,5 +714,18 @@
     "title": "Terjadi Kesalahan",
     "description": "Terjadi kesalahan yang tidak terduga. Silakan coba lagi.",
     "retry": "Coba Lagi"
+  },
+  "dataTable": {
+    "searchPlaceholder": "Cari...",
+    "noData": "Tidak ada data",
+    "loading": "Memuat data...",
+    "error": "Gagal memuat data",
+    "retry": "Coba Lagi",
+    "showing": "Menampilkan",
+    "of": "dari",
+    "records": "data",
+    "page": "Halaman",
+    "prev": "Sebelumnya",
+    "next": "Selanjutnya"
   }
 }

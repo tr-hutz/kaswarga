@@ -1,7 +1,9 @@
 ﻿import { supabase } from '../supabase'
 import type { Database } from '../../types/database'
+import type { QueryOptions, PageResult } from '../types/query'
 import { applyResidentFilters } from '../helpers/filter-resident'
 
+type ResidentRow    = Database['public']['Tables']['residents']['Row']
 type ResidentInsert = Database['public']['Tables']['residents']['Insert']
 type ResidentUpdate = Database['public']['Tables']['residents']['Update']
 
@@ -88,6 +90,49 @@ export async function insertResident(payload: ResidentInsert) {
 
     if (error) throw error
     return data
+}
+
+export async function findResidentsPaginated(
+    rtId: string,
+    query: QueryOptions
+): Promise<PageResult<ResidentRow>> {
+    const from = (query.page - 1) * query.pageSize
+    const to   = from + query.pageSize - 1
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let q = (supabase as any)
+        .from('residents')
+        .select('id, name, block, house_number, phone, active, rt_id, created_at', { count: 'exact' })
+        .eq('rt_id', rtId)
+        .is('deleted_at', null)
+
+    const term = query.search?.trim()
+    if (term) {
+        q = q.or(`name.ilike.%${term}%,block.ilike.%${term}%,house_number.ilike.%${term}%`)
+    }
+
+    const active = query.filters?.active
+    if (active !== undefined && active !== null && active !== '' && active !== 'all') {
+        q = q.eq('active', active === 'true' || active === true)
+    }
+
+    const sortBy  = query.sortBy ?? 'name'
+    const sortAsc = (query.sortDirection ?? 'asc') === 'asc'
+    q = q.order(sortBy, { ascending: sortAsc })
+
+    q = q.range(from, to)
+
+    const { data, error, count } = await q
+    if (error) throw error
+
+    const total = count ?? 0
+    return {
+        data:       (data ?? []) as ResidentRow[],
+        total,
+        page:       query.page,
+        pageSize:   query.pageSize,
+        totalPages: Math.ceil(total / query.pageSize),
+    }
 }
 
 export async function updateResidentById(id: string, payload: ResidentUpdate) {
