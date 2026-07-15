@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
 import { Upload, Download, X, AlertCircle, CheckCircle } from 'lucide-react'

@@ -1,12 +1,13 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
+import Badge from '@/components/ui/Badge'
 import { getStatusLabel, getStatusClass } from '../../services/expense-status'
 
 export default function ExpenseStatusBadge({ status }) {
     return (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(status)}`}>
+        <Badge className={getStatusClass(status)}>
             {getStatusLabel(status)}
-        </span>
+        </Badge>
     )
 }

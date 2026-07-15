@@ -2,7 +2,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import ImportModal from '@/components/import/ImportModal'
+import ImportModal from '@/components/common/import/ImportModal'
 
 const COLUMNS = [
     { key: 'date',        label: 'Date' },

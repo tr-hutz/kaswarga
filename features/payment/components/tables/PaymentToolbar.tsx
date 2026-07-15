@@ -1,7 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import PageToolbar from "../../../../components/toolbar/PageToolbar";
+import PageToolbar from "../../../../components/common/toolbar/PageToolbar";
 import { useTranslations } from 'next-intl'
 
 export default function PaymentToolbar({
