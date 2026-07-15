@@ -2,7 +2,7 @@
 'use client'
 
 import { useState }                                               from 'react'
-import { ChevronDown, ChevronUp, Check, X, Copy, CheckCheck, Link2 } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { approveRtRegistration, rejectRtRegistration }             from '@/lib/services/approval.service'
 import { useAuth }                                                  from '@/lib/auth/useAuth'
 import { useToast }                                                 from '@/components/ui/ToastProvider'
@@ -33,7 +33,7 @@ function CopyButton({ text }) {
             onClick={handleCopy}
             className="shrink-0 flex items-center gap-1 text-xs border rounded-lg px-2 py-1 hover:bg-gray-50 text-gray-600"
         >
-            {copied ? <CheckCheck size={12} className="text-green-600" /> : <Copy size={12} />}
+            {copied ? <Icon name="check-check" size={12} className="text-green-600" /> : <Icon name="copy" size={12} />}
             {copied ? 'Copied' : 'Copy'}
         </button>
     )
@@ -185,7 +185,7 @@ export default function RegistrationCard({ req, onAction }) {
                             onClick={() => setExpanded(o => !o)}
                             className="text-gray-400 hover:text-gray-600 shrink-0"
                         >
-                            {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            {expanded ? <Icon name="chevron-up" size={16} /> : <Icon name="chevron-down" size={16} />}
                         </button>
                     </div>
 
@@ -249,7 +249,7 @@ export default function RegistrationCard({ req, onAction }) {
                                 disabled={processing}
                                 className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                             >
-                                <Check size={12} />
+                                <Icon name="check" size={12} />
                                 {t('card.approve')}
                             </button>
                             <button
@@ -257,7 +257,7 @@ export default function RegistrationCard({ req, onAction }) {
                                 disabled={processing}
                                 className="flex items-center gap-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                             >
-                                <X size={12} />
+                                <Icon name="x" size={12} />
                                 {t('card.reject')}
                             </button>
                         </div>
@@ -272,7 +272,7 @@ export default function RegistrationCard({ req, onAction }) {
                                 disabled={loadingLinks}
                                 className="flex items-center gap-1.5 text-xs border rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 disabled:opacity-50"
                             >
-                                <Link2 size={12} />
+                                <Icon name="link2" size={12} />
                                 {loadingLinks ? t('card.loading') : t('card.viewLinks')}
                             </button>
                         </div>

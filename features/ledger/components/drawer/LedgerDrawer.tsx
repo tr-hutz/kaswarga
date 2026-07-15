@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { X } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 import { useKeyDown } from '../../../../lib/hooks/useKeyDown'
 
@@ -26,7 +26,7 @@ export default function LedgerDrawer({ open, row, onClose }) {
                         <p className="text-sm text-slate-500">{t('drawer.subtitle')}</p>
                     </div>
                     <button onClick={onClose}>
-                        <X className="w-5 h-5" />
+                        <Icon name="x" className="w-5 h-5" />
                     </button>
                 </div>
 

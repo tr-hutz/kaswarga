@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { RefreshCw } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { generateRtCode } from '@/lib/services/registration.service'
 import ImageUpload from './components/ImageUpload'
 import { useTranslations } from 'next-intl'
@@ -135,7 +135,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }) {
                                 title={t('generateCode')}
                                 className="flex items-center gap-1 border rounded-xl px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
                             >
-                                <RefreshCw size={13} className={generating ? 'animate-spin' : ''} />
+                                <Icon name="refresh-cw" size={13} className={generating ? 'animate-spin' : ''} />
                                 Generate
                             </button>
                         </div>

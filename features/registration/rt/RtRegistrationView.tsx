@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, RefreshCw, CheckCircle } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 
@@ -42,7 +42,7 @@ export default function RtRegistrationView({
             <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
                 <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-8 text-center space-y-4">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600">
-                        <CheckCircle size={32} />
+                        <Icon name="check-circle" size={32} />
                     </div>
                     <h1 className="text-xl font-bold">{t('success.title')}</h1>
                     <p className="text-sm text-gray-600">
@@ -108,7 +108,7 @@ export default function RtRegistrationView({
                                         title={t('generate')}
                                         className="flex items-center gap-1 border rounded-xl px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
                                     >
-                                        <RefreshCw size={13} className={generating ? 'animate-spin' : ''} />
+                                        <Icon name="refresh-cw" size={13} className={generating ? 'animate-spin' : ''} />
                                         Generate
                                     </button>
                                 </div>
@@ -177,7 +177,7 @@ export default function RtRegistrationView({
                         className="w-full flex items-center justify-between px-6 py-4 text-sm font-semibold text-gray-700"
                     >
                         {t('sections.bank')}
-                        {bankOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        {bankOpen ? <Icon name="chevron-up" size={16} /> : <Icon name="chevron-down" size={16} />}
                     </button>
 
                     {bankOpen && (

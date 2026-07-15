@@ -1,9 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import {
-    Search
-} from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 
 import { useTranslations } from 'next-intl'
 
@@ -30,7 +28,8 @@ export default function ToolbarSearch({
             "
         >
 
-            <Search
+            <Icon
+                name="search"
                 size={16}
                 className="
                     absolute

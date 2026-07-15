@@ -1,7 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import { AlertTriangle } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import UserTable   from './components/UserTable'
 import EditRoleForm from './components/EditRoleForm'
 import { useTranslations } from 'next-intl'
@@ -64,7 +64,7 @@ export default function UsersView({
 
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-red-50 rounded-xl">
-                                <AlertTriangle size={20} className="text-red-600" />
+                                <Icon name="alert-triangle" size={20} className="text-red-600" />
                             </div>
                             <h2 className="text-base font-semibold">{t('removeMembership.title')}</h2>
                         </div>

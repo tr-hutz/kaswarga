@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { isPending } from '../../services/expense-status'
 import { useTranslations } from 'next-intl'
 
@@ -40,7 +40,7 @@ export default function ExpenseApprovalBar({ row, onApprove, onReject, loading }
                         disabled={loading}
                         className="flex-1 bg-red-600 text-white rounded-xl px-4 py-2 text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                        {loading && <Loader2 size={14} className="animate-spin" />}
+                        {loading && <Icon name="loader2" size={14} className="animate-spin" />}
                         {t('approvalBar.confirmReject')}
                     </button>
                 </div>
@@ -56,7 +56,7 @@ export default function ExpenseApprovalBar({ row, onApprove, onReject, loading }
                 disabled={loading}
                 className="flex-1 bg-emerald-600 text-white rounded-xl px-4 py-3 font-medium hover:bg-emerald-700 transition disabled:opacity-50 flex items-center justify-center gap-2"
             >
-                {loading && <Loader2 size={14} className="animate-spin" />}
+                {loading && <Icon name="loader2" size={14} className="animate-spin" />}
                 {tc('actions.approve')}
             </button>
             <button

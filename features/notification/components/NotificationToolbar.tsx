@@ -1,9 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import {
-    Search
-} from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 export default function NotificationToolbar({
@@ -76,19 +74,7 @@ export default function NotificationToolbar({
                     "
                 >
 
-                    <Search
-                        size={16}
-                        className="
-                            absolute
-
-                            left-3
-                            top-1/2
-
-                            -translate-y-1/2
-
-                            text-gray-400
-                        "
-                    />
+                    <Icon name="search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
 
                     <input
 

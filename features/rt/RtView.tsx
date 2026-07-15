@@ -1,7 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import { Plus }        from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import RtTable         from './components/RtTable'
 import RtForm          from './components/RtForm'
 import RtDeleteConfirm from './components/RtDeleteConfirm'
@@ -43,7 +43,7 @@ export default function RtView({
                     onClick={openCreate}
                     className="flex items-center gap-2 bg-black text-white text-sm rounded-xl px-4 py-2.5"
                 >
-                    <Plus size={16} />
+                    <Icon name="plus" size={16} />
                     {t('addButton')}
                 </button>
             </div>

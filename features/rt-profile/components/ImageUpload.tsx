@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ImageIcon, Loader2, Upload, X } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { supabase } from '@/lib/supabase'
 import { useTranslations } from 'next-intl'
 
@@ -88,18 +88,18 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
                                 onClick={handleRemove}
                                 className="absolute top-2 right-2 bg-white border rounded-full p-0.5 text-gray-500 hover:text-red-500 shadow-sm"
                             >
-                                <X size={14} />
+                                <Icon name="x" size={14} />
                             </button>
                         )}
                         <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition flex items-center justify-center opacity-0 hover:opacity-100">
                             <span className="text-xs text-white bg-black/60 rounded-lg px-2 py-1 flex items-center gap-1">
-                                <Upload size={11} /> {t('change')}
+                                <Icon name="upload" size={11} /> {t('change')}
                             </span>
                         </div>
                     </>
                 ) : (
                     <div className="flex flex-col items-center gap-1.5 text-gray-400 py-4">
-                        <ImageIcon size={28} strokeWidth={1.5} />
+                        <Icon name="image" size={28} strokeWidth={1.5} />
                         <p className="text-xs font-medium">{t('clickToUpload')}</p>
                         <p className="text-[11px]">{t('formatNote')}</p>
                     </div>
@@ -107,7 +107,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
 
                 {uploading && (
                     <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                        <Loader2 size={22} className="animate-spin text-blue-500" />
+                        <Icon name="loader2" size={22} className="animate-spin text-blue-500" />
                     </div>
                 )}
             </div>

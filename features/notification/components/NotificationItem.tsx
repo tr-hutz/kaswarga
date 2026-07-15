@@ -1,15 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import {
-
-    Bell,
-    CheckCircle,
-    XCircle,
-    Wallet,
-    Activity
-
-} from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 
 import {
     formatRelativeDate
@@ -30,44 +22,19 @@ export default function NotificationItem({
             ) {
 
             case 'payment_submitted':
-
-                return (
-                    <Wallet
-                        size={18}
-                    />
-                )
+                return <Icon name="wallet" size={18} />
 
             case 'payment_approved':
-
-                return (
-                    <CheckCircle
-                        size={18}
-                    />
-                )
+                return <Icon name="check-circle" size={18} />
 
             case 'payment_rejected':
-
-                return (
-                    <XCircle
-                        size={18}
-                    />
-                )
+                return <Icon name="x-circle" size={18} />
 
             case 'activity':
-
-                return (
-                    <Activity
-                        size={18}
-                    />
-                )
+                return <Icon name="activity" size={18} />
 
             default:
-
-                return (
-                    <Bell
-                        size={18}
-                    />
-                )
+                return <Icon name="bell" size={18} />
         }
     }
 

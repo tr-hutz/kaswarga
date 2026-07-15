@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { Plus, Upload } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 import ToolbarSearch
@@ -124,7 +124,7 @@ export default function PageToolbar({
                     "
                 >
 
-                    <Plus size={20} />
+                    <Icon name="plus" size={20} />
 
                 </button> }
 
@@ -218,7 +218,7 @@ export default function PageToolbar({
                             transition
                         "
                     >
-                        <Upload size={16} />
+                        <Icon name="upload" size={16} />
                         <span>{t('actions.import')}</span>
                     </button>
                 )}

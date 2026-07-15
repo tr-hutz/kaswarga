@@ -1,9 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import {
-    Download
-} from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 
 import { useTranslations } from 'next-intl'
 
@@ -44,7 +42,7 @@ export default function ToolbarExport({
                 "
             >
 
-                <Download size={16} />
+                <Icon name="download" size={16} />
 
                 <span>
                     {t('exportCsv')}
@@ -70,7 +68,7 @@ export default function ToolbarExport({
                 "
             >
 
-                <Download size={16} />
+                <Icon name="download" size={16} />
 
                 <span>
                     {t('exportExcel')}

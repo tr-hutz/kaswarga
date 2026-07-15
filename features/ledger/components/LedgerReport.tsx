@@ -2,7 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { FileText, Loader2 } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 export default function LedgerReport() {
@@ -63,8 +63,8 @@ export default function LedgerReport() {
                     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl px-4 py-2 text-sm transition"
                 >
                     {loading
-                        ? <Loader2 className="w-4 h-4 animate-spin" />
-                        : <FileText className="w-4 h-4" />
+                        ? <Icon name="loader2" className="w-4 h-4 animate-spin" />
+                        : <Icon name="file-text" className="w-4 h-4" />
                     }
                     {loading ? t('report.generating') : t('report.generate')}
                 </button>

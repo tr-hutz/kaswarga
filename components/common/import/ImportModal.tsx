@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client'
 
-import { Upload, Download, X, AlertCircle, CheckCircle } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 export default function ImportModal({
@@ -47,7 +47,7 @@ export default function ImportModal({
                         onClick={onClose}
                         className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600"
                     >
-                        <X size={18} />
+                        <Icon name="x" size={18} />
                     </button>
                 </div>
 
@@ -65,7 +65,7 @@ export default function ImportModal({
                                     onClick={onDownloadTemplate}
                                     className="flex items-center gap-1.5 text-sm text-blue-600 hover:underline whitespace-nowrap shrink-0"
                                 >
-                                    <Download size={14} />
+                                    <Icon name="download" size={14} />
                                     {t('downloadTemplate')}
                                 </button>
                             </div>
@@ -75,7 +75,7 @@ export default function ImportModal({
                                 p-12 text-center cursor-pointer
                                 hover:border-blue-400 hover:bg-blue-50 transition-colors
                             ">
-                                <Upload size={32} className="mx-auto text-gray-300 mb-3" />
+                                <Icon name="upload" size={32} className="mx-auto text-gray-300 mb-3" />
                                 <p className="text-sm font-medium text-gray-700">
                                     {t('clickToSelect')}
                                 </p>
@@ -161,8 +161,8 @@ export default function ImportModal({
                                                         ))}
                                                         <td className="px-3 py-2 text-center">
                                                             {valid
-                                                                ? <CheckCircle size={14} className="inline text-emerald-500" />
-                                                                : <AlertCircle size={14} className="inline text-red-400" />
+                                                                ? <Icon name="check-circle" size={14} className="inline text-emerald-500" />
+                                                                : <Icon name="alert-circle" size={14} className="inline text-red-400" />
                                                             }
                                                         </td>
                                                     </tr>

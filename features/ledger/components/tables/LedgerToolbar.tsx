@@ -1,10 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import {
-    Search,
-    Download
-} from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 export default function LedgerToolbar({
@@ -44,7 +41,7 @@ export default function LedgerToolbar({
                 "
             >
 
-                <Search
+                <Icon name="search"
                     className="
                         w-4
                         h-4
@@ -103,7 +100,7 @@ export default function LedgerToolbar({
                     "
                 >
 
-                    <Download
+                    <Icon name="download"
                         className="
                             w-4
                             h-4
@@ -132,7 +129,7 @@ export default function LedgerToolbar({
                     "
                 >
 
-                    <Download
+                    <Icon name="download"
                         className="
                             w-4
                             h-4

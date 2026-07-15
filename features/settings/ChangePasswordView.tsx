@@ -2,7 +2,7 @@
 'use client'
 
 import { useState }   from 'react'
-import { Eye, EyeOff } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 function PasswordField({ label, value, onChange, placeholder }) {
@@ -27,7 +27,7 @@ function PasswordField({ label, value, onChange, placeholder }) {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     tabIndex={-1}
                 >
-                    {show ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {show ? <Icon name="eye-off" size={16} /> : <Icon name="eye" size={16} />}
                 </button>
             </div>
         </div>

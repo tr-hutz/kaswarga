@@ -1,7 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import { Pencil, Trash2 } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 export default function RtTable({ data, loading, onEdit, onDelete }) {
@@ -58,14 +58,14 @@ export default function RtTable({ data, loading, onEdit, onDelete }) {
                                         className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors"
                                         title="Edit"
                                     >
-                                        <Pencil size={15} />
+                                        <Icon name="pencil" size={15} />
                                     </button>
                                     <button
                                         onClick={() => onDelete(rt)}
                                         className="p-1.5 rounded-lg hover:bg-red-50 text-gray-500 hover:text-red-600 transition-colors"
                                         title="Hapus"
                                     >
-                                        <Trash2 size={15} />
+                                        <Icon name="trash2" size={15} />
                                     </button>
                                 </div>
                             </td>

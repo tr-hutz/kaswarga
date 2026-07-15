@@ -2,7 +2,7 @@
 'use client'
 
 import { useState }                                          from 'react'
-import { ChevronDown, ChevronUp, Check, X, Building2, Copy, CheckCheck } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import { approveRtRegistration, rejectRtRegistration }       from '@/lib/services/approval.service'
 import { useAuth }                                           from '@/lib/auth/useAuth'
 import { useToast }                                          from '@/components/ui/ToastProvider'
@@ -26,7 +26,7 @@ function CopyButton({ text }) {
             onClick={handleCopy}
             className="shrink-0 flex items-center gap-1 text-xs border rounded-lg px-2 py-1 hover:bg-gray-50 text-gray-600"
         >
-            {copied ? <CheckCheck size={12} className="text-green-600" /> : <Copy size={12} />}
+            {copied ? <Icon name="check-check" size={12} className="text-green-600" /> : <Icon name="copy" size={12} />}
             {copied ? 'Copied' : 'Copy'}
         </button>
     )
@@ -113,7 +113,7 @@ function RequestCard({ req, onAction }) {
         <div className="border rounded-xl overflow-hidden">
             <div className="flex items-start gap-3 p-4">
                 <div className="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
-                    <Building2 size={18} />
+                    <Icon name="building2" size={18} />
                 </div>
 
                 <div className="flex-1 min-w-0">
@@ -129,7 +129,7 @@ function RequestCard({ req, onAction }) {
                             onClick={() => setExpanded(o => !o)}
                             className="text-gray-400 hover:text-gray-600 shrink-0"
                         >
-                            {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            {expanded ? <Icon name="chevron-up" size={16} /> : <Icon name="chevron-down" size={16} />}
                         </button>
                     </div>
 
@@ -180,7 +180,7 @@ function RequestCard({ req, onAction }) {
                                 disabled={processing}
                                 className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                             >
-                                <Check size={12} />
+                                <Icon name="check" size={12} />
                                 {tc('actions.approve')}
                             </button>
                             <button
@@ -188,7 +188,7 @@ function RequestCard({ req, onAction }) {
                                 disabled={processing}
                                 className="flex items-center gap-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                             >
-                                <X size={12} />
+                                <Icon name="x" size={12} />
                                 {tc('actions.reject')}
                             </button>
                         </div>
@@ -223,7 +223,7 @@ export default function RtPendingRequests({ requests, loading, onAction }) {
                         {requests.length}
                     </span>
                 </span>
-                {open ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                {open ? <Icon name="chevron-up" size={16} /> : <Icon name="chevron-down" size={16} />}
             </button>
 
             {open && (

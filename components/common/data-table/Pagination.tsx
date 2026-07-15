@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100]
 
@@ -56,7 +56,7 @@ export default function Pagination({
                         disabled={page <= 1}
                         aria-label={t('prev')}
                     >
-                        <ChevronLeft className="w-4 h-4" />
+                        <Icon name="chevron-left" className="w-4 h-4" />
                     </PageButton>
 
                     {pages.map((p, i) =>
@@ -78,7 +78,7 @@ export default function Pagination({
                         disabled={page >= totalPages}
                         aria-label={t('next')}
                     >
-                        <ChevronRight className="w-4 h-4" />
+                        <Icon name="chevron-right" className="w-4 h-4" />
                     </PageButton>
                 </div>
             )}

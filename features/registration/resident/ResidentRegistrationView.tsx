@@ -2,7 +2,7 @@
 'use client'
 
 import { useState }   from 'react'
-import { ChevronDown, ChevronUp, CheckCircle } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 import Link           from 'next/link'
 import { useTranslations } from 'next-intl'
 
@@ -17,7 +17,7 @@ export default function ResidentRegistrationView({
             <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
                 <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-8 text-center space-y-4">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600">
-                        <CheckCircle size={32} />
+                        <Icon name="check-circle" size={32} />
                     </div>
                     <h1 className="text-xl font-bold">{t('success.title')}</h1>
                     <p className="text-sm text-gray-600">
@@ -92,7 +92,7 @@ export default function ResidentRegistrationView({
                             className="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-600"
                         >
                             {t('fields.extra')}
-                            {extraOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                            {extraOpen ? <Icon name="chevron-up" size={14} /> : <Icon name="chevron-down" size={14} />}
                         </button>
 
                         {extraOpen && (
