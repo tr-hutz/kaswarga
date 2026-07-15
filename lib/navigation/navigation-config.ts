@@ -1,26 +1,10 @@
-import {
-    Home,
-    LayoutDashboard,
-    Users,
-    Wallet,
-    Receipt,
-    ShelvingUnit,
-    Vibrate,
-    Activity,
-    Building2,
-    UserCog,
-    Settings,
-    KeyRound,
-    ClipboardList
-} from 'lucide-react'
-
-import type { LucideIcon } from 'lucide-react'
+import type { IconName } from '@/components/ui/Icon'
 import { PERMISSIONS } from '../permissions/permission-constants'
 
 interface NavItem {
     label: string
     href: string
-    icon: LucideIcon
+    icon: IconName
     permission: string | null
     hideForRoles?: string[]
 }
@@ -36,21 +20,21 @@ export const NAVIGATION: NavItem[] = [
     {
         label: 'rt',
         href: '/rt',
-        icon: Building2,
+        icon: 'building2',
         permission: PERMISSIONS.MANAGE_RT
     },
 
     {
         label: 'rtRegistration',
         href: '/rt/registration',
-        icon: ClipboardList,
+        icon: 'clipboard-list',
         permission: PERMISSIONS.MANAGE_RT
     },
 
     {
         label: 'users',
         href: '/users',
-        icon: UserCog,
+        icon: 'user-cog',
         permission: PERMISSIONS.MANAGE_USERS
     },
 
@@ -63,7 +47,7 @@ export const NAVIGATION: NavItem[] = [
     {
         label: 'home',
         href: '/',
-        icon: Home,
+        icon: 'home',
         permission: null,
         hideForRoles: ['SUPER_ADMIN']
     },
@@ -71,7 +55,7 @@ export const NAVIGATION: NavItem[] = [
     {
         label: 'dashboard',
         href: '/dashboard',
-        icon: LayoutDashboard,
+        icon: 'layout-dashboard',
         permission: null,
         hideForRoles: ['SUPER_ADMIN']
     },
@@ -79,56 +63,56 @@ export const NAVIGATION: NavItem[] = [
     {
         label: 'residents',
         href: '/residents',
-        icon: Users,
+        icon: 'users',
         permission: PERMISSIONS.VIEW_RESIDENTS
     },
 
     {
         label: 'payments',
         href: '/payments',
-        icon: Wallet,
+        icon: 'wallet',
         permission: PERMISSIONS.VIEW_PAYMENTS
     },
 
     {
         label: 'expenses',
         href: '/expenses',
-        icon: Receipt,
+        icon: 'receipt',
         permission: PERMISSIONS.VIEW_EXPENSES
     },
 
     {
         label: 'ledger',
         href: '/ledger',
-        icon: ShelvingUnit,
+        icon: 'shelving-unit',
         permission: PERMISSIONS.VIEW_LEDGER
     },
 
     {
         label: 'notification',
         href: '/notification',
-        icon: Vibrate,
+        icon: 'vibrate',
         permission: PERMISSIONS.VIEW_NOTIFICATIONS
     },
 
     {
         label: 'activity',
         href: '/activity',
-        icon: Activity,
+        icon: 'activity',
         permission: PERMISSIONS.VIEW_ACTIVITY
     },
 
     {
         label: 'rtProfile',
         href: '/rt-profile',
-        icon: Settings,
+        icon: 'settings',
         permission: PERMISSIONS.EDIT_RT_PROFILE
     },
 
     {
         label: 'changePassword',
         href: '/change-password',
-        icon: KeyRound,
+        icon: 'key-round',
         permission: null
     }
 ]
