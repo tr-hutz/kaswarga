@@ -22,6 +22,7 @@ interface Props {
     // query
     query:            QueryOptions
     setPage:          (page: number) => void
+    setPageSize:      (size: number) => void
     setSearch:        (search: string) => void
     setSort:          (by: string, dir: 'asc' | 'desc') => void
     setFilter:        (key: string, value: unknown) => void
@@ -61,7 +62,7 @@ interface Props {
 export default function ResidentView({
     result, loading, error, reload,
     pendingRequests, pendingLoading,
-    query, setPage, setSearch, setSort, setFilter,
+    query, setPage, setPageSize, setSearch, setSort, setFilter,
     onRowClick, onEdit, onDelete, refresh,
     selectedResident, drawerOpen, closeDrawer,
     formOpen, openCreateForm, closeForm,
@@ -113,6 +114,7 @@ export default function ResidentView({
                 onSearch={setSearch}
                 onSort={setSort}
                 onPageChange={setPage}
+                onPageSizeChange={setPageSize}
                 onRetry={reload}
                 onRowClick={onRowClick}
                 renderFilters={
