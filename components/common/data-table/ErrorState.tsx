@@ -10,7 +10,7 @@ export default function ErrorState({ onRetry }: Props) {
     const t = useTranslations('dataTable')
 
     return (
-        <tr>
+        <tr data-testid="dt-error">
             <td colSpan={999}>
                 <div className="py-16 text-center">
                     <p className="text-sm text-red-500 font-medium">{t('error')}</p>
