@@ -25,7 +25,7 @@ export default function ResidentContainer() {
     const t = useTranslations('residents')
 
     // Query state in URL
-    const { query, setPage, setPageSize, setSearch, setSort, setFilter } = useDataTable({ sortBy: 'name' })
+    const { query, setPage, setPageSize, setSearch, setSort, setFilter } = useDataTable({ sortBy: 'name' }, 'residents')
 
     // Paginated list
     const { result, loading, error, reload } = useResidentData(query)
