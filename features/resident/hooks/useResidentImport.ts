@@ -1,7 +1,7 @@
 ﻿// @ts-nocheck
 'use client'
 
-import { useImport } from '@/components/import/useImport'
+import { useImport } from '@/components/common/import/useImport'
 
 const COLUMN_ALIASES = {
     nama:          'name',

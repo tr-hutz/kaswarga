@@ -1,7 +1,8 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
+import Badge from '@/components/ui/Badge'
 import { getStatusClass } from '../../services/payment-status'
 
 export default function PaymentStatusBadge({ status }) {
@@ -14,8 +15,8 @@ export default function PaymentStatusBadge({ status }) {
     }
 
     return (
-        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(status)}`}>
+        <Badge className={getStatusClass(status)}>
             {labelMap[status] ?? '-'}
-        </span>
+        </Badge>
     )
 }
