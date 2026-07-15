@@ -15,22 +15,48 @@ export interface UseDataTableReturn {
     reset:        () => void
 }
 
+const STORAGE_NS = 'dt:pageSize:'
+
+function readStoredPageSize(storageKey: string): number | null {
+    if (typeof window === 'undefined') return null
+    const raw = window.localStorage.getItem(STORAGE_NS + storageKey)
+    const n = Number(raw)
+    return raw && Number.isFinite(n) && n > 0 ? n : null
+}
+
+function writeStoredPageSize(storageKey: string, size: number) {
+    if (typeof window === 'undefined') return
+    window.localStorage.setItem(STORAGE_NS + storageKey, String(size))
+}
+
 /**
  * Manages DataTable query state in the URL so that pagination, search,
  * sort, and filters survive page refresh and are sharable.
  *
+ * Pass a storageKey (e.g. 'residents') to persist the user's chosen page
+ * size in localStorage per feature. Priority: URL → localStorage → default.
+ *
  * Filter params are prefixed with "f_" to avoid collisions with route params.
- * e.g. active=true is stored as ?f_active=true
+ * e.g. active=true → ?f_active=true
  */
-export function useDataTable(defaults?: Partial<QueryOptions>): UseDataTableReturn {
+export function useDataTable(
+    defaults?: Partial<QueryOptions>,
+    storageKey?: string,
+): UseDataTableReturn {
     const router       = useRouter()
     const pathname     = usePathname()
     const searchParams = useSearchParams()
 
-    const page      = Number(searchParams.get('page')      ?? defaults?.page      ?? 1)
-    const pageSize  = Number(searchParams.get('pageSize')  ?? defaults?.pageSize  ?? DEFAULT_PAGE_SIZE)
-    const search    = searchParams.get('search')           ?? defaults?.search    ?? undefined
-    const sortBy    = searchParams.get('sortBy')           ?? defaults?.sortBy    ?? undefined
+    // pageSize priority: URL param → localStorage → defaults → built-in default
+    const urlPageSize  = searchParams.get('pageSize')
+    const storedSize   = storageKey ? readStoredPageSize(storageKey) : null
+    const pageSize     = Number(
+        urlPageSize ?? storedSize ?? defaults?.pageSize ?? DEFAULT_PAGE_SIZE
+    )
+
+    const page     = Number(searchParams.get('page') ?? defaults?.page ?? 1)
+    const search   = searchParams.get('search')      ?? defaults?.search    ?? undefined
+    const sortBy   = searchParams.get('sortBy')      ?? defaults?.sortBy    ?? undefined
     const sortDirection =
         (searchParams.get('sortDirection') as 'asc' | 'desc' | null)
         ?? defaults?.sortDirection
@@ -50,10 +76,10 @@ export function useDataTable(defaults?: Partial<QueryOptions>): UseDataTableRetu
     const query: QueryOptions = {
         page,
         pageSize,
-        search:    search || undefined,
-        sortBy:    sortBy || undefined,
+        search:         search || undefined,
+        sortBy:         sortBy || undefined,
         sortDirection,
-        filters:   Object.keys(filters).length > 0 ? filters : undefined,
+        filters:        Object.keys(filters).length > 0 ? filters : undefined,
     }
 
     const push = useCallback(
@@ -74,8 +100,12 @@ export function useDataTable(defaults?: Partial<QueryOptions>): UseDataTableRetu
     )
 
     const setPageSize = useCallback(
-        (size: number) => push({ pageSize: String(size), page: '1' }),
-        [push],
+        (size: number) => {
+            if (storageKey) writeStoredPageSize(storageKey, size)
+            push({ pageSize: String(size), page: '1' })
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [push, storageKey],
     )
 
     const setSearch = useCallback(
