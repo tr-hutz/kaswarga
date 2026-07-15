@@ -726,6 +726,7 @@
     "records": "data",
     "page": "Halaman",
     "prev": "Sebelumnya",
-    "next": "Selanjutnya"
+    "next": "Selanjutnya",
+    "rowsPerPage": "Baris per halaman"
   }
 }

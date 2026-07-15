@@ -6,12 +6,13 @@ import type { QueryOptions } from '@/lib/types/query'
 import { DEFAULT_PAGE_SIZE } from '@/lib/types/query'
 
 export interface UseDataTableReturn {
-    query: QueryOptions
-    setPage:   (page: number) => void
-    setSearch: (search: string) => void
-    setSort:   (sortBy: string, direction: 'asc' | 'desc') => void
-    setFilter: (key: string, value: unknown) => void
-    reset:     () => void
+    query:        QueryOptions
+    setPage:      (page: number) => void
+    setPageSize:  (size: number) => void
+    setSearch:    (search: string) => void
+    setSort:      (sortBy: string, direction: 'asc' | 'desc') => void
+    setFilter:    (key: string, value: unknown) => void
+    reset:        () => void
 }
 
 /**
@@ -72,6 +73,11 @@ export function useDataTable(defaults?: Partial<QueryOptions>): UseDataTableRetu
         [push],
     )
 
+    const setPageSize = useCallback(
+        (size: number) => push({ pageSize: String(size), page: '1' }),
+        [push],
+    )
+
     const setSearch = useCallback(
         (s: string) => push({ search: s || null, page: '1' }),
         [push],
@@ -97,5 +103,5 @@ export function useDataTable(defaults?: Partial<QueryOptions>): UseDataTableRetu
         [router, pathname],
     )
 
-    return { query, setPage, setSearch, setSort, setFilter, reset }
+    return { query, setPage, setPageSize, setSearch, setSort, setFilter, reset }
 }

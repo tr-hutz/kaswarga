@@ -18,8 +18,9 @@ interface DataTableProps<T> {
     searchPlaceholder?: string
     onSearch?:        (search: string) => void
     onSort?:          (sortBy: string, direction: 'asc' | 'desc') => void
-    onPageChange?:    (page: number) => void
-    onRetry?:         () => void
+    onPageChange?:        (page: number) => void
+    onPageSizeChange?:    (size: number) => void
+    onRetry?:             () => void
     onRowClick?:      (row: T) => void
     // slots
     renderFilters?:   React.ReactNode
@@ -36,13 +37,14 @@ export default function DataTable<T>({
     onSearch,
     onSort,
     onPageChange,
+    onPageSizeChange,
     onRetry,
     onRowClick,
     renderFilters,
     renderActions,
 }: DataTableProps<T>) {
     const showPagination =
-        !loading && !error && result && result.totalPages > 1 && onPageChange
+        !loading && !error && result && (onPageChange || onPageSizeChange)
 
     return (
         <div className="space-y-4">
@@ -126,7 +128,8 @@ export default function DataTable<T>({
                     totalPages={result!.totalPages}
                     total={result!.total}
                     pageSize={result!.pageSize}
-                    onPageChange={onPageChange!}
+                    onPageChange={onPageChange ?? (() => {})}
+                    onPageSizeChange={onPageSizeChange}
                 />
             )}
         </div>
