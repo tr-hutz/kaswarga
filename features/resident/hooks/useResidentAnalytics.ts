@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     useEffect,
@@ -15,14 +14,14 @@ import {
 } from '../services/resident-analytics-transform'
 
 export function useResidentAnalytics(
-    residentId,
-    year
+    residentId: string | null | undefined,
+    year: number
 ) {
 
     const [
         analytics,
         setAnalytics
-    ] = useState([])
+    ] = useState<any[]>([])
 
     const [
         loading,
@@ -39,13 +38,13 @@ export function useResidentAnalytics(
 
                 const payments =
                     await getResidentPaymentHistory(
-                        residentId,
+                        residentId!,
                         year
                     )
 
                 setAnalytics(
                     transformResidentAnalytics(
-                        payments
+                        payments as any
                     )
                 )
 

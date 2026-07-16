@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
   useEffect,
@@ -56,17 +55,17 @@ export function useHome() {
   const [
     approved,
     setApproved
-  ] = useState([])
+  ] = useState<any[]>([])
 
   const [
     pending,
     setPending
-  ] = useState([])
+  ] = useState<any[]>([])
 
   const [
     rejected,
     setRejected
-  ] = useState([])
+  ] = useState<any[]>([])
 
   /*
    |--------------------------------------------------------------------------
@@ -93,12 +92,12 @@ export function useHome() {
   const [
     residentId,
     setResidentId
-  ] = useState(null)
+  ] = useState<string | null>(null)
 
   const [
     rtId,
     setRtId
-  ] = useState(null)
+  ] = useState<string | null>(null)
 
   const [
     monthlyFee,
@@ -108,17 +107,17 @@ export function useHome() {
   const [
     formApproved,
     setFormApproved
-  ] = useState([])
+  ] = useState<any[]>([])
 
   const [
     formPending,
     setFormPending
-  ] = useState([])
+  ] = useState<any[]>([])
 
   const [
     formRejected,
     setFormRejected
-  ] = useState([])
+  ] = useState<any[]>([])
 
   /*
    |--------------------------------------------------------------------------
@@ -136,14 +135,16 @@ export function useHome() {
         await getCurrentMembership()
 
       const residentId =
-        membership.resident?.id || null
+        membership.resident?.id ?? null
 
       setResidentId(residentId)
-      setRtId(membership.rt?.id || null)
+      setRtId(membership.rt?.id ?? null)
 
       const monthlyFee = membership.rt?.monthly_fee || 0
 
       setMonthlyFee(monthlyFee)
+
+      if (!residentId) return
 
       const [
         approvedData,
@@ -341,6 +342,10 @@ export function useHome() {
         months,
         year,
         file
+      }: {
+        months:  number[]
+        year:    number
+        file:    File
       }) => {
 
         if (!residentId || !rtId) return

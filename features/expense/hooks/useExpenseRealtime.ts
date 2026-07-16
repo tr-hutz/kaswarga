@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     useEffect
@@ -13,7 +12,7 @@ export function useExpenseRealtime({
 
                                            onReload
 
-                                       }) {
+                                       }: { onReload?: () => void }) {
 
     useEffect(() => {
 

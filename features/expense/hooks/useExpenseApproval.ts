@@ -1,15 +1,14 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useToast } from '@/components/ui/ToastProvider'
 
-export function useExpenseApproval({ onSuccess } = {}) {
+export function useExpenseApproval({ onSuccess }: { onSuccess?: () => void } = {}) {
 
-    const { toast } = useToast()
+    const { toast } = (useToast() as any)
     const [loading, setLoading] = useState(false)
 
-    async function approve(id) {
+    async function approve(id: string) {
         setLoading(true)
         try {
             const res = await fetch('/api/expenses/approve', {
@@ -22,13 +21,13 @@ export function useExpenseApproval({ onSuccess } = {}) {
             toast({ message: 'Expense approved.', type: 'success' })
             onSuccess?.()
         } catch (err) {
-            toast({ message: err.message, type: 'error' })
+            toast({ message: (err as any).message, type: 'error' })
         } finally {
             setLoading(false)
         }
     }
 
-    async function reject(id, reason) {
+    async function reject(id: string, reason: string) {
         setLoading(true)
         try {
             const res = await fetch('/api/expenses/reject', {
@@ -41,7 +40,7 @@ export function useExpenseApproval({ onSuccess } = {}) {
             toast({ message: 'Expense rejected.', type: 'success' })
             onSuccess?.()
         } catch (err) {
-            toast({ message: err.message, type: 'error' })
+            toast({ message: (err as any).message, type: 'error' })
         } finally {
             setLoading(false)
         }
@@ -59,7 +58,7 @@ export function useExpenseApproval({ onSuccess } = {}) {
             toast({ message: `${body.approved} expense(s) approved.`, type: 'success' })
             onSuccess?.()
         } catch (err) {
-            toast({ message: err.message, type: 'error' })
+            toast({ message: (err as any).message, type: 'error' })
         } finally {
             setLoading(false)
         }

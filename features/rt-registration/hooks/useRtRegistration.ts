@@ -1,12 +1,11 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useCallback, useEffect, useState } from 'react'
 import { supabase }                          from '@/lib/supabase'
 
 export function useRtRegistration() {
 
-    const [requests, setRequests] = useState([])
+    const [requests, setRequests] = useState<any[]>([])
     const [loading,  setLoading]  = useState(true)
     const [filter,   setFilter]   = useState('pending')
     const [error,    setError]    = useState(false)

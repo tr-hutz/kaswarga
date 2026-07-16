@@ -1,17 +1,16 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useToast } from '@/components/ui/ToastProvider'
 import { createRt, updateRt, deleteRt } from '@/lib/services/rt.service'
 
-export function useRtActions(refresh) {
+export function useRtActions(refresh: () => void) {
 
-    const { toast } = useToast()
+    const { toast } = (useToast() as any)
 
-    const [selected,  setSelected]  = useState(null)
+    const [selected,  setSelected]  = useState<any>(null)
     const [formOpen,  setFormOpen]  = useState(false)
-    const [delTarget, setDelTarget] = useState(null)
+    const [delTarget, setDelTarget] = useState<any>(null)
     const [deleting,  setDeleting]  = useState(false)
 
     function openCreate() {
@@ -19,7 +18,7 @@ export function useRtActions(refresh) {
         setFormOpen(true)
     }
 
-    function openEdit(rt) {
+    function openEdit(rt: any) {
         setSelected(rt)
         setFormOpen(true)
     }
@@ -29,7 +28,7 @@ export function useRtActions(refresh) {
         setSelected(null)
     }
 
-    async function handleSubmit(payload) {
+    async function handleSubmit(payload: any) {
 
         try {
             if (selected) {
@@ -43,7 +42,7 @@ export function useRtActions(refresh) {
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: err.message || 'Failed to save RT.', type: 'error' })
+            toast({ message: (err as any).message || 'Failed to save RT.', type: 'error' })
         }
     }
 
@@ -60,7 +59,7 @@ export function useRtActions(refresh) {
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: err.message || 'Failed to delete RT.', type: 'error' })
+            toast({ message: (err as any).message || 'Failed to delete RT.', type: 'error' })
         } finally {
             setDeleting(false)
         }

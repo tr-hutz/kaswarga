@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     useState
@@ -14,7 +13,7 @@ import {
 
 import { useResidentImport } from './useResidentImport'
 
-export function useResidentActions(onImportSuccess) {
+export function useResidentActions(onImportSuccess?: (inserted: number) => void) {
 
     /*
      |------------------------------------------------------------------
@@ -27,7 +26,7 @@ export function useResidentActions(onImportSuccess) {
         selectedResident,
         setSelectedResident
 
-    ] = useState(null)
+    ] = useState<any>(null)
 
     const [
 
@@ -50,7 +49,7 @@ export function useResidentActions(onImportSuccess) {
      */
 
     function openDrawer(
-        resident
+        resident: any
     ) {
 
         setSelectedResident(
@@ -81,7 +80,7 @@ export function useResidentActions(onImportSuccess) {
     }
 
     function openEditForm(
-        resident
+        resident: any
     ) {
 
         setSelectedResident(
@@ -102,12 +101,12 @@ export function useResidentActions(onImportSuccess) {
      |------------------------------------------------------------------
      */
 
-    async function exportExcel(data) {
-        await exportResidentsToExcel(data)
+    async function exportExcel(data: any[]) {
+        await exportResidentsToExcel(data as any)
     }
 
-    async function exportCSV(data) {
-        await exportResidentsToCSV(data)
+    async function exportCSV(data: any[]) {
+        await exportResidentsToCSV(data as any)
     }
 
     /*

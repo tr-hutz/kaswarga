@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     useEffect,
@@ -15,8 +14,8 @@ import {
 } from '../services/resident-history-transform'
 
 export function usePaymentHistory(
-    residentId,
-    year
+    residentId: string | null | undefined,
+    year: number
 ) {
 
     const [
@@ -27,7 +26,7 @@ export function usePaymentHistory(
     const [
         history,
         setHistory
-    ] = useState([])
+    ] = useState<any[]>([])
 
     useEffect(() => {
 
@@ -39,12 +38,12 @@ export function usePaymentHistory(
 
                 const data =
                     await getResidentPaymentHistory(
-                        residentId,
+                        residentId!,
                         year
                     )
 
                 setHistory(
-                    transformPaymentHistory(data)
+                    transformPaymentHistory(data as any)
                 )
 
             } catch (err) {

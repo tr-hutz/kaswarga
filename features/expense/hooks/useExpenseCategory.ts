@@ -1,11 +1,10 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { getExpenseCategories } from '../../../lib/services/expense-category.service'
 
 export function useExpenseCategories() {
-    const [categories, setCategories] = useState([])
+    const [categories, setCategories] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {

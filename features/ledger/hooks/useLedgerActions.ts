@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     useState
@@ -25,7 +24,7 @@ export function useLedgerActions() {
         selectedRow,
         setSelectedRow
 
-    ] = useState(null)
+    ] = useState<any>(null)
 
     const [
 
@@ -40,7 +39,7 @@ export function useLedgerActions() {
      |-------------------------------------------------------------
      */
 
-    function openDrawer(row) {
+    function openDrawer(row: any) {
 
         setSelectedRow(row)
 
@@ -60,17 +59,17 @@ export function useLedgerActions() {
      |-------------------------------------------------------------
      */
 
-    async function exportCSV(rows) {
+    async function exportCSV(rows: any[]) {
 
         await exportLedgerToCSV(
-            rows
+            rows as any
         )
     }
 
-    async function exportExcel(rows) {
+    async function exportExcel(rows: any[]) {
 
         await exportLedgerToExcel(
-            rows
+            rows as any
         )
     }
 
