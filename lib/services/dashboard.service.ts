@@ -45,7 +45,7 @@ export async function getDashboardData(
    |--------------------------------------------------------------------------
    */
 
-  let residentsQuery =
+  const residentsQuery =
     supabase
 
       .from('residents')
