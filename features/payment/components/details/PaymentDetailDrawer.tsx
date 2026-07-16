@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useTranslations } from 'next-intl'
 import PaymentStatusBadge
@@ -21,6 +20,18 @@ import {
     useKeyDown
 } from '../../../../lib/hooks/useKeyDown'
 
+interface PaymentDetailDrawerProps {
+    open:      boolean
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    payment:   any
+    onClose:   () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onApprove: (payment?: any) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onReject:  (payment?: any) => void
+    loading:   boolean
+}
+
 export default function PaymentDetailDrawer({
 
                                                 open,
@@ -35,7 +46,7 @@ export default function PaymentDetailDrawer({
 
                                                 loading
 
-                                            }) {
+                                            }: PaymentDetailDrawerProps) {
 
     const t = useTranslations('payments')
 

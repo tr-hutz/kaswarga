@@ -1,8 +1,8 @@
-// @ts-nocheck
 import { MONTHS } from '../../../constants/months'
 
 export function transformResidentAnalytics(
-    payments = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    payments: any[] = []
 ) {
 
     return MONTHS.map(month => {
@@ -16,11 +16,11 @@ export function transformResidentAnalytics(
 
                     const monthly =
                         details
-                            .filter(detail =>
+                            .filter((detail: { month: number }) =>
                                 Number(detail.month) === Number(month.id)
                             )
                             .reduce(
-                                (acc, detail) => {
+                                (acc: number, detail: { amount?: number }) => {
 
                                     return (
                                         acc +

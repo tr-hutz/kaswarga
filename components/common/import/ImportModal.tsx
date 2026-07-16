@@ -1,8 +1,29 @@
-// @ts-nocheck
 'use client'
 
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
+import type { ReactNode, RefObject } from 'react'
+
+interface ImportModalProps {
+    open: boolean
+    title: string
+    onClose: () => void
+    columns: { key: string; label: string }[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    isValid: (row: any) => boolean
+    columnGuideText?: ReactNode
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rows: any[]
+    fileName: string | null
+    fileRef: RefObject<HTMLInputElement>
+    importing: boolean
+    error: string
+    onFile: (file: File | undefined) => void
+    onImport: () => void
+    onDownloadTemplate: () => void
+    onReset: () => void
+    importButtonLabel: string
+}
 
 export default function ImportModal({
     open,
@@ -21,7 +42,7 @@ export default function ImportModal({
     onDownloadTemplate,
     onReset,
     importButtonLabel,
-}) {
+}: ImportModalProps) {
 
     if (!open) return null
 

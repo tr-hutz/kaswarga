@@ -64,7 +64,7 @@ export function useUnreadNotifications({
 
             await getUnreadNotificationsCount({
 
-                user_id
+                user_id: user_id!
             })
 
         setUnread(count)

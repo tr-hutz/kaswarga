@@ -1,13 +1,21 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
+import type { FormEvent } from 'react'
 import { createResident, updateResident } from '@/lib/services/resident.service'
 import { useTranslations } from 'next-intl'
 
 const EMPTY = { name: '', block: '', houseNumber: '', phone: '' }
 
-export default function ResidentForm({ open, onClose, resident, onSuccess }) {
+interface ResidentFormProps {
+    open:      boolean
+    onClose:   () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resident:  any
+    onSuccess: () => void
+}
+
+export default function ResidentForm({ open, onClose, resident, onSuccess }: ResidentFormProps) {
 
     const isEdit = !!resident
 
@@ -25,14 +33,14 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }) {
         })
     }, [resident])
 
-    function set(key, val) {
+    function set(key: string, val: string) {
         setForm(prev => ({ ...prev, [key]: val }))
     }
 
     const t = useTranslations('residents')
     const tc = useTranslations('common')
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setSaving(true)
         setSaveError('')

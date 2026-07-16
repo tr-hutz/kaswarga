@@ -1,7 +1,7 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useRef, useState } from 'react'
+import type { ChangeEvent, FormEvent, MouseEvent } from 'react'
 import Icon from '@/components/ui/Icon'
 import { MONTHS } from '../../../constants/months'
 import { useTranslations } from 'next-intl'
@@ -10,17 +10,22 @@ import { useTranslations } from 'next-intl'
 /* BuktiUpload — local-preview file picker, upload happens on form submit      */
 /* -------------------------------------------------------------------------- */
 
-function BuktiUpload({ file, onChange }) {
+interface BuktiUploadProps {
+    file:     File | null
+    onChange: (file: File | null) => void
+}
+
+function BuktiUpload({ file, onChange }: BuktiUploadProps) {
 
     const t = useTranslations('home')
-    const inputRef   = useRef(null)
+    const inputRef   = useRef<HTMLInputElement>(null)
     const previewUrl = file ? URL.createObjectURL(file) : null
 
-    function handleChange(e) {
+    function handleChange(e: ChangeEvent<HTMLInputElement>) {
         onChange(e.target.files?.[0] || null)
     }
 
-    function handleRemove(e) {
+    function handleRemove(e: MouseEvent<HTMLButtonElement>) {
         e.stopPropagation()
         onChange(null)
         if (inputRef.current) inputRef.current.value = ''
@@ -90,6 +95,17 @@ function BuktiUpload({ file, onChange }) {
 /* PaymentForm                                                                  */
 /* -------------------------------------------------------------------------- */
 
+interface PaymentFormProps {
+    paymentYear:    number
+    setPaymentYear: (y: number) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onSubmit:       (payload: any) => Promise<void>
+    loading:        boolean
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    statusMap:      Record<number, any>
+    monthlyFee:     number
+}
+
 export default function PaymentForm({
     paymentYear,
     setPaymentYear,
@@ -97,7 +113,7 @@ export default function PaymentForm({
     loading,
     statusMap,
     monthlyFee
-}) {
+}: PaymentFormProps) {
 
     const t = useTranslations('home')
 
@@ -107,14 +123,14 @@ export default function PaymentForm({
         return s !== 'approved' && s !== 'pending'
     })
 
-    const [selectedMonths, setSelectedMonths] = useState([])
-    const [file,           setFile]           = useState(null)
+    const [selectedMonths, setSelectedMonths] = useState<number[]>([])
+    const [file,           setFile]           = useState<File | null>(null)
 
     /* ---------------------------------------------------------------------- */
     /* Helpers                                                                  */
     /* ---------------------------------------------------------------------- */
 
-    function toggleMonth(month) {
+    function toggleMonth(month: number) {
         const status = statusMap[month]
         if (status === 'approved' || status === 'pending') return
         setSelectedMonths(prev =>
@@ -130,7 +146,7 @@ export default function PaymentForm({
         setSelectedMonths(allSelected ? [] : PAYABLE_MONTHS)
     }
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         await onSubmit({ months: selectedMonths, year: paymentYear, file })
         setSelectedMonths([])

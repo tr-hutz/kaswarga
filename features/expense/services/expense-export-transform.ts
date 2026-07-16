@@ -1,9 +1,9 @@
-﻿// @ts-nocheck
 import * as XLSX
     from 'xlsx'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function exportExpenseToExcel(
-    data = []
+    data: any[] = []
 ) {
 
     const rows =
@@ -54,8 +54,9 @@ export async function exportExpenseToExcel(
     )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function exportExpenseToCSV(
-    data = []
+    data: any[] = []
 ) {
 
     const rows =

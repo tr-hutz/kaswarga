@@ -1,7 +1,6 @@
-﻿// @ts-nocheck
 export function calculateArrears(
-    paidCount,
-    currentMonth
+    paidCount: number,
+    currentMonth: number
 ) {
 
     return Math.max(

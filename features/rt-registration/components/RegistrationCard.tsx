@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState }                                               from 'react'
 import Icon from '@/components/ui/Icon'
@@ -12,13 +11,13 @@ import { useTranslations }                                          from 'next-i
 
 const IS_DEV = process.env.NODE_ENV === 'development'
 
-const STATUS_BADGE = {
+const STATUS_BADGE: Record<string, string> = {
     pending:  'bg-amber-100 text-amber-700',
     approved: 'bg-green-100 text-green-700',
     rejected: 'bg-red-100 text-red-700',
 }
 
-function CopyButton({ text }) {
+function CopyButton({ text }: { text: string }) {
     const [copied, setCopied] = useState(false)
 
     function handleCopy() {
@@ -39,7 +38,8 @@ function CopyButton({ text }) {
     )
 }
 
-function DevLinksPanel({ links, onDismiss, closeLabel }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function DevLinksPanel({ links, onDismiss, closeLabel }: { links: any[]; onDismiss: () => void; closeLabel: string }) {
     return (
         <div className="mt-3 border-t border-amber-200 pt-3 space-y-3">
             <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
@@ -73,11 +73,13 @@ function DevLinksPanel({ links, onDismiss, closeLabel }) {
     )
 }
 
-export default function RegistrationCard({ req, onAction }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function RegistrationCard({ req, onAction }: { req: any; onAction: () => void }) {
 
     const [expanded,      setExpanded]      = useState(false)
     const [processing,    setProcessing]    = useState(false)
-    const [devLinks,      setDevLinks]      = useState(null)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [devLinks,      setDevLinks]      = useState<any[] | null>(null)
     const [postApproval,  setPostApproval]  = useState(false)
     const [loadingLinks,  setLoadingLinks]  = useState(false)
     const { membership }                    = useAuth()
@@ -106,7 +108,7 @@ export default function RegistrationCard({ req, onAction }) {
                 onAction()
             }
         } catch (err) {
-            toast({ message: err.message, type: 'error' })
+            toast({ message: (err as Error).message, type: 'error' })
             onAction()
         } finally {
             setProcessing(false)
@@ -139,7 +141,7 @@ export default function RegistrationCard({ req, onAction }) {
 
             setDevLinks(links)
         } catch (err) {
-            toast({ message: err.message, type: 'error' })
+            toast({ message: (err as Error).message, type: 'error' })
         } finally {
             setLoadingLinks(false)
         }
@@ -152,7 +154,7 @@ export default function RegistrationCard({ req, onAction }) {
             await rejectRtRegistration(req.id, '', membership)
             toast({ message: 'Pendaftaran RT ditolak.', type: 'success' })
         } catch (err) {
-            toast({ message: err.message, type: 'error' })
+            toast({ message: (err as Error).message, type: 'error' })
         } finally {
             setProcessing(false)
             onAction()

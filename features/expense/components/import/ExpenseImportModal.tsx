@@ -1,6 +1,6 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
+import type { RefObject } from 'react'
 import { useTranslations } from 'next-intl'
 import ImportModal from '@/components/common/import/ImportModal'
 
@@ -11,6 +11,21 @@ const COLUMNS = [
     { key: 'recipient',   label: 'Recipient' },
     { key: 'description', label: 'Description' },
 ]
+
+interface ExpenseImportModalProps {
+    open:               boolean
+    onClose:            () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rows:               any[]
+    fileName:           string | null
+    fileRef:            RefObject<HTMLInputElement>
+    importing:          boolean
+    error:              string
+    onFile:             (file: File | undefined) => void
+    onImport:           () => void
+    onDownloadTemplate: () => void
+    onReset:            () => void
+}
 
 export default function ExpenseImportModal({
     open,
@@ -24,7 +39,7 @@ export default function ExpenseImportModal({
     onImport,
     onDownloadTemplate,
     onReset,
-}) {
+}: ExpenseImportModalProps) {
     const t = useTranslations('expenses')
 
     const columnGuide = (

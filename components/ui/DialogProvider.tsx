@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     createContext,
@@ -7,13 +6,19 @@ import {
     useRef,
     useState
 } from 'react'
+import type { ReactNode } from 'react'
 
 import {
     useKeyDown
 } from '../../lib/hooks/useKeyDown'
 import { useTranslations } from 'next-intl'
 
-const DialogContext = createContext(null)
+interface DialogContextType {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    prompt: (opts?: Record<string, any>) => Promise<string | null>
+}
+
+const DialogContext = createContext<DialogContextType | null>(null)
 
 export function useDialog() {
     const ctx = useContext(DialogContext)
@@ -21,10 +26,10 @@ export function useDialog() {
     return ctx
 }
 
-export default function DialogProvider({ children }) {
+export default function DialogProvider({ children }: { children: ReactNode }) {
 
     const t = useTranslations('common')
-    const resolverRef = useRef(null)
+    const resolverRef = useRef<((v: string | null) => void) | null>(null)
 
     const [state, setState] = useState({
         open: false,
@@ -44,7 +49,7 @@ export default function DialogProvider({ children }) {
         confirmClassName = 'bg-blue-600 hover:bg-blue-700 text-white'
     } = {}) {
 
-        return new Promise((resolve) => {
+        return new Promise<string | null>((resolve) => {
 
             resolverRef.current = resolve
 

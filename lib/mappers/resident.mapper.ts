@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-import { getResidentStatus } from '../../features/resident/services/resident-status'
+﻿import { getResidentStatus } from '../../features/resident/services/resident-status'
 import { transformPaymentHistory } from '../../features/resident/services/resident-history-transform'
 
 export function mapResident(rows: unknown[] = []) {

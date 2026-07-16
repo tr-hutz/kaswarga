@@ -1,11 +1,7 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
-export default function CashflowChart({
-
-  data
-
-}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function CashflowChart({ data }: { data?: any }) {
 
   return (
 

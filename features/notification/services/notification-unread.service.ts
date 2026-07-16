@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 'use client'
 
 import {
@@ -15,9 +14,9 @@ import {
 
 export async function getUnreadNotificationsCount({
 
-                                                      user_id
+    user_id
 
-                                                  }) {
+}: { user_id: string }) {
 
     const {
 
@@ -74,7 +73,7 @@ export async function getUnreadNotificationsCount({
 
 export async function markNotificationAsRead(
 
-    id
+    id: string
 
 ) {
 

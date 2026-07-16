@@ -1,7 +1,7 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState }       from 'react'
+import type { FormEvent } from 'react'
 import { useToast }       from '@/components/ui/ToastProvider'
 import { changePassword } from '@/lib/services/auth.service'
 import ChangePasswordView from './ChangePasswordView'
@@ -16,12 +16,12 @@ export default function ChangePasswordContainer() {
     const [saving, setSaving] = useState(false)
     const [error,  setError]  = useState('')
 
-    function set(key, val) {
+    function set(key: string, val: string) {
         setForm(prev => ({ ...prev, [key]: val }))
         setError('')
     }
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
 
         e.preventDefault()
 
@@ -43,7 +43,7 @@ export default function ChangePasswordContainer() {
             toast({ message: t('errors.success'), type: 'success' })
             setForm({ current: '', next: '', confirm: '' })
         } catch (err) {
-            setError(err.message || t('errors.failed'))
+            setError((err as Error).message || t('errors.failed'))
         } finally {
             setSaving(false)
         }

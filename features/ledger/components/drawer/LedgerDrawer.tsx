@@ -1,11 +1,17 @@
-// @ts-nocheck
 'use client'
 
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 import { useKeyDown } from '../../../../lib/hooks/useKeyDown'
 
-export default function LedgerDrawer({ open, row, onClose }) {
+interface LedgerDrawerProps {
+    open:    boolean
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    row:     any
+    onClose: () => void
+}
+
+export default function LedgerDrawer({ open, row, onClose }: LedgerDrawerProps) {
 
     const t = useTranslations('ledger')
 

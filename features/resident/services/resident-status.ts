@@ -1,7 +1,6 @@
-﻿// @ts-nocheck
 export function getResidentStatus(
 
-    resident
+    resident: { active?: boolean } | null | undefined
 
 ) {
 
@@ -15,7 +14,7 @@ export function getResidentStatus(
 }
 
 export function getResidentStatusLabel(
-    status
+    status: string
 ) {
 
     switch (status) {
@@ -32,7 +31,7 @@ export function getResidentStatusLabel(
 }
 
 export function getResidentStatusClasses(
-    status
+    status: string
 ) {
 
     switch (status) {

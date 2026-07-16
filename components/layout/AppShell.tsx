@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
 
@@ -10,6 +9,7 @@ import {
 
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import type { ReactNode } from 'react'
 
 import Topbar        from './Topbar'
 import Sidebar       from './Sidebar'
@@ -20,7 +20,7 @@ import { logout }   from '../../lib/services/auth.service'
 
 const PUBLIC_PATHS = ['/login', '/register', '/activation', '/test']
 
-function isPublicPath(pathname) {
+function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
 }
 
@@ -28,7 +28,7 @@ export default function AppShell({
 
                                    children
 
-                                 }) {
+                                 }: { children: ReactNode }) {
 
   const { membership, loading } = useAuth()
   const pathname                = usePathname()

@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 'use client'
 
 import {
@@ -15,9 +14,11 @@ import {
 
 export function usePaymentConfirmationRealtime({
 
-                                          onReload
+    onReload
 
-                                      }) {
+}: {
+    onReload?: () => void
+}) {
 
     useEffect(() => {
 

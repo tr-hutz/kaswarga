@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useRtData }    from './hooks/useRtData'
 import { useRtActions } from './hooks/useRtActions'

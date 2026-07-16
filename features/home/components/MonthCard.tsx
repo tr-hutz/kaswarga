@@ -1,21 +1,20 @@
-// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
 
-const STATUS_STYLE = {
+const STATUS_STYLE: Record<string, string> = {
     approved: 'bg-green-100 border-green-500',
     pending:  'bg-yellow-100 border-yellow-500',
     rejected: 'bg-red-100 border-red-500',
     unpaid:   'bg-gray-100 border-gray-300'
 }
 
-export default function MonthCard({ month, status }) {
+export default function MonthCard({ month, status }: { month: string; status?: string }) {
 
     const t = useTranslations('common')
     const finalStatus = status || 'unpaid'
 
-    const statusLabel = {
+    const statusLabel: Record<string, string> = {
         approved: t('paymentStatus.paid'),
         pending:  t('paymentStatus.pending'),
         rejected: t('paymentStatus.rejected'),

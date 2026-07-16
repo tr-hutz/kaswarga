@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import Icon from '@/components/ui/Icon'

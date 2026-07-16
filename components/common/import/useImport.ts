@@ -1,11 +1,10 @@
-// @ts-nocheck
 'use client'
 
 import { useState, useRef } from 'react'
 import * as XLSX from 'xlsx'
 
-function makeNormalizer(aliases) {
-    return function normalizeKey(raw) {
+function makeNormalizer(aliases: Record<string, string>) {
+    return function normalizeKey(raw: string) {
         const slug = raw
             .toLowerCase()
             .trim()
@@ -15,11 +14,11 @@ function makeNormalizer(aliases) {
     }
 }
 
-function parseWorkbook(workbook, normalizeKey) {
+function parseWorkbook(workbook: XLSX.WorkBook, normalizeKey: (k: string) => string) {
     const sheet = workbook.Sheets[workbook.SheetNames[0]]
-    const raw   = XLSX.utils.sheet_to_json(sheet, { defval: '' })
+    const raw   = XLSX.utils.sheet_to_json(sheet, { defval: '' }) as Record<string, unknown>[]
     return raw.map(row => {
-        const out = {}
+        const out: Record<string, string> = {}
         for (const [k, v] of Object.entries(row)) {
             out[normalizeKey(k)] = String(v).trim()
         }
@@ -28,22 +27,32 @@ function parseWorkbook(workbook, normalizeKey) {
 }
 
 export function useImport({
-    columnAliases = {},
+    columnAliases = {} as Record<string, string>,
     isValidRow,
     apiEndpoint,
     templateData,
     templateSheetName = 'Data',
     templateFileName,
     onSuccess,
+}: {
+    columnAliases?: Record<string, string>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    isValidRow: (row: any) => boolean
+    apiEndpoint: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    templateData: any[]
+    templateSheetName?: string
+    templateFileName: string
+    onSuccess?: (inserted: number) => void
 }) {
     const normalizeKey = makeNormalizer(columnAliases)
 
     const [open,      setOpen]      = useState(false)
-    const [rows,      setRows]      = useState([])
+    const [rows,      setRows]      = useState<Record<string, string>[]>([])
     const [fileName,  setFileName]  = useState('')
     const [importing, setImporting] = useState(false)
     const [error,     setError]     = useState('')
-    const fileRef = useRef(null)
+    const fileRef = useRef<HTMLInputElement>(null)
 
     function openImport()  { setOpen(true) }
 
@@ -59,13 +68,13 @@ export function useImport({
         if (fileRef.current) fileRef.current.value = ''
     }
 
-    function handleFile(file) {
+    function handleFile(file: File | null | undefined) {
         if (!file) return
         setError('')
         const reader = new FileReader()
         reader.onload = e => {
             try {
-                const wb     = XLSX.read(e.target.result, { type: 'array' })
+                const wb     = XLSX.read(e.target?.result, { type: 'array' })
                 const parsed = parseWorkbook(wb, normalizeKey)
                 if (parsed.length === 0) {
                     setError('File has no data.')
@@ -108,7 +117,7 @@ export function useImport({
             closeImport()
             onSuccess?.(body.inserted)
         } catch (err) {
-            setError(err.message)
+            setError((err as Error).message)
         } finally {
             setImporting(false)
         }

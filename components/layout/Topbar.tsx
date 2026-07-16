@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import Icon from '@/components/ui/Icon'
 
@@ -25,12 +24,17 @@ import {
 
 import { useTranslations } from 'next-intl'
 
+interface TopbarProps {
+    mobileOpen:    boolean
+    setMobileOpen: (open: boolean) => void
+}
+
 export default function Topbar({
 
                                    mobileOpen,
                                    setMobileOpen
 
-                               }) {
+                               }: TopbarProps) {
 
     /*
      |-------------------------------------------------------------

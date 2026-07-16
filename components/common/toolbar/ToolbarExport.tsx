@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import Icon from '@/components/ui/Icon'
@@ -10,7 +9,10 @@ export default function ToolbarExport({
                                           onExportCSV,
                                           onExportExcel
 
-                                      }) {
+                                      }: {
+    onExportCSV?: () => void
+    onExportExcel?: () => void
+}) {
 
     const t = useTranslations('common.actions')
 

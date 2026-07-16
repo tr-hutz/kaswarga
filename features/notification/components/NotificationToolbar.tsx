@@ -1,8 +1,15 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
+
+interface NotificationToolbarProps {
+    search:        string
+    setSearch:     (v: string) => void
+    filter:        string
+    setFilter:     (v: string) => void
+    onMarkAllRead: () => void
+}
 
 export default function NotificationToolbar({
 
@@ -16,7 +23,7 @@ export default function NotificationToolbar({
 
                                                 onMarkAllRead,
 
-                                            }) {
+                                            }: NotificationToolbarProps) {
 
     const t = useTranslations('notification')
 

@@ -1,8 +1,8 @@
-// @ts-nocheck
 import { MONTHS } from '../../../constants/months'
 
 export function transformPaymentHistory(
-    rows = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rows: any[] = []
 ) {
 
     return rows.flatMap(item => {
@@ -10,7 +10,7 @@ export function transformPaymentHistory(
         const details =
             item.payment_details || []
 
-        return details.map(detail => {
+        return details.map((detail: { month: number; amount?: number }) => {
 
             const monthEntry =
                 MONTHS.find(

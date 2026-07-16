@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import SidebarMenu
 
@@ -10,7 +9,10 @@ export default function Sidebar({
                                     mobileOpen,
                                     onClose
 
-                                }) {
+                                }: {
+    mobileOpen: boolean
+    onClose: () => void
+}) {
 
     return (
 

@@ -53,7 +53,7 @@ interface Props {
     fileRef:          React.RefObject<HTMLInputElement>
     importing:        boolean
     importError:      string
-    handleFile:       (e: React.ChangeEvent<HTMLInputElement>) => void
+    handleFile:       (file: File | undefined) => void
     handleImport:     () => void
     downloadTemplate: () => void
     resetImport:      () => void
@@ -174,7 +174,7 @@ export default function ResidentView({
                 fileName={importFileName}
                 fileRef={importFileRef}
                 importing={importing}
-                error={!!importError}
+                error={importError}
                 onFile={handleFile}
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}

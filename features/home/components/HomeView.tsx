@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 import { useTranslations } from 'next-intl'
 import PaymentSummary
   from './PaymentSummary'
@@ -11,6 +10,24 @@ import PaymentForm
   from './PaymentForm'
 
 import { MONTHS } from '../../../constants/months'
+
+interface HomeViewProps {
+  loading:        boolean
+  summaryYear:    number
+  setSummaryYear: (y: number) => void
+  paymentYear:    number
+  setPaymentYear: (y: number) => void
+  monthlyFee:     number
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  submitPayment:  (form: any) => Promise<void>
+  submitting:     boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  statusMap:      Record<number, any>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  formStatusMap:  Record<number, any>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  summary:        any
+}
 
 export default function HomeView({
 
@@ -34,7 +51,7 @@ export default function HomeView({
 
   summary
 
-}) {
+}: HomeViewProps) {
 
   const t = useTranslations('home')
 

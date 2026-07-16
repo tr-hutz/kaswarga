@@ -1,6 +1,5 @@
-﻿// @ts-nocheck
 export function getStatusClass(
-    status
+    status: string
 ) {
 
     switch (status) {
@@ -36,7 +35,7 @@ export function getStatusClass(
 }
 
 export function isPending(
-    status
+    status: string
 ) {
 
     return (

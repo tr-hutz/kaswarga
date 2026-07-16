@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import Icon from '@/components/ui/Icon'
@@ -13,63 +12,41 @@ import ToolbarFilter
 import ToolbarExport
     from './ToolbarExport'
 
-export default function PageToolbar({
+interface PageToolbarProps {
+    title: string
+    subtitle?: string
+    onCreate?: () => void
+    search?: string
+    setSearch?: (v: string) => void
+    searchPlaceholder?: string
+    filterValue?: string
+    setFilterValue?: (v: string) => void
+    filterOptions?: { value: string; label: string }[]
+    filterPlaceholder?: string
+    onExportCSV?: () => void
+    onExportExcel?: () => void
+    onImport?: () => void
+}
 
-                                        /*
-                                         |-------------------------------------------------------------
-                                         | HEADER
-                                         |-------------------------------------------------------------
-                                         */
+export default function PageToolbar({
 
                                         title,
                                         subtitle,
-
-                                        /*
-                                         |-------------------------------------------------------------
-                                         | CREATE
-                                         |-------------------------------------------------------------
-                                         */
-
                                         onCreate,
-
-                                        /*
-                                         |-------------------------------------------------------------
-                                         | SEARCH
-                                         |-------------------------------------------------------------
-                                         */
-
                                         search,
                                         setSearch,
-
                                         searchPlaceholder =
                                         'Cari...',
-
-                                        /*
-                                         |-------------------------------------------------------------
-                                         | FILTER
-                                         |-------------------------------------------------------------
-                                         */
-
                                         filterValue,
                                         setFilterValue,
-
                                         filterOptions = [],
-
                                         filterPlaceholder =
                                         'Filter',
-
-                                        /*
-                                         |-------------------------------------------------------------
-                                         | EXPORT
-                                         |-------------------------------------------------------------
-                                         */
-
                                         onExportCSV,
                                         onExportExcel,
-
                                         onImport
 
-                                    }) {
+                                    }: PageToolbarProps) {
 
     const t = useTranslations('common')
 
@@ -178,16 +155,18 @@ export default function PageToolbar({
                 "
             >
 
-                <ToolbarSearch
+                {search !== undefined && setSearch !== undefined && (
+                    <ToolbarSearch
 
-                    value={search}
-                    onChange={setSearch}
-                    placeholder={searchPlaceholder}
+                        value={search}
+                        onChange={setSearch}
+                        placeholder={searchPlaceholder}
 
-                />
+                    />
+                )}
 
                 {
-                    filterOptions.length > 0 && (
+                    filterOptions.length > 0 && filterValue !== undefined && setFilterValue !== undefined && (
 
                         <ToolbarFilter
 

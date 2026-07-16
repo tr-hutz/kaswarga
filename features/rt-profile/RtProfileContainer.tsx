@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useRtProfile }  from './hooks/useRtProfile'
 import RtProfileView     from './ProfilRtView'

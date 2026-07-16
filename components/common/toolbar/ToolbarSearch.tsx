@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import Icon from '@/components/ui/Icon'
@@ -12,7 +11,11 @@ export default function ToolbarSearch({
 
                                           placeholder
 
-                                      }) {
+                                      }: {
+    value: string
+    onChange: (value: string) => void
+    placeholder?: string
+}) {
 
     const t = useTranslations('common.actions')
     const resolvedPlaceholder = placeholder ?? (t('search') + '...')

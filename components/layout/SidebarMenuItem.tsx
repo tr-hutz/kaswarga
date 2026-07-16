@@ -1,11 +1,21 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import Icon from '@/components/ui/Icon'
+import Icon, { type IconName } from '@/components/ui/Icon'
 
-export default function SidebarMenuItem({ item, active, badge = 0, onClick }) {
+interface NavItem {
+    href: string
+    icon: IconName
+    label: string
+}
+
+export default function SidebarMenuItem({ item, active, badge = 0, onClick }: {
+    item: NavItem
+    active: boolean
+    badge?: number
+    onClick?: () => void
+}) {
 
     const t = useTranslations('nav')
     return (

@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import Icon from '@/components/ui/Icon'
@@ -14,7 +13,12 @@ export default function ToolbarFilter({
 
                                           placeholder
 
-                                      }) {
+                                      }: {
+    value: string
+    onChange: (value: string) => void
+    options?: { value: string; label: string }[]
+    placeholder?: string
+}) {
 
     const t = useTranslations('common.filter')
     const resolvedPlaceholder = placeholder ?? t('placeholder')

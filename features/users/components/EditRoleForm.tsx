@@ -1,4 +1,3 @@
-// @ts-nocheck
 'use client'
 
 import { useState } from 'react'
@@ -6,7 +5,15 @@ import { useTranslations } from 'next-intl'
 
 const ROLE_VALUES = ['CHAIR', 'ADMIN', 'TREASURER', 'RESIDENT']
 
-export default function EditRoleForm({ target, onSave, onClose, saving }) {
+interface EditRoleFormProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    target:  any
+    onSave:  (membershipId: string, role: string) => void
+    onClose: () => void
+    saving:  boolean
+}
+
+export default function EditRoleForm({ target, onSave, onClose, saving }: EditRoleFormProps) {
     const t  = useTranslations('users')
     const tc = useTranslations('common')
 

@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useRtRegistration }    from './hooks/useRtRegistration'
 import RtRegistrationView       from './RtRegistrationView'

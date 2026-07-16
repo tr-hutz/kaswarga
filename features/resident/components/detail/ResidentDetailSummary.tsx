@@ -1,13 +1,9 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useTranslations } from 'next-intl'
 
-export default function ResidentDetailSummary({
-
-                                               resident
-
-                                           }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function ResidentDetailSummary({ resident }: { resident: any }) {
 
     const t = useTranslations('residents')
 

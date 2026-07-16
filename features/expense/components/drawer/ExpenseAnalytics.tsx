@@ -1,16 +1,12 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     formatRupiah
 } from '../../../../lib/utils'
 import { useTranslations } from 'next-intl'
 
-export default function ExpenseAnalytics({
-
-                                                 rows = []
-
-                                             }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function ExpenseAnalytics({ rows = [] }: { rows?: any[] }) {
 
     const t = useTranslations('expenses')
 
@@ -42,7 +38,7 @@ export default function ExpenseAnalytics({
      |-------------------------------------------------------------
      */
 
-    const categoryMap = {}
+    const categoryMap: Record<string, number> = {}
 
     rows.forEach(item => {
 
@@ -133,7 +129,7 @@ function Card({
                   value,
                   subtitle
 
-              }) {
+              }: { title: string; value: string | number; subtitle?: string | null }) {
 
     return (
 

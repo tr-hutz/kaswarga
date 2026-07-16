@@ -1,7 +1,7 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
+import type { FormEvent } from 'react'
 import Link from 'next/link'
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
@@ -14,7 +14,7 @@ export default function RequestActivationLink() {
     const [done,    setDone]    = useState(false)
     const [error,   setError]   = useState('')
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setError('')
         setLoading(true)

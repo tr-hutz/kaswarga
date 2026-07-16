@@ -1,11 +1,10 @@
-// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
 import Badge from '@/components/ui/Badge'
 import { getStatusClass } from '../../services/payment-status'
 
-export default function PaymentStatusBadge({ status }) {
+export default function PaymentStatusBadge({ status }: { status: string }) {
     const t = useTranslations('common')
 
     const labelMap: Record<string, string> = {

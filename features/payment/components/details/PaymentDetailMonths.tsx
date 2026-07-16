@@ -1,10 +1,10 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useTranslations } from 'next-intl'
 import { MONTHS } from '../../../../constants/months'
 
-export default function PaymentDetailMonths({ details = [] }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function PaymentDetailMonths({ details = [] }: { details?: any[] }) {
     const t = useTranslations('payments')
 
     return (

@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState }                                          from 'react'
 import Icon from '@/components/ui/Icon'
@@ -11,7 +10,7 @@ import { useTranslations }                                   from 'next-intl'
 
 const IS_DEV = process.env.NODE_ENV === 'development'
 
-function CopyButton({ text }) {
+function CopyButton({ text }: { text: string }) {
     const [copied, setCopied] = useState(false)
 
     function handleCopy() {
@@ -32,7 +31,8 @@ function CopyButton({ text }) {
     )
 }
 
-function DevLinksPanel({ links, onDismiss }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function DevLinksPanel({ links, onDismiss }: { links: any[]; onDismiss: () => void }) {
     return (
         <div className="mt-3 border-t border-amber-200 pt-3 space-y-3">
             <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
@@ -66,12 +66,15 @@ function DevLinksPanel({ links, onDismiss }) {
     )
 }
 
-function RequestCard({ req, onAction }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function RequestCard({ req, onAction }: { req: any; onAction: () => void }) {
     const [expanded,   setExpanded]   = useState(false)
     const [processing, setProcessing] = useState(false)
-    const [devLinks,   setDevLinks]   = useState(null)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [devLinks,   setDevLinks]   = useState<any[] | null>(null)
     const { membership }              = useAuth()
     const { toast }                   = useToast()
+    const t                           = useTranslations('rtRegistration')
     const tc                          = useTranslations('common')
 
     const rtData = req.rt_data || {}
@@ -88,7 +91,7 @@ function RequestCard({ req, onAction }) {
                 onAction()
             }
         } catch (err) {
-            toast({ message: err.message, type: 'error' })
+            toast({ message: (err as Error).message, type: 'error' })
             onAction()
         } finally {
             setProcessing(false)
@@ -102,7 +105,7 @@ function RequestCard({ req, onAction }) {
             await rejectRtRegistration(req.id, '', membership)
             toast({ message: 'RT registration rejected.', type: 'success' })
         } catch (err) {
-            toast({ message: err.message, type: 'error' })
+            toast({ message: (err as Error).message, type: 'error' })
         } finally {
             setProcessing(false)
             onAction()
@@ -203,7 +206,14 @@ function RequestCard({ req, onAction }) {
     )
 }
 
-export default function RtPendingRequests({ requests, loading, onAction }) {
+interface RtPendingRequestsProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    requests: any[]
+    loading:  boolean
+    onAction: () => void
+}
+
+export default function RtPendingRequests({ requests, loading, onAction }: RtPendingRequestsProps) {
     const [open, setOpen] = useState(true)
     const t = useTranslations('rtRegistration')
 

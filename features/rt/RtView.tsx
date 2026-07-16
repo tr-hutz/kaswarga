@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import Icon from '@/components/ui/Icon'
 import RtTable         from './components/RtTable'
@@ -7,6 +6,29 @@ import RtForm          from './components/RtForm'
 import RtDeleteConfirm from './components/RtDeleteConfirm'
 import { useTranslations } from 'next-intl'
 import ErrorState from '@/components/ui/ErrorState'
+
+interface RtViewProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data:         any[]
+    loading:      boolean
+    error:        boolean
+    onRetry:      () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    selected:     any
+    formOpen:     boolean
+    openCreate:   () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    openEdit:     (rt: any) => void
+    closeForm:    () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    handleSubmit: (form: any) => Promise<any>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delTarget:    any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setDelTarget: (t: any) => void
+    deleting:     boolean
+    handleDelete: () => void
+}
 
 export default function RtView({
     data,
@@ -23,7 +45,7 @@ export default function RtView({
     setDelTarget,
     deleting,
     handleDelete
-}) {
+}: RtViewProps) {
 
     const t = useTranslations('rt')
 

@@ -1,7 +1,7 @@
-﻿// @ts-nocheck
 export function buildExpenseAnalytics(
 
-    rows = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rows: any[] = []
 
 ) {
 
@@ -33,7 +33,7 @@ export function buildExpenseAnalytics(
      |-------------------------------------------------------------
      */
 
-    const categoryMap = {}
+    const categoryMap: Record<string, number> = {}
 
     rows.forEach(item => {
 

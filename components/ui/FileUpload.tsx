@@ -1,25 +1,31 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, type ChangeEvent } from 'react'
 import { File, Loader2, Paperclip, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useTranslations } from 'next-intl'
 
-export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUploaded, bucket = 'expense-receipts' }) {
+export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUploaded, bucket = 'expense-receipts' }: {
+    label?: string
+    currentUrl?: string
+    pathPrefix: string
+    accept?: string
+    onUploaded: (url: string) => void
+    bucket?: string
+}) {
 
     const t = useTranslations('fileUpload')
 
     const [fileLabel, setFileLabel] = useState(
         currentUrl
-            ? decodeURIComponent(currentUrl.split('/').pop().split('?')[0])
+            ? decodeURIComponent((currentUrl.split('/').pop() ?? '').split('?')[0])
             : ''
     )
     const [uploading, setUploading] = useState(false)
     const [error,     setError]     = useState('')
-    const inputRef = useRef(null)
+    const inputRef = useRef<HTMLInputElement>(null)
 
-    async function handleChange(e) {
+    async function handleChange(e: ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0]
         if (!file) return
 
@@ -27,7 +33,7 @@ export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUp
         setError('')
 
         try {
-            const ext  = file.name.split('.').pop().toLowerCase()
+            const ext  = (file.name.split('.').pop() ?? '').toLowerCase()
             const path = `${pathPrefix}/${Date.now()}.${ext}`
 
             const { error: uploadError } = await supabase.storage
@@ -41,7 +47,7 @@ export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUp
             setFileLabel(file.name)
             onUploaded(data.publicUrl)
         } catch (err) {
-            setError(err.message || t('uploadFailed'))
+            setError((err as Error).message || t('uploadFailed'))
         } finally {
             setUploading(false)
             if (inputRef.current) inputRef.current.value = ''

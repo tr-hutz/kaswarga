@@ -1,10 +1,19 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
-export default function RtTable({ data, loading, onEdit, onDelete }) {
+interface RtTableProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data:     any[]
+    loading:  boolean
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onEdit:   (rt: any) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onDelete: (rt: any) => void
+}
+
+export default function RtTable({ data, loading, onEdit, onDelete }: RtTableProps) {
 
     const t = useTranslations('rt')
     const tc = useTranslations('common')

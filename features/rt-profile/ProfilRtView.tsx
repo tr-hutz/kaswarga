@@ -1,7 +1,7 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
+import type { FormEvent, ReactNode } from 'react'
 import Icon from '@/components/ui/Icon'
 import { generateRtCode } from '@/lib/services/registration.service'
 import ImageUpload from './components/ImageUpload'
@@ -13,7 +13,7 @@ const EMPTY = {
     accountHolder: '', qrisUrl: '', logoUrl: ''
 }
 
-function Field({ label, children }) {
+function Field({ label, children }: { label: string; children: ReactNode }) {
     return (
         <div>
             <label className="text-xs text-gray-500 mb-1 block">{label}</label>
@@ -22,7 +22,7 @@ function Field({ label, children }) {
     )
 }
 
-function SectionTitle({ children }) {
+function SectionTitle({ children }: { children: ReactNode }) {
     return (
         <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide pt-2">
             {children}
@@ -30,7 +30,16 @@ function SectionTitle({ children }) {
     )
 }
 
-export default function RtProfileView({ rt, loading, saving, onSave }) {
+interface RtProfileViewProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rt:      any
+    loading: boolean
+    saving:  boolean
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onSave:  (form: any) => void
+}
+
+export default function RtProfileView({ rt, loading, saving, onSave }: RtProfileViewProps) {
 
     const [form,       setForm]       = useState(EMPTY)
     const [dirty,      setDirty]      = useState(false)
@@ -59,7 +68,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }) {
 
     }, [rt])
 
-    function set(key, val) {
+    function set(key: string, val: string) {
         setForm(prev => ({ ...prev, [key]: val }))
         setDirty(true)
     }
@@ -76,7 +85,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }) {
         }
     }
 
-    function handleSubmit(e) {
+    function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         onSave({ ...form, monthlyFee: Number(form.monthlyFee) || 0 })
         setDirty(false)

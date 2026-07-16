@@ -1,11 +1,4 @@
-﻿// @ts-nocheck
-export default function YearSelector({
-
-  value,
-
-  onChange
-
-}) {
+﻿export default function YearSelector({ value, onChange }: { value: number; onChange: (y: number) => void }) {
 
   return (
 

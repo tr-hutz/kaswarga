@@ -1,7 +1,11 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import Icon from '@/components/ui/Icon'
+
+interface NotificationBellProps {
+    unreadCount?: number
+    onClick?:     () => void
+}
 
 export default function NotificationBell({
 
@@ -9,7 +13,7 @@ export default function NotificationBell({
 
                                              onClick
 
-                                         }) {
+                                         }: NotificationBellProps) {
 
     return (
 

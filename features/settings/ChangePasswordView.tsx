@@ -1,11 +1,18 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState }   from 'react'
+import type { FormEvent } from 'react'
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
-function PasswordField({ label, value, onChange, placeholder }) {
+interface PasswordFieldProps {
+    label:       string
+    value:       string
+    onChange:    (v: string) => void
+    placeholder: string
+}
+
+function PasswordField({ label, value, onChange, placeholder }: PasswordFieldProps) {
 
     const [show, setShow] = useState(false)
 
@@ -34,7 +41,15 @@ function PasswordField({ label, value, onChange, placeholder }) {
     )
 }
 
-export default function ChangePasswordView({ form, set, saving, error, onSubmit }) {
+interface ChangePasswordViewProps {
+    form:     { next: string; confirm: string }
+    set:      (k: string, v: string) => void
+    saving:   boolean
+    error:    string
+    onSubmit: (e: FormEvent<HTMLFormElement>) => void
+}
+
+export default function ChangePasswordView({ form, set, saving, error, onSubmit }: ChangePasswordViewProps) {
 
     const t = useTranslations('settings')
 

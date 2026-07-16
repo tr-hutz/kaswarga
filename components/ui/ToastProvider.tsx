@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     createContext,
@@ -7,6 +6,7 @@ import {
     useContext,
     useState
 } from 'react'
+import type { ReactNode } from 'react'
 
 import {
     AlertCircle,
@@ -15,7 +15,23 @@ import {
     X
 } from 'lucide-react'
 
-const ToastContext = createContext(null)
+interface ToastOptions {
+    title?: string
+    message?: string
+    type?: 'error' | 'success' | 'info'
+    duration?: number
+    onClick?: () => void
+}
+
+interface ToastContextType {
+    toast: (opts: ToastOptions) => void
+}
+
+interface ToastItem extends ToastOptions {
+    id: string
+}
+
+const ToastContext = createContext<ToastContextType | null>(null)
 
 const STYLES = {
     error: {
@@ -38,26 +54,21 @@ const ICONS = {
     info: Info
 }
 
-export default function ToastProvider({ children }) {
+export default function ToastProvider({ children }: { children: ReactNode }) {
 
     const [
         toasts,
         setToasts
-    ] = useState([])
+    ] = useState<ToastItem[]>([])
 
-    const dismiss = useCallback((id) => {
+    const dismiss = useCallback((id: string) => {
         setToasts(prev =>
             prev.filter(t => t.id !== id)
         )
     }, [])
 
-    const toast = useCallback(({
-        title,
-        message,
-        type = 'info',
-        duration = 4000,
-        onClick
-    }) => {
+    const toast = useCallback((opts: ToastOptions) => {
+        const { title, message, type = 'info', duration = 4000, onClick } = opts
         const id = crypto.randomUUID()
 
         setToasts(prev => [
@@ -93,14 +104,14 @@ export default function ToastProvider({ children }) {
 
                 {toasts.map(t => {
 
-                    const style = STYLES[t.type] || STYLES.info
-                    const Icon = ICONS[t.type] || Info
+                    const style = STYLES[t.type ?? 'info'] || STYLES.info
+                    const Icon = ICONS[t.type ?? 'info'] || Info
 
                     return (
 
                         <div
                             key={t.id}
-                            onClick={t.onClick ? () => { dismiss(t.id); t.onClick() } : undefined}
+                            onClick={t.onClick ? () => { dismiss(t.id); t.onClick!() } : undefined}
                             className={`
                                 pointer-events-auto
                                 border

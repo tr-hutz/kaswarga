@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
 
@@ -16,11 +15,8 @@ import {
 
 import { useTranslations } from 'next-intl'
 
-export default function CashflowChart({
-
-  data = []
-
-}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function CashflowChart({ data = [] }: { data?: any[] }) {
 
   const t = useTranslations('dashboard.sections')
 

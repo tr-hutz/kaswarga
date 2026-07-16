@@ -1,9 +1,9 @@
-// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
 
-export default function ActivityDrawer({ open, row, onClose }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function ActivityDrawer({ open, row, onClose }: { open: boolean; row: any | null; onClose: () => void }) {
     const t = useTranslations('activity')
 
     if (!open || !row) return null

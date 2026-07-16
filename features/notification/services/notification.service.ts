@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 'use client'
 
 import {
@@ -9,23 +8,25 @@ import {
 
 export async function createNotification({
 
-                                             rt_id,
+    rt_id,
+    type,
+    title,
+    message,
+    entity_type = null,
+    entity_id = null,
+    target_role = null,
+    target_user_id = null
 
-                                             type,
-
-                                             title,
-
-                                             message,
-
-                                             entity_type = null,
-
-                                             entity_id = null,
-
-                                             target_role = null,
-
-                                             target_user_id = null
-
-                                         }) {
+}: {
+    rt_id: string
+    type: string
+    title: string
+    message: string
+    entity_type?: string | null
+    entity_id?: string | null
+    target_role?: string | null
+    target_user_id?: string | null
+}) {
 
     const {
 
@@ -56,7 +57,7 @@ export async function createNotification({
 }
 
 export async function markNotificationRead(
-    notificationId
+    notificationId: string
 ) {
 
     const { error } =
@@ -82,7 +83,7 @@ export async function markNotificationRead(
 }
 
 export async function markAllNotificationsRead(
-    userId
+    userId: string
 ) {
 
     const { error } =

@@ -1,10 +1,10 @@
-﻿// @ts-nocheck
 import * as XLSX
     from 'xlsx'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function exportLedgerToCSV(
 
-    rows = []
+    rows: any[] = []
 
 ) {
 
@@ -68,9 +68,10 @@ export async function exportLedgerToCSV(
     link.click()
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function exportLedgerToExcel(
 
-    rows = []
+    rows: any[] = []
 
 ) {
 
