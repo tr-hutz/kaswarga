@@ -1,12 +1,14 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
 import { getAllUsers } from '@/lib/services/users.service'
+import type { PageResult } from '@/lib/types/query'
+import type { UserRow } from '../components/UserColumns'
 
 export function useUsersData() {
 
-    const [data,    setData]    = useState([])
+    const [result,  setResult]  = useState<PageResult<UserRow> | null>(null)
     const [loading, setLoading] = useState(true)
     const [error,   setError]   = useState(false)
 
@@ -16,8 +18,44 @@ export function useUsersData() {
         setError(false)
 
         try {
-            const rows = await getAllUsers()
-            setData(rows)
+            const users = await getAllUsers()
+
+            const rows: UserRow[] = users.flatMap(user => {
+                const memberships = user.memberships || []
+
+                if (!memberships.length) {
+                    return [{
+                        _userId:      user.id,
+                        name:         user.name || '-',
+                        email:        user.email || '-',
+                        rtName:       null,
+                        role:         '',
+                        membershipId: '',
+                        _user:        user,
+                        _membership:  null,
+                    }]
+                }
+
+                return memberships.map(m => ({
+                    _userId:      user.id,
+                    name:         user.name || '-',
+                    email:        user.email || '-',
+                    rtName:       m.rt?.name ?? null,
+                    role:         m.role,
+                    membershipId: m.id,
+                    _user:        user,
+                    _membership:  m,
+                }))
+            })
+
+            setResult({
+                data:       rows,
+                total:      rows.length,
+                page:       1,
+                pageSize:   rows.length || 1,
+                totalPages: 1,
+            })
+
         } catch (err) {
             console.error('[useUsersData]', err)
             setError(true)
@@ -29,5 +67,5 @@ export function useUsersData() {
 
     useEffect(() => { load() }, [load])
 
-    return { data, loading, error, refresh: load }
+    return { result, loading, error, refresh: load }
 }

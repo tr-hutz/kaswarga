@@ -1,32 +1,29 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 'use client'
 
-import ConfirmDialog from '@/components/ui/ConfirmDialog'
-import UserTable   from './components/UserTable'
-import EditRoleForm from './components/EditRoleForm'
 import { useTranslations } from 'next-intl'
-import ErrorState from '@/components/ui/ErrorState'
+import DataTable           from '@/components/common/data-table/DataTable'
+import ConfirmDialog       from '@/components/ui/ConfirmDialog'
+import EditRoleForm        from './components/EditRoleForm'
 
 export default function UsersView({
-    data,
+    result,
+    columns,
     loading,
     error,
     onRetry,
-    currentUserId,
     editTarget,
     setEditTarget,
     delTarget,
     setDelTarget,
     saving,
     handleUpdateRole,
-    handleRemoveMembership
+    handleRemoveMembership,
 }) {
-
-    const t = useTranslations('users')
+    const t  = useTranslations('users')
     const tc = useTranslations('common')
 
     return (
-
         <div className="space-y-6">
 
             {/* Header */}
@@ -38,16 +35,13 @@ export default function UsersView({
             </div>
 
             {/* Table */}
-            {error
-                ? <ErrorState onRetry={onRetry} />
-                : <UserTable
-                    data={data}
-                    loading={loading}
-                    currentUserId={currentUserId}
-                    onEditRole={setEditTarget}
-                    onRemoveMembership={setDelTarget}
-                />
-            }
+            <DataTable
+                columns={columns}
+                result={result}
+                loading={loading}
+                error={error}
+                onRetry={onRetry}
+            />
 
             {/* Edit Role Modal */}
             <EditRoleForm
@@ -57,6 +51,7 @@ export default function UsersView({
                 saving={saving}
             />
 
+            {/* Remove Membership Confirm */}
             <ConfirmDialog
                 open={!!delTarget}
                 title={t('removeMembership.title')}
