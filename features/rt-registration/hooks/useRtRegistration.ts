@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { supabase }                          from '@/lib/supabase'
+import { findRtRegistrationRequests }        from '@/lib/repositories/registration.repository'
 
 export function useRtRegistration() {
 
@@ -14,19 +15,8 @@ export function useRtRegistration() {
         setLoading(true)
         setError(false)
         try {
-            let query = supabase
-                .from('registration_requests')
-                .select('*')
-                .eq('type', 'rt')
-                .order('created_at', { ascending: false })
-
-            if (filter !== 'all') {
-                query = query.eq('status', filter)
-            }
-
-            const { data, error: fetchError } = await query
-            if (fetchError) throw fetchError
-            setRequests(data || [])
+            const data = await findRtRegistrationRequests(filter)
+            setRequests(data)
         } catch (err) {
             console.error('[useRtRegistration]', err)
             setError(true)

@@ -7,6 +7,7 @@ import { useResidentData }    from './hooks/useResidentData'
 import { useResidentActions } from './hooks/useResidentActions'
 import { useAuth }            from '@/lib/auth/useAuth'
 import { supabase }           from '@/lib/supabase'
+import { findPendingResidentRegistrations } from '@/lib/repositories/registration.repository'
 import { deleteResident }     from '@/lib/services/resident.service'
 import { useToast }           from '@/components/ui/ToastProvider'
 import ResidentView           from './ResidentView'
@@ -56,15 +57,8 @@ export default function ResidentContainer() {
         if (!rtId) return
         setPendingLoading(true)
         try {
-            const { data, error: e } = await supabase
-                .from('registration_requests')
-                .select('*')
-                .eq('type', 'resident')
-                .eq('status', 'pending')
-                .eq('rt_id', rtId)
-                .order('created_at', { ascending: false })
-            if (e) throw e
-            setPendingRequests(data ?? [])
+            const data = await findPendingResidentRegistrations(rtId)
+            setPendingRequests(data)
         } catch (err) {
             console.error('[WARGA] pending:', err)
         } finally {

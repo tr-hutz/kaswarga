@@ -1,7 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '../../lib/supabase'
+import { supabase }            from '../../lib/supabase'
+import {
+    countPendingRtRegistrations,
+    countPendingResidentRegistrations,
+} from '../../lib/repositories/registration.repository'
 
 export function usePendingCounts(role: string, rtId?: string) {
 
@@ -11,13 +15,11 @@ export function usePendingCounts(role: string, rtId?: string) {
     useEffect(() => {
         if (role !== 'SUPER_ADMIN') return
 
-        function fetchCount() {
-            supabase
-                .from('registration_requests')
-                .select('*', { count: 'exact', head: true })
-                .eq('type', 'rt')
-                .eq('status', 'pending')
-                .then(({ count }) => setPendingRtCount(count || 0))
+        async function fetchCount() {
+            try {
+                const count = await countPendingRtRegistrations()
+                setPendingRtCount(count)
+            } catch { /* non-critical badge */ }
         }
 
         fetchCount()
@@ -37,16 +39,12 @@ export function usePendingCounts(role: string, rtId?: string) {
 
     useEffect(() => {
         if (!rtId || !['CHAIR', 'ADMIN'].includes(role)) return
-        const id = rtId
 
-        function fetchCount() {
-            supabase
-                .from('registration_requests')
-                .select('*', { count: 'exact', head: true })
-                .eq('type', 'resident')
-                .eq('status', 'pending')
-                .eq('rt_id', id)
-                .then(({ count }) => setPendingResidentCount(count || 0))
+        async function fetchCount() {
+            try {
+                const count = await countPendingResidentRegistrations(rtId!)
+                setPendingResidentCount(count)
+            } catch { /* non-critical badge */ }
         }
 
         fetchCount()
