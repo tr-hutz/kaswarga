@@ -1,80 +1,54 @@
-﻿// @ts-nocheck
 'use client'
 
-import {
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/lib/auth/useAuth'
+import { findActivitiesPaginated, findActivityStats } from '@/lib/repositories/activity.repository'
+import { transformActivity } from '../services/activity-transform'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
 
-    useEffect,
-    useState
+export type MappedActivity = ReturnType<typeof transformActivity>[number]
 
-} from 'react'
+export interface ActivityStats {
+    total:         number
+    approvals:     number
+    expenseCount:  number
+    residentCount: number
+}
 
-import {
+export function useActivityData(query: QueryOptions) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { membership } = (useAuth() as any) ?? {}
+    const rtId = membership?.rt?.id as string | undefined
 
-    getActivities
+    const [result,  setResult]  = useState<PageResult<MappedActivity> | null>(null)
+    const [stats,   setStats]   = useState<ActivityStats>({ total: 0, approvals: 0, expenseCount: 0, residentCount: 0 })
+    const [loading, setLoading] = useState(false)
+    const [error,   setError]   = useState(false)
 
-} from '../../../lib/services/activity.service'
+    const queryKey = JSON.stringify(query)
 
-export function useActivityData() {
-
-    const [
-
-        loading,
-        setLoading
-
-    ] = useState(true)
-
-    const [
-
-        rows,
-        setRows
-
-    ] = useState([])
-
-    const [error, setError] = useState(false)
-
-    useEffect(() => {
-
-        loadData()
-
-    }, [])
-
-    async function loadData() {
-
+    async function load() {
+        if (!rtId) return
         setLoading(true)
         setError(false)
-
         try {
-
-            const result =
-                await getActivities()
-
-            setRows(
-                result
-            )
-
+            const [raw, rawStats] = await Promise.all([
+                findActivitiesPaginated(rtId, query),
+                findActivityStats(rtId),
+            ])
+            const data = transformActivity(raw.data)
+            setResult({ ...raw, data })
+            setStats(rawStats)
         } catch (err) {
-
-            console.error(
-                '[ACTIVITY]',
-                err
-            )
+            console.error('[ACTIVITY]', err)
             setError(true)
-
         } finally {
-
             setLoading(false)
         }
     }
 
-    return {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => { load() }, [rtId, queryKey])
 
-        loading,
-
-        error,
-
-        rows,
-
-        refresh:
-        loadData
-    }
+    return { result, stats, loading, error, reload: load }
 }

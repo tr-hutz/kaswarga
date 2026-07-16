@@ -2,33 +2,33 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth/useAuth'
-import { findExpensesPaginated } from '@/lib/repositories/expense.repository'
-import { mapExpense } from '@/lib/mappers/expense.mapper'
+import { findConfirmationsPaginated } from '@/lib/repositories/payment.repository'
+import { mapConfirmation } from '@/lib/mappers/payment.mapper'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
-export type MappedExpense = ReturnType<typeof mapExpense>[number]
+export type ConfirmationRow = ReturnType<typeof mapConfirmation>[number]
 
-export function useExpenseData(query: QueryOptions) {
+export function usePaymentData(query: QueryOptions, year = new Date().getFullYear()) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { membership } = (useAuth() as any) ?? {}
     const rtId = membership?.rt?.id as string | undefined
 
-    const [result,  setResult]  = useState<PageResult<MappedExpense> | null>(null)
+    const [result,  setResult]  = useState<PageResult<ConfirmationRow> | null>(null)
     const [loading, setLoading] = useState(false)
     const [error,   setError]   = useState(false)
 
-    const queryKey = JSON.stringify(query)
+    const queryKey = JSON.stringify({ query, year })
 
     async function load() {
         if (!rtId) return
         setLoading(true)
         setError(false)
         try {
-            const raw  = await findExpensesPaginated(rtId, query)
-            const data = mapExpense(raw.data)
+            const raw  = await findConfirmationsPaginated(rtId, query, year)
+            const data = mapConfirmation(raw.data)
             setResult({ ...raw, data })
         } catch (err) {
-            console.error('[PENGELUARAN]', err)
+            console.error('[PAYMENTS]', err)
             setError(true)
         } finally {
             setLoading(false)

@@ -1,112 +1,39 @@
-﻿// @ts-nocheck
 'use client'
 
-import {
-    useState
-} from 'react'
-
-import LedgerView
-    from './LedgerView'
-
-import {
-    useLedgerData
-} from './hooks/useLedgerData'
-
-import {
-    useLedgerActions
-} from './hooks/useLedgerActions'
-
-import {
-    useLedgerRealtime
-} from './hooks/useLedgerRealtime'
+import LedgerView           from './LedgerView'
+import { useDataTable }     from '@/hooks/useDataTable'
+import { useLedgerData }    from './hooks/useLedgerData'
+import { useLedgerActions } from './hooks/useLedgerActions'
+import { useLedgerRealtime } from './hooks/useLedgerRealtime'
 
 export default function LedgerContainer() {
+    const { query, setPage, setPageSize, setSearch, setSort } =
+        useDataTable({}, 'ledger')
 
-    /*
-     |-------------------------------------------------------------
-     | FILTERS
-     |-------------------------------------------------------------
-     */
+    const { result, totals, loading, error, reload } = useLedgerData(query)
+    useLedgerRealtime({ onReload: reload })
 
-    const [
-        search,
-        setSearch
-    ] = useState('')
-
-    /*
-     |-------------------------------------------------------------
-     | DATA
-     |-------------------------------------------------------------
-     */
-
-    const {
-
-        rows,
-        loading,
-        error,
-        refresh
-
-    } = useLedgerData({
-
-        search
-
-    })
-
-    /*
-     |-------------------------------------------------------------
-     | REALTIME
-     |-------------------------------------------------------------
-     */
-
-    useLedgerRealtime({
-
-        onReload:
-        refresh
-
-    })
-
-    /*
-     |-------------------------------------------------------------
-     | ACTIONS
-     |-------------------------------------------------------------
-     */
-
-    const actions =
+    const { selectedRow, drawerOpen, openDrawer, closeDrawer, exportCSV, exportExcel } =
         useLedgerActions()
 
-    /*
-     |-------------------------------------------------------------
-     | VIEW
-     |-------------------------------------------------------------
-     */
-
     return (
-
         <LedgerView
-
-            /*
-             * filters
-             */
-
-            search={search}
-            setSearch={setSearch}
-
-            /*
-             * data
-             */
-
-            rows={rows}
+            result={result}
+            totals={totals}
             loading={loading}
             error={error}
-            onRetry={refresh}
-
-            /*
-             * actions
-             */
-
-            {...actions}
-
+            onRetry={reload}
+            query={query}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            setSearch={setSearch}
+            setSort={setSort}
+            selectedRow={selectedRow}
+            drawerOpen={drawerOpen}
+            openDrawer={openDrawer}
+            closeDrawer={closeDrawer}
+            exportCSV={exportCSV}
+            exportExcel={exportExcel}
         />
-
     )
 }

@@ -1,51 +1,26 @@
-﻿// @ts-nocheck
 'use client'
 
-import ActivityView
-    from './ActivityView'
-
-import {
-
-    useActivityData
-
-} from './hooks/useActivityData'
-
-import {
-
-    useActivityRealtime
-
-} from './hooks/useActivityRealtime'
+import ActivityView            from './ActivityView'
+import { useDataTable }        from '@/hooks/useDataTable'
+import { useActivityData }     from './hooks/useActivityData'
+import { useActivityRealtime } from './hooks/useActivityRealtime'
 
 export default function ActivityContainer() {
+    const { query, setPage, setPageSize } = useDataTable({}, 'activity')
 
-    const {
-
-        rows,
-        loading,
-        error,
-        refresh
-
-    } = useActivityData()
-
-    useActivityRealtime({
-
-        onReload:
-        refresh
-    })
+    const { result, stats, loading, error, reload } = useActivityData(query)
+    useActivityRealtime({ onReload: reload })
 
     return (
-
         <ActivityView
-
-            rows={rows}
-
+            result={result}
+            stats={stats}
             loading={loading}
-
             error={error}
-
-            onRetry={refresh}
-
+            onRetry={reload}
+            query={query}
+            setPage={setPage}
+            setPageSize={setPageSize}
         />
-
     )
 }

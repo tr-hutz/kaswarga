@@ -1,6 +1,7 @@
 ﻿import { supabase } from '../supabase'
 import { applyPaymentFilters } from '../helpers/filter-payment'
 import { applyConfirmationFilters } from '../helpers/filter-confirmation'
+import type { QueryOptions, PageResult } from '../types/query'
 
 export async function findApprovedPaymentDetails(options: {
     rtId?: string | null
@@ -322,6 +323,63 @@ export async function findPaymentConfirmations(options: {
     const { data, error } = await query
     if (error) throw error
     return data ?? []
+}
+
+export async function findConfirmationsPaginated(
+    rtId: string,
+    query: QueryOptions,
+    year = new Date().getFullYear(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<PageResult<any>> {
+    const from = (query.page - 1) * query.pageSize
+    const to   = from + query.pageSize - 1
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let q = (supabase as any)
+        .from('payment_confirmations')
+        .select(`
+            id,
+            year,
+            status,
+            total_amount,
+            proof_url,
+            created_at,
+            rt_id,
+            resident_id,
+            residents:residents!inner (
+                id, name, block, house_number
+            ),
+            confirmation_details:confirmation_details (
+                id, month, amount
+            )
+        `, { count: 'exact' })
+        .eq('rt_id', rtId)
+        .eq('year', year)
+        .order('created_at', { ascending: false })
+
+    const status = query.filters?.status
+    if (status && status !== 'all') {
+        q = q.eq('status', status)
+    }
+
+    const term = query.search?.trim()
+    if (term) {
+        q = q.ilike('residents.name', `%${term}%`)
+    }
+
+    q = q.range(from, to)
+
+    const { data, error, count } = await q
+    if (error) throw error
+
+    const total = count ?? 0
+    return {
+        data:       data ?? [],
+        total,
+        page:       query.page,
+        pageSize:   query.pageSize,
+        totalPages: Math.ceil(total / query.pageSize),
+    }
 }
 
 export async function findConfirmationById(id: string) {

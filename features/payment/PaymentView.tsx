@@ -1,198 +1,103 @@
-﻿// @ts-nocheck
 'use client'
 
-import PaymentTable
-    from './components/tables/PaymentTable'
-import ErrorState from '@/components/ui/ErrorState'
+import { DataTable }         from '@/components/common/data-table'
+import PaymentDetailDrawer   from './components/details/PaymentDetailDrawer'
+import type { Column, QueryOptions, PageResult } from '@/lib/types/query'
+import type { ConfirmationRow } from './hooks/usePaymentData'
 
-import PaymentDetailDrawer
-    from './components/details/PaymentDetailDrawer'
-
-import {
-    usePaymentDetail
-} from './hooks/usePaymentDetail'
-
-import {
-    useApprovalActions
-} from './hooks/useApprovalAction'
-
-import PaymentToolbar from "./components/tables/PaymentToolbar";
-import {exportToCSV, exportToExcel} from "../../lib/export/export-utils";
-
-import {
-    useDialog
-} from '../../components/ui/DialogProvider'
-import { useTranslations } from 'next-intl'
+interface Props {
+    result:          PageResult<ConfirmationRow> | null
+    loading:         boolean
+    error:           boolean
+    reload:          () => void
+    query:           QueryOptions
+    setPage:         (p: number) => void
+    setPageSize:     (s: number) => void
+    setSearch:       (s: string) => void
+    setSort:         (by: string, dir: 'asc' | 'desc') => void
+    setFilter:       (key: string, value: unknown) => void
+    columns:         Column<ConfirmationRow>[]
+    data:            ConfirmationRow[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    t:               (key: string, opts?: any) => string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    tc:              (key: string) => string
+    drawerOpen:      boolean
+    selectedPayment: ConfirmationRow | null
+    onRowClick:      (row: ConfirmationRow) => void
+    onCloseDetail:   () => void
+    onApprove:       (payment: ConfirmationRow) => void
+    onReject:        (payment: ConfirmationRow) => void
+    approvalLoading: boolean
+    onExportCSV:     () => void
+    onExportExcel:   () => void
+}
 
 export default function PaymentView({
-
-                                           /*
-                                            |-------------------------------------------------------------
-                                            | FILTERS
-                                            |-------------------------------------------------------------
-                                            */
-                                           search,
-                                           setSearch,
-
-                                           status,
-                                           setStatus,
-
-                                           /*
-                                            |-------------------------------------------------------------
-                                            | DATA
-                                            |-------------------------------------------------------------
-                                            */
-                                           rows,
-                                           loading,
-                                           error,
-                                           reloadData
-
-                                       }) {
-
-    /*
-     |-------------------------------------------------------------
-     | DETAIL
-     |-------------------------------------------------------------
-     */
-
-    const {
-
-        open,
-
-        selectedPayment,
-
-        openDetail,
-
-        closeDetail
-
-    } = usePaymentDetail()
-
-    /*
-     |-------------------------------------------------------------
-     | APPROVAL
-     |-------------------------------------------------------------
-     */
-
-    const t = useTranslations('payments')
-    const { prompt } = useDialog()
-
-    const {
-
-        loading: approvalLoading,
-
-        approve,
-
-        reject
-
-    } = useApprovalActions({
-
-        onSuccess: () => {
-
-            closeDetail()
-
-            if (reloadData) {
-
-                reloadData()
-            }
-        }
-    })
-
-    /*
-     |-------------------------------------------------------------
-     | APPROVE
-     |-------------------------------------------------------------
-     */
-
-    async function handleApprove(
-        payment
-    ) {
-
-        await approve(
-            payment.id
-        )
-    }
-
-    /*
-     |-------------------------------------------------------------
-     | REJECT
-     |-------------------------------------------------------------
-     */
-
-    async function handleReject(
-        payment
-    ) {
-
-        const alasan =
-            await prompt({
-                title: t('reject.title'),
-                description: t('reject.description'),
-                placeholder: t('reject.placeholder'),
-                confirmLabel: t('reject.confirmLabel'),
-                confirmClassName: 'bg-red-600 hover:bg-red-700 text-white'
-            })
-
-        if (!alasan) {
-            return
-        }
-
-        await reject(
-            payment.id,
-            alasan
-        )
-    }
-
-    /*
-     |-------------------------------------------------------------
-     | RENDER
-     |-------------------------------------------------------------
-     */
-
+    result, loading, error, reload,
+    query, setPage, setPageSize, setSearch, setSort, setFilter,
+    columns, data, t, tc,
+    drawerOpen, selectedPayment, onRowClick, onCloseDetail,
+    onApprove, onReject, approvalLoading,
+    onExportCSV, onExportExcel,
+}: Props) {
     return (
-
-        <div
-            className="
-                space-y-6
-            "
-        >
-            <div
-                className="
-        flex
-        items-center
-        justify-between
-    "
-            >
-
-                <PaymentToolbar
-
-                    search={search}
-                    setSearch={setSearch}
-
-                    status={status}
-                    setStatus={setStatus}
-
-                    onExportCSV={() => exportToCSV({data: rows, fileName: 'payments.csv'})}
-                    onExportExcel={() => exportToExcel({data: rows, fileName: 'payments.xlsx'})}
-                />
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
+                <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
             </div>
 
-            {error
-                ? <ErrorState onRetry={reloadData} />
-                : <PaymentTable
-                    rows={rows}
-                    loading={loading}
-                    onSelect={openDetail}
-                />
-            }
-
-            <PaymentDetailDrawer
-                open={open}
-                payment={selectedPayment}
-                onClose={closeDetail}
-                onApprove={handleApprove}
-                onReject={handleReject}
-                loading={approvalLoading}
+            <DataTable
+                columns={columns}
+                result={result}
+                loading={loading}
+                error={error}
+                query={query}
+                searchPlaceholder={t('searchPlaceholder')}
+                onSearch={setSearch}
+                onSort={setSort}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+                onRetry={reload}
+                onRowClick={onRowClick}
+                renderFilters={
+                    <select
+                        value={String(query.filters?.status ?? 'pending')}
+                        onChange={(e) => setFilter('status', e.target.value)}
+                        className="h-9 rounded-lg border bg-white px-3 text-sm"
+                    >
+                        <option value="pending">{tc('paymentStatus.pending')}</option>
+                        <option value="approved">{tc('paymentStatus.approved')}</option>
+                        <option value="rejected">{tc('paymentStatus.rejected')}</option>
+                    </select>
+                }
+                renderActions={
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={onExportExcel}
+                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                        >
+                            {tc('actions.exportExcel')}
+                        </button>
+                        <button
+                            onClick={onExportCSV}
+                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                        >
+                            {tc('actions.exportCsv')}
+                        </button>
+                    </div>
+                }
             />
 
+            <PaymentDetailDrawer
+                open={drawerOpen}
+                payment={selectedPayment}
+                onClose={onCloseDetail}
+                onApprove={onApprove}
+                onReject={onReject}
+                loading={approvalLoading}
+            />
         </div>
     )
 }
