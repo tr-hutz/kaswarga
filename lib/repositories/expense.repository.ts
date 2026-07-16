@@ -1,6 +1,7 @@
 ﻿import { supabase } from '../supabase'
 import type { Database } from '../../types/database'
 import { applyExpenseFilters } from '../helpers/filter-expense'
+import type { QueryOptions, PageResult } from '../types/query'
 
 type ExpenseInsert = Database['public']['Tables']['expenses']['Insert']
 type ExpenseUpdate = Database['public']['Tables']['expenses']['Update']
@@ -51,6 +52,51 @@ export async function countExpensesByDateRange(
         .lt('created_at', startOfNextMonth)
 
     return count ?? 0
+}
+
+export async function findExpensesPaginated(
+    rtId: string,
+    query: QueryOptions,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<PageResult<any>> {
+    const from = (query.page - 1) * query.pageSize
+    const to   = from + query.pageSize - 1
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let q = (supabase as any)
+        .from('expenses')
+        .select(`
+            id, receipt_number, category, description, amount, recipient,
+            date, receipt_url, status, created_by, approved_by, approved_at,
+            rejection_note, rt_id
+        `, { count: 'exact' })
+        .eq('rt_id', rtId)
+        .is('deleted_at', null)
+        .order('date', { ascending: false })
+
+    const term = query.search?.trim()
+    if (term) {
+        q = q.or(`description.ilike.%${term}%,receipt_number.ilike.%${term}%`)
+    }
+
+    const category = query.filters?.category
+    if (category && category !== 'all') {
+        q = q.eq('category', category)
+    }
+
+    q = q.range(from, to)
+
+    const { data, error, count } = await q
+    if (error) throw error
+
+    const total = count ?? 0
+    return {
+        data:       data ?? [],
+        total,
+        page:       query.page,
+        pageSize:   query.pageSize,
+        totalPages: Math.ceil(total / query.pageSize),
+    }
 }
 
 export async function findExpenseSnapshot(id: string) {

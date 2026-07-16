@@ -1,27 +1,27 @@
-// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
 
-export default function ActivityAnalytics({ rows = [] }) {
+interface Props {
+    total:         number
+    approvals:     number
+    expenseCount:  number
+    residentCount: number
+}
+
+export default function ActivityAnalytics({ total, approvals, expenseCount, residentCount }: Props) {
     const t = useTranslations('activity')
-
-    const total         = rows.length
-    const approvals     = rows.filter(r => r.action === 'APPROVE_PAYMENT').length
-    const expenseCount  = rows.filter(r => r.entityType === 'expenses').length
-    const residentCount = rows.filter(r => r.entityType === 'residents').length
-
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card title={t('analytics.total')}        value={total} />
-            <Card title={t('analytics.approvals')}    value={approvals} />
-            <Card title={t('analytics.expense')}      value={expenseCount} />
+            <Card title={t('analytics.total')}           value={total} />
+            <Card title={t('analytics.approvals')}       value={approvals} />
+            <Card title={t('analytics.expense')}         value={expenseCount} />
             <Card title={t('analytics.residentUpdates')} value={residentCount} />
         </div>
     )
 }
 
-function Card({ title, value }) {
+function Card({ title, value }: { title: string; value: number }) {
     return (
         <div className="bg-white rounded-xl border p-5">
             <p className="text-sm text-slate-500">{title}</p>

@@ -1,123 +1,97 @@
-﻿// @ts-nocheck
 'use client'
 
-import LedgerToolbar
-    from './components/tables/LedgerToolbar'
+import { useMemo }           from 'react'
+import { useTranslations }   from 'next-intl'
+import { DataTable }         from '@/components/common/data-table'
+import LedgerAnalytics       from './components/analytics/LedgerAnalytics'
+import LedgerReport          from './components/LedgerReport'
+import LedgerDrawer          from './components/drawer/LedgerDrawer'
+import { buildLedgerColumns } from './components/LedgerColumns'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
+import type { LedgerRow, LedgerTotals } from './hooks/useLedgerData'
 
-import LedgerTable
-    from './components/tables/LedgerTable'
-
-import LedgerDrawer
-    from './components/drawer/LedgerDrawer'
-
-import LedgerAnalytics
-    from './components/analytics/LedgerAnalytics'
-
-import LedgerReport
-    from './components/LedgerReport'
-
-import ErrorState from '@/components/ui/ErrorState'
+interface Props {
+    result:      PageResult<LedgerRow> | null
+    totals:      LedgerTotals
+    loading:     boolean
+    error:       boolean
+    onRetry:     () => void
+    query:       QueryOptions
+    setPage:         (p: number) => void
+    setPageSize:     (s: number) => void
+    setSearch:       (s: string) => void
+    setSort:         (by: string, dir: 'asc' | 'desc') => void
+    selectedRow:     LedgerRow | null
+    drawerOpen:      boolean
+    openDrawer:      (r: LedgerRow) => void
+    closeDrawer:     () => void
+    exportCSV:       (rows: LedgerRow[]) => void
+    exportExcel:     (rows: LedgerRow[]) => void
+}
 
 export default function LedgerView({
+    result, totals, loading, error, onRetry,
+    query, setPage, setPageSize, setSearch, setSort,
+    selectedRow, drawerOpen, openDrawer, closeDrawer,
+    exportCSV, exportExcel,
+}: Props) {
+    const t  = useTranslations('ledger')
+    const tc = useTranslations('common')
 
-                                       /*
-                                        |-------------------------------------------------------------
-                                        | FILTERS
-                                        |-------------------------------------------------------------
-                                        */
+    const data = result?.data ?? []
 
-                                       search,
-                                       setSearch,
-
-                                       /*
-                                        |-------------------------------------------------------------
-                                        | DATA
-                                        |-------------------------------------------------------------
-                                        */
-
-                                       rows,
-                                       loading,
-                                       error,
-                                       onRetry,
-
-                                       /*
-                                        |-------------------------------------------------------------
-                                        | ACTIONS
-                                        |-------------------------------------------------------------
-                                        */
-
-                                       selectedRow,
-
-                                       drawerOpen,
-
-                                       openDrawer,
-                                       closeDrawer,
-
-                                       exportCSV,
-                                       exportExcel
-
-                                   }) {
+    const columns = useMemo(
+        () => buildLedgerColumns({ t: (k) => t(k as Parameters<typeof t>[0]) }),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [],
+    )
 
     return (
-
-        <div
-            className="
-                space-y-5
-            "
-        >
-
+        <div className="space-y-5">
             <LedgerAnalytics
-                rows={rows}
+                income={totals.income}
+                expense={totals.expense}
+                balance={totals.balance}
             />
 
             <LedgerReport />
 
-            <LedgerToolbar
-
-                search={search}
-                setSearch={setSearch}
-
-                onExportCSV={() =>
-                    exportCSV(rows)
+            <DataTable
+                columns={columns}
+                result={result}
+                loading={loading}
+                error={error}
+                query={query}
+                searchPlaceholder={t('searchPlaceholder')}
+                onSearch={setSearch}
+                onSort={setSort}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+                onRetry={onRetry}
+                onRowClick={openDrawer}
+                renderActions={
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => exportExcel(data)}
+                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                        >
+                            {tc('actions.exportExcel')}
+                        </button>
+                        <button
+                            onClick={() => exportCSV(data)}
+                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                        >
+                            {tc('actions.exportCsv')}
+                        </button>
+                    </div>
                 }
-
-                onExportExcel={() =>
-                    exportExcel(rows)
-                }
-
             />
-
-            {error
-                ? <ErrorState onRetry={onRetry} />
-                : <LedgerTable
-
-                    rows={rows}
-
-                    loading={loading}
-
-                    onSelect={
-                        openDrawer
-                    }
-
-                />
-            }
 
             <LedgerDrawer
-
-                open={
-                    drawerOpen
-                }
-
-                row={
-                    selectedRow
-                }
-
-                onClose={
-                    closeDrawer
-                }
-
+                open={drawerOpen}
+                row={selectedRow}
+                onClose={closeDrawer}
             />
-
         </div>
     )
 }

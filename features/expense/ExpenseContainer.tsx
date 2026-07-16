@@ -1,83 +1,53 @@
-﻿// @ts-nocheck
 'use client'
 
-import { useState } from 'react'
-
-import ExpenseView         from './ExpenseView'
-import { useExpenseData }     from './hooks/useExpenseData'
-import { useExpenseRealtime } from './hooks/useExpenseRealtime'
-import { useExpenseActions } from './hooks/useExpenseActions'
-import { useToast }            from '@/components/ui/ToastProvider'
-import { useAuth }             from '@/lib/auth/useAuth'
+import ExpenseView              from './ExpenseView'
+import { useDataTable }         from '@/hooks/useDataTable'
+import { useExpenseData }       from './hooks/useExpenseData'
+import { useExpenseRealtime }   from './hooks/useExpenseRealtime'
+import { useExpenseActions }    from './hooks/useExpenseActions'
+import { useExpenseCategories } from './hooks/useExpenseCategory'
+import { useToast }             from '@/components/ui/ToastProvider'
+import { useAuth }              from '@/lib/auth/useAuth'
 
 export default function ExpenseContainer() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { role } = (useAuth() as any) ?? {}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { toast } = (useToast() as any) ?? {}
 
-    /*
-     |-------------------------------------------------------------
-     | AUTH
-     |-------------------------------------------------------------
-     */
+    const { query, setPage, setPageSize, setSearch, setSort, setFilter } =
+        useDataTable({}, 'expenses')
 
-    const { role } = useAuth()
+    const { result, loading, error: fetchError, reload } = useExpenseData(query)
+    useExpenseRealtime({ onReload: reload })
 
-    /*
-     |-------------------------------------------------------------
-     | FILTERS
-     |-------------------------------------------------------------
-     */
+    const { categories } = useExpenseCategories()
 
-    const [search,   setSearch]   = useState('')
-    const [category, setKategori] = useState('all')
-
-    /*
-     |-------------------------------------------------------------
-     | DATA
-     |-------------------------------------------------------------
-     */
-
-    const { rows, loading, error, refresh } = useExpenseData({ search, category })
-    useExpenseRealtime({ onReload: refresh })
-
-    /*
-     |-------------------------------------------------------------
-     | ACTIONS
-     |-------------------------------------------------------------
-     */
-
-    const { toast } = useToast()
-
-    const actions = useExpenseActions({
-
-        onReload: refresh,
-
-        onImportSuccess: (inserted) => {
-            refresh()
+    const { error: importError, ...actions } = useExpenseActions({
+        onReload:          reload,
+        onImportSuccess:   (inserted: number) => {
+            reload()
             toast({ message: `${inserted} expenses imported successfully.`, type: 'success' })
         },
-
-        onApprovalSuccess: () => {
-            refresh()
-        },
-
-    })
-
-    /*
-     |-------------------------------------------------------------
-     | VIEW
-     |-------------------------------------------------------------
-     */
+        onApprovalSuccess: () => { reload() },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }) as any
 
     return (
         <ExpenseView
-            search={search}
-            setSearch={setSearch}
-            category={category}
-            setKategori={setKategori}
-            role={role}
-            rows={rows}
+            result={result}
             loading={loading}
-            error={error}
-            onRetry={refresh}
+            fetchError={fetchError}
+            onRetry={reload}
+            role={role}
+            categories={categories}
+            query={query}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            setSearch={setSearch}
+            setSort={setSort}
+            setFilter={setFilter}
+            importError={importError}
             {...actions}
         />
     )
