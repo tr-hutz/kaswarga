@@ -44,15 +44,7 @@ export function usePaymentConfirmationRealtime({
 
                     },
 
-                    payload => {
-
-                        console.log(
-
-                            '[REALTIME PAYMENT CONFIRMATION]',
-                            payload
-
-                        )
-
+                    () => {
                         onReload?.()
                     }
 

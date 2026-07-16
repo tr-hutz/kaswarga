@@ -13,7 +13,7 @@ export const getUserRole = async (): Promise<{ role: string | null; name: string
     .maybeSingle()
 
   if (error) {
-    console.log('ERROR getting role: ', error);
+    console.error('ERROR getting role: ', error);
     return null
   }
 

@@ -182,7 +182,7 @@ export function useHome() {
 
     } catch (err) {
 
-      console.log(err)
+      console.error(err)
 
     } finally {
 

@@ -59,7 +59,6 @@ export function useNotificationRealtime({
                 )
 
                 .subscribe((status, err) => {
-                    console.log('[Realtime] notifications status:', status)
                     if (err) console.error('[Realtime] subscription error', err)
                 })
 

@@ -44,15 +44,7 @@ export function useActivityRealtime({
 
                     },
 
-                    payload => {
-
-                        console.log(
-
-                            '[ACTIVITY REALTIME]',
-                            payload
-
-                        )
-
+                    () => {
                         onReload?.()
                     }
 
