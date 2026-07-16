@@ -12,7 +12,8 @@ import {
 
 } from './AuthProvider'
 
-export function useAuth() {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function useAuth(): any {
 
     return useContext(
         AuthContext

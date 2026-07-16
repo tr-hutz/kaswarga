@@ -1,9 +1,9 @@
-// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
 
-export default function PaymentHealthCard({ data }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function PaymentHealthCard({ data }: { data: any }) {
 
     const t = useTranslations('dashboard')
 

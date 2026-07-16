@@ -1,7 +1,7 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
+import type { FormEvent } from 'react'
 import Icon from '@/components/ui/Icon'
 
 import FileUpload from '@/components/ui/FileUpload'
@@ -10,12 +10,21 @@ import { generateNomorBukti } from '@/lib/services/expense.service'
 import { useExpenseCategories } from '../../hooks/useExpenseCategory'
 import { useTranslations } from 'next-intl'
 
+interface ExpenseFormProps {
+    open:         boolean
+    onClose:      () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onSubmit:     (form: any) => Promise<void>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    initialData?: any
+}
+
 export default function ExpenseForm({
     open,
     onClose,
     onSubmit,
     initialData = null,
-}) {
+}: ExpenseFormProps) {
 
     const { membership } = useAuth()
     const rtId = membership?.rt?.id
@@ -47,7 +56,7 @@ export default function ExpenseForm({
 
     if (!open) return null
 
-    function set(field, value) {
+    function set(field: string, value: string) {
         setForm(prev => ({ ...prev, [field]: value }))
     }
 
@@ -63,7 +72,7 @@ export default function ExpenseForm({
         }
     }
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setSaving(true)
         try {

@@ -1,9 +1,8 @@
-// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
 
-export default function PaymentProofPreview({ url }) {
+export default function PaymentProofPreview({ url }: { url?: string | null }) {
 
     const t = useTranslations('payments.detail')
 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 export function mapExpense(rows: unknown[] = []) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (rows as any[]).map(item => ({

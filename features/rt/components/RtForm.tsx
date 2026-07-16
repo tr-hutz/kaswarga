@@ -1,14 +1,23 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
+import type { FormEvent } from 'react'
 import { useTranslations } from 'next-intl'
 
 const EMPTY = {
     name: '', code: '', address: '', city: '', province: '', postalCode: ''
 }
 
-export default function RtForm({ open, onClose, rt, onSubmit }) {
+interface RtFormProps {
+    open:     boolean
+    onClose:  () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rt:       any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onSubmit: (form: typeof EMPTY) => Promise<any>
+}
+
+export default function RtForm({ open, onClose, rt, onSubmit }: RtFormProps) {
 
     const isEdit = !!rt
 
@@ -30,11 +39,11 @@ export default function RtForm({ open, onClose, rt, onSubmit }) {
 
     }, [rt])
 
-    function set(key, val) {
+    function set(key: string, val: string) {
         setForm(prev => ({ ...prev, [key]: val }))
     }
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setSaving(true)
         try {

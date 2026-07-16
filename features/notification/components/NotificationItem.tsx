@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import Icon from '@/components/ui/Icon'
 
@@ -7,13 +6,20 @@ import {
     formatRelativeDate
 } from "../../../lib/utils";
 
+interface NotificationItemProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    notification: any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onClick?:     (n: any) => void
+}
+
 export default function NotificationItem({
 
                                              notification,
 
                                              onClick
 
-                                         }) {
+                                         }: NotificationItemProps) {
 
     function getIcon() {
 

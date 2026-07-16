@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     MONTHS
@@ -7,7 +6,7 @@ import {
 
 import { useTranslations } from 'next-intl'
 
-function getMonthName(month) {
+function getMonthName(month: number | string) {
 
     const found =
         MONTHS.find(
@@ -18,7 +17,7 @@ function getMonthName(month) {
     return found?.short || '-'
 }
 
-function getStatusColor(status) {
+function getStatusColor(status: string) {
 
     switch (status) {
 
@@ -36,11 +35,8 @@ function getStatusColor(status) {
     }
 }
 
-export default function ResidentPaymentHistory({
-
-                                                paymentHistory = []
-
-                                            }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymentHistory?: any[] }) {
 
     const t = useTranslations('residents.paymentHistory')
 

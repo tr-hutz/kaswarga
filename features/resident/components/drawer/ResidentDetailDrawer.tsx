@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
@@ -10,6 +9,13 @@ import ResidentDetailSummary
 import ResidentPaymentHistory
     from './ResidentPaymentHistory'
 
+interface ResidentDetailDrawerProps {
+    open:     boolean
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resident: any
+    onClose:  () => void
+}
+
 export default function ResidentDetailDrawer({
 
                                               open,
@@ -18,7 +24,7 @@ export default function ResidentDetailDrawer({
 
                                               onClose
 
-                                          }) {
+                                          }: ResidentDetailDrawerProps) {
 
     const t = useTranslations('residents')
 

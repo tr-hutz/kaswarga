@@ -1,7 +1,7 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState }                   from 'react'
+import type { FormEvent }             from 'react'
 import { submitResidentRegistration }     from '@/lib/services/registration.service'
 import ResidentRegistrationView           from './ResidentRegistrationView'
 import { useTranslations }             from 'next-intl'
@@ -19,12 +19,12 @@ export default function ResidentRegistrationContainer() {
     const [error,      setError]      = useState('')
     const [success,    setSuccess]    = useState(false)
 
-    function set(key, val) {
+    function set(key: string, val: string) {
         setForm(prev => ({ ...prev, [key]: val }))
         setError('')
     }
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setError('')
         setSubmitting(true)
@@ -40,7 +40,7 @@ export default function ResidentRegistrationContainer() {
             })
             setSuccess(true)
         } catch (err) {
-            setError(err.message || t('errors.submitFailed'))
+            setError((err as Error).message || t('errors.submitFailed'))
         } finally {
             setSubmitting(false)
         }

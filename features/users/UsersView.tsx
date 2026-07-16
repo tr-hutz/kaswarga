@@ -1,10 +1,31 @@
-// @ts-nocheck
 'use client'
 
 import { useTranslations } from 'next-intl'
 import DataTable           from '@/components/common/data-table/DataTable'
 import ConfirmDialog       from '@/components/ui/ConfirmDialog'
 import EditRoleForm        from './components/EditRoleForm'
+import type { Column }     from '@/lib/types/query'
+import type { UserRow }    from './components/UserColumns'
+
+interface UsersViewProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    result:                 any
+    columns:                Column<UserRow>[]
+    loading:                boolean
+    error:                  boolean
+    onRetry:                () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    editTarget:             any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setEditTarget:          (t: any) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    delTarget:              any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setDelTarget:           (t: any) => void
+    saving:                 boolean
+    handleUpdateRole:       (membershipId: string, role: string) => void
+    handleRemoveMembership: () => void
+}
 
 export default function UsersView({
     result,
@@ -19,7 +40,7 @@ export default function UsersView({
     saving,
     handleUpdateRole,
     handleRemoveMembership,
-}) {
+}: UsersViewProps) {
     const t  = useTranslations('users')
     const tc = useTranslations('common')
 

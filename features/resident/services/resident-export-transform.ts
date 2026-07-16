@@ -1,9 +1,9 @@
-﻿// @ts-nocheck
 import * as XLSX
     from 'xlsx'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildRows(
-    data = []
+    data: any[] = []
 ) {
 
     return data.map(item => ({
@@ -37,8 +37,9 @@ function buildRows(
     }))
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function exportResidentsToExcel(
-    data = []
+    data: any[] = []
 ) {
 
     const rows =
@@ -64,8 +65,9 @@ export async function exportResidentsToExcel(
     )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function exportResidentsToCSV(
-    data = []
+    data: any[] = []
 ) {
 
     const rows =

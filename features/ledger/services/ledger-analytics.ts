@@ -1,7 +1,7 @@
-﻿// @ts-nocheck
 export function buildLedgerAnalytics(
 
-    rows = []
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rows: any[] = []
 
 ) {
 

@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { usePathname }         from 'next/navigation'
 import SidebarMenuItem         from './SidebarMenuItem'
@@ -8,7 +7,7 @@ import { hasPermission }       from '../../lib/permissions/permissions'
 import { useAuth }             from '../../lib/auth/useAuth'
 import { usePendingCounts }    from './usePendingCounts'
 
-export default function SidebarMenu({ onClose }) {
+export default function SidebarMenu({ onClose }: { onClose?: () => void }) {
 
     const pathname = usePathname()
     const { role, membership } = useAuth()

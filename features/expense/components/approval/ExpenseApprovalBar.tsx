@@ -1,12 +1,19 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Icon from '@/components/ui/Icon'
 import { isPending } from '../../services/expense-status'
 import { useTranslations } from 'next-intl'
 
-export default function ExpenseApprovalBar({ row, onApprove, onReject, loading }) {
+interface ExpenseApprovalBarProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    row:       any
+    onApprove: (id: string) => void
+    onReject:  (id: string, reason: string) => void
+    loading:   boolean
+}
+
+export default function ExpenseApprovalBar({ row, onApprove, onReject, loading }: ExpenseApprovalBarProps) {
 
     const t = useTranslations('expenses')
     const tc = useTranslations('common')

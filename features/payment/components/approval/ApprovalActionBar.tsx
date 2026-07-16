@@ -1,10 +1,19 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useTranslations } from 'next-intl'
 import {
     isPending
 } from '../../services/payment-status'
+
+interface ApprovalActionBarProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    payment:   any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onApprove: (payment: any) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onReject:  (payment: any) => void
+    loading:   boolean
+}
 
 export default function ApprovalActionBar({
 
@@ -16,7 +25,7 @@ export default function ApprovalActionBar({
 
                                               loading
 
-                                          }) {
+                                          }: ApprovalActionBarProps) {
 
     const t = useTranslations('payments')
 

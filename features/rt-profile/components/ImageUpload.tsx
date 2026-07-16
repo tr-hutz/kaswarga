@@ -1,27 +1,35 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import type { ChangeEvent, MouseEvent } from 'react'
 import Icon from '@/components/ui/Icon'
 import { supabase } from '@/lib/supabase'
 import { useTranslations } from 'next-intl'
 
 const BUCKET = 'rt-assets'
 
-export default function ImageUpload({ label, currentUrl, storagePath, accept = 'image/jpeg,image/png,image/webp', onUploaded }) {
+interface ImageUploadProps {
+    label:       string
+    currentUrl?: string
+    storagePath: string
+    accept?:     string
+    onUploaded:  (url: string) => void
+}
+
+export default function ImageUpload({ label, currentUrl, storagePath, accept = 'image/jpeg,image/png,image/webp', onUploaded }: ImageUploadProps) {
 
     const t = useTranslations('rtProfile.imageUpload')
 
     const [preview,   setPreview]   = useState(currentUrl || '')
     const [uploading, setUploading] = useState(false)
     const [error,     setError]     = useState('')
-    const inputRef = useRef(null)
+    const inputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         setPreview(currentUrl || '')
     }, [currentUrl])
 
-    async function handleChange(e) {
+    async function handleChange(e: ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0]
         if (!file) return
 
@@ -29,7 +37,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
         setError('')
 
         try {
-            const ext  = file.name.split('.').pop().toLowerCase()
+            const ext  = (file.name.split('.').pop() ?? '').toLowerCase()
             const path = `${storagePath}.${ext}`
 
             const { error: uploadError } = await supabase.storage
@@ -44,7 +52,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
             setPreview(url)
             onUploaded(url)
         } catch (err) {
-            setError(err.message || t('uploadFailed'))
+            setError((err as Error).message || t('uploadFailed'))
         } finally {
             setUploading(false)
             // reset input so same file can be re-selected
@@ -52,7 +60,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
         }
     }
 
-    function handleRemove(e) {
+    function handleRemove(e: MouseEvent<HTMLButtonElement>) {
         e.stopPropagation()
         setPreview('')
         onUploaded('')

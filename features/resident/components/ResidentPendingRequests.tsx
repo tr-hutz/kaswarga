@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState }                                              from 'react'
 import Icon from '@/components/ui/Icon'
@@ -11,7 +10,7 @@ import { useTranslations }                                       from 'next-intl
 
 const IS_DEV = process.env.NODE_ENV === 'development'
 
-function CopyButton({ text }) {
+function CopyButton({ text }: { text: string }) {
     const [copied, setCopied] = useState(false)
 
     function handleCopy() {
@@ -32,9 +31,10 @@ function CopyButton({ text }) {
     )
 }
 
-function RequestRow({ req, onAction }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function RequestRow({ req, onAction }: { req: any; onAction: () => void }) {
     const [processing, setProcessing] = useState(false)
-    const [devLink,    setDevLink]    = useState(null)
+    const [devLink,    setDevLink]    = useState<string | null>(null)
     const { membership }              = useAuth()
     const { toast }                   = useToast()
     const t                           = useTranslations('residents.pending')
@@ -51,7 +51,7 @@ function RequestRow({ req, onAction }) {
                 onAction()
             }
         } catch (err) {
-            toast({ message: err.message, type: 'error' })
+            toast({ message: (err as Error).message, type: 'error' })
             onAction()
         } finally {
             setProcessing(false)
@@ -65,7 +65,7 @@ function RequestRow({ req, onAction }) {
             await rejectResidentRegistration(req.id, membership)
             toast({ message: t('rejectedToast'), type: 'success' })
         } catch (err) {
-            toast({ message: err.message, type: 'error' })
+            toast({ message: (err as Error).message, type: 'error' })
         } finally {
             setProcessing(false)
             onAction()
@@ -135,7 +135,14 @@ function RequestRow({ req, onAction }) {
     )
 }
 
-export default function ResidentPendingRequests({ requests, loading, onAction }) {
+interface ResidentPendingRequestsProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    requests: any[]
+    loading:  boolean
+    onAction: () => void
+}
+
+export default function ResidentPendingRequests({ requests, loading, onAction }: ResidentPendingRequestsProps) {
     const [open, setOpen] = useState(true)
     const t = useTranslations('residents.pending')
 

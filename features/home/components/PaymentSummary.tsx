@@ -1,12 +1,8 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 import { useTranslations } from 'next-intl'
 
-export default function PaymentSummary({
-
-  summary
-
-}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function PaymentSummary({ summary }: { summary: any }) {
 
   const t = useTranslations('home')
 

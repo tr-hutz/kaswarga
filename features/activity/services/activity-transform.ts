@@ -1,6 +1,6 @@
-﻿// @ts-nocheck
-export function transformActivity(
+﻿export function transformActivity(
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rows: any[] = []
 
 ) {

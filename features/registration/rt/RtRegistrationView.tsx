@@ -1,12 +1,12 @@
-// @ts-nocheck
 'use client'
 
 import { useState } from 'react'
+import type { FormEvent, ReactNode, InputHTMLAttributes } from 'react'
 import Icon from '@/components/ui/Icon'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 
-function Field({ label, required, children }) {
+function Field({ label, required, children }: { label: string; required?: boolean; children: ReactNode }) {
     return (
         <div>
             <label className="text-xs text-gray-500 mb-1 block">
@@ -17,7 +17,12 @@ function Field({ label, required, children }) {
     )
 }
 
-function Input({ value, onChange, type = 'text', ...props }) {
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> {
+    value:    string
+    onChange: (v: string) => void
+}
+
+function Input({ value, onChange, type = 'text', ...props }: InputProps) {
     return (
         <input
             type={type}
@@ -29,10 +34,22 @@ function Input({ value, onChange, type = 'text', ...props }) {
     )
 }
 
+interface RtRegistrationViewProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    form:           any
+    set:            (k: string, v: string) => void
+    generating:     boolean
+    submitting:     boolean
+    error:          string
+    success:        boolean
+    onGenerateCode: () => void
+    onSubmit:       (e: FormEvent<HTMLFormElement>) => void
+}
+
 export default function RtRegistrationView({
     form, set, generating, submitting, error, success,
     onGenerateCode, onSubmit
-}) {
+}: RtRegistrationViewProps) {
 
     const t = useTranslations('registration.rt')
     const [bankOpen, setBankOpen] = useState(false)

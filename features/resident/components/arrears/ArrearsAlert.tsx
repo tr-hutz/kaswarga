@@ -1,13 +1,8 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useTranslations } from 'next-intl'
 
-export default function ArrearsAlert({
-
-                                           arrears = 0
-
-                                       }) {
+export default function ArrearsAlert({ arrears = 0 }: { arrears?: number }) {
 
     const t = useTranslations('residents.arrears')
 

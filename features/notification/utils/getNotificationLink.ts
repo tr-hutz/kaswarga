@@ -1,6 +1,5 @@
-﻿// @ts-nocheck
 export function getNotificationLink(
-    notification
+    notification: { type: string }
 ) {
 
     switch (

@@ -1,10 +1,22 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { formatRupiah } from '../../../../lib/utils'
 import ExpenseStatusBadge   from '../tables/ExpenseStatusBadge'
 import ExpenseApprovalBar   from '../approval/ExpenseApprovalBar'
 import { useTranslations } from 'next-intl'
+
+interface ExpenseDrawerProps {
+    open:            boolean
+    onClose:         () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    row:             any
+    role:            string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onApprove:       (r: any) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onReject:        (r: any, reason?: string) => void
+    approvalLoading: boolean
+}
 
 export default function ExpenseDrawer({
     open,
@@ -14,7 +26,7 @@ export default function ExpenseDrawer({
     onApprove,
     onReject,
     approvalLoading,
-}) {
+}: ExpenseDrawerProps) {
 
     const t = useTranslations('expenses')
 
@@ -126,7 +138,7 @@ export default function ExpenseDrawer({
     )
 }
 
-function Field({ label, value }) {
+function Field({ label, value }: { label: string; value: string | number }) {
     return (
         <div>
             <p className="text-sm text-slate-500">{label}</p>

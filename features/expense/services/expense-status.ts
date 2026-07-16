@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-export function getStatusLabel(status) {
+export function getStatusLabel(status: string) {
     switch (status) {
         case 'approved': return 'Approved'
         case 'pending':  return 'Pending'
@@ -8,7 +7,7 @@ export function getStatusLabel(status) {
     }
 }
 
-export function getStatusClass(status) {
+export function getStatusClass(status: string) {
     switch (status) {
         case 'approved': return 'bg-emerald-100 text-emerald-700'
         case 'pending':  return 'bg-amber-100 text-amber-700'
@@ -17,4 +16,4 @@ export function getStatusClass(status) {
     }
 }
 
-export function isPending(status) { return status === 'pending' }
+export function isPending(status: string) { return status === 'pending' }

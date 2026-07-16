@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Icon from '@/components/ui/Icon'
@@ -14,7 +13,7 @@ function NoBukti({ label }: { label: string }) {
     )
 }
 
-export default function PaymentProofPreview({ url }) {
+export default function PaymentProofPreview({ url }: { url?: string | null }) {
     const t = useTranslations('payments')
     const [failed, setFailed] = useState(false)
 

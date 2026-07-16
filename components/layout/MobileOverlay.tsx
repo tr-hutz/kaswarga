@@ -1,12 +1,14 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 export default function MobileOverlay({
 
                                           open,
                                           onClose
 
-                                      }) {
+                                      }: {
+    open: boolean
+    onClose: () => void
+}) {
 
     if (!open) {
 

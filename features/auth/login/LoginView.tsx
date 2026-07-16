@@ -1,9 +1,19 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
+import type { FormEvent } from 'react'
 import Link from 'next/link'
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
+
+interface LoginViewProps {
+  loading:      boolean
+  email:        string
+  setEmail:     (v: string) => void
+  password:     string
+  setPassword:  (v: string) => void
+  error:        string
+  handleSubmit: (e: FormEvent<HTMLFormElement>) => void
+}
 
 export default function LoginView({
 
@@ -19,7 +29,7 @@ export default function LoginView({
 
   handleSubmit
 
-}) {
+}: LoginViewProps) {
 
   const t = useTranslations('auth')
 

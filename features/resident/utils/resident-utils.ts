@@ -1,4 +1,3 @@
-﻿// @ts-nocheck
 /*
 |------------------------------------------------------------------
 | STATUS PEMBAYARAN
@@ -6,11 +5,9 @@
 */
 
 export function getPaymentStatus({
-
-                                     paidCount = 0,
-                                     currentMonth = 0
-
-                                 }) {
+    paidCount = 0,
+    currentMonth = 0
+}: { paidCount?: number; currentMonth?: number } = {}) {
 
     if (
         paidCount >= currentMonth
@@ -43,11 +40,9 @@ export function getPaymentStatus({
 */
 
 export function calculateArrears({
-
-                                       paidCount = 0,
-                                       currentMonth = 0
-
-                                   }) {
+    paidCount = 0,
+    currentMonth = 0
+}: { paidCount?: number; currentMonth?: number } = {}) {
 
     return Math.max(
         currentMonth -
@@ -63,11 +58,9 @@ export function calculateArrears({
 */
 
 export function formatHouseLabel({
-
-                                     block,
-                                     houseNumber
-
-                                 }) {
+    block,
+    houseNumber
+}: { block: string | null | undefined; houseNumber: string | null | undefined }) {
 
     return `${block}-${houseNumber}`
 }

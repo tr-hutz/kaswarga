@@ -1,14 +1,24 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState }   from 'react'
+import type { FormEvent } from 'react'
 import Icon from '@/components/ui/Icon'
 import Link           from 'next/link'
 import { useTranslations } from 'next-intl'
 
+interface ResidentRegistrationViewProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    form:       any
+    set:        (k: string, v: string) => void
+    submitting: boolean
+    error:      string
+    success:    boolean
+    onSubmit:   (e: FormEvent<HTMLFormElement>) => void
+}
+
 export default function ResidentRegistrationView({
     form, set, submitting, error, success, onSubmit
-}) {
+}: ResidentRegistrationViewProps) {
     const t = useTranslations('registration.resident')
     const [extraOpen, setExtraOpen] = useState(false)
 

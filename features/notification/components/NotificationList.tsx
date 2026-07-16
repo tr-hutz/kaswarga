@@ -1,8 +1,14 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import NotificationItem from './NotificationItem'
 import { useTranslations } from 'next-intl'
+
+interface NotificationListProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    notifications?:        any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onNotificationClick?:  (n: any) => void
+}
 
 export default function NotificationList({
 
@@ -10,7 +16,7 @@ export default function NotificationList({
 
                                              onNotificationClick
 
-                                         }) {
+                                         }: NotificationListProps) {
 
     const t = useTranslations('notification')
 

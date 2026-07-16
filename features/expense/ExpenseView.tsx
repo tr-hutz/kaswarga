@@ -33,7 +33,8 @@ interface Props {
     openCreateForm:  () => void
     openEditForm:    (r: MappedExpense) => void
     closeForm:       () => void
-    submitForm:      (payload: unknown) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    submitForm:      (payload: any) => Promise<void>
     removeRow:       (r: MappedExpense) => void
     exportCSV:       (rows: MappedExpense[]) => void
     exportExcel:     (rows: MappedExpense[]) => void
@@ -41,11 +42,11 @@ interface Props {
     openImport:      () => void
     closeImport:     () => void
     importRows:      unknown[]
-    fileName:        string | null
+    fileName:        string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fileRef:         React.RefObject<any>
     importing:       boolean
-    handleFile:      (e: React.ChangeEvent<HTMLInputElement>) => void
+    handleFile:      (file: File | undefined) => void
     handleImport:    () => void
     downloadTemplate: () => void
     resetImport:     () => void

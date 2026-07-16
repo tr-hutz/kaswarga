@@ -1,10 +1,17 @@
-// @ts-nocheck
 'use client'
 
 import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useTranslations } from 'next-intl'
 
-export default function RtDeleteConfirm({ rt, onConfirm, onCancel, loading }) {
+interface RtDeleteConfirmProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rt:        any
+    onConfirm: () => void
+    onCancel:  () => void
+    loading:   boolean
+}
+
+export default function RtDeleteConfirm({ rt, onConfirm, onCancel, loading }: RtDeleteConfirmProps) {
     const t  = useTranslations('rt')
     const tc = useTranslations('common')
 

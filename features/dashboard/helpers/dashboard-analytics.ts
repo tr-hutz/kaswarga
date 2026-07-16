@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 interface ResidentAnalyticsItem {
     paidCount: number
 }

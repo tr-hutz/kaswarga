@@ -1,7 +1,7 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState }                                  from 'react'
+import type { FormEvent }                            from 'react'
 import { generateRtCode, submitRtRegistration }       from '@/lib/services/registration.service'
 import RtRegistrationView                             from './RtRegistrationView'
 
@@ -21,7 +21,7 @@ export default function RtRegistrationContainer() {
     const [error,      setError]      = useState('')
     const [success,    setSuccess]    = useState(false)
 
-    function set(key, val) {
+    function set(key: string, val: string) {
         setForm(prev => ({ ...prev, [key]: val }))
         setError('')
     }
@@ -32,13 +32,13 @@ export default function RtRegistrationContainer() {
             const code = await generateRtCode()
             set('code', code)
         } catch (err) {
-            setError('Failed to generate code: ' + err.message)
+            setError('Failed to generate code: ' + (err as Error).message)
         } finally {
             setGenerating(false)
         }
     }
 
-    async function handleSubmit(e) {
+    async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setError('')
 
@@ -62,8 +62,8 @@ export default function RtRegistrationContainer() {
                 chairmanEmail:  form.chairmanEmail,
                 adminName:      form.adminName,
                 adminEmail:     form.adminEmail,
-                treasurerName:  form.treasurerName  || null,
-                treasurerEmail: form.treasurerEmail || null,
+                treasurerName:  form.treasurerName  || undefined,
+                treasurerEmail: form.treasurerEmail || undefined,
                 rtData: {
                     name:          form.name,
                     code:          form.code,
@@ -79,7 +79,7 @@ export default function RtRegistrationContainer() {
             })
             setSuccess(true)
         } catch (err) {
-            setError(err.message || 'Failed to submit registration.')
+            setError((err as Error).message || 'Failed to submit registration.')
         } finally {
             setSubmitting(false)
         }

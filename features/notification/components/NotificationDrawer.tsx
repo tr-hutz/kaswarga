@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     useKeyDown
@@ -28,6 +27,14 @@ import {
 
 } from '../utils/getNotificationLink'
 
+interface NotificationDrawerProps {
+    open:          boolean
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    notifications?: any[]
+    onClose?:      () => void
+    onRead?:       () => void
+}
+
 export default function NotificationDrawer({
 
                                                open,
@@ -38,16 +45,15 @@ export default function NotificationDrawer({
 
                                                onRead
 
-                                           }) {
+                                           }: NotificationDrawerProps) {
 
     const router =
         useRouter()
 
     const t = useTranslations('notification')
 
-    async function handleClick(
-        notification
-    ) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async function handleClick(notification: any) {
 
         try {
 

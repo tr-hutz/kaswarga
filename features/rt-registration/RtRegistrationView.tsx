@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import RegistrationCard from './components/RegistrationCard'
 import { useTranslations } from 'next-intl'
@@ -7,7 +6,17 @@ import ErrorState from '@/components/ui/ErrorState'
 
 const TAB_KEYS = ['pending', 'approved', 'rejected', 'all']
 
-export default function RtRegistrationView({ requests, loading, error, filter, setFilter, refresh }) {
+interface RtRegistrationViewProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    requests:  any[]
+    loading:   boolean
+    error:     boolean
+    filter:    string
+    setFilter: (f: string) => void
+    refresh:   () => void
+}
+
+export default function RtRegistrationView({ requests, loading, error, filter, setFilter, refresh }: RtRegistrationViewProps) {
     const t = useTranslations('rtRegistration')
 
     return (

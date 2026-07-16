@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     useMemo,
@@ -16,6 +15,15 @@ import NotificationList
 
 import ErrorState from '@/components/ui/ErrorState'
 
+interface NotificationViewProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    notifications: any[]
+    loading:       boolean
+    error:         boolean
+    onRetry:       () => void
+    onMarkAllRead: () => void
+}
+
 export default function NotificationView({
 
                                              notifications,
@@ -24,7 +32,7 @@ export default function NotificationView({
                                              onRetry,
                                              onMarkAllRead
 
-                                         }) {
+                                         }: NotificationViewProps) {
 
     const t = useTranslations('notification')
 

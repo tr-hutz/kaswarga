@@ -1,16 +1,15 @@
-﻿// @ts-nocheck
 import {
   MONTHS
 } from '../constants/home.constants'
 
 export function buildMonthCards(
-  statusMap = {}
+  statusMap: Record<number, string> = {}
 ) {
 
   return MONTHS.map(
     (
-      month,
-      index
+      _monthItem: number,
+      index: number
     ) => {
 
       const month =

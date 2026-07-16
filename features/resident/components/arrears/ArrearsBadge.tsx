@@ -1,13 +1,8 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useTranslations } from 'next-intl'
 
-export default function ArrearsBadge({
-
-                                           total = 0
-
-                                       }) {
+export default function ArrearsBadge({ total = 0 }: { total?: number }) {
 
     const tPaymentStatus = useTranslations('common.paymentStatus')
     const tArrears       = useTranslations('residents.arrears')

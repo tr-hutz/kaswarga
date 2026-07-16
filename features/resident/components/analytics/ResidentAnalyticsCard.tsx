@@ -1,7 +1,12 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useTranslations } from 'next-intl'
+
+interface ResidentAnalyticsCardsProps {
+    paidCount?:   number
+    arrears?:     number
+    totalAmount?: number
+}
 
 export default function ResidentAnalyticsCards({
 
@@ -9,7 +14,7 @@ export default function ResidentAnalyticsCards({
                                                 arrears = 0,
                                                 totalAmount = 0
 
-                                            }) {
+                                            }: ResidentAnalyticsCardsProps) {
 
     const t = useTranslations('residents.analytics')
 

@@ -1,7 +1,7 @@
-// @ts-nocheck
 import { MONTHS } from '../../constants/months'
 
-function formatMonthIds(detail = []) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function formatMonthIds(detail: any[] = []) {
     return detail
         .map(item => {
             const month = MONTHS.find(month => month.id === item.month)
@@ -10,12 +10,14 @@ function formatMonthIds(detail = []) {
         .join(', ')
 }
 
-function formatAddress(resident) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function formatAddress(resident: any) {
     if (!resident) return '-'
     return [resident.block, resident.house_number].filter(Boolean).join(' - ')
 }
 
-function calculateTotal(detail = []) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function calculateTotal(detail: any[] = []) {
     return detail.reduce((total, item) => total + (item.amount || 0), 0)
 }
 
@@ -44,14 +46,16 @@ export function mapConfirmation(rows: unknown[] = []) {
             const resident = Array.isArray(item.residents) ? item.residents[0] : item.residents
             const details = item?.confirmation_details || []
             const monthLabel = details
-                .map(detail => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .map((detail: any) => {
                     const month = MONTHS.find(m => Number(m.id) === Number(detail.month))
                     return month?.short
                 })
                 .filter(Boolean)
                 .join(', ')
 
-            const totalAmount = details.reduce((sum, detail) => sum + Number(detail.amount || 0), 0)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const totalAmount = details.reduce((sum: any, detail: any) => sum + Number(detail.amount || 0), 0)
 
             return {
                 id:          item.id,

@@ -1,4 +1,10 @@
-﻿// @ts-nocheck
+﻿interface InsightCardProps {
+  title:       string
+  value:       string | number
+  subtitle?:   string
+  valueColor?: string
+}
+
 export default function InsightCard({
 
   title,
@@ -6,7 +12,7 @@ export default function InsightCard({
   subtitle,
   valueColor = 'text-gray-900'
 
-}) {
+}: InsightCardProps) {
 
   return (
 

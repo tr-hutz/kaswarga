@@ -1,7 +1,7 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
+import type { FormEvent }      from 'react'
 import { supabase }            from '@/lib/supabase'
 import { resendInvite }        from '@/lib/services/approval.service'
 import Icon from '@/components/ui/Icon'
@@ -21,9 +21,9 @@ export default function ActivationContainer() {
     const t = useTranslations('activation')
 
     const [state,         setState]         = useState(STATE.LOADING)
-    const [email,         setEmail]         = useState(null)
-    const [displayName,   setDisplayName]   = useState(null)
-    const [rtName,        setRtName]        = useState(null)
+    const [email,         setEmail]         = useState<string | null>(null)
+    const [displayName,   setDisplayName]   = useState<string | null>(null)
+    const [rtName,        setRtName]        = useState<string | null>(null)
     const [resending,     setResending]     = useState(false)
     const [resendDone,    setResendDone]    = useState(false)
     const [errMsg,        setErrMsg]        = useState('')
@@ -108,12 +108,12 @@ export default function ActivationContainer() {
             setState(STATE.ERROR)
 
         } catch (err) {
-            setErrMsg(err.message)
+            setErrMsg((err as Error).message)
             setState(STATE.ERROR)
         }
     }
 
-    async function handleSetPassword(e) {
+    async function handleSetPassword(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setPwError('')
 
@@ -139,7 +139,7 @@ export default function ActivationContainer() {
 
             window.location.replace('/')
         } catch (err) {
-            setPwError(err.message)
+            setPwError((err as Error).message)
             setSavingPw(false)
         }
     }
@@ -151,7 +151,7 @@ export default function ActivationContainer() {
             await resendInvite(email)
             setResendDone(true)
         } catch (err) {
-            setErrMsg(err.message)
+            setErrMsg((err as Error).message)
         } finally {
             setResending(false)
         }
@@ -243,11 +243,11 @@ export default function ActivationContainer() {
                         </div>
                         <h1 className="text-xl font-bold">{t('expired.title')}</h1>
                         <p className="text-sm text-gray-600">
-                            {t('expired.description', { email })}
+                            {t('expired.description', { email: email ?? '' })}
                         </p>
                         {resendDone ? (
                             <div className="bg-green-50 border border-green-200 text-green-700 rounded-xl px-4 py-3 text-sm">
-                                {t('expired.resendDone', { email })}
+                                {t('expired.resendDone', { email: email ?? '' })}
                             </div>
                         ) : (
                             <>

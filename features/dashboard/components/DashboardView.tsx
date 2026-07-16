@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useTranslations } from 'next-intl'
 import InsightCard
@@ -15,7 +14,7 @@ import {
   formatRupiah
 } from '../../../lib/utils'
 
-function SectionLabel({ title, subtitle }) {
+function SectionLabel({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div>
       <h2 className="text-base font-semibold text-gray-800">{title}</h2>
@@ -24,6 +23,18 @@ function SectionLabel({ title, subtitle }) {
       )}
     </div>
   )
+}
+
+interface DashboardViewProps {
+  loading:          boolean
+  year:             number
+  setYear:          (y: number) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  analytics:        any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  paymentHealth:    any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  financialInsight: any
 }
 
 export default function DashboardView({
@@ -39,7 +50,7 @@ export default function DashboardView({
 
   financialInsight
 
-}) {
+}: DashboardViewProps) {
 
   const t = useTranslations('dashboard')
 

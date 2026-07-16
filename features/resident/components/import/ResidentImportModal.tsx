@@ -1,6 +1,6 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
+import type { RefObject } from 'react'
 import { useTranslations } from 'next-intl'
 import ImportModal from '@/components/common/import/ImportModal'
 
@@ -10,6 +10,21 @@ const COLUMNS = [
     { key: 'house_number', label: 'No. Rumah' },
     { key: 'phone',        label: 'No HP' },
 ]
+
+interface ResidentImportModalProps {
+    open:               boolean
+    onClose:            () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    rows:               any[]
+    fileName:           string | null
+    fileRef:            RefObject<HTMLInputElement>
+    importing:          boolean
+    error:              string
+    onFile:             (file: File | undefined) => void
+    onImport:           () => void
+    onDownloadTemplate: () => void
+    onReset:            () => void
+}
 
 export default function ResidentImportModal({
     open,
@@ -23,7 +38,7 @@ export default function ResidentImportModal({
     onImport,
     onDownloadTemplate,
     onReset,
-}) {
+}: ResidentImportModalProps) {
     const t = useTranslations('residents')
 
     const columnGuide = (

@@ -1,7 +1,6 @@
-﻿// @ts-nocheck
 export function getPaymentStatus(
-    paidCount,
-    currentMonth
+    paidCount: number,
+    currentMonth: number
 ) {
 
     if (

@@ -1,3 +1,5 @@
+export const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1)
+
 export const STATUS_STYLE = {
 
   approved:
