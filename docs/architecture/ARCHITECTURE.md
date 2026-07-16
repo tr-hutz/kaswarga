@@ -40,7 +40,7 @@ KasWarga follows these core principles:
 | Layer | Technology |
 |--------|------------|
 | Framework | Next.js (App Router) |
-| Language | JavaScript (planned migration to TypeScript) |
+| Language | TypeScript (strict mode) |
 | Styling | Tailwind CSS |
 | Database | Supabase PostgreSQL |
 | Authentication | Supabase Auth |
