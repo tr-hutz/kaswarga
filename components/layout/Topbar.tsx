@@ -5,12 +5,6 @@ import Icon from '@/components/ui/Icon'
 
 import {
 
-    supabase
-
-} from '../../lib/supabase'
-
-import {
-
     useAuth
 
 } from '../../lib/auth/useAuth'
@@ -22,6 +16,12 @@ import {
     logActivity
 
 } from '../../lib/services/activity-logger'
+
+import {
+
+    logout
+
+} from '../../lib/services/auth.service'
 
 import { useTranslations } from 'next-intl'
 
@@ -66,7 +66,7 @@ export default function Topbar({
             metadata:   { role }
         })
 
-        await supabase.auth.signOut()
+        await logout()
 
         window.location.href =
             '/login'
