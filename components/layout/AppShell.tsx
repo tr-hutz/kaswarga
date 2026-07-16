@@ -15,7 +15,8 @@ import Topbar        from './Topbar'
 import Sidebar       from './Sidebar'
 import MobileOverlay from './MobileOverlay'
 
-import { useAuth } from '../../lib/auth/useAuth'
+import { useAuth }  from '../../lib/auth/useAuth'
+import { logout }   from '../../lib/services/auth.service'
 
 const PUBLIC_PATHS = ['/login', '/register', '/activation', '/test']
 
@@ -91,10 +92,7 @@ export default function AppShell({
           </a>
           <div>
             <button
-              onClick={async () => {
-                const { supabase: sb } = await import('../../lib/supabase')
-                await sb.auth.signOut()
-              }}
+              onClick={logout}
               className="text-sm text-gray-500 hover:underline mt-2"
             >
               {tTopbar('logout')}
