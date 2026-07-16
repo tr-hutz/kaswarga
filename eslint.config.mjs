@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Claude Code worktrees — not production code
+    ".claude/**",
+    // Generated Supabase types — not hand-authored
+    "types/database.ts",
   ]),
 ]);
 
