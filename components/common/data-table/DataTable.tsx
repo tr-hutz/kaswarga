@@ -60,7 +60,7 @@ export default function DataTable<T>({
             )}
 
             {/* Table */}
-            <div className="bg-white rounded-2xl border overflow-hidden">
+            <div className="bg-white rounded-2xl border overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="border-b border-gray-100 bg-gray-50">

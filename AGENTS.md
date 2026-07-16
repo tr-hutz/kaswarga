@@ -247,8 +247,8 @@ UI Components receive data via props only.
 Use centralized clients only.
 
 ```
-lib/supabaseClient.ts
-lib/supabaseServer.ts
+lib/supabase.ts        (browser / client components)
+lib/supabase-admin.ts  (server / service role operations)
 ```
 
 Always:
