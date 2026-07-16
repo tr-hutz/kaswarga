@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
   useEffect,
@@ -41,17 +40,17 @@ export function useDashboardAnalytics() {
   const [
     analytics,
     setAnalytics
-  ] = useState(null)
+  ] = useState<any>(null)
 
   const [
     paymentHealth,
     setPaymentHealth
-  ] = useState(null)
+  ] = useState<any>(null)
 
   const [
     financialInsight,
     setFinancialInsight
-  ] = useState(null)
+  ] = useState<any>(null)
 
   /*
    |--------------------------------------------------------------------------

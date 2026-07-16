@@ -113,3 +113,65 @@ export async function findRegistrationRequestSnapshot(id: string) {
         .single()
     return data
 }
+
+export async function findPendingResidentRegistrations(rtId: string) {
+    const { data, error } = await supabase
+        .from('registration_requests')
+        .select('*')
+        .eq('type', 'resident')
+        .eq('status', 'pending')
+        .eq('rt_id', rtId)
+        .order('created_at', { ascending: false })
+
+    if (error) throw error
+    return data ?? []
+}
+
+export async function countPendingRtRegistrations(): Promise<number> {
+    const { count, error } = await supabase
+        .from('registration_requests')
+        .select('*', { count: 'exact', head: true })
+        .eq('type', 'rt')
+        .eq('status', 'pending')
+
+    if (error) throw error
+    return count ?? 0
+}
+
+export async function countPendingResidentRegistrations(rtId: string): Promise<number> {
+    const { count, error } = await supabase
+        .from('registration_requests')
+        .select('*', { count: 'exact', head: true })
+        .eq('type', 'resident')
+        .eq('status', 'pending')
+        .eq('rt_id', rtId)
+
+    if (error) throw error
+    return count ?? 0
+}
+
+export async function findRtRegistrationRequests(filter?: string) {
+    let query = supabase
+        .from('registration_requests')
+        .select('*')
+        .eq('type', 'rt')
+        .order('created_at', { ascending: false })
+
+    if (filter && filter !== 'all') {
+        query = query.eq('status', filter)
+    }
+
+    const { data, error } = await query
+    if (error) throw error
+    return data ?? []
+}
+
+export async function findActivationInvitesByRegistrationId(registrationId: string) {
+    const { data, error } = await supabase
+        .from('activation_invites')
+        .select('email, role')
+        .eq('registration_request_id', registrationId)
+
+    if (error) throw error
+    return data ?? []
+}

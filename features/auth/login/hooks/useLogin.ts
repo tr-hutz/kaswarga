@@ -1,8 +1,8 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
-  useState
+  useState,
+  type FormEvent
 } from 'react'
 
 import {
@@ -13,7 +13,7 @@ export function useLogin({
 
   onSuccess
 
-}) {
+}: { onSuccess?: () => void } = {}) {
 
   /*
    |--------------------------------------------------------------------------
@@ -48,7 +48,7 @@ export function useLogin({
    */
 
   async function handleSubmit(
-    e
+    e: FormEvent
   ) {
 
     e.preventDefault()
@@ -69,7 +69,7 @@ export function useLogin({
     } catch (err) {
 
       setError(
-        err.message
+        (err as any).message ?? 'Login failed'
       )
 
     } finally {
