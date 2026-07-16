@@ -1,5 +1,4 @@
-// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useCallback, useEffect, useState } from 'react'
 import { getAllUsers } from '@/lib/services/users.service'
@@ -20,7 +19,7 @@ export function useUsersData() {
         try {
             const users = await getAllUsers()
 
-            const rows: UserRow[] = users.flatMap(user => {
+            const rows: UserRow[] = users.flatMap((user): UserRow[] => {
                 const memberships = user.memberships || []
 
                 if (!memberships.length) {

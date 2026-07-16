@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     useState
@@ -23,9 +22,9 @@ import {
 
 export function useApprovalActions({
                                        onSuccess
-                                   } = {}) {
+                                   }: { onSuccess?: () => void } = {}) {
 
-    const { toast } = useToast()
+    const { toast } = (useToast() as any)
 
     /*
      |-------------------------------------------------------------
@@ -45,7 +44,7 @@ export function useApprovalActions({
      */
 
     async function approve(
-        confirmationId
+        confirmationId: string
     ) {
 
         try {
@@ -71,7 +70,7 @@ export function useApprovalActions({
             console.error(err)
 
             toast({
-                message: getErrorMessage(err),
+                message: getErrorMessage(err as any),
                 type: 'error'
             })
 
@@ -88,8 +87,8 @@ export function useApprovalActions({
      */
 
     async function reject(
-        confirmationId,
-        reason
+        confirmationId: string,
+        reason: string
     ) {
 
         try {
@@ -116,7 +115,7 @@ export function useApprovalActions({
             console.error(err)
 
             toast({
-                message: getErrorMessage(err),
+                message: getErrorMessage(err as any),
                 type: 'error'
             })
 

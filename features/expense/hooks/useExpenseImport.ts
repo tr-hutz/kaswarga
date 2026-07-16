@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useImport } from '@/components/common/import/useImport'
 
@@ -23,10 +22,10 @@ const COLUMN_ALIASES = {
     ket:         'description',
 }
 
-export function useExpenseImport(onSuccess) {
+export function useExpenseImport(onSuccess?: (inserted: number) => void) {
     return useImport({
         columnAliases:     COLUMN_ALIASES,
-        isValidRow:        r => !!r.date?.trim() && !!r.amount?.trim(),
+        isValidRow:        (r: Record<string, string>) => !!r.date?.trim() && !!r.amount?.trim(),
         apiEndpoint:       '/api/expenses/import',
         templateData: [
             { date: '2026-07-03', category: 'Operasional', amount: '150000', recipient: 'Toko Bangunan Jaya', description: 'Pembelian cat pagar' },

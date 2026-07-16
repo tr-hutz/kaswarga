@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useImport } from '@/components/common/import/useImport'
 
@@ -27,10 +26,10 @@ const COLUMN_ALIASES = {
     phone:         'phone',
 }
 
-export function useResidentImport(onSuccess) {
+export function useResidentImport(onSuccess?: (inserted: number) => void) {
     return useImport({
         columnAliases:     COLUMN_ALIASES,
-        isValidRow:        r => !!r.name?.trim(),
+        isValidRow:        (r: Record<string, string>) => !!r.name?.trim(),
         apiEndpoint:       '/api/residents/import',
         templateData: [
             { name: 'Budi Santoso', block: 'A',  house_number: '1',  phone: '08123456789' },

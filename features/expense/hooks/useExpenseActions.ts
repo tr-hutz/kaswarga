@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     useState
@@ -29,7 +28,11 @@ export function useExpenseActions({
                                           onImportSuccess,
                                           onApprovalSuccess
 
-                                      }) {
+                                      }: {
+    onReload?:          () => void
+    onImportSuccess?:   (inserted: number) => void
+    onApprovalSuccess?: () => void
+} = {}) {
 
     /*
      |-------------------------------------------------------------
@@ -40,7 +43,7 @@ export function useExpenseActions({
     const [
         selectedRow,
         setSelectedRow
-    ] = useState(null)
+    ] = useState<any>(null)
 
     const [
         drawerOpen,
@@ -64,7 +67,7 @@ export function useExpenseActions({
      */
 
     function openDrawer(
-        row
+        row: any
     ) {
 
         setSelectedRow(row)
@@ -93,7 +96,7 @@ export function useExpenseActions({
     }
 
     function openEditForm(
-        row
+        row: any
     ) {
 
         setSelectedRow(row)
@@ -115,7 +118,7 @@ export function useExpenseActions({
      */
 
     async function submitForm(
-        payload
+        payload: any
     ) {
 
         try {
@@ -178,7 +181,7 @@ export function useExpenseActions({
      */
 
     async function removeRow(
-        row
+        row: any
     ) {
 
         const confirmed =
@@ -218,20 +221,20 @@ export function useExpenseActions({
      */
 
     async function exportCSV(
-        rows
+        rows: any[]
     ) {
 
         await exportExpenseToCSV(
-            rows
+            rows as any
         )
     }
 
     async function exportExcel(
-        rows
+        rows: any[]
     ) {
 
         await exportExpenseToExcel(
-            rows
+            rows as any
         )
     }
 

@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     useEffect,
@@ -14,7 +13,11 @@ export function useNotificationRealtime({
                                             user_id,
                                             onReload,
                                             onNew
-                                        }) {
+                                        }: {
+    user_id:   string | null | undefined
+    onReload?: () => void
+    onNew?:    (notification: any) => void
+}) {
 
     const onReloadRef = useRef(onReload)
     const onNewRef    = useRef(onNew)
@@ -58,7 +61,7 @@ export function useNotificationRealtime({
 
                 )
 
-                .subscribe((status, err) => {
+                .subscribe((status: string, err?: Error) => {
                     if (err) console.error('[Realtime] subscription error', err)
                 })
 

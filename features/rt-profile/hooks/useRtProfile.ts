@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useCallback, useEffect, useState } from 'react'
 import { useToast } from '@/components/ui/ToastProvider'
@@ -7,9 +6,9 @@ import { getOwnRt, updateRt } from '@/lib/services/rt.service'
 
 export function useRtProfile() {
 
-    const { toast } = useToast()
+    const { toast } = (useToast() as any)
 
-    const [rt,      setRt]      = useState(null)
+    const [rt,      setRt]      = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [saving,  setSaving]  = useState(false)
 
@@ -31,7 +30,7 @@ export function useRtProfile() {
 
     useEffect(() => { load() }, [load])
 
-    async function handleSave(payload) {
+    async function handleSave(payload: any) {
 
         if (!rt?.id) return
 
@@ -43,7 +42,7 @@ export function useRtProfile() {
             toast({ message: 'RT profile updated.', type: 'success' })
         } catch (err) {
             console.error(err)
-            toast({ message: err.message || 'Failed to save changes.', type: 'error' })
+            toast({ message: (err as any).message || 'Failed to save changes.', type: 'error' })
         } finally {
             setSaving(false)
         }

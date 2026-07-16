@@ -1,32 +1,31 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useToast } from '@/components/ui/ToastProvider'
 import { updateMembershipRole, removeMembership } from '@/lib/services/users.service'
 import { getCurrentMembership } from '@/lib/auth/getCurrentMembership'
 
-export function useUsersActions(refresh) {
+export function useUsersActions(refresh: () => void) {
 
-    const { toast } = useToast()
+    const { toast } = (useToast() as any)
 
-    const [editTarget, setEditTarget] = useState(null) // { user, membership }
-    const [delTarget,  setDelTarget]  = useState(null) // membership object
+    const [editTarget, setEditTarget] = useState<any>(null) // { user, membership }
+    const [delTarget,  setDelTarget]  = useState<any>(null) // membership object
     const [saving,     setSaving]     = useState(false)
 
-    async function handleUpdateRole(membershipId, newRole) {
+    async function handleUpdateRole(membershipId: string, newRole: string) {
 
         setSaving(true)
 
         try {
             const actor = await getCurrentMembership()
-            await updateMembershipRole(membershipId, newRole, actor)
+            await updateMembershipRole(membershipId, newRole as any, actor as any)
             toast({ message: 'Role updated.', type: 'success' })
             setEditTarget(null)
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: err.message || 'Failed to update role.', type: 'error' })
+            toast({ message: (err as any).message || 'Failed to update role.', type: 'error' })
         } finally {
             setSaving(false)
         }
@@ -40,13 +39,13 @@ export function useUsersActions(refresh) {
 
         try {
             const actor = await getCurrentMembership()
-            await removeMembership(delTarget.id, actor)
+            await removeMembership(delTarget.id, actor as any)
             toast({ message: 'Membership removed.', type: 'success' })
             setDelTarget(null)
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: err.message || 'Failed to remove membership.', type: 'error' })
+            toast({ message: (err as any).message || 'Failed to remove membership.', type: 'error' })
         } finally {
             setSaving(false)
         }

@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
 
@@ -28,7 +27,7 @@ export function useNotifications() {
         notifications,
         setNotifications
 
-    ] = useState([])
+    ] = useState<any[]>([])
 
     const [error, setError] = useState(false)
 

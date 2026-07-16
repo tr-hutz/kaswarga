@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
     useState
@@ -16,7 +15,7 @@ export function usePaymentDetail() {
     const [
         selectedPayment,
         setSelectedPayment
-    ] = useState(null)
+    ] = useState<any>(null)
 
     const [
         open,
@@ -29,7 +28,7 @@ export function usePaymentDetail() {
      |-------------------------------------------------------------
      */
 
-    function openDetail(payment) {
+    function openDetail(payment: any) {
 
         setSelectedPayment(
             payment

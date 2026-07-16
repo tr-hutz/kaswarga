@@ -1,5 +1,4 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import {
 
@@ -18,7 +17,7 @@ export function useUnreadNotifications({
 
                                            user_id
 
-                                       }) {
+                                       }: { user_id?: string | null }) {
 
     /*
      |-------------------------------------------------------------

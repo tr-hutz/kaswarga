@@ -1,12 +1,11 @@
-﻿// @ts-nocheck
-'use client'
+﻿'use client'
 
 import { useCallback, useEffect, useState } from 'react'
 import { getAllRt }                          from '@/lib/services/rt.service'
 
 export function useRtData() {
 
-    const [data,    setData]    = useState([])
+    const [data,    setData]    = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [error,   setError]   = useState(false)
 
