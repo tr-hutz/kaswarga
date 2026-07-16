@@ -411,3 +411,32 @@ export async function callRejectConfirmation(confirmationId: string, reason: str
     if (error) throw error
     return data
 }
+
+export async function insertConfirmation(data: {
+    resident_id:  string
+    rt_id:        string
+    year:         number
+    total_amount: number
+    proof_url:    string | null
+}): Promise<{ id: string }> {
+    const { data: row, error } = await supabase
+        .from('payment_confirmations')
+        .insert(data)
+        .select('id')
+        .single()
+    if (error) throw error
+    return row
+}
+
+export async function insertConfirmationDetails(rows: Array<{
+    confirmation_id: string
+    resident_id:     string
+    year:            number
+    month:           number
+    amount:          number
+}>): Promise<void> {
+    const { error } = await supabase
+        .from('confirmation_details')
+        .insert(rows)
+    if (error) throw error
+}

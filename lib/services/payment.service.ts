@@ -16,8 +16,12 @@ import {
     findPaymentConfirmations,
     findConfirmationById,
     callApproveConfirmation,
-    callRejectConfirmation
+    callRejectConfirmation,
+    insertConfirmation,
+    insertConfirmationDetails,
 } from '../repositories/payment.repository'
+import { findMembersByRole } from '../repositories/membership.repository'
+import { insertNotifications } from '../repositories/notification.repository'
 
 /*
 |--------------------------------------------------------------------------
@@ -366,6 +370,90 @@ export async function rejectPayment(
     })
 
     return data
+}
+
+/*
+|--------------------------------------------------------------------------
+| SUBMIT PAYMENT CONFIRMATION
+|--------------------------------------------------------------------------
+*/
+
+export async function submitPaymentConfirmation(payload: {
+    residentId:  string
+    rtId:        string
+    year:        number
+    months:      number[]
+    file:        File
+    monthlyFee:  number
+}): Promise<void> {
+    const { residentId, rtId, year, months, file, monthlyFee } = payload
+
+    // Upload proof of payment to storage
+    const ext  = file.name.split('.').pop() ?? 'jpg'
+    const path = `${residentId}/${year}-${Date.now()}.${ext}`
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('payment-proof')
+        .upload(path, file)
+    if (uploadError) throw uploadError
+
+    const { data: { publicUrl } } = supabase.storage
+        .from('payment-proof')
+        .getPublicUrl(uploadData.path)
+
+    // Insert confirmation header
+    const totalAmount  = months.length * monthlyFee
+    const confirmation = await insertConfirmation({
+        resident_id:  residentId,
+        rt_id:        rtId,
+        year,
+        total_amount: totalAmount,
+        proof_url:    publicUrl,
+    })
+
+    // Insert monthly breakdown
+    await insertConfirmationDetails(
+        months.map(month => ({
+            confirmation_id: confirmation.id,
+            resident_id:     residentId,
+            year,
+            month,
+            amount:          monthlyFee,
+        }))
+    )
+
+    // Activity log (fire-and-forget)
+    const membership = await getCurrentMembership()
+    logActivity({
+        rtId:        membership?.rt?.id,
+        actorId:     membership?.user?.id,
+        actorName:   membership?.user?.name,
+        action:      'SUBMIT_PAYMENT',
+        entityType:  'payment_confirmations',
+        entityId:    confirmation.id,
+        description: 'Submit payment confirmation',
+        metadata:    { year, months, totalAmount, residentId },
+    })
+
+    // Notify TREASURER so they can review the submission
+    try {
+        const treasurers = await findMembersByRole(rtId, 'TREASURER')
+        if (treasurers.length) {
+            await insertNotifications(
+                treasurers.map(m => ({
+                    rt_id:          rtId,
+                    type:           'payment_pending',
+                    title:          'New Payment Submission',
+                    message:        `A resident submitted a payment confirmation for ${year} (${months.length} month${months.length > 1 ? 's' : ''})`,
+                    entity_type:    'payment_confirmations',
+                    entity_id:      confirmation.id,
+                    target_user_id: m.user_id,
+                }))
+            )
+        }
+    } catch {
+        // Notification errors must not block the main flow
+    }
 }
 
 export async function getPaymentConfirmations({

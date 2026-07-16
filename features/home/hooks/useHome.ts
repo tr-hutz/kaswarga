@@ -13,7 +13,8 @@ import {
 } from '../../../lib/auth/getCurrentMembership'
 
 import {
-  getApprovedPayments
+  getApprovedPayments,
+  submitPaymentConfirmation,
 } from '../../../lib/services/payment.service'
 
 import {
@@ -95,6 +96,11 @@ export function useHome() {
   ] = useState(null)
 
   const [
+    rtId,
+    setRtId
+  ] = useState(null)
+
+  const [
     monthlyFee,
     setMonthlyFee
   ] = useState(0)
@@ -132,13 +138,8 @@ export function useHome() {
       const residentId =
         membership.resident?.id || null
 
-      /*
-       * optional
-       */
-
-      setResidentId(
-        residentId
-      )
+      setResidentId(residentId)
+      setRtId(membership.rt?.id || null)
 
       const monthlyFee = membership.rt?.monthly_fee || 0
 
@@ -342,41 +343,20 @@ export function useHome() {
         file
       }) => {
 
+        if (!residentId || !rtId) return
+
         try {
 
           setSubmitting(true)
 
-          /*
-           |--------------------------------------------------------------------------
-           | TODO:
-           | upload payment proof to 'payment-proof' bucket
-           |--------------------------------------------------------------------------
-           */
-
-          let proofUrl =
-            null
-
-          /*
-           |--------------------------------------------------------------------------
-           | TODO:
-           | call RPC submit_konfirmasi
-           |--------------------------------------------------------------------------
-           */
-
-          console.log({
-
-            months,
+          await submitPaymentConfirmation({
+            residentId,
+            rtId,
             year,
+            months,
             file,
-            proofUrl
-
+            monthlyFee,
           })
-
-          /*
-           |--------------------------------------------------------------------------
-           | reset selected months
-           |--------------------------------------------------------------------------
-           */
 
           await loadData()
 
@@ -392,7 +372,8 @@ export function useHome() {
 
       },
 
-      []
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [residentId, rtId, monthlyFee]
     )
 
   /*
