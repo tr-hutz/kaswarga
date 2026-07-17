@@ -41,7 +41,9 @@ Before writing code, identify the task type and read the relevant documentation.
 ## Always Read
 
 - docs/development/CODING_STANDARD.md
+- docs/development/DESIGN_SYSTEM.md
 - docs/development/GLOSSARY.md
+- docs/process/COMMIT_POLICY.md
 
 ## UI / Components
 
@@ -558,3 +560,11 @@ Produce code that is:
 - maintainable
 
 Always preserve the existing project architecture.
+
+# Git Rules
+
+AI should recommend Conventional Commit messages for every logical change.
+
+AI should prefer multiple small commits over one large commit.
+
+Commit messages must follow the project's Conventional Commit standard.
