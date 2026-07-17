@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import type { FormEvent }      from 'react'
-import { supabase }            from '@/lib/supabase'
+import {
+    exchangeCodeForSession,
+    setAuthSession,
+    getAuthSession,
+    changePassword,
+    signInWithPassword,
+} from '@/lib/services/auth.service'
 import { resendInvite }        from '@/lib/services/approval.service'
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
@@ -50,11 +56,11 @@ export default function ActivationContainer() {
             const refreshToken = hash.get('refresh_token')
 
             if (code) {
-                const { error } = await supabase.auth.exchangeCodeForSession(code)
-                if (error) { setState(STATE.NO_TOKEN); return }
+                try { await exchangeCodeForSession(code) }
+                catch { setState(STATE.NO_TOKEN); return }
             } else if (accessToken && refreshToken) {
-                const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
-                if (error) { setState(STATE.NO_TOKEN); return }
+                try { await setAuthSession(accessToken, refreshToken) }
+                catch { setState(STATE.NO_TOKEN); return }
             }
 
             // Clear the hash/code from the URL bar without reloading
@@ -68,7 +74,7 @@ export default function ActivationContainer() {
     }, [])
 
     async function activate() {
-        const { data: { session } } = await supabase.auth.getSession()
+        const session = await getAuthSession()
 
         if (!session?.access_token) {
             setState(STATE.NO_TOKEN)
@@ -128,13 +134,12 @@ export default function ActivationContainer() {
 
         setSavingPw(true)
         try {
-            const { error } = await supabase.auth.updateUser({ password })
-            if (error) throw error
+            await changePassword(password)
 
             // Sign in fresh so AuthProvider always gets a clean email+password
             // session rather than the one-time invite session.
             if (email) {
-                await supabase.auth.signInWithPassword({ email, password }).catch(() => {})
+                try { await signInWithPassword(email, password) } catch { /* intentional */ }
             }
 
             window.location.replace('/')

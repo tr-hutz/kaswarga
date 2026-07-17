@@ -3,10 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, MouseEvent } from 'react'
 import Icon from '@/components/ui/Icon'
-import { supabase } from '@/lib/supabase'
+import { uploadRtAsset } from '@/lib/services/storage.service'
 import { useTranslations } from 'next-intl'
-
-const BUCKET = 'rt-assets'
 
 interface ImageUploadProps {
     label:       string
@@ -37,18 +35,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
         setError('')
 
         try {
-            const ext  = (file.name.split('.').pop() ?? '').toLowerCase()
-            const path = `${storagePath}.${ext}`
-
-            const { error: uploadError } = await supabase.storage
-                .from(BUCKET)
-                .upload(path, file, { upsert: true })
-
-            if (uploadError) throw uploadError
-
-            const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
-            const url = `${data.publicUrl}?t=${Date.now()}`
-
+            const url = await uploadRtAsset(storagePath, file)
             setPreview(url)
             onUploaded(url)
         } catch (err) {
