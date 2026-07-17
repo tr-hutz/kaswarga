@@ -3,8 +3,8 @@ import { cookies }            from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { supabaseAdmin }      from '@/lib/supabase-admin'
 
-const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || 'https://bftwjxpotkmpofdruiqc.supabase.co'
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_9S7keXBfOvJqzVOBRIxK4w_pjQ2UhXt'
+const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || ''
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 export async function POST() {
     try {
