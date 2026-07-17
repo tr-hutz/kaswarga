@@ -26,6 +26,17 @@ export async function updateNotificationRead(id: string): Promise<void> {
     if (error) throw error
 }
 
+export async function insertNotification(data: NotificationInsert): Promise<NotificationRow> {
+    const { data: row, error } = await supabase
+        .from('notifications')
+        .insert(data)
+        .select()
+        .single()
+
+    if (error) throw error
+    return row
+}
+
 export async function insertNotifications(rows: NotificationInsert[]): Promise<void> {
     const { error } = await supabase
         .from('notifications')

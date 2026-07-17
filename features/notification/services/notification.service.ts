@@ -1,13 +1,12 @@
 'use client'
 
 import {
-
-    supabase
-
-} from '../../../lib/supabase'
+    insertNotification,
+    updateNotificationRead,
+    updateAllNotificationsRead,
+} from '../../../lib/repositories/notification.repository'
 
 export async function createNotification({
-
     rt_id,
     type,
     title,
@@ -15,8 +14,7 @@ export async function createNotification({
     entity_type = null,
     entity_id = null,
     target_role = null,
-    target_user_id = null
-
+    target_user_id = null,
 }: {
     rt_id: string
     type: string
@@ -27,88 +25,13 @@ export async function createNotification({
     target_role?: string | null
     target_user_id?: string | null
 }) {
-
-    const {
-
-        data,
-        error
-
-    } = await supabase
-        .from('notifications')
-        .insert({
-            rt_id,
-            type,
-            title,
-            message,
-            entity_type,
-            entity_id,
-            target_role,
-            target_user_id
-        })
-        .select()
-        .single()
-
-    if (error) {
-
-        throw error
-    }
-
-    return data
+    return insertNotification({ rt_id, type, title, message, entity_type, entity_id, target_role, target_user_id })
 }
 
-export async function markNotificationRead(
-    notificationId: string
-) {
-
-    const { error } =
-        await supabase
-
-            .from(
-                'notifications'
-            )
-
-            .update({
-
-                is_read: true
-
-            })
-
-            .eq(
-                'id',
-                notificationId
-            )
-
-    if (error)
-        throw error
+export async function markNotificationRead(notificationId: string): Promise<void> {
+    return updateNotificationRead(notificationId)
 }
 
-export async function markAllNotificationsRead(
-    userId: string
-) {
-
-    const { error } =
-        await supabase
-
-            .from(
-                'notifications'
-            )
-
-            .update({
-
-                is_read: true
-
-            })
-
-            .eq(
-                'target_user_id',
-                userId
-            )
-
-            .eq(
-                'is_read',
-                false
-            )
-
-    if (error)
-        throw error
+export async function markAllNotificationsRead(userId: string): Promise<void> {
+    return updateAllNotificationsRead(userId)
 }

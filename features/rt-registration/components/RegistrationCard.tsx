@@ -6,7 +6,7 @@ import { approveRtRegistration, rejectRtRegistration }             from '@/lib/s
 import { useAuth }                                                  from '@/lib/auth/useAuth'
 import { useToast }                                                 from '@/components/ui/ToastProvider'
 import { formatDate }                                               from '@/lib/utils'
-import { supabase }                                                 from '@/lib/supabase'
+import { findActivationInvitesByRegistrationId }                    from '@/lib/repositories/registration.repository'
 import { useTranslations }                                          from 'next-intl'
 
 const IS_DEV = process.env.NODE_ENV === 'development'
@@ -118,13 +118,9 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
     async function handleViewLinks() {
         setLoadingLinks(true)
         try {
-            const { data: invites, error } = await supabase
-                .from('activation_invites')
-                .select('email, role')
-                .eq('registration_request_id', req.id)
+            const invites = await findActivationInvitesByRegistrationId(req.id)
 
-            if (error) throw error
-            if (!invites?.length) {
+            if (!invites.length) {
                 toast({ message: 'No invite found for this registration.', type: 'info' })
                 return
             }
