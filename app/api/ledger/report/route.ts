@@ -1,7 +1,6 @@
 import { NextResponse }      from 'next/server'
 import { cookies }            from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
-import { supabase }           from '../../../../lib/supabase'
 import { supabaseAdmin }      from '../../../../lib/supabase-admin'
 import { monthList, formatMonths, formatAccounting } from '../../../../lib/utils'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
@@ -60,13 +59,13 @@ export async function GET(req: Request) {
   const start = `${year}-01-01`
   const end = `${parseInt(year) + 1}-01-01`
 
-  const { data: rt } = await supabase
+  const { data: rt } = await supabaseAdmin
     .from('rt')
     .select('*')
     .limit(1)
     .single()
 
-  const { data: members } = await supabase
+  const { data: members } = await supabaseAdmin
     .from('memberships')
     .select('role, user:users(name)')
     .eq('rt_id', rt?.id ?? '')
@@ -80,7 +79,7 @@ export async function GET(req: Request) {
     members?.find(m => m.role === 'TREASURER')
       ?.user?.name || '-'
 
-  const { data: incomeRows } = await supabase
+  const { data: incomeRows } = await supabaseAdmin
     .from('payment_details')
     .select(`month, amount, payments!inner(date, rt_id, resident_id, residents(name, block, house_number))`)
     .eq('year', parseInt(year))
@@ -88,7 +87,7 @@ export async function GET(req: Request) {
     .gte('payments.date', start)
     .lt('payments.date', end)
 
-  const { data: expenseRows } = await supabase
+  const { data: expenseRows } = await supabaseAdmin
     .from('expenses')
     .select('*')
     .eq('rt_id', rt?.id ?? '')
