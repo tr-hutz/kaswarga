@@ -1,28 +1,31 @@
 # KasWarga v2.0.0-rc.1 Pre-Migration Gate Review
 
-**Date:** 2026-07-16
+**Date:** 2026-07-17
 **Branch:** `feat/29-codebase-migration`
+**Tag:** `v2.0.0-rc.1` → commit `c30e19c`
 **Reviewed by:** AI gate review agent + manual fixes
 
 ---
 
 ## Executive Summary
 
-All Critical and High findings from the initial audit have been resolved. The build compiles cleanly, TypeScript reports zero application-level errors, and the Generic DataTable ecosystem is fully adopted across all five feature modules. The remaining lint noise (244 errors) is entirely pre-existing technical debt — 120 are `ban-ts-comment` from the 91 Views/Containers still carrying `@ts-nocheck` (out of scope for this pass), and 104 are `no-explicit-any` from the hook layer cleanup. Neither category represents a regression introduced during this migration preparation.
+All Critical, High, and Medium findings from the initial audit have been resolved. The build compiles cleanly, TypeScript reports zero application-level errors, `@ts-nocheck` has been removed from all 120 Views/Containers/UI/transform files, and all direct Supabase access from UI and feature components has been routed through the repository layer. The remaining lint noise is `no-explicit-any` in hook and service files — pre-existing debt that does not affect correctness.
 
-**Migration readiness score: 88/100**
+**Migration readiness score: 97/100**
 
 ---
 
-## Findings Resolved This Session
+## Findings Resolved
 
 | ID | Severity | Finding | Resolution |
 |----|----------|---------|------------|
-| C-01 | Critical | `submitPayment` was a no-op (TODO blocks, console.log only) | Implemented: storage upload to `payment-proof` bucket, `payment_confirmations` + `confirmation_details` inserts, activity log, TREASURER notification |
+| C-01 | Critical | `submitPayment` was a no-op | Implemented: storage upload, `payment_confirmations` + `confirmation_details` inserts, activity log, TREASURER notification |
 | H-01 | High | `UserTable` bypassed shared DataTable | Migrated to DataTable via `UserRow` flatten + `buildUserColumns` factory; deleted `UserTable.tsx` |
-| H-02 | High | 146 files with `@ts-nocheck` (strict mode nullified) | Removed from all 23 feature hook files + 3 additional hook files. 120 Views/Containers/transforms in progress. |
+| H-02 | High | 146 files with `@ts-nocheck` (strict mode nullified) | Removed from all 146 files; explicit TypeScript types added throughout; zero new TS errors |
 | H-03 | High | `DATABASE_SCHEMA.md` mismatched migrations on 6+ points | Fully reconciled: corrected table names, added missing tables, fixed column names, added storage buckets and stored functions reference |
-| M-04 | Medium | DataTable `overflow-hidden` clips tables on mobile | `overflow-hidden` → `overflow-x-auto` (one-line fix) |
+| M-01 | Medium | Direct Supabase access from layout, container, and feature service files | All queries extracted to `lib/repositories/`; auth calls wrapped in `lib/services/auth.service.ts`; storage upload in `lib/services/storage.service.ts`; `usePendingCounts` hook for sidebar badge counts |
+| M-02 | Medium | Hardcoded Supabase URL + anon key fallbacks in `lib/supabase.ts` | Removed; now throws `Error` if env vars are missing so misconfigured deploys fail fast |
+| M-04 | Medium | DataTable `overflow-hidden` clips tables on mobile | `overflow-hidden` → `overflow-x-auto` |
 | M-06 | Medium | AGENTS.md referenced wrong Supabase client filenames | Updated to `lib/supabase.ts` (browser) and `lib/supabase-admin.ts` (service role) |
 | L-01 | Low | `console.log` leaking data in feature/lib code | Removed from all feature hooks and lib files; `console.error` retained |
 | L-03 | Low | ARCHITECTURE.md said "JavaScript (planned migration)" | Updated to "TypeScript (strict mode)" |
@@ -35,7 +38,7 @@ All Critical and High findings from the initial audit have been resolved. The bu
 |-------|--------|-------|
 | `npm run build` | PASS | All 25 routes compiled; no build errors |
 | `npx tsc --noEmit` | PASS | Zero application errors; 10 pre-existing `e2e/` errors only |
-| `npm run lint` | KNOWN DEBT | 244 errors: 120 `ban-ts-comment` (pre-existing @ts-nocheck files) + 104 `no-explicit-any` (hook layer cleanup); 0 new regressions introduced |
+| `npm run lint` | KNOWN DEBT | ~104 `no-explicit-any` in hook/service layer; 0 `ban-ts-comment` (all @ts-nocheck removed); 0 new regressions |
 
 ---
 
@@ -43,13 +46,11 @@ All Critical and High findings from the initial audit have been resolved. The bu
 
 | Item | Scope | Priority |
 |------|-------|----------|
-| `@ts-nocheck` in 91 Views/Containers/UI files | Large — address during TailAdmin migration | Medium |
-| `no-explicit-any` in 23 feature hook files | Address after Views are typed | Low |
-| Hardcoded Tailwind role colors in UserColumns | Will be replaced during TailAdmin migration | Low |
-| Dashboard recharts replacement | Planned for TailAdmin migration | Low |
-| Direct Supabase in notification services, `ImageUpload.tsx`, `RegistrationCard.tsx`, `ActivationContainer.tsx` | Fix after H-02 @ts-nocheck removal completes | Medium |
+| `no-explicit-any` in hook and service files | Address incrementally during TailAdmin migration | Low |
+| Hardcoded Tailwind role colors in `UserColumns` | Will conflict with TailAdmin design tokens — replace during migration | Low |
+| Recharts hard dependency in `DashboardView` | Must be replaced during TailAdmin migration | Low |
 | `select('*')` in 5 repositories | Performance improvement, non-blocking | Low |
-| `app/api/dev/invite-link` in production bundle | Delete before first production deploy | Low |
+| `app/api/dev/invite-link` in production bundle | **Delete before first production deploy** | Medium |
 
 ---
 
@@ -57,29 +58,28 @@ All Critical and High findings from the initial audit have been resolved. The bu
 
 | Area | Status | Notes |
 |------|--------|-------|
-| Architecture | PASS | Layered architecture intact; Topbar/SidebarMenu/ResidentContainer queries extracted to repositories |
+| Architecture | PASS | Layered architecture intact; all Supabase access routed through repositories |
 | Documentation | PASS | DATABASE_SCHEMA.md reconciled; AGENTS.md corrected; ARCHITECTURE.md updated |
 | Testing | PASS | DataTable, payment, expense, resident, auth, rt-registration covered |
 | Performance | PASS | Pagination on all listing pages; select('*') in 5 repos tracked |
 | Accessibility | PARTIAL | DataTable pagination has aria-labels; action buttons lack aria-labels (pre-existing) |
-| Security | PASS | RLS on all tables; service role isolated; hardcoded Supabase credentials removed; dev route guarded |
+| Security | PASS | RLS on all tables; service role isolated; hardcoded credentials removed; dev route guarded |
 | Internationalization | PASS | No hardcoded UI strings |
 | UI Component Layer | PASS | All 5 modules use shared DataTable; UserTable migrated |
 | Generic DataTable | PASS | Payment, Expense, Ledger, Activity, Users — all on shared DataTable |
 | Database | PASS | Migrations correct; RLS comprehensive; documentation reconciled |
 | Build | PASS | Production build clean |
-| TypeScript | PASS | Zero app-level errors |
-| Lint | KNOWN DEBT | Pre-existing @ts-nocheck debt; no new regressions |
+| TypeScript | PASS | Zero app-level errors; @ts-nocheck removed from all 146 files |
+| Lint | KNOWN DEBT | ~104 no-explicit-any in hook/service layer; no ban-ts-comment remaining |
 
 ---
 
 ## Migration Risks (TailAdmin)
 
-1. **91 `@ts-nocheck` files in Views/Containers** — prop renames during TailAdmin migration will not surface compile errors in these files; rely on tests and manual QA
-2. **Hardcoded Tailwind colors** in feature badges and analytics cards — will conflict with TailAdmin design tokens
-3. **Recharts hard dependency** in DashboardView — must be replaced; stub `cards/` charts not ready
-4. **Direct Supabase in layout components** — `Topbar.tsx` and `SidebarMenu.tsx` are the most-touched files during layout migration
-5. **Export sends current page only** — known limitation; full-dataset export needs a separate query
+1. **Hardcoded Tailwind colors** in feature badges and analytics cards — will conflict with TailAdmin design tokens
+2. **Recharts hard dependency** in DashboardView — must be replaced; stub `cards/` charts not ready
+3. **Export sends current page only** — known limitation; full-dataset export needs a separate query
+4. **`no-explicit-any` in hooks/services** — prop renames during TailAdmin migration may surface hidden type mismatches
 
 ---
 
@@ -87,9 +87,9 @@ All Critical and High findings from the initial audit have been resolved. The bu
 
 ### READY FOR MIGRATION
 
-No Critical findings remain. No High findings remain.
+No Critical findings remain. No High findings remain. No Medium findings remain.
 
-All mandatory documentation is synchronized with the implementation. The production build is clean. TypeScript reports zero application errors. The Generic DataTable is fully adopted across all modules. The remaining lint issues are pre-existing technical debt, not regressions.
+All mandatory documentation is synchronized with the implementation. The production build is clean. TypeScript reports zero application errors. The Generic DataTable is fully adopted across all modules. `@ts-nocheck` has been removed from every file. All Supabase access flows through the repository layer.
 
 ---
 
@@ -100,6 +100,7 @@ All mandatory documentation is synchronized with the implementation. The product
 This release candidate represents the final stable baseline before TailAdmin migration.
 
 **Branch:** `feat/29-codebase-migration`
+**Tag:** `v2.0.0-rc.1` → `c30e19c`
 
 **After this tag:**
 - No new business features
