@@ -735,7 +735,13 @@ Planned improvements
 
 ---
 
-# 32. Final Principles
+# 32. Git Workflow
+
+All commits MUST follow the Conventional Commits specification defined in:
+
+docs/process/COMMIT_POLICY.md
+
+# 33. Final Principles
 
 Consistency is more important than personal preference.
 
