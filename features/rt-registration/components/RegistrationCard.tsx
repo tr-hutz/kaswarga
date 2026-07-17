@@ -6,7 +6,6 @@ import { approveRtRegistration, rejectRtRegistration }             from '@/lib/s
 import { useAuth }                                                  from '@/lib/auth/useAuth'
 import { useToast }                                                 from '@/components/ui/ToastProvider'
 import { formatDate }                                               from '@/lib/utils'
-import { findActivationInvitesByRegistrationId }                    from '@/lib/repositories/registration.repository'
 import { useTranslations }                                          from 'next-intl'
 
 const IS_DEV = process.env.NODE_ENV === 'development'
@@ -81,7 +80,6 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [devLinks,      setDevLinks]      = useState<any[] | null>(null)
     const [postApproval,  setPostApproval]  = useState(false)
-    const [loadingLinks,  setLoadingLinks]  = useState(false)
     const { membership }                    = useAuth()
     const { toast }                         = useToast()
     const t                                 = useTranslations('rtRegistration')
@@ -112,34 +110,6 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
             onAction()
         } finally {
             setProcessing(false)
-        }
-    }
-
-    async function handleViewLinks() {
-        setLoadingLinks(true)
-        try {
-            const invites = await findActivationInvitesByRegistrationId(req.id)
-
-            if (!invites.length) {
-                toast({ message: 'No invite found for this registration.', type: 'info' })
-                return
-            }
-
-            const links = await Promise.all(invites.map(async ({ email, role }) => {
-                const res = await fetch('/api/dev/invite-link', {
-                    method:  'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body:    JSON.stringify({ email, role, rtId: req.rt_id })
-                })
-                const body = await res.json()
-                return { email, role, link: body.link || null }
-            }))
-
-            setDevLinks(links)
-        } catch (err) {
-            toast({ message: (err as Error).message, type: 'error' })
-        } finally {
-            setLoadingLinks(false)
         }
     }
 
@@ -257,21 +227,6 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
                             >
                                 <Icon name="x" size={12} />
                                 {t('card.reject')}
-                            </button>
-                        </div>
-                    )}
-
-                    {/* Dev-only view links button for approved cards */}
-                    {IS_DEV && req.status === 'approved' && !devLinks && (
-                        <div className="mt-3">
-                            <button
-                                type="button"
-                                onClick={handleViewLinks}
-                                disabled={loadingLinks}
-                                className="flex items-center gap-1.5 text-xs border rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 disabled:opacity-50"
-                            >
-                                <Icon name="link2" size={12} />
-                                {loadingLinks ? t('card.loading') : t('card.viewLinks')}
                             </button>
                         </div>
                     )}
