@@ -1,4 +1,3 @@
-import { supabase } from './supabase'
 import { formatDistanceToNow } from 'date-fns'
 
 export const formatAccounting = (n: number | null | undefined): string =>
@@ -52,8 +51,3 @@ export const monthList = [
   { id: 11, name: 'Nov' },
   { id: 12, name: 'Des' },
 ]
-
-export const logout = async (): Promise<void> => {
-  await supabase.auth.signOut()
-  window.location.href = '/'
-}
