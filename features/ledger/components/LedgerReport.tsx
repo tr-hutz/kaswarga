@@ -39,17 +39,17 @@ export default function LedgerReport() {
     }
 
     return (
-        <div className="bg-white rounded-lg shadow-card p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="bg-surface rounded-lg shadow-card p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
                 <div className="font-semibold text-sm">{t('report.title')}</div>
-                <div className="text-xs text-dark-5 mt-0.5">{t('report.subtitle')}</div>
+                <div className="text-xs text-muted mt-0.5">{t('report.subtitle')}</div>
             </div>
 
             <div className="flex items-center gap-2">
                 <select
                     value={year}
                     onChange={e => setYear(Number(e.target.value))}
-                    className="border border-stroke rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    className="border border-divider rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 >
                     {YEARS.map(y => (
                         <option key={y} value={y}>{y}</option>

@@ -7,17 +7,17 @@ import { useTranslations } from 'next-intl'
 export default function RegisterLanding() {
     const t = useTranslations('registration')
     return (
-        <div className="min-h-screen flex items-center justify-center bg-body px-4">
+        <div className="min-h-screen flex items-center justify-center bg-canvas px-4">
             <div className="w-full max-w-md space-y-6">
 
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold text-dark">{t('landing.title')}</h1>
+                    <h1 className="text-2xl font-bold text-foreground">{t('landing.title')}</h1>
                 </div>
 
                 <div className="grid gap-4">
 
                     <Link href="/register/rt" className="block">
-                        <div className="bg-white border border-stroke rounded-xl p-6 hover:shadow-default transition cursor-pointer">
+                        <div className="bg-surface border border-divider rounded-xl p-6 hover:shadow-default transition cursor-pointer">
                             <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                                     <Icon name="building2" size={24} />
@@ -30,7 +30,7 @@ export default function RegisterLanding() {
                     </Link>
 
                     <Link href="/register/resident" className="block">
-                        <div className="bg-white border border-stroke rounded-xl p-6 hover:shadow-default transition cursor-pointer">
+                        <div className="bg-surface border border-divider rounded-xl p-6 hover:shadow-default transition cursor-pointer">
                             <div className="flex items-start gap-4">
                                 <div className="w-12 h-12 rounded-xl bg-success/10 text-success flex items-center justify-center shrink-0">
                                     <Icon name="users" size={24} />
@@ -44,7 +44,7 @@ export default function RegisterLanding() {
 
                 </div>
 
-                <p className="text-center text-sm text-dark-5">
+                <p className="text-center text-sm text-muted">
                     {t('landing.hasAccount')}{' '}
                     <Link href="/login" className="text-primary hover:underline font-medium">
                         {t('landing.signIn')}

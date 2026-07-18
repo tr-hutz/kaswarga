@@ -43,13 +43,13 @@ export default function ResidentImportModal({
 
     const columnGuide = (
         <>
-            <span className="font-mono bg-body px-1 rounded">nama</span> ({t('import.required')}){' '}
+            <span className="font-mono bg-canvas px-1 rounded">nama</span> ({t('import.required')}){' '}
             &nbsp;·&nbsp;
-            <span className="font-mono bg-body px-1 rounded">blok</span>{' '}
+            <span className="font-mono bg-canvas px-1 rounded">blok</span>{' '}
             &nbsp;·&nbsp;
-            <span className="font-mono bg-body px-1 rounded">no_rumah</span>{' '}
+            <span className="font-mono bg-canvas px-1 rounded">no_rumah</span>{' '}
             &nbsp;·&nbsp;
-            <span className="font-mono bg-body px-1 rounded">no_hp</span>
+            <span className="font-mono bg-canvas px-1 rounded">no_hp</span>
         </>
     )
 

@@ -9,7 +9,7 @@ import { useTranslations } from 'next-intl'
 function Field({ label, required, children }: { label: string; required?: boolean; children: ReactNode }) {
     return (
         <div>
-            <label className="text-xs text-dark-5 mb-1 block">
+            <label className="text-xs text-muted mb-1 block">
                 {label} {required && <span className="text-danger">*</span>}
             </label>
             {children}
@@ -28,7 +28,7 @@ function Input({ value, onChange, type = 'text', ...props }: InputProps) {
             type={type}
             value={value}
             onChange={e => onChange(e.target.value)}
-            className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
             {...props}
         />
     )
@@ -56,13 +56,13 @@ export default function RtRegistrationView({
 
     if (success) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-body px-4">
-                <div className="w-full max-w-md bg-white rounded-xl shadow-card border border-stroke p-8 text-center space-y-4">
+            <div className="min-h-screen flex items-center justify-center bg-canvas px-4">
+                <div className="w-full max-w-md bg-surface rounded-xl shadow-card border border-divider p-8 text-center space-y-4">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 text-success">
                         <Icon name="check-circle" size={32} />
                     </div>
                     <h1 className="text-xl font-bold">{t('success.title')}</h1>
-                    <p className="text-sm text-dark-5">
+                    <p className="text-sm text-muted">
                         {t('success.message', { name: form.name })}
                     </p>
                     <Link
@@ -77,21 +77,21 @@ export default function RtRegistrationView({
     }
 
     return (
-        <div className="min-h-screen bg-body py-10 px-4">
+        <div className="min-h-screen bg-canvas py-10 px-4">
             <form
                 onSubmit={onSubmit}
                 className="w-full max-w-2xl mx-auto space-y-6"
             >
                 <div>
                     <h1 className="text-2xl font-bold">{t('title')}</h1>
-                    <p className="text-sm text-dark-5 mt-1">
+                    <p className="text-sm text-muted mt-1">
                         {t('subtitle')}
                     </p>
                 </div>
 
                 {/* Identitas RT */}
-                <div className="bg-white rounded-xl border border-stroke p-6 space-y-4">
-                    <h2 className="font-semibold text-sm text-dark uppercase tracking-wide">
+                <div className="bg-surface rounded-xl border border-divider p-6 space-y-4">
+                    <h2 className="font-semibold text-sm text-foreground uppercase tracking-wide">
                         {t('sections.identity')}
                     </h2>
 
@@ -116,14 +116,14 @@ export default function RtRegistrationView({
                                         value={form.code}
                                         onChange={v => set('code', v.toUpperCase())}
                                         placeholder="RT-0001"
-                                        className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                        className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                                     />
                                     <button
                                         type="button"
                                         onClick={onGenerateCode}
                                         disabled={generating}
                                         title={t('generate')}
-                                        className="flex items-center gap-1 border border-stroke rounded-lg px-3 py-2 text-xs text-dark-5 hover:bg-body disabled:opacity-50 whitespace-nowrap"
+                                        className="flex items-center gap-1 border border-divider rounded-lg px-3 py-2 text-xs text-muted hover:bg-canvas disabled:opacity-50 whitespace-nowrap"
                                     >
                                         <Icon name="refresh-cw" size={13} className={generating ? 'animate-spin' : ''} />
                                         Generate
@@ -187,11 +187,11 @@ export default function RtRegistrationView({
                 </div>
 
                 {/* Rekening (collapsible) */}
-                <div className="bg-white rounded-xl border border-stroke overflow-hidden">
+                <div className="bg-surface rounded-xl border border-divider overflow-hidden">
                     <button
                         type="button"
                         onClick={() => setBankOpen(o => !o)}
-                        className="w-full flex items-center justify-between px-6 py-4 text-sm font-semibold text-dark"
+                        className="w-full flex items-center justify-between px-6 py-4 text-sm font-semibold text-foreground"
                     >
                         {t('sections.bank')}
                         {bankOpen ? <Icon name="chevron-up" size={16} /> : <Icon name="chevron-down" size={16} />}
@@ -231,12 +231,12 @@ export default function RtRegistrationView({
                 </div>
 
                 {/* Akun Pengurus */}
-                <div className="bg-white rounded-xl border border-stroke p-6 space-y-4">
+                <div className="bg-surface rounded-xl border border-divider p-6 space-y-4">
                     <div>
-                        <h2 className="font-semibold text-sm text-dark uppercase tracking-wide">
+                        <h2 className="font-semibold text-sm text-foreground uppercase tracking-wide">
                             {t('sections.officers')}
                         </h2>
-                        <p className="text-xs text-dark-5 mt-1">
+                        <p className="text-xs text-muted mt-1">
                             {t('sections.officersNote')}
                         </p>
                     </div>
@@ -307,7 +307,7 @@ export default function RtRegistrationView({
                 )}
 
                 <div className="flex items-center justify-between pb-4">
-                    <Link href="/register" className="text-sm text-dark-5 hover:underline">
+                    <Link href="/register" className="text-sm text-muted hover:underline">
                         {t('back')}
                     </Link>
                     <button

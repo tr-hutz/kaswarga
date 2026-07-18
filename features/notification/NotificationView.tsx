@@ -98,7 +98,7 @@ export default function NotificationView({
 
     if (loading) {
         return (
-            <div className="p-6 text-sm text-dark-6">
+            <div className="p-6 text-sm text-subtle">
                 {t('loading')}
             </div>
         )

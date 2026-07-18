@@ -33,16 +33,16 @@ export default function ToolbarExport({
                     px-4
                     rounded-lg
                     border
-                    border-stroke
-                    bg-white
-                    text-dark
+                    border-divider
+                    bg-surface
+                    text-foreground
                     text-sm
 
                     flex
                     items-center
                     gap-2
 
-                    hover:bg-body
+                    hover:bg-canvas
                     transition
                 "
             >
@@ -62,16 +62,16 @@ export default function ToolbarExport({
                     px-4
                     rounded-lg
                     border
-                    border-stroke
-                    bg-white
-                    text-dark
+                    border-divider
+                    bg-surface
+                    text-foreground
                     text-sm
 
                     flex
                     items-center
                     gap-2
 
-                    hover:bg-body
+                    hover:bg-canvas
                     transition
                 "
             >

@@ -26,7 +26,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         text-xs
-                        text-dark-5
+                        text-muted
                     "
                 >
                     {t('detail.residentName')}
@@ -47,7 +47,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         text-xs
-                        text-dark-5
+                        text-muted
                     "
                 >
                     {t('detail.house')}
@@ -68,7 +68,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         text-xs
-                        text-dark-5
+                        text-muted
                     "
                 >
                     {t('detail.year')}
@@ -89,7 +89,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         text-xs
-                        text-dark-5
+                        text-muted
                     "
                 >
                     {t('detail.totalAmount')}

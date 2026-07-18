@@ -57,7 +57,7 @@ export default function RtView({
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-xl font-semibold">{t('title')}</h1>
-                    <p className="text-sm text-dark-5 mt-0.5">
+                    <p className="text-sm text-muted mt-0.5">
                         {t('subtitle')}
                     </p>
                 </div>

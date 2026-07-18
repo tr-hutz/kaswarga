@@ -33,7 +33,7 @@ export default function ResidentDetailSummary({ resident }: { resident: any }) {
                 <p
                     className="
                         text-sm
-                        text-dark-5
+                        text-muted
                     "
                 >
                     {t('detail.blockLabel')} {resident.block} / {resident.houseNumber}
@@ -54,7 +54,7 @@ export default function ResidentDetailSummary({ resident }: { resident: any }) {
                     <p
                         className="
                             text-xs
-                            text-dark-5
+                            text-muted
                         "
                     >
                         {t('table.phone')}
@@ -75,7 +75,7 @@ export default function ResidentDetailSummary({ resident }: { resident: any }) {
                     <p
                         className="
                             text-xs
-                            text-dark-5
+                            text-muted
                         "
                     >
                         {t('table.status')}

@@ -163,8 +163,8 @@ export default function ActivationContainer() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-body px-4">
-            <div className="w-full max-w-md bg-white rounded-xl shadow-card border p-8 text-center space-y-4">
+        <div className="min-h-screen flex items-center justify-center bg-canvas px-4">
+            <div className="w-full max-w-md bg-surface rounded-xl shadow-card border border-divider p-8 text-center space-y-4">
 
                 {state === STATE.LOADING && (
                     <>
@@ -172,7 +172,7 @@ export default function ActivationContainer() {
                             <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                         </div>
                         <h1 className="text-xl font-bold">{t('loading.title')}</h1>
-                        <p className="text-sm text-dark-5">{t('loading.description')}</p>
+                        <p className="text-sm text-muted">{t('loading.description')}</p>
                     </>
                 )}
 
@@ -184,13 +184,13 @@ export default function ActivationContainer() {
                         </div>
                         <h1 className="text-xl font-bold">{t('setPassword.title')}</h1>
                         {(displayName || rtName) && (
-                            <p className="text-sm font-medium text-dark">
+                            <p className="text-sm font-medium text-foreground">
                                 {displayName && <span>{displayName}</span>}
-                                {displayName && rtName && <span className="text-dark-6"> · </span>}
+                                {displayName && rtName && <span className="text-subtle"> · </span>}
                                 {rtName && <span>{rtName}</span>}
                             </p>
                         )}
-                        <p className="text-sm text-dark-5">
+                        <p className="text-sm text-muted">
                             {t('setPassword.description')}
                         </p>
 
@@ -210,7 +210,7 @@ export default function ActivationContainer() {
                                     <button
                                         type="button"
                                         onClick={() => setShowPw(v => !v)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-dark-6 hover:text-dark-5"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-muted"
                                     >
                                         {showPw ? <Icon name="eye-off" size={16} /> : <Icon name="eye" size={16} />}
                                     </button>
@@ -247,7 +247,7 @@ export default function ActivationContainer() {
                             <Icon name="clock" size={32} />
                         </div>
                         <h1 className="text-xl font-bold">{t('expired.title')}</h1>
-                        <p className="text-sm text-dark-5">
+                        <p className="text-sm text-muted">
                             {t('expired.description', { email: email ?? '' })}
                         </p>
                         {resendDone ? (
@@ -278,9 +278,9 @@ export default function ActivationContainer() {
                         </div>
                         <h1 className="text-xl font-bold">{t('already.title')}</h1>
                         {email && (
-                            <p className="text-sm font-medium text-dark">{email}</p>
+                            <p className="text-sm font-medium text-foreground">{email}</p>
                         )}
-                        <p className="text-sm text-dark-5">
+                        <p className="text-sm text-muted">
                             {t('already.description')}
                         </p>
 
@@ -300,7 +300,7 @@ export default function ActivationContainer() {
                                     <button
                                         type="button"
                                         onClick={() => setShowPw(v => !v)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-dark-6 hover:text-dark-5"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-muted"
                                     >
                                         {showPw ? <Icon name="eye-off" size={16} /> : <Icon name="eye" size={16} />}
                                     </button>
@@ -331,7 +331,7 @@ export default function ActivationContainer() {
 
                         <a
                             href="/login"
-                            className="block text-sm text-dark-6 hover:underline"
+                            className="block text-sm text-muted hover:underline"
                         >
                             {t('already.hasPassword')}
                         </a>
@@ -344,7 +344,7 @@ export default function ActivationContainer() {
                             <Icon name="alert-circle" size={32} />
                         </div>
                         <h1 className="text-xl font-bold">{t('noToken.title')}</h1>
-                        <p className="text-sm text-dark-5">
+                        <p className="text-sm text-muted">
                             {t('noToken.description')}
                         </p>
                         <a
@@ -362,7 +362,7 @@ export default function ActivationContainer() {
                             <Icon name="alert-circle" size={32} />
                         </div>
                         <h1 className="text-xl font-bold">{t('activationError.title')}</h1>
-                        <p className="text-sm text-dark-5">
+                        <p className="text-sm text-muted">
                             {errMsg || t('activationError.fallback')}
                         </p>
                         <a

@@ -23,18 +23,18 @@ export default function ConfirmDialog({
     if (!open) return null
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-default p-6 w-full max-w-sm space-y-4">
+            <div className="bg-surface rounded-xl shadow-default p-6 w-full max-w-sm space-y-4">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-danger/10 rounded-xl">
                         <AlertTriangle size={20} className="text-danger" />
                     </div>
-                    <h2 className="text-base font-semibold text-dark">{title}</h2>
+                    <h2 className="text-base font-semibold text-foreground">{title}</h2>
                 </div>
-                <p className="text-sm text-dark-5">{message}</p>
+                <p className="text-sm text-muted">{message}</p>
                 <div className="flex justify-end gap-2 pt-1">
                     <button
                         onClick={onCancel}
-                        className="border border-stroke rounded-lg px-4 py-2 text-sm text-dark-5 hover:bg-body"
+                        className="border border-divider rounded-lg px-4 py-2 text-sm text-muted hover:bg-canvas"
                     >
                         {cancelLabel}
                     </button>

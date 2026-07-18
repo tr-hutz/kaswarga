@@ -18,7 +18,7 @@ function PasswordField({ label, value, onChange, placeholder }: PasswordFieldPro
 
     return (
         <div>
-            <label className="text-xs text-dark-5 mb-1 block">{label}</label>
+            <label className="text-xs text-muted mb-1 block">{label}</label>
             <div className="relative">
                 <input
                     required
@@ -26,12 +26,12 @@ function PasswordField({ label, value, onChange, placeholder }: PasswordFieldPro
                     value={value}
                     onChange={e => onChange(e.target.value)}
                     placeholder={placeholder}
-                    className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm pr-10"
+                    className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm pr-10"
                 />
                 <button
                     type="button"
                     onClick={() => setShow(s => !s)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-dark-6 hover:text-dark-5"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-subtle hover:text-muted"
                     tabIndex={-1}
                 >
                     {show ? <Icon name="eye-off" size={16} /> : <Icon name="eye" size={16} />}
@@ -59,14 +59,14 @@ export default function ChangePasswordView({ form, set, saving, error, onSubmit 
 
             <div>
                 <h1 className="text-xl font-semibold">{t('title')}</h1>
-                <p className="text-sm text-dark-5 mt-0.5">
+                <p className="text-sm text-muted mt-0.5">
                     {t('subtitle')}
                 </p>
             </div>
 
             <form
                 onSubmit={onSubmit}
-                className="bg-white rounded-xl border border-stroke shadow-card p-6 space-y-4"
+                className="bg-surface rounded-xl border border-divider shadow-card p-6 space-y-4"
             >
 
                 <PasswordField

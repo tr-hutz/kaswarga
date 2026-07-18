@@ -33,7 +33,7 @@ export default function SearchBox({
 
     return (
         <div className="relative">
-            <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-6 pointer-events-none" />
+            <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle pointer-events-none" />
             <input
                 type="text"
                 value={local}
@@ -41,8 +41,8 @@ export default function SearchBox({
                 placeholder={placeholder ?? t('searchPlaceholder')}
                 className="
                     pl-9 pr-3 py-2
-                    text-sm border border-stroke rounded-lg
-                    bg-white placeholder:text-dark-6
+                    text-sm text-foreground border border-divider rounded-lg
+                    bg-input placeholder:text-subtle
                     focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
                     w-64
                 "

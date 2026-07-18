@@ -23,7 +23,7 @@ function CopyButton({ text }: { text: string }) {
         <button
             type="button"
             onClick={handleCopy}
-            className="shrink-0 flex items-center gap-1 text-xs border border-stroke rounded-lg px-2 py-1 hover:bg-body text-dark-5"
+            className="shrink-0 flex items-center gap-1 text-xs border border-divider rounded-lg px-2 py-1 hover:bg-canvas text-muted"
         >
             {copied ? <Icon name="check-check" size={12} className="text-success" /> : <Icon name="copy" size={12} />}
             {copied ? 'Copied' : 'Copy'}
@@ -40,16 +40,16 @@ function DevLinksPanel({ links, onDismiss }: { links: any[]; onDismiss: () => vo
             </p>
             {links.map(({ email, role, link }) => (
                 <div key={email} className="space-y-1">
-                    <p className="text-xs text-dark-5">
+                    <p className="text-xs text-muted">
                         <span className="font-medium capitalize">{role}</span>
-                        <span className="text-dark-6"> — </span>
+                        <span className="text-subtle"> — </span>
                         {email}
                     </p>
                     <div className="flex items-center gap-2">
                         <input
                             readOnly
                             value={link || '(link tidak tersedia)'}
-                            className="flex-1 text-xs border border-stroke rounded-lg px-2 py-1.5 font-mono bg-body text-dark min-w-0"
+                            className="flex-1 text-xs border border-divider rounded-lg px-2 py-1.5 font-mono bg-canvas text-foreground min-w-0"
                         />
                         {link && <CopyButton text={link} />}
                     </div>
@@ -58,7 +58,7 @@ function DevLinksPanel({ links, onDismiss }: { links: any[]; onDismiss: () => vo
             <button
                 type="button"
                 onClick={onDismiss}
-                className="text-xs text-dark-5 hover:text-dark hover:underline"
+                className="text-xs text-muted hover:text-foreground hover:underline"
             >
                 Tutup
             </button>
@@ -123,21 +123,21 @@ function RequestCard({ req, onAction }: { req: any; onAction: () => void }) {
                     <div className="flex items-start justify-between gap-2">
                         <div>
                             <p className="font-medium text-sm">{rtData.name}</p>
-                            <p className="text-xs text-dark-5 mt-0.5">
+                            <p className="text-xs text-muted mt-0.5">
                                 {rtData.code} &bull; {rtData.city} &bull; {formatDate(req.created_at)}
                             </p>
                         </div>
                         <button
                             type="button"
                             onClick={() => setExpanded(o => !o)}
-                            className="text-dark-6 hover:text-dark-5 shrink-0"
+                            className="text-subtle hover:text-muted shrink-0"
                         >
                             {expanded ? <Icon name="chevron-up" size={16} /> : <Icon name="chevron-down" size={16} />}
                         </button>
                     </div>
 
                     {expanded && (
-                        <div className="mt-3 border-t border-stroke pt-3 space-y-3 text-xs text-dark-5">
+                        <div className="mt-3 border-t border-divider pt-3 space-y-3 text-xs text-muted">
 
                             {/* RT details */}
                             <div className="space-y-1">
@@ -149,26 +149,26 @@ function RequestCard({ req, onAction }: { req: any; onAction: () => void }) {
                             </div>
 
                             {/* Management */}
-                            <div className="space-y-1.5 border-t pt-2">
+                            <div className="space-y-1.5 border-t border-divider pt-2">
                                 {(req.chair_name || req.chair_email) && (
                                     <div>
-                                        <p className="font-medium text-dark">Ketua</p>
+                                        <p className="font-medium text-foreground">Ketua</p>
                                         {req.chair_name  && <p>{req.chair_name}</p>}
-                                        {req.chair_email && <p className="text-dark-6">{req.chair_email}</p>}
+                                        {req.chair_email && <p className="text-subtle">{req.chair_email}</p>}
                                     </div>
                                 )}
                                 {(req.admin_name || req.admin_email) && (
                                     <div>
-                                        <p className="font-medium text-dark">Admin</p>
+                                        <p className="font-medium text-foreground">Admin</p>
                                         {req.admin_name  && <p>{req.admin_name}</p>}
-                                        {req.admin_email && <p className="text-dark-6">{req.admin_email}</p>}
+                                        {req.admin_email && <p className="text-subtle">{req.admin_email}</p>}
                                     </div>
                                 )}
                                 {(req.treasurer_name || req.treasurer_email) && (
                                     <div>
-                                        <p className="font-medium text-dark">Bendahara</p>
+                                        <p className="font-medium text-foreground">Bendahara</p>
                                         {req.treasurer_name  && <p>{req.treasurer_name}</p>}
-                                        {req.treasurer_email && <p className="text-dark-6">{req.treasurer_email}</p>}
+                                        {req.treasurer_email && <p className="text-subtle">{req.treasurer_email}</p>}
                                     </div>
                                 )}
                             </div>

@@ -17,9 +17,9 @@ import {
 function SectionLabel({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div>
-      <h2 className="text-base font-semibold text-dark">{title}</h2>
+      <h2 className="text-base font-semibold text-foreground">{title}</h2>
       {subtitle && (
-        <p className="text-xs text-dark-6 mt-0.5">{subtitle}</p>
+        <p className="text-xs text-subtle mt-0.5">{subtitle}</p>
       )}
     </div>
   )
@@ -62,7 +62,7 @@ export default function DashboardView({
   ) {
 
     return (
-      <div className="text-sm text-dark-6 p-6">
+      <div className="text-sm text-subtle p-6">
         {t('loading')}
       </div>
     )
@@ -86,7 +86,7 @@ export default function DashboardView({
           className="
             text-2xl
             font-bold
-            text-dark
+            text-foreground
           "
         >
           {t('title')}
@@ -102,12 +102,12 @@ export default function DashboardView({
             )
           }
           className="
-            border border-stroke
+            border border-divider
             rounded-lg
             px-3
             py-2
-            text-sm text-dark
-            bg-white
+            text-sm text-foreground
+            bg-input
             focus:outline-none focus:border-primary
           "
         >

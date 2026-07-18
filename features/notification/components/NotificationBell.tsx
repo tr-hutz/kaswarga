@@ -28,7 +28,7 @@ export default function NotificationBell({
 
                 rounded-lg
 
-                hover:bg-body
+                hover:bg-canvas
             "
         >
 

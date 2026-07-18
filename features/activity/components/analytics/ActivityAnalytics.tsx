@@ -23,8 +23,8 @@ export default function ActivityAnalytics({ total, approvals, expenseCount, resi
 
 function Card({ title, value }: { title: string; value: number }) {
     return (
-        <div className="bg-white rounded-lg shadow-card p-5">
-            <p className="text-sm text-dark-5">{title}</p>
+        <div className="bg-surface rounded-lg shadow-card p-5">
+            <p className="text-sm text-muted">{title}</p>
             <h3 className="text-2xl font-bold mt-2">{value}</h3>
         </div>
     )

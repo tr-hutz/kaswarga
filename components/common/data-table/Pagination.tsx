@@ -24,7 +24,7 @@ export default function Pagination({
     const pages = totalPages > 1 ? buildPageRange(page, totalPages) : []
 
     return (
-        <div className="flex items-center justify-between text-sm text-dark-5 px-1 flex-wrap gap-3">
+        <div className="flex items-center justify-between text-sm text-muted px-1 flex-wrap gap-3">
 
             {/* Left — rows per page */}
             <div className="flex items-center gap-2">
@@ -35,7 +35,7 @@ export default function Pagination({
                             data-testid="dt-page-size"
                             value={pageSize}
                             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-                            className="rounded-lg border border-stroke px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            className="rounded-lg border border-divider px-2 py-1 text-sm bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                         >
                             {PAGE_SIZE_OPTIONS.map((s) => (
                                 <option key={s} value={s}>{s}</option>
@@ -61,7 +61,7 @@ export default function Pagination({
 
                     {pages.map((p, i) =>
                         p === '...' ? (
-                            <span key={`ellipsis-${i}`} className="px-2 text-dark-6">…</span>
+                            <span key={`ellipsis-${i}`} className="px-2 text-subtle">…</span>
                         ) : (
                             <PageButton
                                 key={p}
@@ -98,7 +98,7 @@ function PageButton({
                 min-w-[32px] h-8 px-2 rounded-lg text-sm flex items-center justify-center transition
                 ${active
                     ? 'bg-primary text-white font-medium'
-                    : 'hover:bg-body text-dark-5 disabled:opacity-30 disabled:cursor-not-allowed'
+                    : 'hover:bg-canvas text-muted disabled:opacity-30 disabled:cursor-not-allowed'
                 }
             `}
             {...rest}

@@ -14,16 +14,16 @@ export default function LedgerAnalytics({ income, expense, balance }: Props) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white rounded-lg shadow-card p-5">
-                <p className="text-sm text-dark-5">{t('analytics.income')}</p>
+            <div className="bg-surface rounded-lg shadow-card p-5">
+                <p className="text-sm text-muted">{t('analytics.income')}</p>
                 <h2 className="mt-2 text-2xl font-bold">{formatRupiah(income)}</h2>
             </div>
-            <div className="bg-white rounded-lg shadow-card p-5">
-                <p className="text-sm text-dark-5">{t('analytics.expense')}</p>
+            <div className="bg-surface rounded-lg shadow-card p-5">
+                <p className="text-sm text-muted">{t('analytics.expense')}</p>
                 <h2 className="mt-2 text-2xl font-bold">{formatRupiah(expense)}</h2>
             </div>
-            <div className="bg-white rounded-lg shadow-card p-5">
-                <p className="text-sm text-dark-5">{t('analytics.balance')}</p>
+            <div className="bg-surface rounded-lg shadow-card p-5">
+                <p className="text-sm text-muted">{t('analytics.balance')}</p>
                 <h2 className="mt-2 text-2xl font-bold">{formatRupiah(balance)}</h2>
             </div>
         </div>

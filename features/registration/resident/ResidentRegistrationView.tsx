@@ -24,13 +24,13 @@ export default function ResidentRegistrationView({
 
     if (success) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-body px-4">
-                <div className="w-full max-w-md bg-white rounded-xl shadow-card border border-stroke p-8 text-center space-y-4">
+            <div className="min-h-screen flex items-center justify-center bg-canvas px-4">
+                <div className="w-full max-w-md bg-surface rounded-xl shadow-card border border-divider p-8 text-center space-y-4">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 text-success">
                         <Icon name="check-circle" size={32} />
                     </div>
                     <h1 className="text-xl font-bold">{t('success.title')}</h1>
-                    <p className="text-sm text-dark-5">
+                    <p className="text-sm text-muted">
                         {t('success.message', { email: form.email })}
                     </p>
                     <Link
@@ -45,93 +45,93 @@ export default function ResidentRegistrationView({
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-body px-4 py-10">
+        <div className="min-h-screen flex items-center justify-center bg-canvas px-4 py-10">
             <form
                 onSubmit={onSubmit}
                 className="w-full max-w-md space-y-5"
             >
                 <div>
                     <h1 className="text-2xl font-bold">{t('title')}</h1>
-                    <p className="text-sm text-dark-5 mt-1">
+                    <p className="text-sm text-muted mt-1">
                         {t('subtitle')}
                     </p>
                 </div>
 
-                <div className="bg-white rounded-xl border border-stroke p-6 space-y-4">
+                <div className="bg-surface rounded-xl border border-divider p-6 space-y-4">
 
                     <div>
-                        <label className="text-xs text-dark-5 mb-1 block">{t('fields.fullName')} <span className="text-danger">*</span></label>
+                        <label className="text-xs text-muted mb-1 block">{t('fields.fullName')} <span className="text-danger">*</span></label>
                         <input
                             required
                             value={form.name}
                             onChange={e => set('name', e.target.value)}
                             placeholder="Nama sesuai KTP"
-                            className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
                     <div>
-                        <label className="text-xs text-dark-5 mb-1 block">{t('fields.email')} <span className="text-danger">*</span></label>
+                        <label className="text-xs text-muted mb-1 block">{t('fields.email')} <span className="text-danger">*</span></label>
                         <input
                             required
                             type="email"
                             value={form.email}
                             onChange={e => set('email', e.target.value)}
                             placeholder="email@example.com"
-                            className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
                     <div>
-                        <label className="text-xs text-dark-5 mb-1 block">{t('fields.rtCode')} <span className="text-danger">*</span></label>
+                        <label className="text-xs text-muted mb-1 block">{t('fields.rtCode')} <span className="text-danger">*</span></label>
                         <input
                             required
                             value={form.rtCode}
                             onChange={e => set('rtCode', e.target.value.toUpperCase())}
                             placeholder="RT-0001"
-                            className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30"
                         />
-                        <p className="text-xs text-dark-6 mt-1">{t('fields.rtCodeNote')}</p>
+                        <p className="text-xs text-subtle mt-1">{t('fields.rtCodeNote')}</p>
                     </div>
 
                     {/* Extra fields (collapsible) */}
-                    <div className="border border-stroke rounded-lg overflow-hidden">
+                    <div className="border border-divider rounded-lg overflow-hidden">
                         <button
                             type="button"
                             onClick={() => setExtraOpen(o => !o)}
-                            className="w-full flex items-center justify-between px-4 py-3 text-sm text-dark-5"
+                            className="w-full flex items-center justify-between px-4 py-3 text-sm text-muted"
                         >
                             {t('fields.extra')}
                             {extraOpen ? <Icon name="chevron-up" size={14} /> : <Icon name="chevron-down" size={14} />}
                         </button>
 
                         {extraOpen && (
-                            <div className="px-4 pb-4 space-y-3 border-t border-stroke">
+                            <div className="px-4 pb-4 space-y-3 border-t border-divider">
                                 <div className="mt-3">
-                                    <label className="text-xs text-dark-5 mb-1 block">{t('fields.block')}</label>
+                                    <label className="text-xs text-muted mb-1 block">{t('fields.block')}</label>
                                     <input
                                         value={form.block}
                                         onChange={e => set('block', e.target.value)}
                                         placeholder="Blok A / Jl. Kenanga"
-                                        className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm"
+                                        className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-dark-5 mb-1 block">{t('fields.houseNumber')}</label>
+                                    <label className="text-xs text-muted mb-1 block">{t('fields.houseNumber')}</label>
                                     <input
                                         value={form.houseNumber}
                                         onChange={e => set('houseNumber', e.target.value)}
                                         placeholder="12"
-                                        className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm"
+                                        className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
                                     />
                                 </div>
                                 <div>
-                                    <label className="text-xs text-dark-5 mb-1 block">{t('fields.phone')}</label>
+                                    <label className="text-xs text-muted mb-1 block">{t('fields.phone')}</label>
                                     <input
                                         value={form.phone}
                                         onChange={e => set('phone', e.target.value)}
                                         placeholder="08123456789"
-                                        className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm"
+                                        className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
                                     />
                                 </div>
                             </div>
@@ -147,7 +147,7 @@ export default function ResidentRegistrationView({
                 )}
 
                 <div className="flex items-center justify-between">
-                    <Link href="/register" className="text-sm text-dark-5 hover:underline">
+                    <Link href="/register" className="text-sm text-muted hover:underline">
                         {t('back')}
                     </Link>
                     <button

@@ -49,7 +49,7 @@ export default function ActivityView({
         <div className="space-y-5">
             <div>
                 <h1 className="text-2xl font-bold">{t('title')}</h1>
-                <p className="text-dark-5">{t('subtitle')}</p>
+                <p className="text-muted">{t('subtitle')}</p>
             </div>
 
             <ActivityAnalytics

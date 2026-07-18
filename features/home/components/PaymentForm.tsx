@@ -33,7 +33,7 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
 
     return (
         <div className="space-y-1.5">
-            <p className="text-sm font-medium text-dark">{t('receipt.label')}</p>
+            <p className="text-sm font-medium text-foreground">{t('receipt.label')}</p>
 
             <div
                 onClick={() => inputRef.current?.click()}
@@ -43,7 +43,7 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
                     transition cursor-pointer select-none h-36
                     ${file
                         ? 'border-primary/30 bg-primary/5'
-                        : 'border-stroke hover:border-primary/40 hover:bg-primary/5 bg-body'
+                        : 'border-divider hover:border-primary/40 hover:bg-primary/5 bg-canvas'
                     }
                 `}
             >
@@ -57,7 +57,7 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
                         <button
                             type="button"
                             onClick={handleRemove}
-                            className="absolute top-2 right-2 bg-white border border-stroke rounded-full p-0.5 text-dark-5 hover:text-danger transition-colors"
+                            className="absolute top-2 right-2 bg-surface border border-divider rounded-full p-0.5 text-muted hover:text-danger transition-colors"
                         >
                             <Icon name="x" size={14} />
                         </button>
@@ -68,7 +68,7 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
                         </div>
                     </>
                 ) : (
-                    <div className="flex flex-col items-center gap-1.5 text-dark-6 py-4">
+                    <div className="flex flex-col items-center gap-1.5 text-subtle py-4">
                         <Icon name="image" size={28} strokeWidth={1.5} />
                         <p className="text-xs font-medium">{t('receipt.clickUpload')}</p>
                         <p className="text-[11px]">{t('receipt.format')}</p>
@@ -77,7 +77,7 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
             </div>
 
             {file && (
-                <p className="text-xs text-dark-5 truncate">{file.name}</p>
+                <p className="text-xs text-muted truncate">{file.name}</p>
             )}
 
             <input
@@ -165,7 +165,7 @@ export default function PaymentForm({
     /* ---------------------------------------------------------------------- */
 
     return (
-        <form onSubmit={handleSubmit} className="border border-stroke rounded-xl p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="border border-divider rounded-xl p-6 space-y-6">
 
             {/* HEADER */}
             <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
@@ -175,7 +175,7 @@ export default function PaymentForm({
                     <select
                         value={paymentYear}
                         onChange={e => setPaymentYear(Number(e.target.value))}
-                        className="border border-stroke rounded-lg px-3 py-2 text-sm"
+                        className="border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground"
                     >
                         {[paymentYear - 1, paymentYear, paymentYear + 1].map(year => (
                             <option key={year} value={year}>{year}</option>
@@ -188,7 +188,7 @@ export default function PaymentForm({
                         className={`px-4 py-2 rounded-lg border text-sm transition-all ${
                             PAYABLE_MONTHS.length > 0 && PAYABLE_MONTHS.every(m => selectedMonths.includes(m))
                                 ? 'bg-primary text-white border-primary'
-                                : 'bg-white hover:bg-body'
+                                : 'bg-surface hover:bg-canvas'
                         }`}
                     >
                         {t('payment.annualized')}
@@ -211,10 +211,10 @@ export default function PaymentForm({
                             onClick={() => toggleMonth(month.id)}
                             className={`border rounded-lg p-4 text-left transition-all ${
                                 isDisabled
-                                    ? 'bg-body text-dark-6 border-stroke cursor-not-allowed'
+                                    ? 'bg-canvas text-subtle border-divider cursor-not-allowed'
                                     : isSelected
                                     ? 'bg-primary text-white border-primary'
-                                    : 'bg-white hover:bg-body'
+                                    : 'bg-surface hover:bg-canvas'
                             }`}
                         >
                             <div className="font-semibold">{month.short}</div>
@@ -236,13 +236,13 @@ export default function PaymentForm({
                 <BuktiUpload file={file} onChange={setFile} />
 
                 {/* Summary */}
-                <div className="rounded-xl border border-stroke p-4 bg-body space-y-3">
+                <div className="rounded-xl border border-divider p-4 bg-canvas space-y-3">
                     <div className="flex items-center justify-between text-sm">
-                        <span className="text-dark-5">{t('payment.totalMonths')}</span>
+                        <span className="text-muted">{t('payment.totalMonths')}</span>
                         <strong>{totalMonths} {t('payment.monthsUnit')}</strong>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                        <span className="text-dark-5">{t('payment.totalFee')}</span>
+                        <span className="text-muted">{t('payment.totalFee')}</span>
                         <strong>Rp {totalFee.toLocaleString('id-ID')}</strong>
                     </div>
                     <div className="pt-1">

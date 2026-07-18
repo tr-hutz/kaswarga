@@ -62,7 +62,7 @@ export default function NotificationItem({
                 px-4
                 py-3
                 border-b
-                hover:bg-body
+                hover:bg-canvas
                 transition
 
                 ${!notification.is_read
@@ -82,7 +82,7 @@ export default function NotificationItem({
                 <div
                     className="
                         mt-1
-                        text-dark-5
+                        text-muted
                     "
                 >
                     {getIcon()}
@@ -136,7 +136,7 @@ export default function NotificationItem({
                     <div
                         className="
                             text-sm
-                            text-dark-5
+                            text-muted
                             mt-1
                         "
                     >
@@ -148,7 +148,7 @@ export default function NotificationItem({
                     <div
                         className="
                             text-xs
-                            text-dark-6
+                            text-subtle
                             mt-2
                         "
                     >

@@ -8,7 +8,7 @@ export default function EmptyState() {
     return (
         <tr data-testid="dt-empty">
             <td colSpan={999}>
-                <div className="py-16 text-center text-sm text-dark-6">
+                <div className="py-16 text-center text-sm text-subtle">
                     {t('noData')}
                 </div>
             </td>

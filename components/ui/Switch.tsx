@@ -31,7 +31,7 @@ export default function Switch({ checked, onChange, label, disabled = false }: P
                     `}
                 />
             </button>
-            {label && <span className="text-sm text-dark">{label}</span>}
+            {label && <span className="text-sm text-foreground">{label}</span>}
         </label>
     )
 }

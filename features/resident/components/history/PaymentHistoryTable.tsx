@@ -12,7 +12,7 @@ export default function PaymentHistoryTable({ data = [] }: { data?: any[] }) {
 
         <div
             className="
-        bg-white
+        bg-surface
         rounded-xl
         border
         overflow-hidden
@@ -25,7 +25,7 @@ export default function PaymentHistoryTable({ data = [] }: { data?: any[] }) {
 
                 <tr
                     className="
-              bg-body
+              bg-canvas
               border-b
             "
                 >

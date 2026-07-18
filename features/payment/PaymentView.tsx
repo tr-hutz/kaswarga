@@ -44,8 +44,8 @@ export default function PaymentView({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-dark">{t('title')}</h1>
-                <p className="text-sm text-dark-5 mt-1">{t('subtitle')}</p>
+                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
             </div>
 
             <DataTable
@@ -65,7 +65,7 @@ export default function PaymentView({
                     <select
                         value={String(query.filters?.status ?? 'pending')}
                         onChange={(e) => setFilter('status', e.target.value)}
-                        className="h-9 rounded-lg border bg-white px-3 text-sm"
+                        className="h-9 rounded-lg border bg-input px-3 text-sm"
                     >
                         <option value="pending">{tc('paymentStatus.pending')}</option>
                         <option value="approved">{tc('paymentStatus.approved')}</option>
@@ -76,13 +76,13 @@ export default function PaymentView({
                     <div className="flex items-center gap-2">
                         <button
                             onClick={onExportExcel}
-                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
+                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
                         >
                             {tc('actions.exportExcel')}
                         </button>
                         <button
                             onClick={onExportCSV}
-                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
+                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
                         >
                             {tc('actions.exportCsv')}
                         </button>

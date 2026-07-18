@@ -54,14 +54,14 @@ export default function ResidentAnalyticsCards({
                     <div
                         key={card.label}
                         className="
-              bg-white
+              bg-surface
               border
               rounded-xl
               p-5
             "
                     >
 
-                        <p className="text-sm text-dark-5">
+                        <p className="text-sm text-muted">
                             {card.label}
                         </p>
 

@@ -29,7 +29,7 @@ function CopyButton({ text }: { text: string }) {
         <button
             type="button"
             onClick={handleCopy}
-            className="shrink-0 flex items-center gap-1 text-xs border border-stroke rounded-lg px-2 py-1 hover:bg-body text-dark-5"
+            className="shrink-0 flex items-center gap-1 text-xs border border-divider rounded-lg px-2 py-1 hover:bg-canvas text-muted"
         >
             {copied ? <Icon name="check-check" size={12} className="text-success" /> : <Icon name="copy" size={12} />}
             {copied ? 'Copied' : 'Copy'}
@@ -46,16 +46,16 @@ function DevLinksPanel({ links, onDismiss, closeLabel }: { links: any[]; onDismi
             </p>
             {links.map(({ email, role, link }) => (
                 <div key={email} className="space-y-1">
-                    <p className="text-xs text-dark-5">
+                    <p className="text-xs text-muted">
                         <span className="font-medium capitalize">{role}</span>
-                        <span className="text-dark-6"> — </span>
+                        <span className="text-subtle"> — </span>
                         {email}
                     </p>
                     <div className="flex items-center gap-2">
                         <input
                             readOnly
                             value={link || '(link tidak tersedia)'}
-                            className="flex-1 text-xs border border-stroke rounded-lg px-2 py-1.5 font-mono bg-body text-dark min-w-0"
+                            className="flex-1 text-xs border border-divider rounded-lg px-2 py-1.5 font-mono bg-canvas text-foreground min-w-0"
                         />
                         {link && <CopyButton text={link} />}
                     </div>
@@ -64,7 +64,7 @@ function DevLinksPanel({ links, onDismiss, closeLabel }: { links: any[]; onDismi
             <button
                 type="button"
                 onClick={onDismiss}
-                className="text-xs text-dark-5 hover:text-dark hover:underline"
+                className="text-xs text-muted hover:text-foreground hover:underline"
             >
                 {closeLabel}
             </button>
@@ -128,7 +128,7 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
     }
 
     return (
-        <div className="bg-white border border-stroke rounded-xl overflow-hidden">
+        <div className="bg-surface border border-divider rounded-xl overflow-hidden">
             <div className="flex items-start gap-3 p-4">
 
                 <div className="flex-1 min-w-0">
@@ -142,7 +142,7 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
                                     {t(`tabs.${req.status}`) || req.status}
                                 </span>
                             </div>
-                            <p className="text-xs text-dark-5 mt-0.5">
+                            <p className="text-xs text-muted mt-0.5">
                                 {(rtData.code || rtData.kode) && <span>{rtData.code || rtData.kode} &bull; </span>}
                                 {(rtData.city || rtData.kota) && <span>{rtData.city || rtData.kota} &bull; </span>}
                                 <span>{formatDate(req.created_at)}</span>
@@ -151,7 +151,7 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
                         <button
                             type="button"
                             onClick={() => setExpanded(o => !o)}
-                            className="text-dark-6 hover:text-dark-5 shrink-0"
+                            className="text-subtle hover:text-muted shrink-0"
                         >
                             {expanded ? <Icon name="chevron-up" size={16} /> : <Icon name="chevron-down" size={16} />}
                         </button>
@@ -159,7 +159,7 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
 
                     {/* Expanded details */}
                     {expanded && (
-                        <div className="mt-3 border-t border-stroke pt-3 space-y-3 text-xs text-dark-5">
+                        <div className="mt-3 border-t border-divider pt-3 space-y-3 text-xs text-muted">
 
                             {/* RT info */}
                             <div className="space-y-1">
@@ -169,38 +169,38 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
                             </div>
 
                             {/* Management */}
-                            <div className="space-y-2 border-t border-stroke pt-2">
+                            <div className="space-y-2 border-t border-divider pt-2">
                                 {(req.chair_name || req.chair_email) && (
                                     <div>
-                                        <p className="font-medium text-dark">{t('card.roles.chair')}</p>
+                                        <p className="font-medium text-foreground">{t('card.roles.chair')}</p>
                                         {req.chair_name  && <p>{req.chair_name}</p>}
-                                        {req.chair_email && <p className="text-dark-6">{req.chair_email}</p>}
+                                        {req.chair_email && <p className="text-subtle">{req.chair_email}</p>}
                                     </div>
                                 )}
                                 {(req.admin_name || req.admin_email) && (
                                     <div>
-                                        <p className="font-medium text-dark">{t('card.roles.admin')}</p>
+                                        <p className="font-medium text-foreground">{t('card.roles.admin')}</p>
                                         {req.admin_name  && <p>{req.admin_name}</p>}
-                                        {req.admin_email && <p className="text-dark-6">{req.admin_email}</p>}
+                                        {req.admin_email && <p className="text-subtle">{req.admin_email}</p>}
                                     </div>
                                 )}
                                 {(req.treasurer_name || req.treasurer_email) && (
                                     <div>
-                                        <p className="font-medium text-dark">{t('card.roles.treasurer')}</p>
+                                        <p className="font-medium text-foreground">{t('card.roles.treasurer')}</p>
                                         {req.treasurer_name  && <p>{req.treasurer_name}</p>}
-                                        {req.treasurer_email && <p className="text-dark-6">{req.treasurer_email}</p>}
+                                        {req.treasurer_email && <p className="text-subtle">{req.treasurer_email}</p>}
                                     </div>
                                 )}
                             </div>
 
                             {/* Status info */}
                             {req.status === 'approved' && req.approved_at && (
-                                <p className="border-t border-stroke pt-2 text-success">
+                                <p className="border-t border-divider pt-2 text-success">
                                     <span className="font-medium">{t('card.approvedAt')}:</span> {formatDate(req.approved_at)}
                                 </p>
                             )}
                             {req.status === 'rejected' && (
-                                <div className="border-t border-stroke pt-2 space-y-1 text-danger">
+                                <div className="border-t border-divider pt-2 space-y-1 text-danger">
                                     {req.rejected_at      && <p><span className="font-medium">{t('card.rejectedAt')}:</span> {formatDate(req.rejected_at)}</p>}
                                     {req.rejection_reason && <p><span className="font-medium">{t('card.reason')}:</span> {req.rejection_reason}</p>}
                                 </div>

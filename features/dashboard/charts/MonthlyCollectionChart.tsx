@@ -12,12 +12,25 @@ import {
 
 } from 'recharts'
 
+import { useTheme } from '@/hooks/useTheme'
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function MonthlyCollectionChart({ data = [] }: { data?: any[] }) {
 
+  const { resolvedTheme } = useTheme()
+
+  const isDark       = resolvedTheme === 'dark'
+  const gridStroke   = isDark ? '#2E3A47' : '#E2E8F0'
+  const tickFill     = isDark ? '#8A99AF' : '#637381'
+  const tooltipStyle = {
+    backgroundColor: isDark ? '#24303F' : '#ffffff',
+    borderColor:     isDark ? '#2E3A47' : '#E2E8F0',
+    color:           isDark ? '#DEE4EE' : '#1C2434',
+  }
+
   return (
 
-    <div className="bg-white rounded-lg shadow-card p-5">
+    <div className="bg-surface rounded-lg shadow-card p-5">
 
       <div
         className="
@@ -25,11 +38,11 @@ export default function MonthlyCollectionChart({ data = [] }: { data?: any[] }) 
         "
       >
 
-        <h2 className="text-lg font-semibold text-dark">
+        <h2 className="text-lg font-semibold text-foreground">
           Monthly Collection
         </h2>
 
-        <p className="text-sm text-dark-5">
+        <p className="text-sm text-muted">
           Number of payments per month
         </p>
 
@@ -52,16 +65,21 @@ export default function MonthlyCollectionChart({ data = [] }: { data?: any[] }) 
 
             <CartesianGrid
               strokeDasharray="3 3"
-              stroke="#E2E8F0"
+              stroke={gridStroke}
             />
 
             <XAxis
               dataKey="month"
+              tick={{ fill: tickFill, fontSize: 12 }}
             />
 
-            <YAxis />
+            <YAxis
+              tick={{ fill: tickFill, fontSize: 12 }}
+            />
 
-            <Tooltip />
+            <Tooltip
+              contentStyle={tooltipStyle}
+            />
 
             <Bar
               dataKey="total"
