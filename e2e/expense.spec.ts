@@ -5,7 +5,7 @@
  *
  * Approval tests require at least one pending expense in the database.
  */
-import { test, expect } from '@playwright/test'
+import { test, expect, type Browser } from '@playwright/test'
 import { ExpensesPage } from './pages/ExpensesPage'
 import { refreshAdminSession } from './utils/refreshSession'
 import path from 'path'
@@ -97,9 +97,9 @@ test.describe('create expense (treasurer)', () => {
 test.describe('expense drawer (admin)', () => {
   test.use({ storageState: path.join(__dirname, '.auth/session.json') })
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async ({ browser }: { browser: Browser }) => {
     await refreshAdminSession(browser)
-  }, { timeout: 60000 })
+  })
 
   test('renders the expenses page', async ({ page }) => {
     const expenses = new ExpensesPage(page)
@@ -147,9 +147,9 @@ test.describe('expense drawer (admin)', () => {
 test.describe('approve / reject expense (admin)', () => {
   test.use({ storageState: path.join(__dirname, '.auth/session.json') })
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async ({ browser }: { browser: Browser }) => {
     await refreshAdminSession(browser)
-  }, { timeout: 60000 })
+  })
 
   test('approve first pending expense (if data exists)', async ({ page }) => {
     const expenses = new ExpensesPage(page)

@@ -5,7 +5,7 @@
  *
  * Approval tests require at least one pending payment in the database.
  */
-import { test, expect } from '@playwright/test'
+import { test, expect, type Browser } from '@playwright/test'
 import { PaymentsPage } from './pages/PaymentsPage'
 import { waitForShell } from './utils/waitForShell'
 import { refreshAdminSession } from './utils/refreshSession'
@@ -70,9 +70,9 @@ test.describe('submit payment (resident)', () => {
 test.describe('payments list (admin)', () => {
   test.use({ storageState: path.join(__dirname, '.auth/session.json') })
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async ({ browser }: { browser: Browser }) => {
     await refreshAdminSession(browser)
-  }, { timeout: 60000 })
+  })
 
   test('renders the payments page', async ({ page }) => {
     const payments = new PaymentsPage(page)

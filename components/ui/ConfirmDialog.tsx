@@ -41,7 +41,7 @@ export default function ConfirmDialog({
                     <button
                         onClick={onConfirm}
                         disabled={loading}
-                        className="bg-danger hover:bg-red-700 text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50"
+                        className="bg-danger hover:bg-danger/80 text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50"
                     >
                         {confirmLabel}
                     </button>

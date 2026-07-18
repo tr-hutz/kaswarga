@@ -41,7 +41,7 @@ export default function PaymentContainer() {
             description:      t('reject.description'),
             placeholder:      t('reject.placeholder'),
             confirmLabel:     t('reject.confirmLabel'),
-            confirmClassName: 'bg-red-600 hover:bg-red-700 text-white',
+            confirmClassName: 'bg-danger hover:bg-danger/80 text-white',
         })
         if (!reason) return
         await reject(payment.id, reason)

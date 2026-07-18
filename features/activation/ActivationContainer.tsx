@@ -228,7 +228,7 @@ export default function ActivationContainer() {
                                 />
                             </div>
                             {pwError && (
-                                <p className="text-sm text-red-600">{pwError}</p>
+                                <p className="text-sm text-danger">{pwError}</p>
                             )}
                             <button
                                 type="submit"
@@ -318,7 +318,7 @@ export default function ActivationContainer() {
                                 />
                             </div>
                             {pwError && (
-                                <p className="text-sm text-red-600">{pwError}</p>
+                                <p className="text-sm text-danger">{pwError}</p>
                             )}
                             <button
                                 type="submit"
