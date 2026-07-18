@@ -17,15 +17,7 @@ export default function MonthlyCollectionChart({ data = [] }: { data?: any[] }) 
 
   return (
 
-    <div
-      className="
-        bg-white
-        rounded-2xl
-        p-5
-        shadow-sm
-        border
-      "
-    >
+    <div className="bg-white rounded-lg shadow-card p-5">
 
       <div
         className="
@@ -33,21 +25,11 @@ export default function MonthlyCollectionChart({ data = [] }: { data?: any[] }) 
         "
       >
 
-        <h2
-          className="
-            text-lg
-            font-semibold
-          "
-        >
+        <h2 className="text-lg font-semibold text-dark">
           Monthly Collection
         </h2>
 
-        <p
-          className="
-            text-sm
-            text-slate-500
-          "
-        >
+        <p className="text-sm text-dark-5">
           Number of payments per month
         </p>
 
@@ -70,6 +52,7 @@ export default function MonthlyCollectionChart({ data = [] }: { data?: any[] }) 
 
             <CartesianGrid
               strokeDasharray="3 3"
+              stroke="#E2E8F0"
             />
 
             <XAxis
@@ -82,6 +65,7 @@ export default function MonthlyCollectionChart({ data = [] }: { data?: any[] }) 
 
             <Bar
               dataKey="total"
+              fill="#3C50E0"
             />
 
           </BarChart>

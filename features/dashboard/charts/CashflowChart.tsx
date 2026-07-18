@@ -22,15 +22,7 @@ export default function CashflowChart({ data = [] }: { data?: any[] }) {
 
   return (
 
-    <div
-      className="
-        bg-white
-        rounded-2xl
-        p-5
-        shadow-sm
-        border
-      "
-    >
+    <div className="bg-white rounded-lg shadow-card p-5">
 
       <div
         className="
@@ -38,21 +30,11 @@ export default function CashflowChart({ data = [] }: { data?: any[] }) {
         "
       >
 
-        <h2
-          className="
-            text-lg
-            font-semibold
-          "
-        >
+        <h2 className="text-lg font-semibold text-dark">
           Cashflow
         </h2>
 
-        <p
-          className="
-            text-sm
-            text-slate-500
-          "
-        >
+        <p className="text-sm text-dark-5">
           {t('cashflowSubtitle')}
         </p>
 
@@ -75,6 +57,7 @@ export default function CashflowChart({ data = [] }: { data?: any[] }) {
 
             <CartesianGrid
               strokeDasharray="3 3"
+              stroke="#E2E8F0"
             />
 
             <XAxis
@@ -91,18 +74,21 @@ export default function CashflowChart({ data = [] }: { data?: any[] }) {
               type="monotone"
               dataKey="income"
               strokeWidth={2}
+              stroke="#219653"
             />
 
             <Line
               type="monotone"
               dataKey="expense"
               strokeWidth={2}
+              stroke="#D34053"
             />
 
             <Line
               type="monotone"
               dataKey="balance"
               strokeWidth={2}
+              stroke="#3C50E0"
             />
 
           </LineChart>

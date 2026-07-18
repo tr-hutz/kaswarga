@@ -5,21 +5,9 @@ export default function CashflowChart({ data }: { data?: any }) {
 
   return (
 
-    <div
-      className="
-        rounded-2xl
-        border
-        p-6
-      "
-    >
+    <div className="rounded-lg shadow-card p-6">
 
-      <h2
-        className="
-          text-lg
-          font-semibold
-          mb-4
-        "
-      >
+      <h2 className="text-lg font-semibold text-dark mb-4">
         Cashflow
       </h2>
 

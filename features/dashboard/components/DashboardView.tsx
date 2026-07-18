@@ -17,9 +17,9 @@ import {
 function SectionLabel({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div>
-      <h2 className="text-base font-semibold text-gray-800">{title}</h2>
+      <h2 className="text-base font-semibold text-dark">{title}</h2>
       {subtitle && (
-        <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>
+        <p className="text-xs text-dark-6 mt-0.5">{subtitle}</p>
       )}
     </div>
   )
@@ -62,7 +62,7 @@ export default function DashboardView({
   ) {
 
     return (
-      <div className="text-sm text-gray-400 p-6">
+      <div className="text-sm text-dark-6 p-6">
         {t('loading')}
       </div>
     )
@@ -86,6 +86,7 @@ export default function DashboardView({
           className="
             text-2xl
             font-bold
+            text-dark
           "
         >
           {t('title')}
@@ -101,11 +102,13 @@ export default function DashboardView({
             )
           }
           className="
-            border
+            border border-stroke
             rounded-lg
             px-3
             py-2
-            text-sm
+            text-sm text-dark
+            bg-white
+            focus:outline-none focus:border-primary
           "
         >
 
@@ -154,25 +157,25 @@ export default function DashboardView({
           <InsightCard
             title={t('cards.paid')}
             value={paymentHealth.paid}
-            valueColor="text-green-600"
+            valueColor="text-success"
           />
 
           <InsightCard
             title={t('cards.almostPaid')}
             value={paymentHealth.almostPaid}
-            valueColor="text-yellow-600"
+            valueColor="text-warning"
           />
 
           <InsightCard
             title={t('cards.delinquent')}
             value={paymentHealth.delinquent}
-            valueColor="text-orange-600"
+            valueColor="text-warning"
           />
 
           <InsightCard
             title={t('cards.neverPaid')}
             value={paymentHealth.neverPaid}
-            valueColor="text-red-600"
+            valueColor="text-danger"
           />
 
         </div>
@@ -201,28 +204,28 @@ export default function DashboardView({
             title={t('cards.balance')}
             value={formatRupiah(financialInsight.balance)}
             subtitle={t('cards.balanceSubtitle')}
-            valueColor="text-blue-700"
+            valueColor="text-primary"
           />
 
           <InsightCard
             title={t('cards.income')}
             value={formatRupiah(financialInsight.income)}
             subtitle={t('cards.incomeSubtitle')}
-            valueColor="text-green-600"
+            valueColor="text-success"
           />
 
           <InsightCard
             title={t('cards.expense')}
             value={formatRupiah(financialInsight.expense)}
             subtitle={t('cards.expenseSubtitle')}
-            valueColor="text-orange-600"
+            valueColor="text-warning"
           />
 
           <InsightCard
             title={t('cards.arrears')}
             value={formatRupiah(financialInsight.arrears)}
             subtitle={t('cards.arrearsSubtitle')}
-            valueColor="text-red-600"
+            valueColor="text-danger"
           />
 
         </div>
