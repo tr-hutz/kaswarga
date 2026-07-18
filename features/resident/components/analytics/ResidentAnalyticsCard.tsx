@@ -56,12 +56,12 @@ export default function ResidentAnalyticsCards({
                         className="
               bg-white
               border
-              rounded-2xl
+              rounded-xl
               p-5
             "
                     >
 
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-dark-5">
                             {card.label}
                         </p>
 

@@ -136,8 +136,8 @@ function Card({
         <div
             className="
         bg-white
-        border
-        rounded-2xl
+        shadow-card
+        rounded-lg
         p-5
       "
         >
@@ -145,7 +145,7 @@ function Card({
             <p
                 className="
           text-sm
-          text-slate-500
+          text-dark-5
         "
             >
                 {title}
@@ -168,7 +168,7 @@ function Card({
                     <p
                         className="
               text-sm
-              text-slate-400
+              text-dark-6
               mt-2
             "
                     >

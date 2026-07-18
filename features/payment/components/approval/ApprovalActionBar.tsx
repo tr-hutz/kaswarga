@@ -57,11 +57,11 @@ export default function ApprovalActionBar({
                     flex-1
                     px-4
                     py-3
-                    rounded-xl
-                    bg-emerald-600
+                    rounded-lg
+                    bg-success
                     text-white
                     font-medium
-                    hover:bg-emerald-700
+                    hover:bg-success/90
                     transition
                 "
             >
@@ -77,11 +77,11 @@ export default function ApprovalActionBar({
                     flex-1
                     px-4
                     py-3
-                    rounded-xl
-                    bg-red-600
+                    rounded-lg
+                    bg-danger
                     text-white
                     font-medium
-                    hover:bg-red-700
+                    hover:bg-danger/90
                     transition
                 "
             >

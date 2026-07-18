@@ -91,8 +91,8 @@ export default function ExpenseView({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
-                <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
+                <h1 className="text-2xl font-bold text-dark">{t('title')}</h1>
+                <p className="text-sm text-dark-5 mt-1">{t('subtitle')}</p>
             </div>
 
             <DataTable
@@ -125,27 +125,27 @@ export default function ExpenseView({
                         {role === 'CHAIR' && pendingCount > 0 && (
                             <button
                                 onClick={approveAllExpenses}
-                                className="bg-emerald-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-emerald-700 transition"
+                                className="bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
                             >
                                 {t('approveAll', { count: pendingCount })}
                             </button>
                         )}
                         <button
                             onClick={() => exportExcel(data)}
-                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
                         >
                             {tc('actions.exportExcel')}
                         </button>
                         <button
                             onClick={() => exportCSV(data)}
-                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
                         >
                             {tc('actions.exportCsv')}
                         </button>
                         {role === 'TREASURER' && (
                             <button
                                 onClick={openImport}
-                                className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                                className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
                             >
                                 {tc('actions.import')}
                             </button>
@@ -153,7 +153,7 @@ export default function ExpenseView({
                         {role === 'TREASURER' && (
                             <button
                                 onClick={openCreateForm}
-                                className="px-4 py-2 rounded-lg bg-black text-white text-sm hover:bg-gray-800"
+                                className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary-dark"
                             >
                                 + {tc('actions.add')}
                             </button>

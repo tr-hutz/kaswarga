@@ -53,7 +53,7 @@ export default function ResidentDetailDrawer({
                     w-full
                     max-w-lg
                     bg-white
-                    shadow-2xl
+                    shadow-default
                     p-6
                     overflow-y-auto
                 "

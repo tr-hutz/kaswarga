@@ -3,10 +3,10 @@
 import { useTranslations } from 'next-intl'
 
 const STATUS_STYLE: Record<string, string> = {
-    approved: 'bg-green-100 border-green-500',
-    pending:  'bg-yellow-100 border-yellow-500',
-    rejected: 'bg-red-100 border-red-500',
-    unpaid:   'bg-gray-100 border-gray-300'
+    approved: 'bg-success/10 border-success',
+    pending:  'bg-warning/10 border-warning',
+    rejected: 'bg-danger/10 border-danger',
+    unpaid:   'bg-body border-stroke'
 }
 
 export default function MonthCard({ month, status }: { month: string; status?: string }) {

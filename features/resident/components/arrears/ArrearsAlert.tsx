@@ -14,11 +14,11 @@ export default function ArrearsAlert({ arrears = 0 }: { arrears?: number }) {
 
         <div
             className="
-        bg-amber-50
+        bg-warning/10
         border
-        border-amber-200
-        text-amber-700
-        rounded-2xl
+        border-warning/30
+        text-warning
+        rounded-xl
         p-4
       "
         >

@@ -11,9 +11,9 @@ import { useTranslations }                                          from 'next-i
 const IS_DEV = process.env.NODE_ENV === 'development'
 
 const STATUS_BADGE: Record<string, string> = {
-    pending:  'bg-amber-100 text-amber-700',
-    approved: 'bg-green-100 text-green-700',
-    rejected: 'bg-red-100 text-red-700',
+    pending:  'bg-warning/10 text-warning',
+    approved: 'bg-success/10 text-success',
+    rejected: 'bg-danger/10 text-danger',
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -29,9 +29,9 @@ function CopyButton({ text }: { text: string }) {
         <button
             type="button"
             onClick={handleCopy}
-            className="shrink-0 flex items-center gap-1 text-xs border rounded-lg px-2 py-1 hover:bg-gray-50 text-gray-600"
+            className="shrink-0 flex items-center gap-1 text-xs border border-stroke rounded-lg px-2 py-1 hover:bg-body text-dark-5"
         >
-            {copied ? <Icon name="check-check" size={12} className="text-green-600" /> : <Icon name="copy" size={12} />}
+            {copied ? <Icon name="check-check" size={12} className="text-success" /> : <Icon name="copy" size={12} />}
             {copied ? 'Copied' : 'Copy'}
         </button>
     )
@@ -40,22 +40,22 @@ function CopyButton({ text }: { text: string }) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function DevLinksPanel({ links, onDismiss, closeLabel }: { links: any[]; onDismiss: () => void; closeLabel: string }) {
     return (
-        <div className="mt-3 border-t border-amber-200 pt-3 space-y-3">
-            <p className="text-xs font-semibold text-amber-700 uppercase tracking-wider">
+        <div className="mt-3 border-t border-warning/20 pt-3 space-y-3">
+            <p className="text-xs font-semibold text-warning uppercase tracking-wider">
                 [DEV] Activation Links
             </p>
             {links.map(({ email, role, link }) => (
                 <div key={email} className="space-y-1">
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-dark-5">
                         <span className="font-medium capitalize">{role}</span>
-                        <span className="text-gray-400"> — </span>
+                        <span className="text-dark-6"> — </span>
                         {email}
                     </p>
                     <div className="flex items-center gap-2">
                         <input
                             readOnly
                             value={link || '(link tidak tersedia)'}
-                            className="flex-1 text-xs border rounded-lg px-2 py-1.5 font-mono bg-gray-50 text-gray-700 min-w-0"
+                            className="flex-1 text-xs border border-stroke rounded-lg px-2 py-1.5 font-mono bg-body text-dark min-w-0"
                         />
                         {link && <CopyButton text={link} />}
                     </div>
@@ -64,7 +64,7 @@ function DevLinksPanel({ links, onDismiss, closeLabel }: { links: any[]; onDismi
             <button
                 type="button"
                 onClick={onDismiss}
-                className="text-xs text-gray-500 hover:text-gray-700 hover:underline"
+                className="text-xs text-dark-5 hover:text-dark hover:underline"
             >
                 {closeLabel}
             </button>
@@ -128,7 +128,7 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
     }
 
     return (
-        <div className="bg-white border rounded-xl overflow-hidden">
+        <div className="bg-white border border-stroke rounded-xl overflow-hidden">
             <div className="flex items-start gap-3 p-4">
 
                 <div className="flex-1 min-w-0">
@@ -142,7 +142,7 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
                                     {t(`tabs.${req.status}`) || req.status}
                                 </span>
                             </div>
-                            <p className="text-xs text-gray-500 mt-0.5">
+                            <p className="text-xs text-dark-5 mt-0.5">
                                 {(rtData.code || rtData.kode) && <span>{rtData.code || rtData.kode} &bull; </span>}
                                 {(rtData.city || rtData.kota) && <span>{rtData.city || rtData.kota} &bull; </span>}
                                 <span>{formatDate(req.created_at)}</span>
@@ -151,7 +151,7 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
                         <button
                             type="button"
                             onClick={() => setExpanded(o => !o)}
-                            className="text-gray-400 hover:text-gray-600 shrink-0"
+                            className="text-dark-6 hover:text-dark-5 shrink-0"
                         >
                             {expanded ? <Icon name="chevron-up" size={16} /> : <Icon name="chevron-down" size={16} />}
                         </button>
@@ -159,7 +159,7 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
 
                     {/* Expanded details */}
                     {expanded && (
-                        <div className="mt-3 border-t pt-3 space-y-3 text-xs text-gray-600">
+                        <div className="mt-3 border-t border-stroke pt-3 space-y-3 text-xs text-dark-5">
 
                             {/* RT info */}
                             <div className="space-y-1">
@@ -169,38 +169,38 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
                             </div>
 
                             {/* Management */}
-                            <div className="space-y-2 border-t pt-2">
+                            <div className="space-y-2 border-t border-stroke pt-2">
                                 {(req.chair_name || req.chair_email) && (
                                     <div>
-                                        <p className="font-medium text-gray-700">{t('card.roles.chair')}</p>
+                                        <p className="font-medium text-dark">{t('card.roles.chair')}</p>
                                         {req.chair_name  && <p>{req.chair_name}</p>}
-                                        {req.chair_email && <p className="text-gray-400">{req.chair_email}</p>}
+                                        {req.chair_email && <p className="text-dark-6">{req.chair_email}</p>}
                                     </div>
                                 )}
                                 {(req.admin_name || req.admin_email) && (
                                     <div>
-                                        <p className="font-medium text-gray-700">{t('card.roles.admin')}</p>
+                                        <p className="font-medium text-dark">{t('card.roles.admin')}</p>
                                         {req.admin_name  && <p>{req.admin_name}</p>}
-                                        {req.admin_email && <p className="text-gray-400">{req.admin_email}</p>}
+                                        {req.admin_email && <p className="text-dark-6">{req.admin_email}</p>}
                                     </div>
                                 )}
                                 {(req.treasurer_name || req.treasurer_email) && (
                                     <div>
-                                        <p className="font-medium text-gray-700">{t('card.roles.treasurer')}</p>
+                                        <p className="font-medium text-dark">{t('card.roles.treasurer')}</p>
                                         {req.treasurer_name  && <p>{req.treasurer_name}</p>}
-                                        {req.treasurer_email && <p className="text-gray-400">{req.treasurer_email}</p>}
+                                        {req.treasurer_email && <p className="text-dark-6">{req.treasurer_email}</p>}
                                     </div>
                                 )}
                             </div>
 
                             {/* Status info */}
                             {req.status === 'approved' && req.approved_at && (
-                                <p className="border-t pt-2 text-green-600">
+                                <p className="border-t border-stroke pt-2 text-success">
                                     <span className="font-medium">{t('card.approvedAt')}:</span> {formatDate(req.approved_at)}
                                 </p>
                             )}
                             {req.status === 'rejected' && (
-                                <div className="border-t pt-2 space-y-1 text-red-600">
+                                <div className="border-t border-stroke pt-2 space-y-1 text-danger">
                                     {req.rejected_at      && <p><span className="font-medium">{t('card.rejectedAt')}:</span> {formatDate(req.rejected_at)}</p>}
                                     {req.rejection_reason && <p><span className="font-medium">{t('card.reason')}:</span> {req.rejection_reason}</p>}
                                 </div>
@@ -215,7 +215,7 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
                             <button
                                 onClick={handleApprove}
                                 disabled={processing}
-                                className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+                                className="flex items-center gap-1.5 bg-success hover:bg-success/90 text-white rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                             >
                                 <Icon name="check" size={12} />
                                 {t('card.approve')}
@@ -223,7 +223,7 @@ export default function RegistrationCard({ req, onAction }: { req: any; onAction
                             <button
                                 onClick={handleReject}
                                 disabled={processing}
-                                className="flex items-center gap-1.5 border border-red-300 text-red-600 hover:bg-red-50 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+                                className="flex items-center gap-1.5 border border-danger/30 text-danger hover:bg-danger/5 rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50"
                             >
                                 <Icon name="x" size={12} />
                                 {t('card.reject')}

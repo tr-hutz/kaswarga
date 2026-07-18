@@ -62,11 +62,11 @@ export default function NotificationItem({
                 px-4
                 py-3
                 border-b
-                hover:bg-gray-50
+                hover:bg-body
                 transition
 
                 ${!notification.is_read
-                ? 'bg-blue-50'
+                ? 'bg-primary/5'
                 : ''
             }
             `}
@@ -82,7 +82,7 @@ export default function NotificationItem({
                 <div
                     className="
                         mt-1
-                        text-gray-500
+                        text-dark-5
                     "
                 >
                     {getIcon()}
@@ -123,7 +123,7 @@ export default function NotificationItem({
                                         w-2
                                         h-2
                                         rounded-full
-                                        bg-blue-600
+                                        bg-primary
                                         shrink-0
                                     "
                                 />
@@ -136,7 +136,7 @@ export default function NotificationItem({
                     <div
                         className="
                             text-sm
-                            text-gray-600
+                            text-dark-5
                             mt-1
                         "
                     >
@@ -148,7 +148,7 @@ export default function NotificationItem({
                     <div
                         className="
                             text-xs
-                            text-gray-400
+                            text-dark-6
                             mt-2
                         "
                     >

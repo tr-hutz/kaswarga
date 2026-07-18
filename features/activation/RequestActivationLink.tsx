@@ -44,12 +44,12 @@ export default function RequestActivationLink() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-            <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-8 space-y-5">
+        <div className="min-h-screen flex items-center justify-center bg-body px-4">
+            <div className="w-full max-w-md bg-white rounded-lg shadow-card border border-stroke p-8 space-y-5">
 
                 <Link
                     href="/login"
-                    className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
+                    className="inline-flex items-center gap-1.5 text-sm text-dark-5 hover:text-dark"
                 >
                     <Icon name="arrow-left" size={14} />
                     {t('backToLogin')}
@@ -58,11 +58,11 @@ export default function RequestActivationLink() {
                 {!done ? (
                     <>
                         <div>
-                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 mb-3">
+                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 text-primary mb-3">
                                 <Icon name="mail" size={22} />
                             </div>
                             <h1 className="text-xl font-bold">{t('title')}</h1>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-dark-5 mt-1">
                                 {t('subtitle')}
                             </p>
                         </div>
@@ -77,12 +77,12 @@ export default function RequestActivationLink() {
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
                                     placeholder="email@example.com"
-                                    className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border border-stroke rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                                 />
                             </div>
 
                             {error && (
-                                <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+                                <p className="text-sm text-danger bg-danger/5 border border-danger/20 rounded-lg px-4 py-3">
                                     {error}
                                 </p>
                             )}
@@ -90,7 +90,7 @@ export default function RequestActivationLink() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-black text-white rounded-xl py-3 text-sm font-medium disabled:opacity-50"
+                                className="w-full bg-primary text-white rounded-lg py-3 text-sm font-medium disabled:opacity-50 hover:bg-primary-dark transition"
                             >
                                 {loading ? t('submitting') : t('submit')}
                             </button>
@@ -98,16 +98,16 @@ export default function RequestActivationLink() {
                     </>
                 ) : (
                     <div className="text-center space-y-3 py-4">
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 text-success">
                             <Icon name="check-circle" size={32} />
                         </div>
                         <h1 className="text-xl font-bold">{t('success.title')}</h1>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-dark-5">
                             {t('success.message', { email })}
                         </p>
                         <Link
                             href="/login"
-                            className="inline-block mt-2 text-sm text-blue-600 hover:underline"
+                            className="inline-block mt-2 text-sm text-primary hover:underline"
                         >
                             {t('success.backToLogin')}
                         </Link>

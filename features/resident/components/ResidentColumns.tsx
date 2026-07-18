@@ -57,7 +57,7 @@ export function buildResidentColumns(opts: Options): Column<ResidentRow>[] {
                     </button>
                     <button
                         onClick={(e) => { e.stopPropagation(); onDelete(row) }}
-                        className="text-sm border px-3 py-1 rounded-lg text-red-600"
+                        className="text-sm border px-3 py-1 rounded-lg text-danger"
                     >
                         {tc('actions.delete')}
                     </button>
