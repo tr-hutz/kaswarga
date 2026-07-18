@@ -23,18 +23,18 @@ export default function EditRoleForm({ target, onSave, onClose, saving }: EditRo
 
     return (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4">
+            <div className="bg-white rounded-xl p-6 w-full max-w-sm space-y-4">
 
                 <h2 className="text-base font-semibold">{t('editRole.title')}</h2>
 
                 <div>
-                    <p className="text-sm text-gray-500">
-                        {t('editRole.user')}: <span className="font-medium text-gray-800">
+                    <p className="text-sm text-dark-5">
+                        {t('editRole.user')}: <span className="font-medium text-dark">
                             {target.user?.name || target.user?.email}
                         </span>
                     </p>
-                    <p className="text-sm text-gray-500">
-                        {t('editRole.rt')}: <span className="font-medium text-gray-800">
+                    <p className="text-sm text-dark-5">
+                        {t('editRole.rt')}: <span className="font-medium text-dark">
                             {target.membership?.rt?.name || t('editRole.system')}
                         </span>
                     </p>
@@ -43,7 +43,7 @@ export default function EditRoleForm({ target, onSave, onClose, saving }: EditRo
                 <select
                     value={role}
                     onChange={e => setRole(e.target.value)}
-                    className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                    className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm"
                 >
                     {ROLE_VALUES.map(r => (
                         <option key={r} value={r}>{t(`roles.${r}`)}</option>
@@ -53,14 +53,14 @@ export default function EditRoleForm({ target, onSave, onClose, saving }: EditRo
                 <div className="flex justify-end gap-2 pt-1">
                     <button
                         onClick={onClose}
-                        className="border rounded-xl px-4 py-2 text-sm"
+                        className="border border-stroke rounded-lg px-4 py-2 text-sm"
                     >
                         {tc('actions.cancel')}
                     </button>
                     <button
                         onClick={() => onSave(target.membership.id, role)}
                         disabled={saving}
-                        className="bg-black text-white rounded-xl px-4 py-2 text-sm disabled:opacity-50"
+                        className="bg-primary text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50"
                     >
                         {saving ? tc('states.saving') : tc('actions.save')}
                     </button>

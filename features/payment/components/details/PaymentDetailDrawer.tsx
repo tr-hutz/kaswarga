@@ -76,7 +76,7 @@ export default function PaymentDetailDrawer({
                     h-full
                     bg-white
                     overflow-y-auto
-                    shadow-2xl
+                    shadow-default
                     p-6
                     space-y-6
                 "
@@ -106,7 +106,7 @@ export default function PaymentDetailDrawer({
                         <p
                             className="
                                 text-sm
-                                text-slate-500
+                                text-dark-5
                             "
                         >
                             {t('detail.subtitle')}
@@ -117,7 +117,7 @@ export default function PaymentDetailDrawer({
                     <button
                         onClick={onClose}
                         className="
-                            text-slate-500
+                            text-dark-5
                             hover:text-black
                         "
                     >

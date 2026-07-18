@@ -73,13 +73,13 @@ export default function LedgerView({
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => exportExcel(data)}
-                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
                         >
                             {tc('actions.exportExcel')}
                         </button>
                         <button
                             onClick={() => exportCSV(data)}
-                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
                         >
                             {tc('actions.exportCsv')}
                         </button>

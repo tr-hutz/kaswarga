@@ -7,7 +7,7 @@ import { useTranslations } from 'next-intl'
 export default function RegisterLanding() {
     const t = useTranslations('registration')
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-body px-4">
             <div className="w-full max-w-md space-y-6">
 
                 <div className="text-center">
@@ -17,9 +17,9 @@ export default function RegisterLanding() {
                 <div className="grid gap-4">
 
                     <Link href="/register/rt" className="block">
-                        <div className="bg-white border rounded-2xl p-6 hover:shadow-md transition cursor-pointer">
+                        <div className="bg-white border border-stroke rounded-xl p-6 hover:shadow-default transition cursor-pointer">
                             <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                                     <Icon name="building2" size={24} />
                                 </div>
                                 <div>
@@ -30,9 +30,9 @@ export default function RegisterLanding() {
                     </Link>
 
                     <Link href="/register/resident" className="block">
-                        <div className="bg-white border rounded-2xl p-6 hover:shadow-md transition cursor-pointer">
+                        <div className="bg-white border border-stroke rounded-xl p-6 hover:shadow-default transition cursor-pointer">
                             <div className="flex items-start gap-4">
-                                <div className="w-12 h-12 rounded-xl bg-green-100 text-green-700 flex items-center justify-center shrink-0">
+                                <div className="w-12 h-12 rounded-xl bg-success/10 text-success flex items-center justify-center shrink-0">
                                     <Icon name="users" size={24} />
                                 </div>
                                 <div>
@@ -44,9 +44,9 @@ export default function RegisterLanding() {
 
                 </div>
 
-                <p className="text-center text-sm text-gray-500">
+                <p className="text-center text-sm text-dark-5">
                     {t('landing.hasAccount')}{' '}
-                    <Link href="/login" className="text-blue-600 hover:underline font-medium">
+                    <Link href="/login" className="text-primary hover:underline font-medium">
                         {t('landing.signIn')}
                     </Link>
                 </p>

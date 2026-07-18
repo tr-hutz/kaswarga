@@ -57,13 +57,13 @@ export default function RtView({
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-xl font-semibold">{t('title')}</h1>
-                    <p className="text-sm text-gray-500 mt-0.5">
+                    <p className="text-sm text-dark-5 mt-0.5">
                         {t('subtitle')}
                     </p>
                 </div>
                 <button
                     onClick={openCreate}
-                    className="flex items-center gap-2 bg-black text-white text-sm rounded-xl px-4 py-2.5"
+                    className="flex items-center gap-2 bg-primary text-white text-sm rounded-lg px-4 py-2.5"
                 >
                     <Icon name="plus" size={16} />
                     {t('addButton')}

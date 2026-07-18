@@ -44,8 +44,8 @@ export default function PaymentView({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
-                <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
+                <h1 className="text-2xl font-bold text-dark">{t('title')}</h1>
+                <p className="text-sm text-dark-5 mt-1">{t('subtitle')}</p>
             </div>
 
             <DataTable
@@ -76,13 +76,13 @@ export default function PaymentView({
                     <div className="flex items-center gap-2">
                         <button
                             onClick={onExportExcel}
-                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
                         >
                             {tc('actions.exportExcel')}
                         </button>
                         <button
                             onClick={onExportCSV}
-                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
                         >
                             {tc('actions.exportCsv')}
                         </button>

@@ -9,8 +9,8 @@ import { useTranslations } from 'next-intl'
 function Field({ label, required, children }: { label: string; required?: boolean; children: ReactNode }) {
     return (
         <div>
-            <label className="text-xs text-gray-500 mb-1 block">
-                {label} {required && <span className="text-red-500">*</span>}
+            <label className="text-xs text-dark-5 mb-1 block">
+                {label} {required && <span className="text-danger">*</span>}
             </label>
             {children}
         </div>
@@ -28,7 +28,7 @@ function Input({ value, onChange, type = 'text', ...props }: InputProps) {
             type={type}
             value={value}
             onChange={e => onChange(e.target.value)}
-            className="w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
             {...props}
         />
     )
@@ -56,18 +56,18 @@ export default function RtRegistrationView({
 
     if (success) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-                <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-8 text-center space-y-4">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600">
+            <div className="min-h-screen flex items-center justify-center bg-body px-4">
+                <div className="w-full max-w-md bg-white rounded-xl shadow-card border border-stroke p-8 text-center space-y-4">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 text-success">
                         <Icon name="check-circle" size={32} />
                     </div>
                     <h1 className="text-xl font-bold">{t('success.title')}</h1>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-dark-5">
                         {t('success.message', { name: form.name })}
                     </p>
                     <Link
                         href="/login"
-                        className="inline-block mt-2 bg-black text-white rounded-xl px-6 py-2.5 text-sm font-medium"
+                        className="inline-block mt-2 bg-primary text-white rounded-lg px-6 py-2.5 text-sm font-medium"
                     >
                         {t('success.backToLogin')}
                     </Link>
@@ -77,21 +77,21 @@ export default function RtRegistrationView({
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 py-10 px-4">
+        <div className="min-h-screen bg-body py-10 px-4">
             <form
                 onSubmit={onSubmit}
                 className="w-full max-w-2xl mx-auto space-y-6"
             >
                 <div>
                     <h1 className="text-2xl font-bold">{t('title')}</h1>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-dark-5 mt-1">
                         {t('subtitle')}
                     </p>
                 </div>
 
                 {/* Identitas RT */}
-                <div className="bg-white rounded-2xl border p-6 space-y-4">
-                    <h2 className="font-semibold text-sm text-gray-700 uppercase tracking-wide">
+                <div className="bg-white rounded-xl border border-stroke p-6 space-y-4">
+                    <h2 className="font-semibold text-sm text-dark uppercase tracking-wide">
                         {t('sections.identity')}
                     </h2>
 
@@ -116,14 +116,14 @@ export default function RtRegistrationView({
                                         value={form.code}
                                         onChange={v => set('code', v.toUpperCase())}
                                         placeholder="RT-0001"
-                                        className="w-full border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full border border-stroke rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                                     />
                                     <button
                                         type="button"
                                         onClick={onGenerateCode}
                                         disabled={generating}
                                         title={t('generate')}
-                                        className="flex items-center gap-1 border rounded-xl px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
+                                        className="flex items-center gap-1 border border-stroke rounded-lg px-3 py-2 text-xs text-dark-5 hover:bg-body disabled:opacity-50 whitespace-nowrap"
                                     >
                                         <Icon name="refresh-cw" size={13} className={generating ? 'animate-spin' : ''} />
                                         Generate
@@ -187,11 +187,11 @@ export default function RtRegistrationView({
                 </div>
 
                 {/* Rekening (collapsible) */}
-                <div className="bg-white rounded-2xl border overflow-hidden">
+                <div className="bg-white rounded-xl border border-stroke overflow-hidden">
                     <button
                         type="button"
                         onClick={() => setBankOpen(o => !o)}
-                        className="w-full flex items-center justify-between px-6 py-4 text-sm font-semibold text-gray-700"
+                        className="w-full flex items-center justify-between px-6 py-4 text-sm font-semibold text-dark"
                     >
                         {t('sections.bank')}
                         {bankOpen ? <Icon name="chevron-up" size={16} /> : <Icon name="chevron-down" size={16} />}
@@ -231,12 +231,12 @@ export default function RtRegistrationView({
                 </div>
 
                 {/* Akun Pengurus */}
-                <div className="bg-white rounded-2xl border p-6 space-y-4">
+                <div className="bg-white rounded-xl border border-stroke p-6 space-y-4">
                     <div>
-                        <h2 className="font-semibold text-sm text-gray-700 uppercase tracking-wide">
+                        <h2 className="font-semibold text-sm text-dark uppercase tracking-wide">
                             {t('sections.officers')}
                         </h2>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-dark-5 mt-1">
                             {t('sections.officersNote')}
                         </p>
                     </div>
@@ -301,19 +301,19 @@ export default function RtRegistrationView({
                 </div>
 
                 {error && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+                    <div className="bg-danger/5 border border-danger/30 text-danger rounded-lg px-4 py-3 text-sm">
                         {error}
                     </div>
                 )}
 
                 <div className="flex items-center justify-between pb-4">
-                    <Link href="/register" className="text-sm text-gray-500 hover:underline">
+                    <Link href="/register" className="text-sm text-dark-5 hover:underline">
                         {t('back')}
                     </Link>
                     <button
                         type="submit"
                         disabled={submitting}
-                        className="bg-black text-white rounded-xl px-6 py-2.5 text-sm font-medium disabled:opacity-50"
+                        className="bg-primary text-white rounded-lg px-6 py-2.5 text-sm font-medium disabled:opacity-50"
                     >
                         {submitting ? t('submitting') : t('submit')}
                     </button>

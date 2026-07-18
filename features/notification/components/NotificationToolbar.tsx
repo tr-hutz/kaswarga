@@ -57,7 +57,7 @@ export default function NotificationToolbar({
                 <p
                     className="
                         text-sm
-                        text-gray-500
+                        text-dark-5
                     "
                 >
                     {t('subtitle')}
@@ -160,7 +160,7 @@ export default function NotificationToolbar({
 
                         border
 
-                        hover:bg-gray-50
+                        hover:bg-body
                     "
                 >
 

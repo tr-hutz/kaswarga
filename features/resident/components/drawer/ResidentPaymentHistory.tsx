@@ -22,16 +22,16 @@ function getStatusColor(status: string) {
     switch (status) {
 
         case 'approved':
-            return 'bg-emerald-100 text-emerald-700'
+            return 'bg-success/10 text-success'
 
         case 'pending':
-            return 'bg-amber-100 text-amber-700'
+            return 'bg-warning/10 text-warning'
 
         case 'rejected':
-            return 'bg-red-100 text-red-700'
+            return 'bg-danger/10 text-danger'
 
         default:
-            return 'bg-slate-100 text-slate-700'
+            return 'bg-body text-dark-5'
     }
 }
 
@@ -54,7 +54,7 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
                     className="
             text-sm
             font-semibold
-            text-slate-700
+            text-dark
           "
                 >
                     {t('title')}
@@ -68,7 +68,7 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
                     <div
                         className="
               text-sm
-              text-slate-500
+              text-dark-5
               border
               rounded-xl
               p-4
@@ -110,7 +110,7 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
                             <div
                                 className="
                   text-sm
-                  text-slate-500
+                  text-dark-5
                 "
                             >
                                 Rp
@@ -123,7 +123,7 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
                             <div
                                 className="
                   text-xs
-                  text-slate-400
+                  text-dark-6
                   mt-1
                 "
                             >

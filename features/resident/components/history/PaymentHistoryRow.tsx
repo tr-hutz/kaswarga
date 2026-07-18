@@ -8,7 +8,7 @@ export default function PaymentHistoryRow({ row }: { row: any }) {
         <tr
             className="
         border-b
-        hover:bg-slate-50
+        hover:bg-body
       "
         >
 
@@ -24,7 +24,7 @@ export default function PaymentHistoryRow({ row }: { row: any }) {
                 Rp {(row.amount || 0).toLocaleString('id-ID')}
             </td>
 
-            <td className="p-4 text-slate-500">
+            <td className="p-4 text-dark-5">
                 {
                     new Date(row.date)
                         .toLocaleDateString('id-ID')

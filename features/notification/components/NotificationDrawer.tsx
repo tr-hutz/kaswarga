@@ -113,7 +113,7 @@ export default function NotificationDrawer({
                     max-w-md
                     bg-white
                     h-full
-                    shadow-2xl
+                    shadow-default
                     flex
                     flex-col
                 "
