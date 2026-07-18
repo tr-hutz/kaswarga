@@ -39,7 +39,7 @@ export default function ToolbarSearch({
                     left-3
                     top-1/2
                     -translate-y-1/2
-                    text-gray-400
+                    text-dark-6
                 "
             />
 
@@ -57,17 +57,20 @@ export default function ToolbarSearch({
 
                 className="
                     w-full
-                    h-11
+                    h-10
                     pl-10
                     pr-4
-                    rounded-2xl
+                    rounded-lg
                     border
+                    border-stroke
                     bg-white
+                    text-dark
+                    placeholder:text-dark-6
                     outline-none
 
                     focus:ring-2
-                    focus:ring-blue-500/20
-                    focus:border-blue-500
+                    focus:ring-primary/30
+                    focus:border-primary
                 "
             />
 

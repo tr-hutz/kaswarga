@@ -13,11 +13,11 @@ export default function ErrorState({ onRetry }: Props) {
         <tr data-testid="dt-error">
             <td colSpan={999}>
                 <div className="py-16 text-center">
-                    <p className="text-sm text-red-500 font-medium">{t('error')}</p>
+                    <p className="text-sm text-danger font-medium">{t('error')}</p>
                     {onRetry && (
                         <button
                             onClick={onRetry}
-                            className="mt-2 text-sm text-red-400 underline hover:text-red-600"
+                            className="mt-2 text-sm text-danger underline hover:opacity-80"
                         >
                             {t('retry')}
                         </button>

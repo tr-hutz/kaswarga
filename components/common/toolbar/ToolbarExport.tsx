@@ -29,17 +29,20 @@ export default function ToolbarExport({
             <button
                 onClick={onExportCSV}
                 className="
-                    h-11
+                    h-10
                     px-4
-                    rounded-2xl
+                    rounded-lg
                     border
+                    border-stroke
                     bg-white
+                    text-dark
+                    text-sm
 
                     flex
                     items-center
                     gap-2
 
-                    hover:bg-gray-50
+                    hover:bg-body
                     transition
                 "
             >
@@ -55,17 +58,20 @@ export default function ToolbarExport({
             <button
                 onClick={onExportExcel}
                 className="
-                    h-11
+                    h-10
                     px-4
-                    rounded-2xl
+                    rounded-lg
                     border
+                    border-stroke
                     bg-white
+                    text-dark
+                    text-sm
 
                     flex
                     items-center
                     gap-2
 
-                    hover:bg-gray-50
+                    hover:bg-body
                     transition
                 "
             >

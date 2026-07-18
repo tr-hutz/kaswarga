@@ -13,13 +13,13 @@ export default function ExportButtons({ onExportCSV, onExportExcel }: Props) {
         <div className="flex items-center gap-2">
             <button
                 onClick={onExportExcel}
-                className="px-4 py-2 rounded-xl border text-sm bg-white hover:bg-slate-50"
+                className="px-4 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body text-dark"
             >
                 {t('exportExcel')}
             </button>
             <button
                 onClick={onExportCSV}
-                className="px-4 py-2 rounded-xl border text-sm bg-white hover:bg-slate-50"
+                className="px-4 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body text-dark"
             >
                 {t('exportCsv')}
             </button>
