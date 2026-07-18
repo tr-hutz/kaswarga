@@ -14,16 +14,17 @@ interface ThemeContextValue {
 
 export const ThemeContext = createContext<ThemeContextValue | null>(null)
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
-    const [theme, setThemeState]           = useState<Theme>('system')
-    const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>('light')
+function readStoredTheme(): Theme {
+    if (typeof window === 'undefined') return 'system'
+    const stored = localStorage.getItem(THEME_KEY)
+    return stored && (AVAILABLE_THEMES as readonly string[]).includes(stored)
+        ? (stored as Theme)
+        : 'system'
+}
 
-    useEffect(() => {
-        const stored = localStorage.getItem(THEME_KEY) as Theme | null
-        if (stored && (AVAILABLE_THEMES as readonly string[]).includes(stored)) {
-            setThemeState(stored)
-        }
-    }, [])
+export function ThemeProvider({ children }: { children: ReactNode }) {
+    const [theme, setThemeState]           = useState<Theme>(readStoredTheme)
+    const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>('light')
 
     useEffect(() => {
         function apply(t: Theme) {
