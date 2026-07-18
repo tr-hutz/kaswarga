@@ -55,7 +55,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
 
     return (
         <div className="space-y-1.5">
-            <label className="text-xs text-dark-5 block">{label}</label>
+            <label className="text-xs text-muted block">{label}</label>
 
             <div
                 onClick={() => !uploading && inputRef.current?.click()}
@@ -64,8 +64,8 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
                     border-2 border-dashed rounded-xl overflow-hidden
                     transition cursor-pointer select-none
                     ${uploading
-                        ? 'border-stroke bg-body cursor-wait'
-                        : 'border-stroke hover:border-primary hover:bg-primary/5 bg-body'
+                        ? 'border-divider bg-canvas cursor-wait'
+                        : 'border-divider hover:border-primary hover:bg-primary/5 bg-canvas'
                     }
                     ${preview ? 'h-40' : 'h-32'}
                 `}
@@ -81,7 +81,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
                             <button
                                 type="button"
                                 onClick={handleRemove}
-                                className="absolute top-2 right-2 bg-white border border-stroke rounded-full p-0.5 text-dark-5 hover:text-danger transition-colors"
+                                className="absolute top-2 right-2 bg-surface border border-divider rounded-full p-0.5 text-muted hover:text-danger transition-colors"
                             >
                                 <Icon name="x" size={14} />
                             </button>
@@ -93,7 +93,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
                         </div>
                     </>
                 ) : (
-                    <div className="flex flex-col items-center gap-1.5 text-dark-6 py-4">
+                    <div className="flex flex-col items-center gap-1.5 text-subtle py-4">
                         <Icon name="image" size={28} strokeWidth={1.5} />
                         <p className="text-xs font-medium">{t('clickToUpload')}</p>
                         <p className="text-[11px]">{t('formatNote')}</p>
@@ -101,7 +101,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
                 )}
 
                 {uploading && (
-                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-surface/80 flex items-center justify-center">
                         <Icon name="loader2" size={22} className="animate-spin text-primary" />
                     </div>
                 )}

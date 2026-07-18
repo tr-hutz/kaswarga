@@ -91,8 +91,8 @@ export default function ExpenseView({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-dark">{t('title')}</h1>
-                <p className="text-sm text-dark-5 mt-1">{t('subtitle')}</p>
+                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
             </div>
 
             <DataTable
@@ -112,7 +112,7 @@ export default function ExpenseView({
                     <select
                         value={String(query.filters?.category ?? 'all')}
                         onChange={(e) => setFilter('category', e.target.value)}
-                        className="h-9 rounded-lg border bg-white px-3 text-sm"
+                        className="h-9 rounded-lg border bg-input px-3 text-sm"
                     >
                         <option value="all">{t('filterPlaceholder')}</option>
                         {categories.map((c) => (
@@ -132,20 +132,20 @@ export default function ExpenseView({
                         )}
                         <button
                             onClick={() => exportExcel(data)}
-                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
+                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
                         >
                             {tc('actions.exportExcel')}
                         </button>
                         <button
                             onClick={() => exportCSV(data)}
-                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
+                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
                         >
                             {tc('actions.exportCsv')}
                         </button>
                         {role === 'TREASURER' && (
                             <button
                                 onClick={openImport}
-                                className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body"
+                                className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
                             >
                                 {tc('actions.import')}
                             </button>

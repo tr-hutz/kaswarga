@@ -8,7 +8,7 @@ export default function PaymentProofPreview({ url }: { url?: string | null }) {
 
     if (!url) {
         return (
-            <div className="text-sm text-dark-5">
+            <div className="text-sm text-muted">
                 {t('proofUnavailable')}
             </div>
         )
@@ -22,7 +22,7 @@ export default function PaymentProofPreview({ url }: { url?: string | null }) {
             <img
                 src={url}
                 alt={t('proofTitle')}
-                className="w-full rounded-xl border border-stroke object-cover"
+                className="w-full rounded-xl border border-divider object-cover"
             />
         </div>
     )

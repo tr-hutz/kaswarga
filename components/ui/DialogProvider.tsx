@@ -105,7 +105,7 @@ export default function DialogProvider({ children }: { children: ReactNode }) {
 
                     <div
                         className="
-                            bg-white
+                            bg-surface
                             rounded-xl
                             shadow-default
                             w-full
@@ -130,7 +130,7 @@ export default function DialogProvider({ children }: { children: ReactNode }) {
                                     <p
                                         className="
                                             text-sm
-                                            text-dark-5
+                                            text-muted
                                             mt-1
                                         "
                                     >
@@ -153,7 +153,7 @@ export default function DialogProvider({ children }: { children: ReactNode }) {
                             placeholder={state.placeholder}
                             className="
                                 w-full
-                                border border-stroke
+                                border border-divider
                                 rounded-lg
                                 p-3
                                 text-sm
@@ -179,9 +179,9 @@ export default function DialogProvider({ children }: { children: ReactNode }) {
                                     px-4
                                     py-2
                                     rounded-lg
-                                    border border-stroke
+                                    border border-divider
                                     text-sm
-                                    hover:bg-body
+                                    hover:bg-canvas
                                     transition
                                 "
                             >

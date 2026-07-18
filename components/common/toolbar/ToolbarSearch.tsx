@@ -39,7 +39,7 @@ export default function ToolbarSearch({
                     left-3
                     top-1/2
                     -translate-y-1/2
-                    text-dark-6
+                    text-subtle
                 "
             />
 
@@ -62,10 +62,10 @@ export default function ToolbarSearch({
                     pr-4
                     rounded-lg
                     border
-                    border-stroke
-                    bg-white
-                    text-dark
-                    placeholder:text-dark-6
+                    border-divider
+                    bg-surface
+                    text-foreground
+                    placeholder:text-subtle
                     outline-none
 
                     focus:ring-2

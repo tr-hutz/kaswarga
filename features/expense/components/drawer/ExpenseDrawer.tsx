@@ -42,7 +42,7 @@ export default function ExpenseDrawer({
             onClick={onClose}
         >
             <div
-                className="bg-white w-full max-w-lg h-full overflow-y-auto p-6 shadow-default"
+                className="bg-surface w-full max-w-lg h-full overflow-y-auto p-6 shadow-default"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
@@ -50,14 +50,14 @@ export default function ExpenseDrawer({
                     <div>
                         <h2 className="text-xl font-semibold">{t('drawer.title')}</h2>
                         {row.receiptNumber && (
-                            <p className="font-mono text-sm text-dark-5 mt-0.5">{row.receiptNumber}</p>
+                            <p className="font-mono text-sm text-muted mt-0.5">{row.receiptNumber}</p>
                         )}
                     </div>
                     <div className="flex items-center gap-3">
                         <ExpenseStatusBadge status={row.status} />
                         <button
                             onClick={onClose}
-                            className="text-dark-6 hover:text-dark text-xl leading-none"
+                            className="text-subtle hover:text-foreground text-xl leading-none"
                         >
                             ✕
                         </button>
@@ -100,7 +100,7 @@ export default function ExpenseDrawer({
                 {/* Nota */}
                 {row.receiptUrl && (
                     <div className="mt-6">
-                        <p className="text-sm text-dark-5 mb-2">{t('drawer.receipt')}</p>
+                        <p className="text-sm text-muted mb-2">{t('drawer.receipt')}</p>
                         {row.receiptUrl.endsWith('.pdf') ? (
                             <a
                                 href={row.receiptUrl}
@@ -115,7 +115,7 @@ export default function ExpenseDrawer({
                             <img
                                 src={row.receiptUrl}
                                 alt="Nota"
-                                className="rounded-lg border border-stroke w-full object-contain"
+                                className="rounded-lg border border-divider w-full object-contain"
                             />
                         )}
                     </div>
@@ -141,7 +141,7 @@ export default function ExpenseDrawer({
 function Field({ label, value }: { label: string; value: string | number }) {
     return (
         <div>
-            <p className="text-sm text-dark-5">{label}</p>
+            <p className="text-sm text-muted">{label}</p>
             <p className="font-medium">{value}</p>
         </div>
     )

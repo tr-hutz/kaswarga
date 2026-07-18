@@ -31,7 +31,7 @@ function getStatusColor(status: string) {
             return 'bg-danger/10 text-danger'
 
         default:
-            return 'bg-body text-dark-5'
+            return 'bg-canvas text-muted'
     }
 }
 
@@ -54,7 +54,7 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
                     className="
             text-sm
             font-semibold
-            text-dark
+            text-foreground
           "
                 >
                     {t('title')}
@@ -68,7 +68,7 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
                     <div
                         className="
               text-sm
-              text-dark-5
+              text-muted
               border
               rounded-xl
               p-4
@@ -110,7 +110,7 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
                             <div
                                 className="
                   text-sm
-                  text-dark-5
+                  text-muted
                 "
                             >
                                 Rp
@@ -123,7 +123,7 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
                             <div
                                 className="
                   text-xs
-                  text-dark-6
+                  text-subtle
                   mt-1
                 "
                             >

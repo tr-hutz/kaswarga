@@ -116,7 +116,7 @@ export default function PageToolbar({
                             text-xl
                             font-bold
                             truncate
-                            text-dark
+                            text-foreground
                         "
                     >
                         {title}
@@ -125,7 +125,7 @@ export default function PageToolbar({
                     <div
                         className="
                             text-sm
-                            text-dark-5
+                            text-muted
                             truncate
                         "
                     >
@@ -188,16 +188,16 @@ export default function PageToolbar({
                             px-4
                             rounded-lg
                             border
-                            border-stroke
-                            bg-white
-                            text-dark
+                            border-divider
+                            bg-surface
+                            text-foreground
                             text-sm
 
                             flex
                             items-center
                             gap-2
 
-                            hover:bg-body
+                            hover:bg-canvas
                             transition
                         "
                     >

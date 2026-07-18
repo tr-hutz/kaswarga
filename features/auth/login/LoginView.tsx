@@ -41,7 +41,7 @@ export default function LoginView({
         flex
         items-center
         justify-center
-        bg-body
+        bg-canvas
         px-4
       "
     >
@@ -50,11 +50,11 @@ export default function LoginView({
         className="
           w-full
           max-w-md
-          bg-white
+          bg-surface
           rounded-xl
           shadow-card
           border
-          border-stroke
+          border-divider
           p-8
         "
       >
@@ -90,7 +90,7 @@ export default function LoginView({
             className="
               text-2xl
               font-bold
-              text-dark
+              text-foreground
             "
           >
             {t('title')}
@@ -99,7 +99,7 @@ export default function LoginView({
           <p
             className="
               text-sm
-              text-dark-5
+              text-muted
               mt-2
             "
           >
@@ -170,7 +170,7 @@ export default function LoginView({
               className="
                 w-full
                 border
-                border-stroke
+                border-divider
                 rounded-lg
                 px-4
                 py-3
@@ -210,7 +210,7 @@ export default function LoginView({
               className="
                 w-full
                 border
-                border-stroke
+                border-divider
                 rounded-lg
                 px-4
                 py-3
@@ -251,14 +251,14 @@ export default function LoginView({
 
         </form>
 
-        <p className="text-center text-sm text-dark-5 mt-6">
+        <p className="text-center text-sm text-muted mt-6">
           {t('noAccount')}{' '}
           <Link href="/register" className="text-primary hover:underline font-medium">
             {t('register')}
           </Link>
         </p>
 
-        <p className="text-center text-sm text-dark-5 mt-2">
+        <p className="text-center text-sm text-muted mt-2">
           {t('hasInvitation')}{' '}
           <Link href="/activation/request-link" className="text-primary hover:underline font-medium">
             {t('requestNewLink')}

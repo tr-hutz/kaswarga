@@ -65,7 +65,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
             <form
                 onSubmit={handleSubmit}
-                className="bg-white rounded-lg p-6 w-full max-w-lg space-y-4"
+                className="bg-surface rounded-lg p-6 w-full max-w-lg space-y-4"
             >
                 <h2 className="text-lg font-semibold">
                     {isEdit ? t('form.editTitle') : t('form.addTitle')}
@@ -74,7 +74,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                 <div className="grid grid-cols-2 gap-3">
 
                     <div className="col-span-2">
-                        <label className="text-xs text-dark-5 mb-1 block">{t('form.fullName')}</label>
+                        <label className="text-xs text-muted mb-1 block">{t('form.fullName')}</label>
                         <input
                             required
                             placeholder={t('form.fullNamePlaceholder')}
@@ -85,7 +85,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                     </div>
 
                     <div>
-                        <label className="text-xs text-dark-5 mb-1 block">{t('form.block')}</label>
+                        <label className="text-xs text-muted mb-1 block">{t('form.block')}</label>
                         <input
                             placeholder={t('form.blockPlaceholder')}
                             value={form.block}
@@ -95,7 +95,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                     </div>
 
                     <div>
-                        <label className="text-xs text-dark-5 mb-1 block">{t('form.houseNumber')}</label>
+                        <label className="text-xs text-muted mb-1 block">{t('form.houseNumber')}</label>
                         <input
                             placeholder={t('form.houseNumberPlaceholder')}
                             value={form.houseNumber}
@@ -105,7 +105,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                     </div>
 
                     <div className="col-span-2">
-                        <label className="text-xs text-dark-5 mb-1 block">{t('form.phone')}</label>
+                        <label className="text-xs text-muted mb-1 block">{t('form.phone')}</label>
                         <input
                             placeholder={t('form.phonePlaceholder')}
                             value={form.phone}
@@ -124,7 +124,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border rounded-lg px-4 py-2 text-sm hover:bg-body transition-colors"
+                        className="border rounded-lg px-4 py-2 text-sm hover:bg-canvas transition-colors"
                     >
                         {tc('actions.cancel')}
                     </button>

@@ -57,7 +57,7 @@ export default function NotificationToolbar({
                 <p
                     className="
                         text-sm
-                        text-dark-5
+                        text-muted
                     "
                 >
                     {t('subtitle')}
@@ -81,7 +81,7 @@ export default function NotificationToolbar({
                     "
                 >
 
-                    <Icon name="search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-dark-6" />
+                    <Icon name="search" size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-subtle" />
 
                     <input
 
@@ -160,7 +160,7 @@ export default function NotificationToolbar({
 
                         border
 
-                        hover:bg-body
+                        hover:bg-canvas
                     "
                 >
 

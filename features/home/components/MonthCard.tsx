@@ -6,7 +6,7 @@ const STATUS_STYLE: Record<string, string> = {
     approved: 'bg-success/10 border-success',
     pending:  'bg-warning/10 border-warning',
     rejected: 'bg-danger/10 border-danger',
-    unpaid:   'bg-body border-stroke'
+    unpaid:   'bg-canvas border-divider'
 }
 
 export default function MonthCard({ month, status }: { month: string; status?: string }) {

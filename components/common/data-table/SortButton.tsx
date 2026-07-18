@@ -31,15 +31,15 @@ export default function SortButton({
         <button
             type="button"
             onClick={handleClick}
-            className="flex items-center gap-1 hover:text-dark transition-colors"
+            className="flex items-center gap-1 hover:text-foreground transition-colors"
         >
             {children}
             <span className="flex flex-col -space-y-1">
                 <Icon name="chevron-up"
-                    className={`w-3 h-3 ${isActive && currentDirection === 'asc' ? 'text-dark' : 'text-stroke'}`}
+                    className={`w-3 h-3 ${isActive && currentDirection === 'asc' ? 'text-foreground' : 'text-divider'}`}
                 />
                 <Icon name="chevron-down"
-                    className={`w-3 h-3 ${isActive && currentDirection === 'desc' ? 'text-dark' : 'text-stroke'}`}
+                    className={`w-3 h-3 ${isActive && currentDirection === 'desc' ? 'text-foreground' : 'text-divider'}`}
                 />
             </span>
         </button>

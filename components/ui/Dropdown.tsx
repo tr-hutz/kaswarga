@@ -33,7 +33,7 @@ export default function Dropdown({ trigger, items, align = 'right' }: Props) {
             {open && (
                 <div className={`
                     absolute top-full mt-1 z-50 min-w-[160px] py-1
-                    bg-white rounded-lg shadow-default border border-stroke
+                    bg-popover rounded-lg shadow-default border border-divider
                     ${align === 'right' ? 'right-0' : 'left-0'}
                 `}>
                     {items.map((item, i) => (
@@ -42,8 +42,8 @@ export default function Dropdown({ trigger, items, align = 'right' }: Props) {
                             onClick={() => { item.onClick(); setOpen(false) }}
                             className={`
                                 w-full flex items-center gap-2 px-4 py-2 text-sm text-left
-                                hover:bg-body transition-colors
-                                ${item.danger ? 'text-danger' : 'text-dark'}
+                                hover:bg-canvas transition-colors
+                                ${item.danger ? 'text-danger' : 'text-foreground'}
                             `}
                         >
                             {item.icon}

@@ -60,15 +60,15 @@ export default function DataTable<T>({
             )}
 
             {/* Table */}
-            <div className="bg-white rounded-lg shadow-card overflow-x-auto">
+            <div className="bg-surface rounded-lg shadow-card overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead>
-                        <tr className="border-b border-stroke bg-body">
+                        <tr className="border-b border-divider bg-canvas">
                             {columns.map(col => (
                                 <th
                                     key={col.key}
                                     style={col.width ? { width: col.width } : undefined}
-                                    className="px-4 py-3 text-left text-xs font-medium text-dark-5 uppercase tracking-wider whitespace-nowrap"
+                                    className="px-4 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider whitespace-nowrap"
                                 >
                                     {col.sortable && onSort ? (
                                         <SortButton
@@ -87,7 +87,7 @@ export default function DataTable<T>({
                         </tr>
                     </thead>
 
-                    <tbody className="divide-y divide-stroke">
+                    <tbody className="divide-y divide-divider">
                         {loading ? (
                             <LoadingState columns={columns.length} />
                         ) : error ? (
@@ -101,12 +101,12 @@ export default function DataTable<T>({
                                     data-testid="dt-row"
                                     onClick={() => onRowClick?.(row)}
                                     className={`
-                                        border-t border-stroke transition-colors
-                                        ${onRowClick ? 'cursor-pointer hover:bg-body' : ''}
+                                        border-t border-divider transition-colors
+                                        ${onRowClick ? 'cursor-pointer hover:bg-canvas' : ''}
                                     `}
                                 >
                                     {columns.map(col => (
-                                        <td key={col.key} className="px-4 py-3 text-dark">
+                                        <td key={col.key} className="px-4 py-3 text-foreground">
                                             {col.render
                                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                                 ? col.render(row)

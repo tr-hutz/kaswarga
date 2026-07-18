@@ -22,7 +22,7 @@ export default function NotificationList({
 
     if (notifications.length === 0) {
         return (
-            <div className="p-6 text-center text-dark-5">
+            <div className="p-6 text-center text-muted">
                 {t('empty')}
             </div>
         )

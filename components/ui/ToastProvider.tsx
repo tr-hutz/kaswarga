@@ -35,15 +35,15 @@ const ToastContext = createContext<ToastContextType | null>(null)
 
 const STYLES = {
     error: {
-        container: 'bg-white border border-stroke border-l-4 border-l-danger',
+        container: 'bg-surface border border-divider border-l-4 border-l-danger',
         icon: 'text-danger',
     },
     success: {
-        container: 'bg-white border border-stroke border-l-4 border-l-success',
+        container: 'bg-surface border border-divider border-l-4 border-l-success',
         icon: 'text-success',
     },
     info: {
-        container: 'bg-white border border-stroke border-l-4 border-l-info',
+        container: 'bg-surface border border-divider border-l-4 border-l-info',
         icon: 'text-info',
     },
 }
@@ -138,7 +138,7 @@ export default function ToastProvider({ children }: { children: ReactNode }) {
                             <div className="flex-1 min-w-0">
 
                                 {t.title && (
-                                    <div className="font-semibold text-sm text-dark mb-0.5">
+                                    <div className="font-semibold text-sm text-foreground mb-0.5">
                                         {t.title}
                                     </div>
                                 )}
@@ -146,7 +146,7 @@ export default function ToastProvider({ children }: { children: ReactNode }) {
                                 <span
                                     className="
                                         text-sm
-                                        text-dark-5
+                                        text-muted
                                         leading-snug
                                     "
                                 >

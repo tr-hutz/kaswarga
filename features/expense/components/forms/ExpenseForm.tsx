@@ -89,7 +89,7 @@ export default function ExpenseForm({
 
             <form
                 onSubmit={handleSubmit}
-                className="bg-white rounded-lg p-6 w-full max-w-lg space-y-4 max-h-[90vh] overflow-y-auto shadow-default"
+                className="bg-surface rounded-lg p-6 w-full max-w-lg space-y-4 max-h-[90vh] overflow-y-auto shadow-default"
             >
 
                 <h2 className="text-lg font-semibold">
@@ -98,7 +98,7 @@ export default function ExpenseForm({
 
                 {/* Nomor Bukti */}
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-dark-5 block">
+                    <label className="text-sm font-medium text-muted block">
                         {t('form.receiptNumber')}
                     </label>
                     <div className="flex gap-2">
@@ -106,7 +106,7 @@ export default function ExpenseForm({
                             value={form.receiptNumber}
                             onChange={e => set('receiptNumber', e.target.value)}
                             placeholder={t('form.receiptNumberPlaceholder')}
-                            className="flex-1 border border-stroke rounded-lg px-4 py-2 text-sm font-mono"
+                            className="flex-1 border border-divider rounded-lg px-4 py-2 text-sm font-mono"
                         />
                         <button
                             type="button"
@@ -114,15 +114,15 @@ export default function ExpenseForm({
                             disabled={generating}
                             title={t('form.receiptNumberGenerate')}
                             className="
-                                h-10 w-10 shrink-0 rounded-lg border border-stroke
+                                h-10 w-10 shrink-0 rounded-lg border border-divider
                                 flex items-center justify-center
-                                hover:bg-body transition
+                                hover:bg-canvas transition
                                 disabled:opacity-50
                             "
                         >
                             {generating
-                                ? <Icon name="loader2" size={15} className="animate-spin text-dark-5" />
-                                : <Icon name="refresh-cw" size={15} className="text-dark-5" />
+                                ? <Icon name="loader2" size={15} className="animate-spin text-muted" />
+                                : <Icon name="refresh-cw" size={15} className="text-muted" />
                             }
                         </button>
                     </div>
@@ -131,7 +131,7 @@ export default function ExpenseForm({
                 {/* Tanggal + Kategori */}
                 <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
-                        <label className="text-sm font-medium text-dark-5 block">
+                        <label className="text-sm font-medium text-muted block">
                             {t('form.date')} <span className="text-danger">*</span>
                         </label>
                         <input
@@ -139,18 +139,18 @@ export default function ExpenseForm({
                             required
                             value={form.date}
                             onChange={e => set('date', e.target.value)}
-                            className="w-full border border-stroke rounded-lg px-4 py-2 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2 text-sm"
                         />
                     </div>
 
                     <div className="space-y-1.5">
-                        <label className="text-sm font-medium text-dark-5 block">
+                        <label className="text-sm font-medium text-muted block">
                             {t('form.category')}
                         </label>
                         <select
                             value={form.category}
                             onChange={e => set('category', e.target.value)}
-                            className="w-full border border-stroke rounded-lg px-4 py-2 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2 text-sm"
                         >
                             <option value="">{t('form.selectCategory')}</option>
                             {categories.map(k => (
@@ -162,7 +162,7 @@ export default function ExpenseForm({
 
                 {/* Nominal */}
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-dark-5 block">
+                    <label className="text-sm font-medium text-muted block">
                         {t('form.amount')} <span className="text-danger">*</span>
                     </label>
                     <input
@@ -172,26 +172,26 @@ export default function ExpenseForm({
                         value={form.amount}
                         onChange={e => set('amount', e.target.value)}
                         placeholder="0"
-                        className="w-full border border-stroke rounded-lg px-4 py-2 text-sm"
+                        className="w-full border border-divider rounded-lg px-4 py-2 text-sm"
                     />
                 </div>
 
                 {/* Penerima */}
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-dark-5 block">
+                    <label className="text-sm font-medium text-muted block">
                         {t('form.recipient')}
                     </label>
                     <input
                         value={form.recipient}
                         onChange={e => set('recipient', e.target.value)}
                         placeholder={t('form.recipientPlaceholder')}
-                        className="w-full border border-stroke rounded-lg px-4 py-2 text-sm"
+                        className="w-full border border-divider rounded-lg px-4 py-2 text-sm"
                     />
                 </div>
 
                 {/* Deskripsi */}
                 <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-dark-5 block">
+                    <label className="text-sm font-medium text-muted block">
                         {t('form.description')}
                     </label>
                     <textarea
@@ -199,7 +199,7 @@ export default function ExpenseForm({
                         onChange={e => set('description', e.target.value)}
                         placeholder={t('form.descriptionPlaceholder')}
                         rows={3}
-                        className="w-full border border-stroke rounded-lg px-4 py-2 text-sm resize-none"
+                        className="w-full border border-divider rounded-lg px-4 py-2 text-sm resize-none"
                     />
                 </div>
 
@@ -217,7 +217,7 @@ export default function ExpenseForm({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border border-stroke rounded-lg px-4 py-2 text-sm hover:bg-body transition-colors"
+                        className="border border-divider rounded-lg px-4 py-2 text-sm hover:bg-canvas transition-colors"
                     >
                         {tc('actions.cancel')}
                     </button>

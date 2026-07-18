@@ -55,18 +55,18 @@ export default function ImportModal({
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-xl shadow-card w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div className="bg-surface rounded-xl shadow-card w-full max-w-2xl max-h-[90vh] flex flex-col">
 
-                <div className="flex items-center justify-between px-6 py-4 border-b border-stroke">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-divider">
                     <div>
-                        <h2 className="text-base font-semibold text-dark">{title}</h2>
-                        <p className="text-xs text-dark-5 mt-0.5">
+                        <h2 className="text-base font-semibold text-foreground">{title}</h2>
+                        <p className="text-xs text-muted mt-0.5">
                             {t('format')}
                         </p>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-lg hover:bg-body text-dark-6 hover:text-dark"
+                        className="p-1.5 rounded-lg hover:bg-canvas text-subtle hover:text-foreground"
                     >
                         <Icon name="x" size={18} />
                     </button>
@@ -78,7 +78,7 @@ export default function ImportModal({
                         <div className="space-y-4">
 
                             <div className="flex items-center gap-3 p-3 bg-info/5 rounded-lg">
-                                <span className="text-sm text-dark-5">
+                                <span className="text-sm text-muted">
                                     {t('templateNote')}
                                 </span>
                                 <button
@@ -92,15 +92,15 @@ export default function ImportModal({
                             </div>
 
                             <label className="
-                                block border-2 border-dashed border-stroke rounded-lg
+                                block border-2 border-dashed border-divider rounded-lg
                                 p-12 text-center cursor-pointer
                                 hover:border-primary hover:bg-primary/5 transition-colors
                             ">
-                                <Icon name="upload" size={32} className="mx-auto text-dark-6 mb-3" />
-                                <p className="text-sm font-medium text-dark">
+                                <Icon name="upload" size={32} className="mx-auto text-subtle mb-3" />
+                                <p className="text-sm font-medium text-foreground">
                                     {t('clickToSelect')}
                                 </p>
-                                <p className="text-xs text-dark-6 mt-1">
+                                <p className="text-xs text-subtle mt-1">
                                     {t('fileFormat')}
                                 </p>
                                 <input
@@ -113,8 +113,8 @@ export default function ImportModal({
                             </label>
 
                             {columnGuideText && (
-                                <div className="text-xs text-dark-6 space-y-1">
-                                    <p className="font-medium text-dark-5">{t('columnGuide')}</p>
+                                <div className="text-xs text-subtle space-y-1">
+                                    <p className="font-medium text-muted">{t('columnGuide')}</p>
                                     <p>{columnGuideText}</p>
                                 </div>
                             )}
@@ -125,16 +125,16 @@ export default function ImportModal({
 
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-sm">
-                                    <span className="font-medium text-dark truncate max-w-xs">
+                                    <span className="font-medium text-foreground truncate max-w-xs">
                                         {fileName}
                                     </span>
-                                    <span className="text-dark-6">·</span>
+                                    <span className="text-subtle">·</span>
                                     <span className="text-success font-medium">
                                         {validRows.length} {t('valid')}
                                     </span>
                                     {invalidRows.length > 0 && (
                                         <>
-                                            <span className="text-dark-6">·</span>
+                                            <span className="text-subtle">·</span>
                                             <span className="text-danger">
                                                 {invalidRows.length} {t('skipped')}
                                             </span>
@@ -144,16 +144,16 @@ export default function ImportModal({
                                 <button
                                     type="button"
                                     onClick={onReset}
-                                    className="text-xs text-dark-6 hover:text-dark underline shrink-0"
+                                    className="text-xs text-subtle hover:text-foreground underline shrink-0"
                                 >
                                     {t('changeFile')}
                                 </button>
                             </div>
 
-                            <div className="rounded-lg border border-stroke overflow-hidden">
+                            <div className="rounded-lg border border-divider overflow-hidden">
                                 <div className="overflow-auto max-h-72">
                                     <table className="w-full text-xs">
-                                        <thead className="bg-body text-dark-5 uppercase tracking-wide sticky top-0">
+                                        <thead className="bg-canvas text-muted uppercase tracking-wide sticky top-0">
                                             <tr>
                                                 <th className="px-3 py-2 text-left w-8 font-medium">#</th>
                                                 {columns.map(col => (
@@ -164,19 +164,19 @@ export default function ImportModal({
                                                 <th className="px-3 py-2 text-center font-medium">{t('status')}</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-stroke">
+                                        <tbody className="divide-y divide-divider">
                                             {rows.map((row, i) => {
                                                 const valid = isValid(row)
                                                 return (
                                                     <tr
                                                         key={i}
-                                                        className={valid ? 'hover:bg-body' : 'bg-danger/5'}
+                                                        className={valid ? 'hover:bg-canvas' : 'bg-danger/5'}
                                                     >
-                                                        <td className="px-3 py-2 text-dark-6">{i + 1}</td>
+                                                        <td className="px-3 py-2 text-subtle">{i + 1}</td>
                                                         {columns.map(col => (
-                                                            <td key={col.key} className="px-3 py-2 text-dark">
+                                                            <td key={col.key} className="px-3 py-2 text-foreground">
                                                                 {row[col.key] || (
-                                                                    <span className="text-dark-6">-</span>
+                                                                    <span className="text-subtle">-</span>
                                                                 )}
                                                             </td>
                                                         ))}
@@ -211,11 +211,11 @@ export default function ImportModal({
 
                 </div>
 
-                <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-stroke">
+                <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-divider">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border border-stroke rounded-lg px-4 py-2 text-sm text-dark-5 hover:bg-body"
+                        className="border border-divider rounded-lg px-4 py-2 text-sm text-muted hover:bg-canvas"
                     >
                         {tCommon('actions.cancel')}
                     </button>

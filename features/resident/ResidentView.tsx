@@ -92,8 +92,8 @@ export default function ResidentView({
         <div className="space-y-6">
             {/* Page header */}
             <div>
-                <h1 className="text-2xl font-bold text-dark">{t('title')}</h1>
-                <p className="text-sm text-dark-5 mt-1">{t('subtitle')}</p>
+                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
             </div>
 
             {/* Pending join requests */}
@@ -127,19 +127,19 @@ export default function ResidentView({
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => exportExcel(data)}
-                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body text-dark"
+                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
                         >
                             {tc('actions.exportExcel')}
                         </button>
                         <button
                             onClick={() => exportCSV(data)}
-                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body text-dark"
+                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
                         >
                             {tc('actions.exportCsv')}
                         </button>
                         <button
                             onClick={openImport}
-                            className="px-3 py-2 rounded-lg border border-stroke text-sm bg-white hover:bg-body text-dark"
+                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
                         >
                             {tc('actions.import')}
                         </button>

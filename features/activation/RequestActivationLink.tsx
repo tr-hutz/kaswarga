@@ -44,12 +44,12 @@ export default function RequestActivationLink() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-body px-4">
-            <div className="w-full max-w-md bg-white rounded-lg shadow-card border border-stroke p-8 space-y-5">
+        <div className="min-h-screen flex items-center justify-center bg-canvas px-4">
+            <div className="w-full max-w-md bg-surface rounded-lg shadow-card border border-divider p-8 space-y-5">
 
                 <Link
                     href="/login"
-                    className="inline-flex items-center gap-1.5 text-sm text-dark-5 hover:text-dark"
+                    className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground"
                 >
                     <Icon name="arrow-left" size={14} />
                     {t('backToLogin')}
@@ -62,7 +62,7 @@ export default function RequestActivationLink() {
                                 <Icon name="mail" size={22} />
                             </div>
                             <h1 className="text-xl font-bold">{t('title')}</h1>
-                            <p className="text-sm text-dark-5 mt-1">
+                            <p className="text-sm text-muted mt-1">
                                 {t('subtitle')}
                             </p>
                         </div>
@@ -77,7 +77,7 @@ export default function RequestActivationLink() {
                                     value={email}
                                     onChange={e => setEmail(e.target.value)}
                                     placeholder="email@example.com"
-                                    className="w-full border border-stroke rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                                    className="w-full border border-divider rounded-lg px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                                 />
                             </div>
 
@@ -102,7 +102,7 @@ export default function RequestActivationLink() {
                             <Icon name="check-circle" size={32} />
                         </div>
                         <h1 className="text-xl font-bold">{t('success.title')}</h1>
-                        <p className="text-sm text-dark-5">
+                        <p className="text-sm text-muted">
                             {t('success.message', { email })}
                         </p>
                         <Link

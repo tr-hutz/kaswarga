@@ -10,15 +10,15 @@ export default function InsightCard({
   title,
   value,
   subtitle,
-  valueColor = 'text-dark'
+  valueColor = 'text-foreground'
 
 }: InsightCardProps) {
 
   return (
 
-    <div className="rounded-lg shadow-card p-5 bg-white">
+    <div className="rounded-lg shadow-card p-5 bg-surface">
 
-      <div className="text-sm text-dark-5">
+      <div className="text-sm text-muted">
         {title}
       </div>
 
@@ -27,7 +27,7 @@ export default function InsightCard({
       </div>
 
       {subtitle && (
-        <div className="text-xs text-dark-6 mt-1">
+        <div className="text-xs text-subtle mt-1">
           {subtitle}
         </div>
       )}

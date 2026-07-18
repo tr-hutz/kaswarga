@@ -23,7 +23,7 @@ function CopyButton({ text }: { text: string }) {
         <button
             type="button"
             onClick={handleCopy}
-            className="shrink-0 flex items-center gap-1 text-xs border rounded-lg px-2 py-1 hover:bg-body text-dark-5"
+            className="shrink-0 flex items-center gap-1 text-xs border rounded-lg px-2 py-1 hover:bg-canvas text-muted"
         >
             {copied ? <Icon name="check-check" size={12} className="text-success" /> : <Icon name="copy" size={12} />}
             {copied ? 'Copied' : 'Copy'}
@@ -76,11 +76,11 @@ function RequestRow({ req, onAction }: { req: any; onAction: () => void }) {
         <>
             <tr className="border-t">
                 <td className="px-4 py-3 text-sm font-medium">{req.resident_name}</td>
-                <td className="px-4 py-3 text-sm text-dark-5">{req.resident_email}</td>
-                <td className="px-4 py-3 text-xs text-dark-5">
+                <td className="px-4 py-3 text-sm text-muted">{req.resident_email}</td>
+                <td className="px-4 py-3 text-xs text-muted">
                     {[req.block, req.house_number].filter(Boolean).join(' / ') || '-'}
                 </td>
-                <td className="px-4 py-3 text-xs text-dark-6">{formatDate(req.created_at)}</td>
+                <td className="px-4 py-3 text-xs text-subtle">{formatDate(req.created_at)}</td>
                 <td className="px-4 py-3">
                     {!devLink ? (
                         <div className="flex gap-2">
@@ -117,14 +117,14 @@ function RequestRow({ req, onAction }: { req: any; onAction: () => void }) {
                             <input
                                 readOnly
                                 value={devLink}
-                                className="flex-1 text-xs border border-stroke rounded-lg px-2 py-1.5 font-mono bg-white text-dark min-w-0"
+                                className="flex-1 text-xs border border-divider rounded-lg px-2 py-1.5 font-mono bg-input text-foreground min-w-0"
                             />
                             <CopyButton text={devLink} />
                         </div>
                         <button
                             type="button"
                             onClick={onAction}
-                            className="text-xs text-dark-5 hover:text-dark hover:underline"
+                            className="text-xs text-muted hover:text-foreground hover:underline"
                         >
                             {t('close')}
                         </button>
@@ -178,7 +178,7 @@ export default function ResidentPendingRequests({ requests, loading, onAction }:
                                 <th className="px-4 py-2 font-medium">{t('actions')}</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white">
+                        <tbody className="bg-surface">
                             {requests.map(req => (
                                 <RequestRow key={req.id} req={req} onAction={onAction} />
                             ))}

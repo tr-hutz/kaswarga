@@ -63,19 +63,19 @@ export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUp
         <div className="space-y-1.5">
 
             {label && (
-                <label className="text-sm font-medium text-dark block">
+                <label className="text-sm font-medium text-foreground block">
                     {label}
                 </label>
             )}
 
             {fileLabel ? (
-                <div className="flex items-center gap-2 border border-stroke rounded-lg px-3 py-2.5 bg-body">
-                    <File size={15} className="text-dark-6 shrink-0" />
-                    <span className="text-sm text-dark truncate flex-1">{fileLabel}</span>
+                <div className="flex items-center gap-2 border border-divider rounded-lg px-3 py-2.5 bg-canvas">
+                    <File size={15} className="text-subtle shrink-0" />
+                    <span className="text-sm text-foreground truncate flex-1">{fileLabel}</span>
                     <button
                         type="button"
                         onClick={handleRemove}
-                        className="text-dark-6 hover:text-danger shrink-0"
+                        className="text-subtle hover:text-danger shrink-0"
                     >
                         <X size={14} />
                     </button>
@@ -84,16 +84,16 @@ export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUp
                 <div
                     onClick={() => !uploading && inputRef.current?.click()}
                     className="
-                        flex items-center gap-3 border-2 border-dashed border-stroke
+                        flex items-center gap-3 border-2 border-dashed border-divider
                         rounded-lg px-4 py-3 cursor-pointer
                         hover:border-primary hover:bg-primary/5 transition
                     "
                 >
                     {uploading
                         ? <Loader2 size={16} className="animate-spin text-primary shrink-0" />
-                        : <Paperclip size={16} className="text-dark-6 shrink-0" />
+                        : <Paperclip size={16} className="text-subtle shrink-0" />
                     }
-                    <span className="text-sm text-dark-5">
+                    <span className="text-sm text-muted">
                         {uploading ? t('uploading') : t('clickToAttach')}
                     </span>
                 </div>
