@@ -124,14 +124,14 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border rounded-lg px-4 py-2 text-sm"
+                        className="border rounded-lg px-4 py-2 text-sm hover:bg-body transition-colors"
                     >
                         {tc('actions.cancel')}
                     </button>
                     <button
                         type="submit"
                         disabled={saving}
-                        className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50"
+                        className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 transition-colors"
                     >
                         {saving ? tc('states.saving') : tc('actions.save')}
                     </button>

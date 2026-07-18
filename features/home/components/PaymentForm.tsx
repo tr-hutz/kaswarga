@@ -57,7 +57,7 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
                         <button
                             type="button"
                             onClick={handleRemove}
-                            className="absolute top-2 right-2 bg-white border border-stroke rounded-full p-0.5 text-dark-5 hover:text-danger shadow-sm"
+                            className="absolute top-2 right-2 bg-white border border-stroke rounded-full p-0.5 text-dark-5 hover:text-danger transition-colors"
                         >
                             <Icon name="x" size={14} />
                         </button>

@@ -62,7 +62,7 @@ export default function AppShell({
   if (loading) {
     return (
       <div data-testid="shell-spinner" className="min-h-screen flex items-center justify-center bg-body">
-        <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-stroke border-t-dark rounded-full animate-spin" />
       </div>
     )
   }
@@ -76,12 +76,12 @@ export default function AppShell({
   if (membership?.status === 'no_membership' && !isPublicPath(pathname)) {
     return (
       <div data-testid="shell-no-membership" className="min-h-screen flex items-center justify-center bg-body px-4">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-8 text-center space-y-4">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 mb-2">
+        <div className="w-full max-w-md bg-white rounded-xl shadow-card border p-8 text-center space-y-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-warning/10 text-warning mb-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           </div>
           <h1 className="text-xl font-bold">{t('noMembership.title')}</h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-dark-5">
             {t('noMembership.description')}
           </p>
           <a
@@ -93,7 +93,7 @@ export default function AppShell({
           <div>
             <button
               onClick={logout}
-              className="text-sm text-gray-500 hover:underline mt-2"
+              className="text-sm text-dark-5 hover:underline mt-2"
             >
               {tTopbar('logout')}
             </button>

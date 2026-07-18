@@ -75,7 +75,7 @@ export default function LoginView({
               justify-center
               w-14
               h-14
-              rounded-2xl
+              rounded-xl
               bg-primary/10
               text-primary
               mb-4
@@ -90,6 +90,7 @@ export default function LoginView({
             className="
               text-2xl
               font-bold
+              text-dark
             "
           >
             {t('title')}

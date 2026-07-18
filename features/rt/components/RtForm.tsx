@@ -137,14 +137,14 @@ export default function RtForm({ open, onClose, rt, onSubmit }: RtFormProps) {
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border border-stroke rounded-lg px-4 py-2 text-sm"
+                        className="border border-stroke rounded-lg px-4 py-2 text-sm hover:bg-body transition-colors"
                     >
                         {tc('actions.cancel')}
                     </button>
                     <button
                         type="submit"
                         disabled={saving}
-                        className="bg-primary text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50"
+                        className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 transition-colors"
                     >
                         {saving ? tc('states.saving') : tc('actions.save')}
                     </button>
