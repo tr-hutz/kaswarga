@@ -1,4 +1,5 @@
 import './globals.css'
+import { Outfit } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { AuthProvider } from '../lib/auth/AuthProvider'
@@ -6,12 +7,17 @@ import AppShell from '../components/layout/AppShell'
 import ToastProvider from '../components/ui/ToastProvider'
 import DialogProvider from '../components/ui/DialogProvider'
 
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-outfit',
+})
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const messages = await getMessages()
 
   return (
-    <html lang="id">
-      <body>
+    <html lang="id" className={outfit.variable}>
+      <body className="font-sans">
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
             <ToastProvider>
