@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Class-based dark mode — ThemeProvider toggles .dark on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
     /* Typography */
     --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
@@ -41,4 +44,46 @@
     --radius-sm: 5px;
     --radius-md: 8px;
     --radius-lg: 10px;
+
+    /* ── Semantic tokens (theme-adaptive) ─────────────────── */
+    --color-surface:    var(--surface);     /* card / panel bg       */
+    --color-canvas:     var(--canvas);      /* page body bg          */
+    --color-foreground: var(--foreground);  /* primary text          */
+    --color-muted:      var(--muted);       /* secondary text        */
+    --color-subtle:     var(--subtle);      /* tertiary / placeholder */
+    --color-divider:    var(--divider);     /* borders               */
+    --color-input:      var(--input-bg);    /* form input bg         */
+    --color-popover:    var(--popover-bg);  /* dropdown / popover bg */
+    --color-sidebar:    var(--sidebar-bg);  /* sidebar bg            */
+    --color-header:     var(--header-bg);   /* topbar bg             */
+}
+
+/* ── Light theme (default) ───────────────────────────────── */
+:root {
+    color-scheme: light;
+    --surface:    #ffffff;
+    --canvas:     #F1F5F9;
+    --foreground: #1C2434;
+    --muted:      #637381;
+    --subtle:     #A3ABB2;
+    --divider:    #E2E8F0;
+    --input-bg:   #ffffff;
+    --popover-bg: #ffffff;
+    --sidebar-bg: #313D4A;
+    --header-bg:  #ffffff;
+}
+
+/* ── Dark theme ──────────────────────────────────────────── */
+.dark {
+    color-scheme: dark;
+    --surface:    #24303F;
+    --canvas:     #111928;
+    --foreground: #DEE4EE;
+    --muted:      #8A99AF;
+    --subtle:     #64748B;
+    --divider:    #2E3A47;
+    --input-bg:   #1C2434;
+    --popover-bg: #24303F;
+    --sidebar-bg: #1C2434;
+    --header-bg:  #24303F;
 }

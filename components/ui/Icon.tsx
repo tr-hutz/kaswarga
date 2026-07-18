@@ -7,8 +7,8 @@ import {
     ClipboardList, Clock, Copy, Download, Eye, EyeOff,
     File, FileText, Funnel, Home, ImageIcon, ImageOff,
     KeyRound, LayoutDashboard, Link2, Loader2, LogIn, LogOut, Mail,
-    Menu, Paperclip, Pencil, Plus, Receipt, RefreshCw, Search,
-    Settings, ShelvingUnit, Trash2, Upload, UserCog, UserPlus, Users,
+    Menu, Monitor, Moon, Paperclip, Pencil, Plus, Receipt, RefreshCw, Search,
+    Settings, ShelvingUnit, Sun, Trash2, Upload, UserCog, UserPlus, Users,
     Vibrate, Wallet, X, XCircle,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
@@ -47,6 +47,8 @@ const ICONS = {
     'log-out':          LogOut,
     mail:               Mail,
     menu:               Menu,
+    monitor:            Monitor,
+    moon:               Moon,
     paperclip:          Paperclip,
     pencil:             Pencil,
     plus:               Plus,
@@ -55,6 +57,7 @@ const ICONS = {
     search:             Search,
     settings:           Settings,
     'shelving-unit':    ShelvingUnit,
+    sun:                Sun,
     trash2:             Trash2,
     upload:             Upload,
     'user-cog':         UserCog,
