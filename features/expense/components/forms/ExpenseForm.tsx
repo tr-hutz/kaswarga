@@ -217,7 +217,7 @@ export default function ExpenseForm({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border border-stroke rounded-lg px-4 py-2 text-sm"
+                        className="border border-stroke rounded-lg px-4 py-2 text-sm hover:bg-body transition-colors"
                     >
                         {tc('actions.cancel')}
                     </button>
@@ -225,7 +225,7 @@ export default function ExpenseForm({
                     <button
                         type="submit"
                         disabled={saving}
-                        className="bg-primary text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 flex items-center gap-2"
+                        className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 flex items-center gap-2 transition-colors"
                     >
                         {saving && <Icon name="loader2" size={14} className="animate-spin" />}
                         {tc('actions.save')}

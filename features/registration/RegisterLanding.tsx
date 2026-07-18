@@ -11,7 +11,7 @@ export default function RegisterLanding() {
             <div className="w-full max-w-md space-y-6">
 
                 <div className="text-center">
-                    <h1 className="text-2xl font-bold">{t('landing.title')}</h1>
+                    <h1 className="text-2xl font-bold text-dark">{t('landing.title')}</h1>
                 </div>
 
                 <div className="grid gap-4">

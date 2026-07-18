@@ -66,7 +66,7 @@ export default function ChangePasswordView({ form, set, saving, error, onSubmit 
 
             <form
                 onSubmit={onSubmit}
-                className="bg-white rounded-xl border border-stroke p-6 space-y-4"
+                className="bg-white rounded-xl border border-stroke shadow-card p-6 space-y-4"
             >
 
                 <PasswordField
@@ -91,7 +91,7 @@ export default function ChangePasswordView({ form, set, saving, error, onSubmit 
                     <button
                         type="submit"
                         disabled={saving || !form.next || !form.confirm}
-                        className="bg-primary text-white rounded-lg px-6 py-2.5 text-sm disabled:opacity-40"
+                        className="bg-primary hover:bg-primary-dark text-white rounded-lg px-6 py-2.5 text-sm disabled:opacity-40 transition-colors"
                     >
                         {saving ? t('saving') : t('save')}
                     </button>

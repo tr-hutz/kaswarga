@@ -38,7 +38,7 @@ export default function Topbar({ mobileOpen, setMobileOpen }: TopbarProps) {
             <div className="flex items-center gap-3 lg:hidden">
                 <button
                     onClick={() => setMobileOpen(!mobileOpen)}
-                    className="p-2 rounded-lg hover:bg-gray-100"
+                    className="p-2 rounded-lg hover:bg-body transition-colors"
                     aria-label="Toggle menu"
                 >
                     {mobileOpen
@@ -61,7 +61,7 @@ export default function Topbar({ mobileOpen, setMobileOpen }: TopbarProps) {
                 <button
                     onClick={handleLogout}
                     data-testid="btn-logout"
-                    className="p-2 rounded-lg hover:bg-gray-100 text-dark-5 hover:text-dark"
+                    className="p-2 rounded-lg hover:bg-body transition-colors text-dark-5 hover:text-dark"
                     aria-label={t('logout')}
                 >
                     <Icon name="log-out" size={18} />
