@@ -21,10 +21,12 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
     const [preview,   setPreview]   = useState(currentUrl || '')
     const [uploading, setUploading] = useState(false)
     const [error,     setError]     = useState('')
+    const [imgFailed, setImgFailed] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         setPreview(currentUrl || '')
+        setImgFailed(false)
     }, [currentUrl])
 
     async function handleChange(e: ChangeEvent<HTMLInputElement>) {
@@ -70,12 +72,13 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
                     ${preview ? 'h-40' : 'h-32'}
                 `}
             >
-                {preview ? (
+                {preview && !imgFailed ? (
                     <>
                         <img
                             src={preview}
                             alt={label}
                             className="h-full w-full object-contain p-2"
+                            onError={() => setImgFailed(true)}
                         />
                         {!uploading && (
                             <button
