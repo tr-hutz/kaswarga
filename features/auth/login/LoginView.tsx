@@ -3,6 +3,7 @@
 import type { FormEvent } from 'react'
 import Link from 'next/link'
 import Icon from '@/components/ui/Icon'
+import PasswordInput from '@/components/ui/PasswordInput'
 import { useTranslations } from 'next-intl'
 
 interface LoginViewProps {
@@ -198,8 +199,7 @@ export default function LoginView({
               {t('password')}
             </label>
 
-            <input
-              type="password"
+            <PasswordInput
               required
               value={password}
               onChange={e =>
@@ -208,7 +208,6 @@ export default function LoginView({
                 )
               }
               className="
-                w-full
                 border
                 border-divider
                 rounded-lg
