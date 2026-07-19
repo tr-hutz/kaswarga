@@ -81,11 +81,11 @@ export function AuthProvider({
                                 logActivity({
                                     rtId:        m.rt.id,
                                     actorId:     m.user?.id,
-                                    actorName:   m.user?.nama,
+                                    actorName:   m.user?.name,
                                     action:      'LOGIN',
                                     entityType:  'auth',
                                     entityId:    m.user?.id,
-                                    description: `${m.user?.nama} logged in`,
+                                    description: `${m.user?.name} logged in`,
                                     metadata:    { role: m.role }
                                 })
                             }
