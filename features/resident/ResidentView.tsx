@@ -19,6 +19,8 @@ interface Props {
     reload:           () => void
     pendingRequests:  unknown[]
     pendingLoading:   boolean
+    // permissions
+    canManage:        boolean
     // query
     query:            QueryOptions
     setPage:          (page: number) => void
@@ -62,6 +64,7 @@ interface Props {
 export default function ResidentView({
     result, loading, error, reload,
     pendingRequests, pendingLoading,
+    canManage,
     query, setPage, setPageSize, setSearch, setSort, setFilter,
     onRowClick, onEdit, onDelete, refresh,
     selectedResident, drawerOpen, closeDrawer,
@@ -79,11 +82,12 @@ export default function ResidentView({
         () => buildResidentColumns({
             tResidents: (k) => t(k as Parameters<typeof t>[0]),
             tCommon:    (k) => tc(k as Parameters<typeof tc>[0]),
+            canManage,
             onEdit,
             onDelete,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [onEdit, onDelete],
+        [canManage, onEdit, onDelete],
     )
 
     const data = result?.data ?? []
@@ -137,18 +141,22 @@ export default function ResidentView({
                         >
                             {tc('actions.exportCsv')}
                         </button>
-                        <button
-                            onClick={openImport}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
-                        >
-                            {tc('actions.import')}
-                        </button>
-                        <button
-                            onClick={openCreateForm}
-                            className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary-dark"
-                        >
-                            + {tc('actions.add')}
-                        </button>
+                        {canManage && (
+                            <>
+                                <button
+                                    onClick={openImport}
+                                    className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
+                                >
+                                    {tc('actions.import')}
+                                </button>
+                                <button
+                                    onClick={openCreateForm}
+                                    className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary-dark"
+                                >
+                                    + {tc('actions.add')}
+                                </button>
+                            </>
+                        )}
                     </div>
                 }
             />

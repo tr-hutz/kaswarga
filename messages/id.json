@@ -69,7 +69,7 @@
   },
   "nav": {
     "home": "Beranda",
-    "dashboard": "Dashboard",
+    "dashboard": "Dasbor",
     "residents": "Warga",
     "payments": "Pembayaran",
     "expenses": "Pengeluaran",
@@ -487,7 +487,8 @@
       "close": "Tutup"
     },
     "row": {
-      "deactivateConfirm": "Nonaktifkan warga ini?",
+      "deactivateTitle": "Nonaktifkan Warga",
+      "deactivateConfirm": "Apakah kamu yakin ingin menonaktifkan warga ini? Tindakan ini tidak dapat dibatalkan.",
       "deleteFailed": "Gagal menghapus warga"
     },
     "import": {
@@ -554,6 +555,8 @@
   "expenses": {
     "title": "Pengeluaran",
     "subtitle": "Manajemen pengeluaran RT",
+    "deleteTitle": "Hapus Pengeluaran",
+    "deleteConfirm": "Apakah kamu yakin ingin menghapus pengeluaran \"{description}\"?",
     "searchPlaceholder": "Cari pengeluaran...",
     "filterPlaceholder": "Semua Kategori",
     "approveAll": "Setujui Semua ({count})",

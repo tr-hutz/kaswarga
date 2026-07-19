@@ -9,12 +9,13 @@ export type ResidentRow = Database['public']['Tables']['residents']['Row']
 interface Options {
     tResidents: (key: string) => string
     tCommon:    (key: string) => string
+    canManage:  boolean
     onEdit:     (row: ResidentRow) => void
     onDelete:   (row: ResidentRow) => void
 }
 
 export function buildResidentColumns(opts: Options): Column<ResidentRow>[] {
-    const { tResidents: t, tCommon: tc, onEdit, onDelete } = opts
+    const { tResidents: t, tCommon: tc, canManage, onEdit, onDelete } = opts
     return [
         {
             key:      'name',
@@ -43,11 +44,11 @@ export function buildResidentColumns(opts: Options): Column<ResidentRow>[] {
                 <ResidentStatusBadge status={row.active ? 'active' : 'inactive'} />
             ),
         },
-        {
+        ...(canManage ? [{
             key:    '_actions',
             title:  t('table.actions'),
             width:  '128px',
-            render: (row) => (
+            render: (row: ResidentRow) => (
                 <div className="flex gap-2 justify-end">
                     <button
                         onClick={(e) => { e.stopPropagation(); onEdit(row) }}
@@ -63,6 +64,6 @@ export function buildResidentColumns(opts: Options): Column<ResidentRow>[] {
                     </button>
                 </div>
             ),
-        },
+        }] as Column<ResidentRow>[] : []),
     ]
 }
