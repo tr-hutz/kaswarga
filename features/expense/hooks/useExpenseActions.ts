@@ -60,6 +60,9 @@ export function useExpenseActions({
         setSubmitting
     ] = useState(false)
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [deleteTarget, setDeleteTarget] = useState<any>(null)
+
     /*
      |-------------------------------------------------------------
      | DRAWER
@@ -180,38 +183,24 @@ export function useExpenseActions({
      |-------------------------------------------------------------
      */
 
-    async function removeRow(
-        row: any
-    ) {
+    function removeRow(row: any) {
+        setDeleteTarget(row)
+    }
 
-        const confirmed =
-            confirm(
-                `Delete expense "${row.description}"?`
-            )
-
-        if (!confirmed) {
-            return
-        }
-
+    async function confirmDelete() {
+        if (!deleteTarget) return
         try {
-
-            await deleteExpense(
-                row.id
-            )
-
+            await deleteExpense(deleteTarget.id)
             await onReload?.()
-
         } catch (err) {
-
-            console.error(
-                '[DELETE PENGELUARAN]',
-                err
-            )
-
-            alert(
-                'Failed to delete'
-            )
+            console.error('[DELETE PENGELUARAN]', err)
+        } finally {
+            setDeleteTarget(null)
         }
+    }
+
+    function cancelDelete() {
+        setDeleteTarget(null)
     }
 
     /*
@@ -313,6 +302,9 @@ export function useExpenseActions({
          */
 
         removeRow,
+        deleteTarget,
+        confirmDelete,
+        cancelDelete,
 
         /*
          * export
