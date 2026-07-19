@@ -7,6 +7,7 @@ import ExpenseDrawer          from './components/drawer/ExpenseDrawer'
 import ExpenseForm            from './components/forms/ExpenseForm'
 import ExpenseImportModal     from './components/import/ExpenseImportModal'
 import { buildExpenseColumns } from './components/ExpenseColumns'
+import ConfirmDialog           from '@/components/ui/ConfirmDialog'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 import type { MappedExpense } from './hooks/useExpenseData'
 
@@ -54,6 +55,9 @@ interface Props {
     approveExpense:     (r: MappedExpense) => void
     rejectExpense:      (r: MappedExpense) => void
     approveAllExpenses: () => void
+    deleteTarget:       MappedExpense | null
+    confirmDelete:      () => void
+    cancelDelete:       () => void
 }
 
 export default function ExpenseView({
@@ -69,6 +73,7 @@ export default function ExpenseView({
     importRows, fileName: importFileName, fileRef: importFileRef,
     importing, handleFile, handleImport, downloadTemplate, resetImport,
     approvalLoading, approveExpense, rejectExpense, approveAllExpenses,
+    deleteTarget, confirmDelete, cancelDelete,
 }: Props) {
     const t  = useTranslations('expenses')
     const tc = useTranslations('common')
@@ -193,6 +198,16 @@ export default function ExpenseView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
+            />
+
+            <ConfirmDialog
+                open={!!deleteTarget}
+                title={t('deleteTitle')}
+                message={t('deleteConfirm', { description: deleteTarget?.description ?? '' })}
+                confirmLabel={tc('actions.delete')}
+                cancelLabel={tc('actions.cancel')}
+                onConfirm={confirmDelete}
+                onCancel={cancelDelete}
             />
         </div>
     )
