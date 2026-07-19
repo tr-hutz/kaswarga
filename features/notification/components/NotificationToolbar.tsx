@@ -43,28 +43,6 @@ export default function NotificationToolbar({
             "
         >
 
-            <div>
-
-                <h1
-                    className="
-                        text-2xl
-                        font-semibold
-                    "
-                >
-                    {t('title')}
-                </h1>
-
-                <p
-                    className="
-                        text-sm
-                        text-muted
-                    "
-                >
-                    {t('subtitle')}
-                </p>
-
-            </div>
-
             <div
                 className="
                     flex
