@@ -20,6 +20,9 @@ export default function PaymentSummary({ summary }: { summary: any }) {
         className="
           rounded-xl
           border
+          border-divider
+          bg-surface
+          shadow-card
           p-4
         "
       >
@@ -41,6 +44,9 @@ export default function PaymentSummary({ summary }: { summary: any }) {
         className="
           rounded-xl
           border
+          border-divider
+          bg-surface
+          shadow-card
           p-4
         "
       >
@@ -62,6 +68,9 @@ export default function PaymentSummary({ summary }: { summary: any }) {
         className="
           rounded-xl
           border
+          border-divider
+          bg-surface
+          shadow-card
           p-4
         "
       >
