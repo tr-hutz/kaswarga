@@ -8,6 +8,14 @@ import { logActivity } from '../../lib/services/activity-logger'
 import { logout } from '../../lib/services/auth.service'
 import { useTranslations } from 'next-intl'
 
+const ROLE_LABELS: Record<string, string> = {
+    SUPER_ADMIN: 'Super Admin',
+    CHAIR:       'Ketua',
+    TREASURER:   'Bendahara',
+    ADMIN:       'Admin',
+    RESIDENT:    'Warga',
+}
+
 interface TopbarProps {
     mobileOpen: boolean
     setMobileOpen: (open: boolean) => void
@@ -58,7 +66,7 @@ export default function Topbar({ mobileOpen, setMobileOpen }: TopbarProps) {
 
                 <div className="hidden md:block text-right">
                     <div className="text-sm font-medium text-foreground">{membership?.user?.name}</div>
-                    <div className="text-xs text-muted capitalize">{role}</div>
+                    <div className="text-xs text-muted">{ROLE_LABELS[role as string] ?? role}</div>
                 </div>
 
                 <button
