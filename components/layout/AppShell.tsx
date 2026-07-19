@@ -11,9 +11,10 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 
-import Topbar        from './Topbar'
-import Sidebar       from './Sidebar'
-import MobileOverlay from './MobileOverlay'
+import Topbar          from './Topbar'
+import Sidebar         from './Sidebar'
+import MobileOverlay   from './MobileOverlay'
+import UserThemeSync   from './UserThemeSync'
 
 import { useAuth }  from '../../lib/auth/useAuth'
 import { logout }   from '../../lib/services/auth.service'
@@ -123,6 +124,8 @@ export default function AppShell({
   return (
 
       <>
+
+        <UserThemeSync />
 
         <Topbar
             mobileOpen={mobileOpen}
