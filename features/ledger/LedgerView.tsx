@@ -48,6 +48,10 @@ export default function LedgerView({
 
     return (
         <div className="space-y-5">
+            <div>
+                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+            </div>
+
             <LedgerAnalytics
                 income={totals.income}
                 expense={totals.expense}
