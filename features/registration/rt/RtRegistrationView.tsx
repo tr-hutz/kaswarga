@@ -28,7 +28,7 @@ function Input({ value, onChange, type = 'text', ...props }: InputProps) {
             type={type}
             value={value}
             onChange={e => onChange(e.target.value)}
-            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
             {...props}
         />
     )
@@ -83,7 +83,7 @@ export default function RtRegistrationView({
                 className="w-full max-w-2xl mx-auto space-y-6"
             >
                 <div>
-                    <h1 className="text-2xl font-bold">{t('title')}</h1>
+                    <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-1">
                         {t('subtitle')}
                     </p>

@@ -21,7 +21,7 @@ export default function Tooltip({ content, children, position = 'top' }: Props) 
             {children}
             <div className={`
                 pointer-events-none absolute z-50 px-2 py-1 rounded-md text-xs
-                bg-dark text-white whitespace-nowrap opacity-0
+                bg-sidebar text-white whitespace-nowrap opacity-0
                 group-hover:opacity-100 transition-opacity duration-150
                 ${POSITION[position]}
             `}>
