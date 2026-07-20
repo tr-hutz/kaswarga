@@ -52,7 +52,7 @@ export default function AppShell({
     if (!membership && !isPublicPath(pathname)) {
       router.replace('/login')
     }
-  }, [loading, membership, pathname])
+  }, [loading, membership, pathname, router])
 
   /*
    |-------------------------------------------------------------
@@ -87,7 +87,7 @@ export default function AppShell({
           </p>
           <a
             href="/activation"
-            className="inline-block bg-black text-white rounded-xl px-6 py-2.5 text-sm font-medium"
+            className="inline-block bg-primary hover:bg-primary-dark text-white rounded-xl px-6 py-2.5 text-sm font-medium"
           >
             {t('noMembership.goToActivation')}
           </a>
