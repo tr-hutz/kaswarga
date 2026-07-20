@@ -61,104 +61,49 @@ export default function HomeView({
 
       {/* HEADER */}
 
-      <div
-        className="
-          flex
-          items-center
-          justify-between
-        "
-      >
+      <h1 className="text-2xl font-bold text-foreground">
+        {t('title')}
+      </h1>
 
-        <h1
-          className="
-            text-2xl
-            font-bold
-            text-foreground
-          "
-        >
-          {t('title')}
-        </h1>
+      {/* RANGKUMAN STATUS PEMBAYARAN */}
 
-        <select
-          value={summaryYear}
-          onChange={e =>
-            setSummaryYear(
-              Number(
-                e.target.value
-              )
-            )
-          }
-          className="
-            h-10 px-3
-            border border-divider rounded-lg
-            bg-surface text-foreground text-sm
-            outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
-            transition-colors
-          "
-        >
+      <div className="bg-surface rounded-xl border border-divider shadow-card p-6 space-y-6">
 
-          {[
+        {/* Card header */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold text-foreground">
+            {t('summary.sectionTitle')}
+          </h2>
+          <select
+            value={summaryYear}
+            onChange={e => setSummaryYear(Number(e.target.value))}
+            className="
+              h-9 px-3
+              border border-divider rounded-lg
+              bg-canvas text-foreground text-sm
+              outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
+              transition-colors
+            "
+          >
+            {[summaryYear - 1, summaryYear, summaryYear + 1].map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
 
-            summaryYear - 1,
-            summaryYear,
-            summaryYear + 1
+        {/* Stat boxes */}
+        <PaymentSummary summary={summary} />
 
-          ].map(year => (
-
-            <option
-              key={year}
-              value={year}
-            >
-              {year}
-            </option>
-
+        {/* Monthly status grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+          {MONTHS.map(monthData => (
+            <MonthCard
+              key={monthData.id}
+              month={monthData.short}
+              status={statusMap[monthData.id]}
+            />
           ))}
-
-        </select>
-
-      </div>
-
-      {/* SUMMARY */}
-
-      <PaymentSummary
-        summary={summary}
-      />
-
-      {/* STATUS BULANAN */}
-
-      <div
-        className="
-          grid
-          grid-cols-2
-          md:grid-cols-3
-          xl:grid-cols-4
-          gap-4
-        "
-      >
-
-        {MONTHS.map(
-          monthData => {
-
-            const monthId =
-              monthData.id
-
-            return (
-
-              <MonthCard
-                key={monthId}
-                month={
-                  monthData.short
-                }
-                status={
-                  statusMap[
-                  monthId
-                  ]
-                }
-              />
-
-            )
-          }
-        )}
+        </div>
 
       </div>
 

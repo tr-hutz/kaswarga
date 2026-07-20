@@ -165,9 +165,10 @@
     "title": "Beranda Warga",
     "loading": "Loading...",
     "summary": {
-      "paid": "Sudah Bayar",
+      "sectionTitle": "Rangkuman Status Pembayaran",
+      "paid": "Sudah Dibayar",
       "arrears": "Tunggakan",
-      "upcoming": "Upcoming"
+      "upcoming": "Mendatang"
     },
     "payment": {
       "title": "Ajukan Pembayaran",
