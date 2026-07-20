@@ -135,7 +135,7 @@ test.describe('expense drawer (admin)', () => {
     }
 
     await expenses.clickRow(0)
-    await page.getByText('✕').last().click()
+    await page.locator('[data-testid="close-drawer"]').click()
     await expect(page.getByText(/Detail Pengeluaran/i)).not.toBeVisible({ timeout: 3000 })
   })
 })
@@ -171,7 +171,7 @@ test.describe('approve / reject expense (admin)', () => {
         approved = true
         break
       }
-      await page.getByText('✕').last().click()
+      await page.locator('[data-testid="close-drawer"]').click()
     }
 
     if (!approved) {
@@ -210,7 +210,7 @@ test.describe('approve / reject expense (admin)', () => {
         rejected = true
         break
       }
-      await page.getByText('✕').last().click()
+      await page.locator('[data-testid="close-drawer"]').click()
     }
 
     if (!rejected) {

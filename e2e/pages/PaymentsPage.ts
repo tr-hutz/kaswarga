@@ -23,7 +23,7 @@ export class PaymentsPage {
   }
 
   drawer(): Locator {
-    return this.page.locator('.fixed.inset-0.z-50')
+    return this.page.locator('[data-testid="payment-drawer"]')
   }
 
   approveButton(): Locator {
@@ -43,7 +43,7 @@ export class PaymentsPage {
   }
 
   closeDrawerButton(): Locator {
-    return this.drawer().getByText('✕')
+    return this.drawer().locator('[data-testid="close-drawer"]')
   }
 
   async clickFirstPendingRow() {

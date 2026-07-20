@@ -115,6 +115,7 @@ export default function LoginView({
           error && (
 
             <div
+              data-testid="login-error"
               className="
                 mb-4
                 rounded-xl

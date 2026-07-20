@@ -73,11 +73,11 @@ export class ExpensesPage {
 
   // ExpenseDrawer
   drawer(): Locator {
-    return this.page.locator('.fixed.inset-0.bg-black\\/20.z-50')
+    return this.page.locator('[data-testid="expense-drawer"]')
   }
 
   drawerCloseButton(): Locator {
-    return this.page.locator('.fixed.inset-0').last().getByText('✕')
+    return this.drawer().locator('[data-testid="close-drawer"]')
   }
 
   approveInDrawer(): Locator {

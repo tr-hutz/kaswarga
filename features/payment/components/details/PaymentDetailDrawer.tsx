@@ -59,6 +59,7 @@ export default function PaymentDetailDrawer({
     return (
 
         <div
+            data-testid="payment-drawer"
             className="
                 fixed
                 inset-0
@@ -115,7 +116,9 @@ export default function PaymentDetailDrawer({
                     </div>
 
                     <button
+                        data-testid="close-drawer"
                         onClick={onClose}
+                        aria-label="Tutup"
                         className="
                             text-muted
                             hover:text-foreground

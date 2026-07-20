@@ -16,7 +16,7 @@ export class LoginPage {
 
   async expectError() {
     await expect(
-      this.page.locator('.bg-red-50').first()
+      this.page.locator('[data-testid="login-error"]')
     ).toBeVisible({ timeout: 5000 })
   }
 
