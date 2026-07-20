@@ -23,7 +23,7 @@ export default function ConfirmDialog({
     if (!open) return null
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-surface rounded-xl shadow-default p-6 w-full max-w-sm space-y-4">
+            <div role="dialog" aria-modal="true" className="bg-surface rounded-xl shadow-default p-6 w-full max-w-sm space-y-4">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-danger/10 rounded-xl">
                         <Icon name="alert-triangle" size={20} className="text-danger" />
