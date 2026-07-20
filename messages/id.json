@@ -136,7 +136,7 @@
     }
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Dasbor",
     "loading": "Memuat data...",
     "sections": {
       "paymentStatus": "Status Iuran Warga",
@@ -202,7 +202,7 @@
     "viewAll": "Lihat semua notifikasi"
   },
   "activity": {
-    "title": "Activity Feed",
+    "title": "Aktivitas",
     "subtitle": "Histori aktivitas sistem",
     "loading": "Loading...",
     "table": {
