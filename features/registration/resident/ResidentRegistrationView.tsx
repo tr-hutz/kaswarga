@@ -66,7 +66,7 @@ export default function ResidentRegistrationView({
                             value={form.name}
                             onChange={e => set('name', e.target.value)}
                             placeholder="Nama sesuai KTP"
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
@@ -78,7 +78,7 @@ export default function ResidentRegistrationView({
                             value={form.email}
                             onChange={e => set('email', e.target.value)}
                             placeholder="email@example.com"
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
