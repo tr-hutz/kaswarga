@@ -17,7 +17,7 @@ export default function Error({
             <p className="text-sm text-muted mb-6">{t('description')}</p>
             <button
                 onClick={reset}
-                className="px-4 py-2 bg-dark text-white text-sm rounded-lg hover:bg-dark-2 transition"
+                className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg transition-colors"
             >
                 {t('retry')}
             </button>
