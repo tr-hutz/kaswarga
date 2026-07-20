@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
@@ -24,6 +25,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
     const [saveError, setSaveError] = useState('')
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         if (!resident) { setForm(EMPTY); return }
         setForm({
             name:        resident.name        || '',

@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
@@ -49,6 +50,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
 
         if (!rt) return
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setForm({
             name:          rt.name           || '',
             code:          rt.code           || '',

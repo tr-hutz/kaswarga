@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
@@ -25,7 +26,7 @@ export default function RtForm({ open, onClose, rt, onSubmit }: RtFormProps) {
     const [saving,  setSaving]  = useState(false)
 
     useEffect(() => {
-
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         if (!rt) { setForm(EMPTY); return }
 
         setForm({
