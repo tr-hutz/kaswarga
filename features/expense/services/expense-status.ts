@@ -9,10 +9,10 @@ export function getStatusLabel(status: string) {
 
 export function getStatusClass(status: string) {
     switch (status) {
-        case 'approved': return 'bg-emerald-100 text-emerald-700'
-        case 'pending':  return 'bg-amber-100 text-amber-700'
-        case 'rejected': return 'bg-red-100 text-red-700'
-        default:         return 'bg-slate-100 text-slate-700'
+        case 'approved': return 'bg-success/10 text-success'
+        case 'pending':  return 'bg-warning/10 text-warning'
+        case 'rejected': return 'bg-danger/10 text-danger'
+        default:         return 'bg-canvas text-muted'
     }
 }
 
