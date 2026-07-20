@@ -12,6 +12,8 @@ export class PaymentsPage {
     await this.page.goto('/payments')
     await expect(this.page).toHaveURL(/\/payments/)
     await waitForShell(this.page, /\/payments/)
+    // Wait until the table finishes loading (skeleton rows replaced by dt-row or dt-empty)
+    await this.page.locator('[data-testid="dt-row"],[data-testid="dt-empty"]').first().waitFor({ timeout: 15000 })
   }
 
   table(): Locator {
@@ -19,7 +21,7 @@ export class PaymentsPage {
   }
 
   tableRows(): Locator {
-    return this.table().locator('tbody tr')
+    return this.page.locator('[data-testid="dt-row"]')
   }
 
   drawer(): Locator {

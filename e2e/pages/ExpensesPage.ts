@@ -12,6 +12,8 @@ export class ExpensesPage {
     await this.page.goto('/expenses')
     await expect(this.page).toHaveURL(/\/expenses/)
     await waitForShell(this.page, /\/expenses/)
+    // Wait until the table finishes loading (skeleton rows replaced by dt-row or dt-empty)
+    await this.page.locator('[data-testid="dt-row"],[data-testid="dt-empty"]').first().waitFor({ timeout: 15000 })
   }
 
   addButton(): Locator {
@@ -97,11 +99,13 @@ export class ExpensesPage {
   }
 
   tableRows(): Locator {
-    return this.page.locator('table tbody tr')
+    return this.page.locator('[data-testid="dt-row"]')
   }
 
   async clickRow(index = 0) {
     await this.tableRows().nth(index).click()
+    // Wait for the drawer to open before callers check its contents
+    await this.drawer().waitFor({ timeout: 5000 })
   }
 
   async approveExpense() {

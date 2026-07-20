@@ -12,7 +12,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
     "seed:auth": "node scripts/seed-auth.mjs",
-    "seed:dev": "node scripts/seed-dev.mjs"
+    "seed:dev": "node scripts/seed-dev.mjs",
+    "seed:e2e": "node scripts/seed-e2e.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
