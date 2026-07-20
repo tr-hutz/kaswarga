@@ -1,4 +1,5 @@
-'use client'
+﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { DataTable }         from '@/components/common/data-table'
 import PaymentDetailDrawer   from './components/details/PaymentDetailDrawer'

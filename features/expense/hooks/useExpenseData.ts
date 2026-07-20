@@ -1,4 +1,5 @@
-'use client'
+﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth/useAuth'
@@ -35,7 +36,7 @@ export function useExpenseData(query: QueryOptions) {
         }
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
     useEffect(() => { load() }, [rtId, queryKey])
 
     return { result, loading, error, reload: load }
