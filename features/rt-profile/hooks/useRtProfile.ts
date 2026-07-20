@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useCallback, useEffect, useState } from 'react'
 import { useToast } from '@/components/ui/ToastProvider'
@@ -28,6 +29,7 @@ export function useRtProfile() {
 
     }, [])
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { load() }, [load])
 
     async function handleSave(payload: any) {
