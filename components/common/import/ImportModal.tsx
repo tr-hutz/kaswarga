@@ -44,10 +44,10 @@ export default function ImportModal({
     importButtonLabel,
 }: ImportModalProps) {
 
-    if (!open) return null
-
     const t = useTranslations('import')
     const tCommon = useTranslations('common')
+
+    if (!open) return null
 
     const validRows   = rows.filter(isValid)
     const invalidRows = rows.filter(r => !isValid(r))

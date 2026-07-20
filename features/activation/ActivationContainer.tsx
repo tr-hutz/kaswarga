@@ -41,38 +41,6 @@ export default function ActivationContainer() {
     const [savingPw,      setSavingPw]      = useState(false)
     const [pwError,       setPwError]       = useState('')
 
-    useEffect(() => {
-
-        async function bootstrap() {
-            // Supabase admin-generated links use implicit flow — the session
-            // arrives as a URL hash (#access_token=...&refresh_token=...).
-            // PKCE flow (client-initiated sign-in) arrives as ?code=.
-            // Handle both before calling activate().
-            const query = new URLSearchParams(window.location.search)
-            const hash  = new URLSearchParams(window.location.hash.slice(1))
-
-            const code         = query.get('code')
-            const accessToken  = hash.get('access_token')
-            const refreshToken = hash.get('refresh_token')
-
-            if (code) {
-                try { await exchangeCodeForSession(code) }
-                catch { setState(STATE.NO_TOKEN); return }
-            } else if (accessToken && refreshToken) {
-                try { await setAuthSession(accessToken, refreshToken) }
-                catch { setState(STATE.NO_TOKEN); return }
-            }
-
-            // Clear the hash/code from the URL bar without reloading
-            window.history.replaceState(null, '', window.location.pathname)
-
-            await activate()
-        }
-
-        bootstrap()
-
-    }, [])
-
     async function activate() {
         const session = await getAuthSession()
 
@@ -118,6 +86,38 @@ export default function ActivationContainer() {
             setState(STATE.ERROR)
         }
     }
+
+    useEffect(() => {
+
+        async function bootstrap() {
+            // Supabase admin-generated links use implicit flow — the session
+            // arrives as a URL hash (#access_token=...&refresh_token=...).
+            // PKCE flow (client-initiated sign-in) arrives as ?code=.
+            // Handle both before calling activate().
+            const query = new URLSearchParams(window.location.search)
+            const hash  = new URLSearchParams(window.location.hash.slice(1))
+
+            const code         = query.get('code')
+            const accessToken  = hash.get('access_token')
+            const refreshToken = hash.get('refresh_token')
+
+            if (code) {
+                try { await exchangeCodeForSession(code) }
+                catch { setState(STATE.NO_TOKEN); return }
+            } else if (accessToken && refreshToken) {
+                try { await setAuthSession(accessToken, refreshToken) }
+                catch { setState(STATE.NO_TOKEN); return }
+            }
+
+            // Clear the hash/code from the URL bar without reloading
+            window.history.replaceState(null, '', window.location.pathname)
+
+            await activate()
+        }
+
+        bootstrap()
+
+    }, [])
 
     async function handleSetPassword(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()

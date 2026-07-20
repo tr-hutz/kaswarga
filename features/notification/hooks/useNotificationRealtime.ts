@@ -1,7 +1,9 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
     useEffect,
+    useLayoutEffect,
     useRef
 } from 'react'
 
@@ -21,8 +23,10 @@ export function useNotificationRealtime({
 
     const onReloadRef = useRef(onReload)
     const onNewRef    = useRef(onNew)
-    onReloadRef.current = onReload
-    onNewRef.current    = onNew
+    useLayoutEffect(() => {
+        onReloadRef.current = onReload
+        onNewRef.current    = onNew
+    })
 
     useEffect(() => {
         if (!user_id) {
