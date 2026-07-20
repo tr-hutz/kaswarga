@@ -25,7 +25,7 @@ export default function EditRoleForm({ target, onSave, onClose, saving }: EditRo
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
             <div className="bg-surface rounded-xl p-6 w-full max-w-sm space-y-4">
 
-                <h2 className="text-base font-semibold">{t('editRole.title')}</h2>
+                <h2 className="text-lg font-semibold text-foreground">{t('editRole.title')}</h2>
 
                 <div>
                     <p className="text-sm text-muted">
@@ -43,7 +43,7 @@ export default function EditRoleForm({ target, onSave, onClose, saving }: EditRo
                 <select
                     value={role}
                     onChange={e => setRole(e.target.value)}
-                    className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                    className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                 >
                     {ROLE_VALUES.map(r => (
                         <option key={r} value={r}>{t(`roles.${r}`)}</option>
@@ -60,7 +60,7 @@ export default function EditRoleForm({ target, onSave, onClose, saving }: EditRo
                     <button
                         onClick={() => onSave(target.membership.id, role)}
                         disabled={saving}
-                        className="bg-primary text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50"
+                        className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 transition-colors"
                     >
                         {saving ? tc('states.saving') : tc('actions.save')}
                     </button>

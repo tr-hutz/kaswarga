@@ -99,6 +99,7 @@ export default function PaymentDetailDrawer({
                             className="
                                 text-xl
                                 font-bold
+                                text-foreground
                             "
                         >
                             {t('detail.title')}

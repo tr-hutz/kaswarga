@@ -109,7 +109,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
 
             {/* Header */}
             <div>
-                <h1 className="text-xl font-semibold">{t('title')}</h1>
+                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                 <p className="text-sm text-muted mt-0.5">
                     {t('subtitle')}
                 </p>
@@ -127,7 +127,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                                 required
                                 value={form.name}
                                 onChange={e => set('name', e.target.value)}
-                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                             />
                         </Field>
                     </div>
@@ -137,7 +137,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                             <input
                                 value={form.code}
                                 onChange={e => set('code', e.target.value.toUpperCase())}
-                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                             />
                             <button
                                 type="button"
@@ -157,7 +157,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                             type="number"
                             value={form.monthlyFee}
                             onChange={e => set('monthlyFee', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -172,7 +172,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                             <input
                                 value={form.address}
                                 onChange={e => set('address', e.target.value)}
-                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                             />
                         </Field>
                     </div>
@@ -181,7 +181,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                         <input
                             value={form.city}
                             onChange={e => set('city', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -189,7 +189,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                         <input
                             value={form.province}
                             onChange={e => set('province', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -197,7 +197,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                         <input
                             value={form.postalCode}
                             onChange={e => set('postalCode', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -211,7 +211,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                         <input
                             value={form.bankName}
                             onChange={e => set('bankName', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -219,7 +219,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                         <input
                             value={form.accountNumber}
                             onChange={e => set('accountNumber', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -228,7 +228,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                             <input
                                 value={form.accountHolder}
                                 onChange={e => set('accountHolder', e.target.value)}
-                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                             />
                         </Field>
                     </div>

@@ -26,7 +26,7 @@ function PasswordField({ label, value, onChange, placeholder }: PasswordFieldPro
                     value={value}
                     onChange={e => onChange(e.target.value)}
                     placeholder={placeholder}
-                    className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm pr-10"
+                    className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm pr-10 bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 <button
                     type="button"
@@ -58,7 +58,7 @@ export default function ChangePasswordView({ form, set, saving, error, onSubmit 
         <div className="space-y-6 max-w-md">
 
             <div>
-                <h1 className="text-xl font-semibold">{t('title')}</h1>
+                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                 <p className="text-sm text-muted mt-0.5">
                     {t('subtitle')}
                 </p>

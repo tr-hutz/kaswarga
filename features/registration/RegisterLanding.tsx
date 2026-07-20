@@ -23,7 +23,7 @@ export default function RegisterLanding() {
                                     <Icon name="building2" size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="font-semibold">{t('landing.asRt')}</h2>
+                                    <h2 className="font-semibold text-foreground">{t('landing.asRt')}</h2>
                                 </div>
                             </div>
                         </div>
@@ -36,7 +36,7 @@ export default function RegisterLanding() {
                                     <Icon name="users" size={24} />
                                 </div>
                                 <div>
-                                    <h2 className="font-semibold">{t('landing.asResident')}</h2>
+                                    <h2 className="font-semibold text-foreground">{t('landing.asResident')}</h2>
                                 </div>
                             </div>
                         </div>

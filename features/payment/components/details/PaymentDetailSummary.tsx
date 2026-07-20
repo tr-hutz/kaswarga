@@ -35,6 +35,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         font-medium
+                        text-foreground
                     "
                 >
                     {payment.name}
@@ -56,6 +57,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         font-medium
+                        text-foreground
                     "
                 >
                     {t('detail.blockPrefix')} {payment.block} / {payment.houseNumber}
@@ -77,6 +79,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         font-medium
+                        text-foreground
                     "
                 >
                     {payment.year}
@@ -98,6 +101,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         font-semibold
+                        text-foreground
                     "
                 >
                     Rp {
