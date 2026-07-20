@@ -98,8 +98,8 @@ export default function NotificationView({
 
     if (loading) {
         return (
-            <div className="p-6 text-sm text-subtle">
-                {t('loading')}
+            <div className="bg-surface rounded-xl shadow-card border border-divider flex items-center justify-center py-16">
+                <div className="w-6 h-6 border-2 border-divider border-t-primary rounded-full animate-spin" />
             </div>
         )
     }

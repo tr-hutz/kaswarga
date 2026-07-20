@@ -123,37 +123,17 @@ export default function NotificationDrawer({
                 }
             >
 
-                <div
-                    className="
-                        p-4
-                        border-b
-                        flex
-                        items-center
-                        justify-between
-                    "
-                >
-
-                    <div>
-
-                        <h2
-                            className="
-                                font-semibold
-                                text-lg
-                            "
-                        >
-                            {t('title')}
-                        </h2>
-
-                    </div>
-
+                <div className="shrink-0 px-4 py-4 border-b border-divider flex items-center justify-between">
+                    <h2 className="font-semibold text-lg text-foreground">
+                        {t('title')}
+                    </h2>
                     <button
                         onClick={onClose}
+                        className="p-2 rounded-lg hover:bg-canvas text-muted hover:text-foreground transition-colors"
+                        aria-label="Tutup"
                     >
-
-                        <Icon name="x" className="w-5 h-5" />
-
+                        <Icon name="x" size={18} />
                     </button>
-
                 </div>
 
                 <div
