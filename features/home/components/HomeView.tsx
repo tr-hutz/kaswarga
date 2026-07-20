@@ -71,7 +71,7 @@ export default function HomeView({
 
         {/* Card header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-foreground">
+          <h2 className="text-xl font-semibold text-foreground">
             {t('summary.sectionTitle')}
           </h2>
           <select
