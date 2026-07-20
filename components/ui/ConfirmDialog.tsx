@@ -1,6 +1,6 @@
 'use client'
 
-import { AlertTriangle } from 'lucide-react'
+import Icon from '@/components/ui/Icon'
 
 interface Props {
     open: boolean
@@ -26,7 +26,7 @@ export default function ConfirmDialog({
             <div className="bg-surface rounded-xl shadow-default p-6 w-full max-w-sm space-y-4">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-danger/10 rounded-xl">
-                        <AlertTriangle size={20} className="text-danger" />
+                        <Icon name="alert-triangle" size={20} className="text-danger" />
                     </div>
                     <h2 className="text-base font-semibold text-foreground">{title}</h2>
                 </div>

@@ -165,17 +165,17 @@ export default function PaymentForm({
     /* ---------------------------------------------------------------------- */
 
     return (
-        <form onSubmit={handleSubmit} className="border border-divider rounded-xl p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-surface border border-divider rounded-xl p-6 space-y-6">
 
             {/* HEADER */}
             <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-                <h2 className="text-xl font-semibold">{t('payment.title')}</h2>
+                <h2 className="text-xl font-semibold text-foreground">{t('payment.title')}</h2>
 
                 <div className="flex flex-wrap items-center gap-3">
                     <select
                         value={paymentYear}
                         onChange={e => setPaymentYear(Number(e.target.value))}
-                        className="border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground"
+                        className="h-10 px-3 border border-divider rounded-lg text-sm bg-surface text-foreground outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                     >
                         {[paymentYear - 1, paymentYear, paymentYear + 1].map(year => (
                             <option key={year} value={year}>{year}</option>
@@ -185,10 +185,10 @@ export default function PaymentForm({
                     <button
                         type="button"
                         onClick={handleToggleFullYear}
-                        className={`px-4 py-2 rounded-lg border text-sm transition-all ${
+                        className={`h-10 px-4 rounded-lg border text-sm font-medium transition-colors ${
                             PAYABLE_MONTHS.length > 0 && PAYABLE_MONTHS.every(m => selectedMonths.includes(m))
                                 ? 'bg-primary text-white border-primary'
-                                : 'bg-surface hover:bg-canvas'
+                                : 'border-divider bg-surface text-foreground hover:bg-canvas'
                         }`}
                     >
                         {t('payment.annualized')}
@@ -209,12 +209,12 @@ export default function PaymentForm({
                             type="button"
                             disabled={isDisabled}
                             onClick={() => toggleMonth(month.id)}
-                            className={`border rounded-lg p-4 text-left transition-all ${
+                            className={`border rounded-lg p-4 text-left transition-colors ${
                                 isDisabled
                                     ? 'bg-canvas text-subtle border-divider cursor-not-allowed'
                                     : isSelected
                                     ? 'bg-primary text-white border-primary'
-                                    : 'bg-surface hover:bg-canvas'
+                                    : 'bg-surface border-divider text-foreground hover:bg-canvas'
                             }`}
                         >
                             <div className="font-semibold">{month.short}</div>
@@ -239,17 +239,17 @@ export default function PaymentForm({
                 <div className="rounded-xl border border-divider p-4 bg-canvas space-y-3">
                     <div className="flex items-center justify-between text-sm">
                         <span className="text-muted">{t('payment.totalMonths')}</span>
-                        <strong>{totalMonths} {t('payment.monthsUnit')}</strong>
+                        <strong className="text-foreground">{totalMonths} {t('payment.monthsUnit')}</strong>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                         <span className="text-muted">{t('payment.totalFee')}</span>
-                        <strong>Rp {totalFee.toLocaleString('id-ID')}</strong>
+                        <strong className="text-foreground">Rp {totalFee.toLocaleString('id-ID')}</strong>
                     </div>
                     <div className="pt-1">
                         <button
                             type="submit"
                             disabled={loading || selectedMonths.length === 0}
-                            className="w-full rounded-lg bg-primary text-white px-6 py-2.5 text-sm font-medium disabled:opacity-40 transition"
+                            className="w-full h-10 rounded-lg bg-primary hover:bg-primary-dark text-white px-6 text-sm font-medium disabled:opacity-40 transition-colors"
                         >
                             {loading ? t('payment.submitting') : t('payment.submit')}
                         </button>

@@ -9,6 +9,13 @@ const STATUS_STYLE: Record<string, string> = {
     unpaid:   'bg-canvas border-divider'
 }
 
+const STATUS_TEXT: Record<string, string> = {
+    approved: 'text-success',
+    pending:  'text-warning',
+    rejected: 'text-danger',
+    unpaid:   'text-muted'
+}
+
 export default function MonthCard({ month, status }: { month: string; status?: string }) {
 
     const t = useTranslations('common')
@@ -22,9 +29,9 @@ export default function MonthCard({ month, status }: { month: string; status?: s
     }
 
     return (
-        <div className={`border-2 rounded-xl p-4 transition ${STATUS_STYLE[finalStatus]}`}>
-            <div className="font-semibold text-lg">{month}</div>
-            <div className="text-sm mt-2">{statusLabel[finalStatus]}</div>
+        <div className={`border rounded-xl p-4 transition ${STATUS_STYLE[finalStatus]}`}>
+            <div className="font-semibold text-lg text-foreground">{month}</div>
+            <div className={`text-sm mt-2 ${STATUS_TEXT[finalStatus]}`}>{statusLabel[finalStatus]}</div>
         </div>
     )
 }
