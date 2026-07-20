@@ -38,6 +38,7 @@ export default function ExpenseDrawer({
 
     return (
         <div
+            data-testid="expense-drawer"
             className="fixed inset-0 bg-black/20 z-50 flex justify-end"
             onClick={onClose}
         >
@@ -56,8 +57,10 @@ export default function ExpenseDrawer({
                     <div className="flex items-center gap-3">
                         <ExpenseStatusBadge status={row.status} />
                         <button
+                            data-testid="close-drawer"
                             onClick={onClose}
                             className="text-subtle hover:text-foreground text-xl leading-none"
+                            aria-label="Tutup"
                         >
                             ✕
                         </button>
