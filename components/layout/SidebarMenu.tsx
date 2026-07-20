@@ -27,7 +27,7 @@ export default function SidebarMenu({ onClose }: { onClose?: () => void }) {
             <Link
                 href="/"
                 onClick={onClose}
-                className="flex items-center gap-3 px-6 h-16 border-b border-white/20 shrink-0"
+                className="flex items-center gap-3 px-6 h-16 shrink-0"
             >
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary">
                     <span className="text-white font-bold text-sm">KW</span>
