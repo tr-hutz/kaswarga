@@ -21,6 +21,8 @@ export default function NotificationBell({
 
             onClick={onClick}
 
+            aria-label="Notifikasi"
+
             className="
                 relative
 
