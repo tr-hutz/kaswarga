@@ -197,7 +197,8 @@
     },
     "loading": "Memuat notifikasi...",
     "markAllRead": "Tandai Semua Dibaca",
-    "empty": "Tidak ada notifikasi"
+    "empty": "Tidak ada notifikasi",
+    "viewAll": "Lihat semua notifikasi"
   },
   "activity": {
     "title": "Activity Feed",

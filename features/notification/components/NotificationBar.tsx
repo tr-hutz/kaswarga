@@ -1,7 +1,9 @@
-﻿'use client'
+'use client'
 
 import {
-    useState
+    useState,
+    useRef,
+    useEffect,
 } from 'react'
 
 import { useRouter } from 'next/navigation'
@@ -9,8 +11,8 @@ import { useRouter } from 'next/navigation'
 import NotificationBell
     from './NotificationBell'
 
-import NotificationDrawer
-    from './NotificationDrawer'
+import NotificationDropdown
+    from './NotificationDropdown'
 
 import {
     useNotifications
@@ -29,85 +31,92 @@ import {
 } from '../../../components/ui/ToastProvider'
 
 import {
+    markNotificationRead,
+    markAllNotificationsRead,
+} from '../services/notification.service'
+
+import {
     getNotificationLink
 } from '../utils/getNotificationLink'
 
 export default function NotificationBar() {
 
-    const [
-        open,
-        setOpen
-    ] = useState(false)
+    const [open, setOpen] = useState(false)
 
-    const {
-        membership
-    } = useAuth()
+    const containerRef = useRef<HTMLDivElement>(null)
 
-    const router = useRouter()
+    const { membership } = useAuth()
+    const router         = useRouter()
+    const { toast }      = useToast()
 
-    const {
-        toast
-    } = useToast()
-
-    const {
-        notifications,
-        reload
-    } = useNotifications()
+    const { notifications, reload } = useNotifications()
 
     useNotificationRealtime({
-        user_id: membership?.user?.id,
+        user_id:  membership?.user?.id,
         onReload: reload,
         onNew: (notification) => {
             const isRejected = notification?.type === 'payment_rejected'
             toast({
-                title: notification?.title,
-                message: notification?.message,
-                type: isRejected ? 'error' : 'success',
+                title:    notification?.title,
+                message:  notification?.message,
+                type:     isRejected ? 'error' : 'success',
                 duration: 0,
-                onClick: () => router.push(getNotificationLink(notification))
+                onClick:  () => router.push(getNotificationLink(notification))
             })
         }
     })
 
-    const unreadCount =
+    useEffect(() => {
+        function handleOutside(e: MouseEvent) {
+            if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+                setOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleOutside)
+        return () => document.removeEventListener('mousedown', handleOutside)
+    }, [])
 
-        notifications.filter(
-            n => !n.is_read
-        ).length
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    async function handleNotificationClick(notification: any) {
+        try {
+            if (!notification.is_read) {
+                await markNotificationRead(notification.id)
+                reload()
+            }
+            setOpen(false)
+            router.push(getNotificationLink(notification))
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    async function handleMarkAllRead() {
+        if (!membership?.user?.id) return
+        try {
+            await markAllNotificationsRead(membership.user.id)
+            reload()
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    const unreadCount = notifications.filter(n => !n.is_read).length
 
     return (
-
-        <>
+        <div ref={containerRef} className="relative">
 
             <NotificationBell
-
-                unreadCount={
-                    unreadCount
-                }
-
-                onClick={() =>
-                    setOpen(true)
-                }
-
+                unreadCount={unreadCount}
+                onClick={() => setOpen(o => !o)}
             />
 
-            <NotificationDrawer
-
+            <NotificationDropdown
                 open={open}
-
-                notifications={
-                    notifications
-                }
-
-                onClose={() =>
-                    setOpen(false)
-                }
-
-                onRead={reload}
-
+                notifications={notifications}
+                onNotificationClick={handleNotificationClick}
+                onMarkAllRead={handleMarkAllRead}
             />
 
-        </>
-
+        </div>
     )
 }
