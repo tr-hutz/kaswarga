@@ -69,7 +69,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                 onSubmit={handleSubmit}
                 className="bg-surface rounded-lg p-6 w-full max-w-lg space-y-4"
             >
-                <h2 className="text-lg font-semibold">
+                <h2 className="text-xl font-semibold text-foreground">
                     {isEdit ? t('form.editTitle') : t('form.addTitle')}
                 </h2>
 
@@ -82,7 +82,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                             placeholder={t('form.fullNamePlaceholder')}
                             value={form.name}
                             onChange={e => set('name', e.target.value)}
-                            className="w-full border rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
@@ -92,7 +92,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                             placeholder={t('form.blockPlaceholder')}
                             value={form.block}
                             onChange={e => set('block', e.target.value)}
-                            className="w-full border rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
@@ -102,7 +102,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                             placeholder={t('form.houseNumberPlaceholder')}
                             value={form.houseNumber}
                             onChange={e => set('houseNumber', e.target.value)}
-                            className="w-full border rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
@@ -112,7 +112,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                             placeholder={t('form.phonePlaceholder')}
                             value={form.phone}
                             onChange={e => set('phone', e.target.value)}
-                            className="w-full border rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
@@ -126,7 +126,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border rounded-lg px-4 py-2 text-sm hover:bg-canvas transition-colors"
+                        className="border border-divider rounded-lg px-4 py-2 text-sm hover:bg-canvas transition-colors"
                     >
                         {tc('actions.cancel')}
                     </button>

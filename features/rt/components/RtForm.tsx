@@ -65,7 +65,7 @@ export default function RtForm({ open, onClose, rt, onSubmit }: RtFormProps) {
                 onSubmit={handleSubmit}
                 className="bg-surface rounded-xl p-6 w-full max-w-xl space-y-4 max-h-[90vh] overflow-y-auto"
             >
-                <h2 className="text-lg font-semibold">
+                <h2 className="text-xl font-semibold text-foreground">
                     {isEdit ? t('form.editTitle') : t('form.addTitle')}
                 </h2>
 
@@ -78,7 +78,7 @@ export default function RtForm({ open, onClose, rt, onSubmit }: RtFormProps) {
                             placeholder={t('form.namePlaceholder')}
                             value={form.name}
                             onChange={e => set('name', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
@@ -88,7 +88,7 @@ export default function RtForm({ open, onClose, rt, onSubmit }: RtFormProps) {
                             placeholder={t('form.codePlaceholder')}
                             value={form.code}
                             onChange={e => set('code', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
@@ -98,7 +98,7 @@ export default function RtForm({ open, onClose, rt, onSubmit }: RtFormProps) {
                             placeholder={t('form.postalCodePlaceholder')}
                             value={form.postalCode}
                             onChange={e => set('postalCode', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
@@ -108,7 +108,7 @@ export default function RtForm({ open, onClose, rt, onSubmit }: RtFormProps) {
                             placeholder={t('form.addressPlaceholder')}
                             value={form.address}
                             onChange={e => set('address', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
@@ -118,7 +118,7 @@ export default function RtForm({ open, onClose, rt, onSubmit }: RtFormProps) {
                             placeholder={t('form.cityPlaceholder')}
                             value={form.city}
                             onChange={e => set('city', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
@@ -128,7 +128,7 @@ export default function RtForm({ open, onClose, rt, onSubmit }: RtFormProps) {
                             placeholder={t('form.provincePlaceholder')}
                             value={form.province}
                             onChange={e => set('province', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 

@@ -26,9 +26,9 @@ export default function LedgerDrawer({ open, row, onClose }: LedgerDrawerProps) 
         >
             <div className="w-full max-w-lg bg-surface h-full overflow-y-auto p-6 shadow-default">
 
-                <div className="p-5 border-b flex items-center justify-between">
+                <div className="p-5 border-b border-divider flex items-center justify-between">
                     <div>
-                        <h2 className="text-lg font-semibold">{t('drawer.title')}</h2>
+                        <h2 className="text-xl font-semibold text-foreground">{t('drawer.title')}</h2>
                         <p className="text-sm text-muted">{t('drawer.subtitle')}</p>
                     </div>
                     <button onClick={onClose}>

@@ -49,7 +49,7 @@ export default function ExpenseDrawer({
                 {/* Header */}
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h2 className="text-xl font-semibold">{t('drawer.title')}</h2>
+                        <h2 className="text-xl font-semibold text-foreground">{t('drawer.title')}</h2>
                         {row.receiptNumber && (
                             <p className="font-mono text-sm text-muted mt-0.5">{row.receiptNumber}</p>
                         )}
@@ -145,7 +145,7 @@ function Field({ label, value }: { label: string; value: string | number }) {
     return (
         <div>
             <p className="text-sm text-muted">{label}</p>
-            <p className="font-medium">{value}</p>
+            <p className="font-medium text-foreground">{value}</p>
         </div>
     )
 }

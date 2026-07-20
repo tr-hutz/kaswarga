@@ -70,8 +70,9 @@ export default function ResidentDetailDrawer({
 
                     <h1
                         className="
-                            text-lg
+                            text-xl
                             font-semibold
+                            text-foreground
                         "
                     >
                         {t('drawer.title')}

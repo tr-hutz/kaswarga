@@ -24,14 +24,14 @@ export default function ExpenseApprovalBar({ row, onApprove, onReject, loading }
 
     if (rejectMode) {
         return (
-            <div className="space-y-3 pt-4 border-t">
+            <div className="space-y-3 pt-4 border-t border-divider">
                 <p className="text-sm font-medium text-foreground">{t('approvalBar.rejectReason')}</p>
                 <textarea
                     value={alasan}
                     onChange={e => setAlasan(e.target.value)}
                     placeholder={t('approvalBar.rejectReasonPlaceholder')}
                     rows={3}
-                    className="w-full border border-divider rounded-lg px-3 py-2 text-sm resize-none"
+                    className="w-full border border-divider rounded-lg px-3 py-2 text-sm resize-none bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 <div className="flex gap-2">
                     <button
@@ -56,7 +56,7 @@ export default function ExpenseApprovalBar({ row, onApprove, onReject, loading }
     }
 
     return (
-        <div className="flex gap-3 pt-4 border-t">
+        <div className="flex gap-3 pt-4 border-t border-divider">
             <button
                 type="button"
                 onClick={() => onApprove(row.id)}

@@ -29,7 +29,7 @@ export default function ResidentRegistrationView({
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10 text-success">
                         <Icon name="check-circle" size={32} />
                     </div>
-                    <h1 className="text-xl font-bold">{t('success.title')}</h1>
+                    <h1 className="text-xl font-bold text-foreground">{t('success.title')}</h1>
                     <p className="text-sm text-muted">
                         {t('success.message', { email: form.email })}
                     </p>
@@ -51,7 +51,7 @@ export default function ResidentRegistrationView({
                 className="w-full max-w-md space-y-5"
             >
                 <div>
-                    <h1 className="text-2xl font-bold">{t('title')}</h1>
+                    <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-1">
                         {t('subtitle')}
                     </p>
@@ -113,7 +113,7 @@ export default function ResidentRegistrationView({
                                         value={form.block}
                                         onChange={e => set('block', e.target.value)}
                                         placeholder="Blok A / Jl. Kenanga"
-                                        className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                                        className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                                     />
                                 </div>
                                 <div>
@@ -122,7 +122,7 @@ export default function ResidentRegistrationView({
                                         value={form.houseNumber}
                                         onChange={e => set('houseNumber', e.target.value)}
                                         placeholder="12"
-                                        className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                                        className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                                     />
                                 </div>
                                 <div>
@@ -131,7 +131,7 @@ export default function ResidentRegistrationView({
                                         value={form.phone}
                                         onChange={e => set('phone', e.target.value)}
                                         placeholder="08123456789"
-                                        className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm"
+                                        className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
                                     />
                                 </div>
                             </div>

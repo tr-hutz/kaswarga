@@ -92,7 +92,7 @@ export default function ExpenseForm({
                 className="bg-surface rounded-lg p-6 w-full max-w-lg space-y-4 max-h-[90vh] overflow-y-auto shadow-default"
             >
 
-                <h2 className="text-lg font-semibold">
+                <h2 className="text-xl font-semibold text-foreground">
                     {initialData ? t('form.editTitle') : t('form.addTitle')}
                 </h2>
 
@@ -106,7 +106,7 @@ export default function ExpenseForm({
                             value={form.receiptNumber}
                             onChange={e => set('receiptNumber', e.target.value)}
                             placeholder={t('form.receiptNumberPlaceholder')}
-                            className="flex-1 border border-divider rounded-lg px-4 py-2 text-sm font-mono"
+                            className="flex-1 border border-divider rounded-lg px-4 py-2 text-sm font-mono bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                         <button
                             type="button"
@@ -139,7 +139,7 @@ export default function ExpenseForm({
                             required
                             value={form.date}
                             onChange={e => set('date', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
@@ -150,7 +150,7 @@ export default function ExpenseForm({
                         <select
                             value={form.category}
                             onChange={e => set('category', e.target.value)}
-                            className="w-full border border-divider rounded-lg px-4 py-2 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         >
                             <option value="">{t('form.selectCategory')}</option>
                             {categories.map(k => (
@@ -199,7 +199,7 @@ export default function ExpenseForm({
                         onChange={e => set('description', e.target.value)}
                         placeholder={t('form.descriptionPlaceholder')}
                         rows={3}
-                        className="w-full border border-divider rounded-lg px-4 py-2 text-sm resize-none"
+                        className="w-full border border-divider rounded-lg px-4 py-2 text-sm resize-none bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                     />
                 </div>
 
