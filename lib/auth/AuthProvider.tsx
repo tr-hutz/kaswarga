@@ -4,7 +4,8 @@ import {
 
     createContext,
     useEffect,
-    useState
+    useState,
+    type ReactNode
 
 } from 'react'
 
@@ -13,6 +14,8 @@ import {
     getCurrentMembership
 
 } from './getCurrentMembership'
+
+import type { Membership } from '../../types'
 
 import {
 
@@ -26,15 +29,10 @@ import {
 
 } from '../services/activity-logger'
 
-export const AuthContext =
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const AuthContext = createContext<any>(null)
 
-    createContext(null)
-
-export function AuthProvider({
-
-                                 children
-
-                             }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
 
     /*
      |-------------------------------------------------------------
@@ -47,7 +45,7 @@ export function AuthProvider({
         membership,
         setMembership
 
-    ] = useState(null)
+    ] = useState<Membership | null>(null)
 
     const [
 
@@ -62,8 +60,30 @@ export function AuthProvider({
      |-------------------------------------------------------------
      */
 
-    useEffect(() => {
+    async function load() {
 
+        try {
+
+            const result =
+
+                await getCurrentMembership()
+
+            setMembership(result)
+
+        } catch (err) {
+
+            if ((err as Error)?.message !== 'Unauthorized') {
+                console.error('[AUTH PROVIDER]', err)
+            }
+
+        } finally {
+
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         load()
 
         // Keep Realtime auth token in sync with the current session.
@@ -102,28 +122,6 @@ export function AuthProvider({
 
     }, [])
 
-    async function load() {
-
-        try {
-
-            const result =
-
-                await getCurrentMembership()
-
-            setMembership(result)
-
-        } catch (err) {
-
-            if (err?.message !== 'Unauthorized') {
-                console.error('[AUTH PROVIDER]', err)
-            }
-
-        } finally {
-
-            setLoading(false)
-        }
-    }
-
     /*
      |-------------------------------------------------------------
      | CONTEXT VALUE
@@ -140,10 +138,10 @@ export function AuthProvider({
         membership?.role,
 
         rtId:
-        membership?.rt_id,
+        membership?.rt?.id,
 
         wargaId:
-        membership?.warga_id,
+        membership?.resident?.id,
 
         user:
         membership?.user
