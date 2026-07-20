@@ -104,7 +104,6 @@ export function useDataTable(
             if (storageKey) writeStoredPageSize(storageKey, size)
             push({ pageSize: String(size), page: '1' })
         },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         [push, storageKey],
     )
 

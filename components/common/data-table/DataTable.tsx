@@ -108,7 +108,6 @@ export default function DataTable<T>({
                                     {columns.map(col => (
                                         <td key={col.key} className="px-4 py-3 text-foreground">
                                             {col.render
-                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                                 ? col.render(row)
                                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                                 : String((row as any)[col.key] ?? '')

@@ -39,7 +39,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
                 ? stored as Theme
                 : 'system'
             if (effective !== theme) {
-                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setThemeState(effective)
                 return // Effect re-runs with the corrected theme
             }
@@ -51,7 +50,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         const mq      = window.matchMedia('(prefers-color-scheme: dark)')
         const handler = () => {
             document.documentElement.classList.toggle('dark', mq.matches)
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setResolvedTheme(mq.matches ? 'dark' : 'light')
         }
         mq.addEventListener('change', handler)
@@ -75,7 +73,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         const effective = (stored && (AVAILABLE_THEMES as readonly string[]).includes(stored))
             ? stored as Theme
             : 'system'
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setThemeState(effective)
     }, [])
 

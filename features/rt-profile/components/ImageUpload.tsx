@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, MouseEvent } from 'react'
@@ -25,6 +26,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
     const inputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPreview(currentUrl || '')
         setImgFailed(false)
     }, [currentUrl])
@@ -74,6 +76,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
             >
                 {preview && !imgFailed ? (
                     <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={preview}
                             alt={label}

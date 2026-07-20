@@ -22,6 +22,7 @@ export default function SearchBox({
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     // Keep local in sync when value changes externally (e.g. reset)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { setLocal(value) }, [value])
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
