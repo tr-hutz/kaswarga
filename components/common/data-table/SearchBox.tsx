@@ -22,6 +22,7 @@ export default function SearchBox({
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     // Keep local in sync when value changes externally (e.g. reset)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { setLocal(value) }, [value])
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -33,7 +34,7 @@ export default function SearchBox({
 
     return (
         <div className="relative">
-            <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-subtle pointer-events-none" />
             <input
                 type="text"
                 value={local}
@@ -41,9 +42,9 @@ export default function SearchBox({
                 placeholder={placeholder ?? t('searchPlaceholder')}
                 className="
                     pl-9 pr-3 py-2
-                    text-sm border border-gray-200 rounded-lg
-                    bg-white placeholder-gray-400
-                    focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-gray-400
+                    text-sm text-foreground border border-divider rounded-lg
+                    bg-input placeholder:text-subtle
+                    focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
                     w-64
                 "
             />

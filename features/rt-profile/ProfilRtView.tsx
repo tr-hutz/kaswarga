@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
@@ -16,7 +17,7 @@ const EMPTY = {
 function Field({ label, children }: { label: string; children: ReactNode }) {
     return (
         <div>
-            <label className="text-xs text-gray-500 mb-1 block">{label}</label>
+            <label className="text-xs text-muted mb-1 block">{label}</label>
             {children}
         </div>
     )
@@ -24,7 +25,7 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 
 function SectionTitle({ children }: { children: ReactNode }) {
     return (
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide pt-2">
+        <h2 className="text-xs font-semibold text-subtle uppercase tracking-wide pt-2">
             {children}
         </h2>
     )
@@ -49,6 +50,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
 
         if (!rt) return
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setForm({
             name:          rt.name           || '',
             code:          rt.code           || '',
@@ -95,7 +97,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
 
     if (loading) {
         return (
-            <div className="py-16 text-center text-sm text-gray-400">
+            <div className="py-16 text-center text-sm text-subtle">
                 {t('loading')}
             </div>
         )
@@ -107,13 +109,13 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
 
             {/* Header */}
             <div>
-                <h1 className="text-xl font-semibold">{t('title')}</h1>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                <p className="text-sm text-muted mt-0.5">
                     {t('subtitle')}
                 </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-100 p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="bg-surface rounded-xl border border-divider p-6 space-y-4">
 
                 <SectionTitle>{t('sections.identity')}</SectionTitle>
 
@@ -125,7 +127,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                                 required
                                 value={form.name}
                                 onChange={e => set('name', e.target.value)}
-                                className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                             />
                         </Field>
                     </div>
@@ -135,14 +137,14 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                             <input
                                 value={form.code}
                                 onChange={e => set('code', e.target.value.toUpperCase())}
-                                className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                             />
                             <button
                                 type="button"
                                 onClick={handleGenerateCode}
                                 disabled={generating}
                                 title={t('generateCode')}
-                                className="flex items-center gap-1 border rounded-xl px-3 py-2 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
+                                className="flex items-center gap-1 border border-divider rounded-lg px-3 py-2 text-xs text-muted hover:bg-canvas disabled:opacity-50 whitespace-nowrap"
                             >
                                 <Icon name="refresh-cw" size={13} className={generating ? 'animate-spin' : ''} />
                                 Generate
@@ -155,7 +157,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                             type="number"
                             value={form.monthlyFee}
                             onChange={e => set('monthlyFee', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -170,7 +172,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                             <input
                                 value={form.address}
                                 onChange={e => set('address', e.target.value)}
-                                className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                             />
                         </Field>
                     </div>
@@ -179,7 +181,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                         <input
                             value={form.city}
                             onChange={e => set('city', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -187,7 +189,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                         <input
                             value={form.province}
                             onChange={e => set('province', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -195,7 +197,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                         <input
                             value={form.postalCode}
                             onChange={e => set('postalCode', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -209,7 +211,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                         <input
                             value={form.bankName}
                             onChange={e => set('bankName', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -217,7 +219,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                         <input
                             value={form.accountNumber}
                             onChange={e => set('accountNumber', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>
 
@@ -226,7 +228,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                             <input
                                 value={form.accountHolder}
                                 onChange={e => set('accountHolder', e.target.value)}
-                                className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                             />
                         </Field>
                     </div>
@@ -257,7 +259,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                     <button
                         type="submit"
                         disabled={saving || !dirty}
-                        className="bg-black text-white rounded-xl px-6 py-2.5 text-sm disabled:opacity-40"
+                        className="bg-primary text-white rounded-lg px-6 py-2.5 text-sm disabled:opacity-40"
                     >
                         {saving ? t('saving') : t('save')}
                     </button>

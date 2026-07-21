@@ -14,7 +14,7 @@ export default function ActivityDrawer({ open, row, onClose }: { open: boolean; 
             onClick={onClose}
         >
             <div
-                className="w-full max-w-lg bg-white h-full overflow-y-auto p-6 shadow-2xl"
+                className="w-full max-w-lg bg-surface h-full overflow-y-auto p-6 shadow-default"
                 onClick={e => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between mb-6">
@@ -25,28 +25,28 @@ export default function ActivityDrawer({ open, row, onClose }: { open: boolean; 
                 <div className="space-y-4 text-sm">
 
                     <div>
-                        <p className="text-slate-500">{t('drawer.actor')}</p>
+                        <p className="text-muted">{t('drawer.actor')}</p>
                         <p className="font-medium">{row.actorName}</p>
                     </div>
 
                     <div>
-                        <p className="text-slate-500">{t('drawer.action')}</p>
+                        <p className="text-muted">{t('drawer.action')}</p>
                         <p className="font-medium">{row.action}</p>
                     </div>
 
                     <div>
-                        <p className="text-slate-500">{t('drawer.entity')}</p>
+                        <p className="text-muted">{t('drawer.entity')}</p>
                         <p className="font-medium">{row.entityType}</p>
                     </div>
 
                     <div>
-                        <p className="text-slate-500">{t('drawer.description')}</p>
+                        <p className="text-muted">{t('drawer.description')}</p>
                         <p>{row.description}</p>
                     </div>
 
                     <div>
-                        <p className="text-slate-500">{t('drawer.metadata')}</p>
-                        <pre className="bg-slate-100 p-4 rounded-lg overflow-auto text-xs">
+                        <p className="text-muted">{t('drawer.metadata')}</p>
+                        <pre className="bg-canvas p-4 rounded-lg overflow-auto text-xs">
                             {JSON.stringify(row.metadata, null, 2)}
                         </pre>
                     </div>

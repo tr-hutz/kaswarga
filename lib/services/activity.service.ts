@@ -51,8 +51,14 @@ export async function createActivity({
     metadata = {}
 }: ActivityParams): Promise<void> {
 
+    let resolvedRtId = rtId
+    if (!resolvedRtId) {
+        const membership = await getCurrentMembership()
+        resolvedRtId = membership?.rt?.id ?? SYSTEM_RT_ID
+    }
+
     await insertActivity({
-        rt_id:       rtId || SYSTEM_RT_ID,
+        rt_id:       resolvedRtId,
         actor_id:    actorId,
         actor_name:  actorName,
         action,

@@ -21,6 +21,8 @@ export default function NotificationBell({
 
             onClick={onClick}
 
+            aria-label="Notifikasi"
+
             className="
                 relative
 
@@ -28,7 +30,7 @@ export default function NotificationBell({
 
                 rounded-lg
 
-                hover:bg-gray-100
+                hover:bg-canvas
             "
         >
 
@@ -51,7 +53,7 @@ export default function NotificationBell({
 
                             rounded-full
 
-                            bg-red-500
+                            bg-danger
                             text-white
 
                             text-[10px]

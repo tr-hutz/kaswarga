@@ -3,10 +3,17 @@
 import { useTranslations } from 'next-intl'
 
 const STATUS_STYLE: Record<string, string> = {
-    approved: 'bg-green-100 border-green-500',
-    pending:  'bg-yellow-100 border-yellow-500',
-    rejected: 'bg-red-100 border-red-500',
-    unpaid:   'bg-gray-100 border-gray-300'
+    approved: 'bg-success/10 border-success',
+    pending:  'bg-warning/10 border-warning',
+    rejected: 'bg-danger/10 border-danger',
+    unpaid:   'bg-canvas border-divider'
+}
+
+const STATUS_TEXT: Record<string, string> = {
+    approved: 'text-success',
+    pending:  'text-warning',
+    rejected: 'text-danger',
+    unpaid:   'text-muted'
 }
 
 export default function MonthCard({ month, status }: { month: string; status?: string }) {
@@ -22,9 +29,9 @@ export default function MonthCard({ month, status }: { month: string; status?: s
     }
 
     return (
-        <div className={`border-2 rounded-xl p-4 transition ${STATUS_STYLE[finalStatus]}`}>
-            <div className="font-semibold text-lg">{month}</div>
-            <div className="text-sm mt-2">{statusLabel[finalStatus]}</div>
+        <div className={`border rounded-xl p-4 transition ${STATUS_STYLE[finalStatus]}`}>
+            <div className="font-semibold text-lg text-foreground">{month}</div>
+            <div className={`text-sm mt-2 ${STATUS_TEXT[finalStatus]}`}>{statusLabel[finalStatus]}</div>
         </div>
     )
 }

@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useCallback, useEffect, useState } from 'react'
 import { getAllRt }                          from '@/lib/services/rt.service'
@@ -23,6 +24,7 @@ export function useRtData() {
         }
     }, [])
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { load() }, [load])
 
     function refresh() { load() }

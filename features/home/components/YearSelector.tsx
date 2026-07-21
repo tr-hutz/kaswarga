@@ -12,10 +12,11 @@
         )
       }
       className="
-        border
-        rounded-lg
-        px-3
-        py-2
+        h-10 px-3
+        border border-divider rounded-lg
+        bg-surface text-foreground text-sm
+        outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
+        transition-colors
       "
     >
 

@@ -42,7 +42,7 @@ export default function ToolbarFilter({
                     left-3
                     top-1/2
                     -translate-y-1/2
-                    text-gray-400
+                    text-subtle
                     pointer-events-none
                 "
             />
@@ -59,17 +59,19 @@ export default function ToolbarFilter({
 
                 className="
                     w-full
-                    h-11
+                    h-10
                     pl-10
                     pr-4
-                    rounded-2xl
+                    rounded-lg
                     border
-                    bg-white
+                    border-divider
+                    bg-surface
+                    text-foreground
                     outline-none
 
                     focus:ring-2
-                    focus:ring-blue-500/20
-                    focus:border-blue-500
+                    focus:ring-primary/30
+                    focus:border-primary
                 "
             >
 

@@ -1,5 +1,5 @@
 import { supabase } from '../supabase'
-import type { Database, Json } from '../../types/database'
+import type { Database } from '../../types/database'
 
 type RegistrationRequestInsert = Database['public']['Tables']['registration_requests']['Insert']
 type RegistrationRequestUpdate = Database['public']['Tables']['registration_requests']['Update']

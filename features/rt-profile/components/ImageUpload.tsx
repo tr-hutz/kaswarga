@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, MouseEvent } from 'react'
@@ -21,10 +22,13 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
     const [preview,   setPreview]   = useState(currentUrl || '')
     const [uploading, setUploading] = useState(false)
     const [error,     setError]     = useState('')
+    const [imgFailed, setImgFailed] = useState(false)
     const inputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPreview(currentUrl || '')
+        setImgFailed(false)
     }, [currentUrl])
 
     async function handleChange(e: ChangeEvent<HTMLInputElement>) {
@@ -55,7 +59,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
 
     return (
         <div className="space-y-1.5">
-            <label className="text-xs text-gray-500 block">{label}</label>
+            <label className="text-xs text-muted block">{label}</label>
 
             <div
                 onClick={() => !uploading && inputRef.current?.click()}
@@ -64,24 +68,26 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
                     border-2 border-dashed rounded-xl overflow-hidden
                     transition cursor-pointer select-none
                     ${uploading
-                        ? 'border-gray-200 bg-gray-50 cursor-wait'
-                        : 'border-gray-200 hover:border-blue-400 hover:bg-blue-50/40 bg-gray-50'
+                        ? 'border-divider bg-canvas cursor-wait'
+                        : 'border-divider hover:border-primary hover:bg-primary/5 bg-canvas'
                     }
                     ${preview ? 'h-40' : 'h-32'}
                 `}
             >
-                {preview ? (
+                {preview && !imgFailed ? (
                     <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={preview}
                             alt={label}
                             className="h-full w-full object-contain p-2"
+                            onError={() => setImgFailed(true)}
                         />
                         {!uploading && (
                             <button
                                 type="button"
                                 onClick={handleRemove}
-                                className="absolute top-2 right-2 bg-white border rounded-full p-0.5 text-gray-500 hover:text-red-500 shadow-sm"
+                                className="absolute top-2 right-2 bg-surface border border-divider rounded-full p-0.5 text-muted hover:text-danger transition-colors"
                             >
                                 <Icon name="x" size={14} />
                             </button>
@@ -93,7 +99,7 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
                         </div>
                     </>
                 ) : (
-                    <div className="flex flex-col items-center gap-1.5 text-gray-400 py-4">
+                    <div className="flex flex-col items-center gap-1.5 text-subtle py-4">
                         <Icon name="image" size={28} strokeWidth={1.5} />
                         <p className="text-xs font-medium">{t('clickToUpload')}</p>
                         <p className="text-[11px]">{t('formatNote')}</p>
@@ -101,14 +107,14 @@ export default function ImageUpload({ label, currentUrl, storagePath, accept = '
                 )}
 
                 {uploading && (
-                    <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                        <Icon name="loader2" size={22} className="animate-spin text-blue-500" />
+                    <div className="absolute inset-0 bg-surface/80 flex items-center justify-center">
+                        <Icon name="loader2" size={22} className="animate-spin text-primary" />
                     </div>
                 )}
             </div>
 
             {error && (
-                <p className="text-xs text-red-500">{error}</p>
+                <p className="text-xs text-danger">{error}</p>
             )}
 
             <input

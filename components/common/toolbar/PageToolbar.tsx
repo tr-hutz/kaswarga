@@ -86,15 +86,15 @@ export default function PageToolbar({
                     className="
                         h-11
                         w-11
-                        rounded-2xl
-                        bg-blue-600
+                        rounded-lg
+                        bg-primary
                         text-white
 
                         flex
                         items-center
                         justify-center
 
-                        hover:bg-blue-700
+                        hover:bg-primary-dark
                         transition
 
                         shrink-0
@@ -116,6 +116,7 @@ export default function PageToolbar({
                             text-xl
                             font-bold
                             truncate
+                            text-foreground
                         "
                     >
                         {title}
@@ -124,7 +125,7 @@ export default function PageToolbar({
                     <div
                         className="
                             text-sm
-                            text-gray-500
+                            text-muted
                             truncate
                         "
                     >
@@ -183,17 +184,20 @@ export default function PageToolbar({
                     <button
                         onClick={onImport}
                         className="
-                            h-11
+                            h-10
                             px-4
-                            rounded-2xl
+                            rounded-lg
                             border
-                            bg-white
+                            border-divider
+                            bg-surface
+                            text-foreground
+                            text-sm
 
                             flex
                             items-center
                             gap-2
 
-                            hover:bg-gray-50
+                            hover:bg-canvas
                             transition
                         "
                     >

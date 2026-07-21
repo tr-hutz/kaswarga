@@ -3,6 +3,7 @@
 import type { FormEvent } from 'react'
 import Link from 'next/link'
 import Icon from '@/components/ui/Icon'
+import PasswordInput from '@/components/ui/PasswordInput'
 import { useTranslations } from 'next-intl'
 
 interface LoginViewProps {
@@ -41,7 +42,7 @@ export default function LoginView({
         flex
         items-center
         justify-center
-        bg-gray-100
+        bg-canvas
         px-4
       "
     >
@@ -50,10 +51,11 @@ export default function LoginView({
         className="
           w-full
           max-w-md
-          bg-white
-          rounded-2xl
-          shadow-sm
+          bg-surface
+          rounded-xl
+          shadow-card
           border
+          border-divider
           p-8
         "
       >
@@ -74,9 +76,9 @@ export default function LoginView({
               justify-center
               w-14
               h-14
-              rounded-2xl
-              bg-blue-100
-              text-blue-700
+              rounded-xl
+              bg-primary/10
+              text-primary
               mb-4
             "
           >
@@ -89,6 +91,7 @@ export default function LoginView({
             className="
               text-2xl
               font-bold
+              text-foreground
             "
           >
             {t('title')}
@@ -97,7 +100,7 @@ export default function LoginView({
           <p
             className="
               text-sm
-              text-gray-500
+              text-muted
               mt-2
             "
           >
@@ -112,13 +115,14 @@ export default function LoginView({
           error && (
 
             <div
+              data-testid="login-error"
               className="
                 mb-4
                 rounded-xl
-                bg-red-50
+                bg-danger/5
                 border
-                border-red-200
-                text-red-700
+                border-danger/30
+                text-danger
                 px-4
                 py-3
                 text-sm
@@ -168,12 +172,13 @@ export default function LoginView({
               className="
                 w-full
                 border
-                rounded-xl
+                border-divider
+                rounded-lg
                 px-4
                 py-3
                 outline-none
                 focus:ring-2
-                focus:ring-blue-500
+                focus:ring-primary/30
               "
               placeholder={t('emailPlaceholder')}
             />
@@ -195,8 +200,7 @@ export default function LoginView({
               {t('password')}
             </label>
 
-            <input
-              type="password"
+            <PasswordInput
               required
               value={password}
               onChange={e =>
@@ -205,14 +209,14 @@ export default function LoginView({
                 )
               }
               className="
-                w-full
                 border
-                rounded-xl
+                border-divider
+                rounded-lg
                 px-4
                 py-3
                 outline-none
                 focus:ring-2
-                focus:ring-blue-500
+                focus:ring-primary/30
               "
               placeholder={t('passwordPlaceholder')}
             />
@@ -226,8 +230,8 @@ export default function LoginView({
             disabled={loading}
             className="
               w-full
-              bg-blue-600
-              hover:bg-blue-700
+              bg-primary
+              hover:bg-primary-dark
               disabled:opacity-50
               text-white
               rounded-xl
@@ -247,16 +251,16 @@ export default function LoginView({
 
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-muted mt-6">
           {t('noAccount')}{' '}
-          <Link href="/register" className="text-blue-600 hover:underline font-medium">
+          <Link href="/register" className="text-primary hover:underline font-medium">
             {t('register')}
           </Link>
         </p>
 
-        <p className="text-center text-sm text-gray-500 mt-2">
+        <p className="text-center text-sm text-muted mt-2">
           {t('hasInvitation')}{' '}
-          <Link href="/activation/request-link" className="text-blue-600 hover:underline font-medium">
+          <Link href="/activation/request-link" className="text-primary hover:underline font-medium">
             {t('requestNewLink')}
           </Link>
         </p>

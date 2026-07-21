@@ -1,4 +1,5 @@
-'use client'
+﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useTranslations } from 'next-intl'
 
@@ -8,7 +9,7 @@ export default function PaymentProofPreview({ url }: { url?: string | null }) {
 
     if (!url) {
         return (
-            <div className="text-sm text-slate-500">
+            <div className="text-sm text-muted">
                 {t('proofUnavailable')}
             </div>
         )
@@ -22,7 +23,7 @@ export default function PaymentProofPreview({ url }: { url?: string | null }) {
             <img
                 src={url}
                 alt={t('proofTitle')}
-                className="w-full rounded-2xl border object-cover"
+                className="w-full rounded-xl border border-divider object-cover"
             />
         </div>
     )

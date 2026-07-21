@@ -10,44 +10,24 @@ export default function InsightCard({
   title,
   value,
   subtitle,
-  valueColor = 'text-gray-900'
+  valueColor = 'text-foreground'
 
 }: InsightCardProps) {
 
   return (
 
-    <div
-      className="
-        rounded-2xl
-        border
-        p-5
-        bg-white
-      "
-    >
+    <div className="rounded-lg shadow-card p-5 bg-surface">
 
-      <div
-        className="
-          text-sm
-          text-gray-500
-        "
-      >
+      <div className="text-sm text-muted">
         {title}
       </div>
 
-      <div
-        className={`
-          text-2xl
-          font-bold
-          mt-2
-          leading-tight
-          ${valueColor}
-        `}
-      >
+      <div className={`text-2xl font-bold mt-2 leading-tight ${valueColor}`}>
         {value}
       </div>
 
       {subtitle && (
-        <div className="text-xs text-gray-400 mt-1">
+        <div className="text-xs text-subtle mt-1">
           {subtitle}
         </div>
       )}

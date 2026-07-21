@@ -98,8 +98,8 @@ export default function NotificationView({
 
     if (loading) {
         return (
-            <div className="p-6 text-sm text-gray-400">
-                {t('loading')}
+            <div className="bg-surface rounded-xl shadow-card border border-divider flex items-center justify-center py-16">
+                <div className="w-6 h-6 border-2 border-divider border-t-primary rounded-full animate-spin" />
             </div>
         )
     }
@@ -110,12 +110,12 @@ export default function NotificationView({
 
     return (
 
-        <div
-            className="
-                p-6
-                space-y-6
-            "
-        >
+        <div className="space-y-6">
+
+            <div>
+                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                <p className="text-sm text-muted">{t('subtitle')}</p>
+            </div>
 
             <NotificationToolbar
 

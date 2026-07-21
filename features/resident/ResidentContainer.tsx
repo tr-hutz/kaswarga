@@ -6,10 +6,13 @@ import { useDataTable }       from '@/hooks/useDataTable'
 import { useResidentData }    from './hooks/useResidentData'
 import { useResidentActions } from './hooks/useResidentActions'
 import { useAuth }            from '@/lib/auth/useAuth'
+import { hasPermission }      from '@/lib/permissions/permissions'
+import { PERMISSIONS }        from '@/lib/permissions/permission-constants'
 import { supabase }           from '@/lib/supabase'
 import { findPendingResidentRegistrations } from '@/lib/repositories/registration.repository'
 import { deleteResident }     from '@/lib/services/resident.service'
 import { useToast }           from '@/components/ui/ToastProvider'
+import ConfirmDialog          from '@/components/ui/ConfirmDialog'
 import ResidentView           from './ResidentView'
 import type { Database }      from '@/types/database'
 
@@ -21,9 +24,11 @@ function toFormShape(row: ResidentRow) {
 
 export default function ResidentContainer() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { membership } = (useAuth() as any) ?? {}
+    const { membership, role } = (useAuth() as any) ?? {}
     const rtId = membership?.rt?.id as string | undefined
+    const canManage = hasPermission(role, PERMISSIONS.MANAGE_RESIDENTS)
     const t = useTranslations('residents')
+    const tc = useTranslations('common')
 
     // Query state in URL
     const { query, setPage, setPageSize, setSearch, setSort, setFilter } = useDataTable({ sortBy: 'name' }, 'residents')
@@ -34,6 +39,10 @@ export default function ResidentContainer() {
     // Pending registration requests
     const [pendingRequests, setPendingRequests] = useState<unknown[]>([])
     const [pendingLoading,  setPendingLoading]  = useState(true)
+
+    // Delete confirmation
+    const [deleteTarget,  setDeleteTarget]  = useState<ResidentRow | null>(null)
+    const [deleting,      setDeleting]      = useState(false)
 
     useEffect(() => {
         if (rtId) loadPending()
@@ -71,10 +80,10 @@ export default function ResidentContainer() {
     // Drawer / form / export / import
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { toast } = (useToast() as any) ?? {}
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: importError, ...actions } = useResidentActions((inserted: number) => {
         refresh()
         toast({ message: `${inserted} residents imported successfully.`, type: 'success' })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
 
     function handleRowClick(row: ResidentRow) {
@@ -85,37 +94,59 @@ export default function ResidentContainer() {
         actions.openEditForm(toFormShape(row))
     }
 
-    async function handleDelete(row: ResidentRow) {
-        if (!confirm(t('row.deactivateConfirm'))) return
+    function handleDelete(row: ResidentRow) {
+        setDeleteTarget(row)
+    }
+
+    async function confirmDelete() {
+        if (!deleteTarget) return
+        setDeleting(true)
         try {
-            await deleteResident(row.id)
+            await deleteResident(deleteTarget.id)
             refresh()
         } catch (err) {
             console.error('[WARGA] delete:', err)
-            alert(t('row.deleteFailed'))
+            toast({ message: t('row.deleteFailed'), type: 'error' })
+        } finally {
+            setDeleting(false)
+            setDeleteTarget(null)
         }
     }
 
     return (
-        <ResidentView
-            result={result}
-            loading={loading}
-            error={error}
-            reload={reload}
-            pendingRequests={pendingRequests}
-            pendingLoading={pendingLoading}
-            query={query}
-            setPage={setPage}
-            setPageSize={setPageSize}
-            setSearch={setSearch}
-            setSort={setSort}
-            setFilter={setFilter}
-            onRowClick={handleRowClick}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            refresh={refresh}
-            importError={importError}
-            {...actions}
-        />
+        <>
+            <ResidentView
+                result={result}
+                loading={loading}
+                error={error}
+                reload={reload}
+                pendingRequests={pendingRequests}
+                pendingLoading={pendingLoading}
+                canManage={canManage}
+                query={query}
+                setPage={setPage}
+                setPageSize={setPageSize}
+                setSearch={setSearch}
+                setSort={setSort}
+                setFilter={setFilter}
+                onRowClick={handleRowClick}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                refresh={refresh}
+                importError={importError}
+                {...actions}
+            />
+
+            <ConfirmDialog
+                open={!!deleteTarget}
+                title={t('row.deactivateTitle')}
+                message={t('row.deactivateConfirm')}
+                confirmLabel={tc('actions.delete')}
+                cancelLabel={tc('actions.cancel')}
+                loading={deleting}
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteTarget(null)}
+            />
+        </>
     )
 }

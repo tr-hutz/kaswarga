@@ -37,7 +37,7 @@ export default function DialogProvider({ children }: { children: ReactNode }) {
         description: '',
         placeholder: '',
         confirmLabel: 'Konfirmasi',
-        confirmClassName: 'bg-blue-600 hover:bg-blue-700 text-white',
+        confirmClassName: 'bg-primary hover:bg-primary-dark text-white',
         value: ''
     })
 
@@ -46,7 +46,7 @@ export default function DialogProvider({ children }: { children: ReactNode }) {
         description = '',
         placeholder = '',
         confirmLabel = 'Konfirmasi',
-        confirmClassName = 'bg-blue-600 hover:bg-blue-700 text-white'
+        confirmClassName = 'bg-primary hover:bg-primary-dark text-white'
     } = {}) {
 
         return new Promise<string | null>((resolve) => {
@@ -105,9 +105,9 @@ export default function DialogProvider({ children }: { children: ReactNode }) {
 
                     <div
                         className="
-                            bg-white
-                            rounded-2xl
-                            shadow-xl
+                            bg-surface
+                            rounded-xl
+                            shadow-default
                             w-full
                             max-w-md
                             p-6
@@ -130,7 +130,7 @@ export default function DialogProvider({ children }: { children: ReactNode }) {
                                     <p
                                         className="
                                             text-sm
-                                            text-slate-500
+                                            text-muted
                                             mt-1
                                         "
                                     >
@@ -153,15 +153,15 @@ export default function DialogProvider({ children }: { children: ReactNode }) {
                             placeholder={state.placeholder}
                             className="
                                 w-full
-                                border
-                                rounded-xl
+                                border border-divider
+                                rounded-lg
                                 p-3
                                 text-sm
                                 resize-none
                                 outline-none
-                                focus:ring-2
-                                focus:ring-blue-500/20
-                                focus:border-blue-500
+                                focus:ring-1
+                                focus:ring-primary/30
+                                focus:border-primary
                             "
                         />
 
@@ -178,10 +178,10 @@ export default function DialogProvider({ children }: { children: ReactNode }) {
                                 className="
                                     px-4
                                     py-2
-                                    rounded-xl
-                                    border
+                                    rounded-lg
+                                    border border-divider
                                     text-sm
-                                    hover:bg-slate-50
+                                    hover:bg-canvas
                                     transition
                                 "
                             >
@@ -193,7 +193,7 @@ export default function DialogProvider({ children }: { children: ReactNode }) {
                                 className={`
                                     px-4
                                     py-2
-                                    rounded-xl
+                                    rounded-lg
                                     text-sm
                                     transition
                                     ${state.confirmClassName}

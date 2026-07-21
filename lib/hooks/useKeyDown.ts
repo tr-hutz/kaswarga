@@ -1,5 +1,6 @@
 import {
     useEffect,
+    useLayoutEffect,
     useRef
 } from 'react'
 
@@ -19,7 +20,7 @@ if (typeof window !== 'undefined') {
 export function useKeyDown(active: boolean, handlers: HandlersMap): void {
 
     const handlersRef = useRef(handlers)
-    handlersRef.current = handlers
+    useLayoutEffect(() => { handlersRef.current = handlers })
 
     useEffect(() => {
 

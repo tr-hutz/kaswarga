@@ -5,7 +5,7 @@
  *
  * Approval tests require at least one pending payment in the database.
  */
-import { test, expect } from '@playwright/test'
+import { test, expect, type Browser } from '@playwright/test'
 import { PaymentsPage } from './pages/PaymentsPage'
 import { waitForShell } from './utils/waitForShell'
 import { refreshAdminSession } from './utils/refreshSession'
@@ -19,17 +19,16 @@ test.describe('submit payment (resident)', () => {
   test.use({ storageState: path.join(__dirname, '.auth/resident.json') })
 
   test('home page renders the payment form', async ({ page }) => {
-    await page.goto('/home')
-    await expect(page).toHaveURL(/\/home/)
-    await waitForShell(page, /\/home/)
+    await page.goto('/')
+    await waitForShell(page, /\/$/)
 
     // Payment form title (h2 heading — button also uses this text, so target heading only)
     await expect(page.getByRole('heading', { name: /Ajukan Pembayaran/i })).toBeVisible()
   })
 
   test('month buttons are clickable', async ({ page }) => {
-    await page.goto('/home')
-    await waitForShell(page, /\/home/)
+    await page.goto('/')
+    await waitForShell(page, /\/$/)
 
     // At least one non-disabled month button should be visible
     const monthButtons = page.locator('button[type="button"]').filter({
@@ -40,7 +39,8 @@ test.describe('submit payment (resident)', () => {
   })
 
   test('submit button is disabled when no months selected', async ({ page }) => {
-    await page.goto('/home')
+    await page.goto('/')
+    await waitForShell(page, /\/$/)
     await expect(page.locator('button[type="submit"]')).toBeDisabled()
   })
 
@@ -70,9 +70,9 @@ test.describe('submit payment (resident)', () => {
 test.describe('payments list (admin)', () => {
   test.use({ storageState: path.join(__dirname, '.auth/session.json') })
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async ({ browser }: { browser: Browser }) => {
     await refreshAdminSession(browser)
-  }, { timeout: 60000 })
+  })
 
   test('renders the payments page', async ({ page }) => {
     const payments = new PaymentsPage(page)

@@ -1,4 +1,5 @@
-'use client'
+﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useMemo }            from 'react'
 import { useTranslations }    from 'next-intl'
@@ -41,7 +42,7 @@ export default function PaymentContainer() {
             description:      t('reject.description'),
             placeholder:      t('reject.placeholder'),
             confirmLabel:     t('reject.confirmLabel'),
-            confirmClassName: 'bg-red-600 hover:bg-red-700 text-white',
+            confirmClassName: 'bg-danger hover:bg-danger/80 text-white',
         })
         if (!reason) return
         await reject(payment.id, reason)

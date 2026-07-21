@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useCallback, useEffect, useState } from 'react'
 import { getAllUsers } from '@/lib/services/users.service'
@@ -64,6 +65,7 @@ export function useUsersData() {
 
     }, [])
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { load() }, [load])
 
     return { result, loading, error, refresh: load }

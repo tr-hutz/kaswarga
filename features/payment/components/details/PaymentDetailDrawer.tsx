@@ -59,6 +59,7 @@ export default function PaymentDetailDrawer({
     return (
 
         <div
+            data-testid="payment-drawer"
             className="
                 fixed
                 inset-0
@@ -74,9 +75,9 @@ export default function PaymentDetailDrawer({
                     w-full
                     max-w-xl
                     h-full
-                    bg-white
+                    bg-surface
                     overflow-y-auto
-                    shadow-2xl
+                    shadow-default
                     p-6
                     space-y-6
                 "
@@ -98,6 +99,7 @@ export default function PaymentDetailDrawer({
                             className="
                                 text-xl
                                 font-bold
+                                text-foreground
                             "
                         >
                             {t('detail.title')}
@@ -106,7 +108,7 @@ export default function PaymentDetailDrawer({
                         <p
                             className="
                                 text-sm
-                                text-slate-500
+                                text-muted
                             "
                         >
                             {t('detail.subtitle')}
@@ -115,10 +117,12 @@ export default function PaymentDetailDrawer({
                     </div>
 
                     <button
+                        data-testid="close-drawer"
                         onClick={onClose}
+                        aria-label="Tutup"
                         className="
-                            text-slate-500
-                            hover:text-black
+                            text-muted
+                            hover:text-foreground
                         "
                     >
                         ✕

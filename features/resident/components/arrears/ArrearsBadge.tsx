@@ -17,8 +17,8 @@ export default function ArrearsBadge({ total = 0 }: { total?: number }) {
           py-1
           rounded-full
           text-sm
-          bg-emerald-100
-          text-emerald-700
+          bg-success/10
+          text-success
         "
             >
         {tPaymentStatus('paid')}
@@ -34,8 +34,8 @@ export default function ArrearsBadge({ total = 0 }: { total?: number }) {
         py-1
         rounded-full
         text-sm
-        bg-rose-100
-        text-rose-700
+        bg-danger/10
+        text-danger
       "
         >
       {tArrears('badge', { total })}

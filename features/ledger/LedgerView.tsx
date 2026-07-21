@@ -48,6 +48,10 @@ export default function LedgerView({
 
     return (
         <div className="space-y-5">
+            <div>
+                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+            </div>
+
             <LedgerAnalytics
                 income={totals.income}
                 expense={totals.expense}
@@ -73,13 +77,13 @@ export default function LedgerView({
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => exportExcel(data)}
-                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
                         >
                             {tc('actions.exportExcel')}
                         </button>
                         <button
                             onClick={() => exportCSV(data)}
-                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
                         >
                             {tc('actions.exportCsv')}
                         </button>

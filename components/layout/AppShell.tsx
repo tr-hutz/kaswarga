@@ -11,9 +11,10 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 
-import Topbar        from './Topbar'
-import Sidebar       from './Sidebar'
-import MobileOverlay from './MobileOverlay'
+import Topbar          from './Topbar'
+import Sidebar         from './Sidebar'
+import MobileOverlay   from './MobileOverlay'
+import UserThemeSync   from './UserThemeSync'
 
 import { useAuth }  from '../../lib/auth/useAuth'
 import { logout }   from '../../lib/services/auth.service'
@@ -51,7 +52,7 @@ export default function AppShell({
     if (!membership && !isPublicPath(pathname)) {
       router.replace('/login')
     }
-  }, [loading, membership, pathname])
+  }, [loading, membership, pathname, router])
 
   /*
    |-------------------------------------------------------------
@@ -61,8 +62,8 @@ export default function AppShell({
 
   if (loading) {
     return (
-      <div data-testid="shell-spinner" className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
+      <div data-testid="shell-spinner" className="min-h-screen flex items-center justify-center bg-canvas">
+        <div className="w-6 h-6 border-2 border-divider border-t-foreground rounded-full animate-spin" />
       </div>
     )
   }
@@ -75,25 +76,25 @@ export default function AppShell({
 
   if (membership?.status === 'no_membership' && !isPublicPath(pathname)) {
     return (
-      <div data-testid="shell-no-membership" className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-8 text-center space-y-4">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 mb-2">
+      <div data-testid="shell-no-membership" className="min-h-screen flex items-center justify-center bg-canvas px-4">
+        <div className="w-full max-w-md bg-surface rounded-xl shadow-card border border-divider p-8 text-center space-y-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-warning/10 text-warning mb-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           </div>
           <h1 className="text-xl font-bold">{t('noMembership.title')}</h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted">
             {t('noMembership.description')}
           </p>
           <a
             href="/activation"
-            className="inline-block bg-black text-white rounded-xl px-6 py-2.5 text-sm font-medium"
+            className="inline-block bg-primary hover:bg-primary-dark text-white rounded-xl px-6 py-2.5 text-sm font-medium"
           >
             {t('noMembership.goToActivation')}
           </a>
           <div>
             <button
               onClick={logout}
-              className="text-sm text-gray-500 hover:underline mt-2"
+              className="text-sm text-muted hover:underline mt-2"
             >
               {tTopbar('logout')}
             </button>
@@ -124,6 +125,8 @@ export default function AppShell({
 
       <>
 
+        <UserThemeSync />
+
         <Topbar
             mobileOpen={mobileOpen}
             setMobileOpen={setMobileOpen}
@@ -143,8 +146,9 @@ export default function AppShell({
             data-testid="shell-ready"
             className="
                 lg:pl-72
+                pt-16
                 min-h-screen
-                bg-slate-50
+                bg-canvas
             "
         >
 

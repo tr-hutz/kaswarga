@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useRef, useState } from 'react'
 import type { ChangeEvent, FormEvent, MouseEvent } from 'react'
@@ -33,7 +34,7 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
 
     return (
         <div className="space-y-1.5">
-            <p className="text-sm font-medium text-gray-700">{t('receipt.label')}</p>
+            <p className="text-sm font-medium text-foreground">{t('receipt.label')}</p>
 
             <div
                 onClick={() => inputRef.current?.click()}
@@ -42,8 +43,8 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
                     border-2 border-dashed rounded-xl overflow-hidden
                     transition cursor-pointer select-none h-36
                     ${file
-                        ? 'border-blue-300 bg-blue-50/30'
-                        : 'border-gray-200 hover:border-blue-400 hover:bg-blue-50/40 bg-gray-50'
+                        ? 'border-primary/30 bg-primary/5'
+                        : 'border-divider hover:border-primary/40 hover:bg-primary/5 bg-canvas'
                     }
                 `}
             >
@@ -57,7 +58,7 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
                         <button
                             type="button"
                             onClick={handleRemove}
-                            className="absolute top-2 right-2 bg-white border rounded-full p-0.5 text-gray-500 hover:text-red-500 shadow-sm"
+                            className="absolute top-2 right-2 bg-surface border border-divider rounded-full p-0.5 text-muted hover:text-danger transition-colors"
                         >
                             <Icon name="x" size={14} />
                         </button>
@@ -68,7 +69,7 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
                         </div>
                     </>
                 ) : (
-                    <div className="flex flex-col items-center gap-1.5 text-gray-400 py-4">
+                    <div className="flex flex-col items-center gap-1.5 text-subtle py-4">
                         <Icon name="image" size={28} strokeWidth={1.5} />
                         <p className="text-xs font-medium">{t('receipt.clickUpload')}</p>
                         <p className="text-[11px]">{t('receipt.format')}</p>
@@ -77,7 +78,7 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
             </div>
 
             {file && (
-                <p className="text-xs text-gray-500 truncate">{file.name}</p>
+                <p className="text-xs text-muted truncate">{file.name}</p>
             )}
 
             <input
@@ -165,17 +166,17 @@ export default function PaymentForm({
     /* ---------------------------------------------------------------------- */
 
     return (
-        <form onSubmit={handleSubmit} className="border rounded-xl p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-surface border border-divider rounded-xl p-6 space-y-6">
 
             {/* HEADER */}
             <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-                <h2 className="text-xl font-semibold">{t('payment.title')}</h2>
+                <h2 className="text-xl font-semibold text-foreground">{t('payment.title')}</h2>
 
                 <div className="flex flex-wrap items-center gap-3">
                     <select
                         value={paymentYear}
                         onChange={e => setPaymentYear(Number(e.target.value))}
-                        className="border rounded-xl px-3 py-2 text-sm"
+                        className="h-10 px-3 border border-divider rounded-lg text-sm bg-surface text-foreground outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
                     >
                         {[paymentYear - 1, paymentYear, paymentYear + 1].map(year => (
                             <option key={year} value={year}>{year}</option>
@@ -185,10 +186,10 @@ export default function PaymentForm({
                     <button
                         type="button"
                         onClick={handleToggleFullYear}
-                        className={`px-4 py-2 rounded-xl border text-sm transition-all ${
+                        className={`h-10 px-4 rounded-lg border text-sm font-medium transition-colors ${
                             PAYABLE_MONTHS.length > 0 && PAYABLE_MONTHS.every(m => selectedMonths.includes(m))
-                                ? 'bg-blue-600 text-white border-blue-600'
-                                : 'bg-white hover:bg-slate-100'
+                                ? 'bg-primary text-white border-primary'
+                                : 'border-divider bg-surface text-foreground hover:bg-canvas'
                         }`}
                     >
                         {t('payment.annualized')}
@@ -209,12 +210,12 @@ export default function PaymentForm({
                             type="button"
                             disabled={isDisabled}
                             onClick={() => toggleMonth(month.id)}
-                            className={`border rounded-2xl p-4 text-left transition-all ${
+                            className={`border rounded-lg p-4 text-left transition-colors ${
                                 isDisabled
-                                    ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                                    ? 'bg-canvas text-subtle border-divider cursor-not-allowed'
                                     : isSelected
-                                    ? 'bg-blue-600 text-white border-blue-600'
-                                    : 'bg-white hover:bg-slate-50'
+                                    ? 'bg-primary text-white border-primary'
+                                    : 'bg-surface border-divider text-foreground hover:bg-canvas'
                             }`}
                         >
                             <div className="font-semibold">{month.short}</div>
@@ -236,20 +237,20 @@ export default function PaymentForm({
                 <BuktiUpload file={file} onChange={setFile} />
 
                 {/* Summary */}
-                <div className="rounded-2xl border p-4 bg-slate-50 space-y-3">
+                <div className="rounded-xl border border-divider p-4 bg-canvas space-y-3">
                     <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">{t('payment.totalMonths')}</span>
-                        <strong>{totalMonths} {t('payment.monthsUnit')}</strong>
+                        <span className="text-muted">{t('payment.totalMonths')}</span>
+                        <strong className="text-foreground">{totalMonths} {t('payment.monthsUnit')}</strong>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">{t('payment.totalFee')}</span>
-                        <strong>Rp {totalFee.toLocaleString('id-ID')}</strong>
+                        <span className="text-muted">{t('payment.totalFee')}</span>
+                        <strong className="text-foreground">Rp {totalFee.toLocaleString('id-ID')}</strong>
                     </div>
                     <div className="pt-1">
                         <button
                             type="submit"
                             disabled={loading || selectedMonths.length === 0}
-                            className="w-full rounded-xl bg-black text-white px-6 py-2.5 text-sm font-medium disabled:opacity-40 transition"
+                            className="w-full h-10 rounded-lg bg-primary hover:bg-primary-dark text-white px-6 text-sm font-medium disabled:opacity-40 transition-colors"
                         >
                             {loading ? t('payment.submitting') : t('payment.submit')}
                         </button>

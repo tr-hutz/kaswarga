@@ -44,29 +44,29 @@ export default function ImportModal({
     importButtonLabel,
 }: ImportModalProps) {
 
-    if (!open) return null
-
     const t = useTranslations('import')
     const tCommon = useTranslations('common')
+
+    if (!open) return null
 
     const validRows   = rows.filter(isValid)
     const invalidRows = rows.filter(r => !isValid(r))
     const hasFile     = rows.length > 0
 
     return (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-surface rounded-xl shadow-card w-full max-w-2xl max-h-[90vh] flex flex-col">
 
-                <div className="flex items-center justify-between px-6 py-4 border-b">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-divider">
                     <div>
-                        <h2 className="text-base font-semibold">{title}</h2>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <h2 className="text-base font-semibold text-foreground">{title}</h2>
+                        <p className="text-xs text-muted mt-0.5">
                             {t('format')}
                         </p>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                        className="p-1.5 rounded-lg hover:bg-canvas text-subtle hover:text-foreground"
                     >
                         <Icon name="x" size={18} />
                     </button>
@@ -77,14 +77,14 @@ export default function ImportModal({
                     {!hasFile ? (
                         <div className="space-y-4">
 
-                            <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl">
-                                <span className="text-sm text-gray-600">
+                            <div className="flex items-center gap-3 p-3 bg-info/5 rounded-lg">
+                                <span className="text-sm text-muted">
                                     {t('templateNote')}
                                 </span>
                                 <button
                                     type="button"
                                     onClick={onDownloadTemplate}
-                                    className="flex items-center gap-1.5 text-sm text-blue-600 hover:underline whitespace-nowrap shrink-0"
+                                    className="flex items-center gap-1.5 text-sm text-info hover:underline whitespace-nowrap shrink-0"
                                 >
                                     <Icon name="download" size={14} />
                                     {t('downloadTemplate')}
@@ -92,15 +92,15 @@ export default function ImportModal({
                             </div>
 
                             <label className="
-                                block border-2 border-dashed border-gray-200 rounded-2xl
+                                block border-2 border-dashed border-divider rounded-lg
                                 p-12 text-center cursor-pointer
-                                hover:border-blue-400 hover:bg-blue-50 transition-colors
+                                hover:border-primary hover:bg-primary/5 transition-colors
                             ">
-                                <Icon name="upload" size={32} className="mx-auto text-gray-300 mb-3" />
-                                <p className="text-sm font-medium text-gray-700">
+                                <Icon name="upload" size={32} className="mx-auto text-subtle mb-3" />
+                                <p className="text-sm font-medium text-foreground">
                                     {t('clickToSelect')}
                                 </p>
-                                <p className="text-xs text-gray-400 mt-1">
+                                <p className="text-xs text-subtle mt-1">
                                     {t('fileFormat')}
                                 </p>
                                 <input
@@ -113,8 +113,8 @@ export default function ImportModal({
                             </label>
 
                             {columnGuideText && (
-                                <div className="text-xs text-gray-400 space-y-1">
-                                    <p className="font-medium text-gray-500">{t('columnGuide')}</p>
+                                <div className="text-xs text-subtle space-y-1">
+                                    <p className="font-medium text-muted">{t('columnGuide')}</p>
                                     <p>{columnGuideText}</p>
                                 </div>
                             )}
@@ -125,17 +125,17 @@ export default function ImportModal({
 
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-sm">
-                                    <span className="font-medium text-gray-700 truncate max-w-xs">
+                                    <span className="font-medium text-foreground truncate max-w-xs">
                                         {fileName}
                                     </span>
-                                    <span className="text-gray-300">·</span>
-                                    <span className="text-emerald-600 font-medium">
+                                    <span className="text-subtle">·</span>
+                                    <span className="text-success font-medium">
                                         {validRows.length} {t('valid')}
                                     </span>
                                     {invalidRows.length > 0 && (
                                         <>
-                                            <span className="text-gray-300">·</span>
-                                            <span className="text-red-500">
+                                            <span className="text-subtle">·</span>
+                                            <span className="text-danger">
                                                 {invalidRows.length} {t('skipped')}
                                             </span>
                                         </>
@@ -144,16 +144,16 @@ export default function ImportModal({
                                 <button
                                     type="button"
                                     onClick={onReset}
-                                    className="text-xs text-gray-400 hover:text-gray-600 underline shrink-0"
+                                    className="text-xs text-subtle hover:text-foreground underline shrink-0"
                                 >
                                     {t('changeFile')}
                                 </button>
                             </div>
 
-                            <div className="rounded-xl border overflow-hidden">
+                            <div className="rounded-lg border border-divider overflow-hidden">
                                 <div className="overflow-auto max-h-72">
                                     <table className="w-full text-xs">
-                                        <thead className="bg-gray-50 text-gray-500 uppercase tracking-wide sticky top-0">
+                                        <thead className="bg-canvas text-muted uppercase tracking-wide sticky top-0">
                                             <tr>
                                                 <th className="px-3 py-2 text-left w-8 font-medium">#</th>
                                                 {columns.map(col => (
@@ -164,26 +164,26 @@ export default function ImportModal({
                                                 <th className="px-3 py-2 text-center font-medium">{t('status')}</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-100">
+                                        <tbody className="divide-y divide-divider">
                                             {rows.map((row, i) => {
                                                 const valid = isValid(row)
                                                 return (
                                                     <tr
                                                         key={i}
-                                                        className={valid ? 'hover:bg-gray-50' : 'bg-red-50'}
+                                                        className={valid ? 'hover:bg-canvas' : 'bg-danger/5'}
                                                     >
-                                                        <td className="px-3 py-2 text-gray-400">{i + 1}</td>
+                                                        <td className="px-3 py-2 text-subtle">{i + 1}</td>
                                                         {columns.map(col => (
-                                                            <td key={col.key} className="px-3 py-2 text-gray-700">
+                                                            <td key={col.key} className="px-3 py-2 text-foreground">
                                                                 {row[col.key] || (
-                                                                    <span className="text-gray-300">-</span>
+                                                                    <span className="text-subtle">-</span>
                                                                 )}
                                                             </td>
                                                         ))}
                                                         <td className="px-3 py-2 text-center">
                                                             {valid
-                                                                ? <Icon name="check-circle" size={14} className="inline text-emerald-500" />
-                                                                : <Icon name="alert-circle" size={14} className="inline text-red-400" />
+                                                                ? <Icon name="check-circle" size={14} className="inline text-success" />
+                                                                : <Icon name="alert-circle" size={14} className="inline text-danger" />
                                                             }
                                                         </td>
                                                     </tr>
@@ -195,7 +195,7 @@ export default function ImportModal({
                             </div>
 
                             {invalidRows.length > 0 && (
-                                <p className="text-xs text-red-500">
+                                <p className="text-xs text-danger">
                                     {t('invalidRowsNote')}
                                 </p>
                             )}
@@ -204,18 +204,18 @@ export default function ImportModal({
                     )}
 
                     {error && (
-                        <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+                        <div className="bg-danger/5 border border-danger/30 text-danger rounded-lg px-4 py-3 text-sm">
                             {error}
                         </div>
                     )}
 
                 </div>
 
-                <div className="flex items-center justify-end gap-2 px-6 py-4 border-t">
+                <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-divider">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border rounded-xl px-4 py-2 text-sm"
+                        className="border border-divider rounded-lg px-4 py-2 text-sm text-muted hover:bg-canvas"
                     >
                         {tCommon('actions.cancel')}
                     </button>
@@ -224,7 +224,7 @@ export default function ImportModal({
                             type="button"
                             onClick={onImport}
                             disabled={importing || validRows.length === 0}
-                            className="bg-black text-white rounded-xl px-4 py-2 text-sm disabled:opacity-50"
+                            className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50"
                         >
                             {importing
                                 ? tCommon('states.importing')

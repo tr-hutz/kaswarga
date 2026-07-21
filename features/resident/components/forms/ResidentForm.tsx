@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
@@ -24,6 +25,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
     const [saveError, setSaveError] = useState('')
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         if (!resident) { setForm(EMPTY); return }
         setForm({
             name:        resident.name        || '',
@@ -65,73 +67,73 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
             <form
                 onSubmit={handleSubmit}
-                className="bg-white rounded-2xl p-6 w-full max-w-lg space-y-4"
+                className="bg-surface rounded-lg p-6 w-full max-w-lg space-y-4"
             >
-                <h2 className="text-lg font-semibold">
+                <h2 className="text-xl font-semibold text-foreground">
                     {isEdit ? t('form.editTitle') : t('form.addTitle')}
                 </h2>
 
                 <div className="grid grid-cols-2 gap-3">
 
                     <div className="col-span-2">
-                        <label className="text-xs text-gray-500 mb-1 block">{t('form.fullName')}</label>
+                        <label className="text-xs text-muted mb-1 block">{t('form.fullName')}</label>
                         <input
                             required
                             placeholder={t('form.fullNamePlaceholder')}
                             value={form.name}
                             onChange={e => set('name', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">{t('form.block')}</label>
+                        <label className="text-xs text-muted mb-1 block">{t('form.block')}</label>
                         <input
                             placeholder={t('form.blockPlaceholder')}
                             value={form.block}
                             onChange={e => set('block', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
                     <div>
-                        <label className="text-xs text-gray-500 mb-1 block">{t('form.houseNumber')}</label>
+                        <label className="text-xs text-muted mb-1 block">{t('form.houseNumber')}</label>
                         <input
                             placeholder={t('form.houseNumberPlaceholder')}
                             value={form.houseNumber}
                             onChange={e => set('houseNumber', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
                     <div className="col-span-2">
-                        <label className="text-xs text-gray-500 mb-1 block">{t('form.phone')}</label>
+                        <label className="text-xs text-muted mb-1 block">{t('form.phone')}</label>
                         <input
                             placeholder={t('form.phonePlaceholder')}
                             value={form.phone}
                             onChange={e => set('phone', e.target.value)}
-                            className="w-full border rounded-xl px-4 py-2.5 text-sm"
+                            className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </div>
 
                 </div>
 
                 {saveError && (
-                    <p className="text-red-500 text-sm">{saveError}</p>
+                    <p className="text-danger text-sm">{saveError}</p>
                 )}
 
                 <div className="flex justify-end gap-2 pt-1">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border rounded-xl px-4 py-2 text-sm"
+                        className="border border-divider rounded-lg px-4 py-2 text-sm hover:bg-canvas transition-colors"
                     >
                         {tc('actions.cancel')}
                     </button>
                     <button
                         type="submit"
                         disabled={saving}
-                        className="bg-black text-white rounded-xl px-4 py-2 text-sm disabled:opacity-50"
+                        className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 transition-colors"
                     >
                         {saving ? tc('states.saving') : tc('actions.save')}
                     </button>

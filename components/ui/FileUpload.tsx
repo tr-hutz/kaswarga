@@ -63,19 +63,19 @@ export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUp
         <div className="space-y-1.5">
 
             {label && (
-                <label className="text-sm font-medium text-gray-700 block">
+                <label className="text-sm font-medium text-foreground block">
                     {label}
                 </label>
             )}
 
             {fileLabel ? (
-                <div className="flex items-center gap-2 border rounded-xl px-4 py-2.5 bg-gray-50">
-                    <File size={15} className="text-gray-400 shrink-0" />
-                    <span className="text-sm text-gray-700 truncate flex-1">{fileLabel}</span>
+                <div className="flex items-center gap-2 border border-divider rounded-lg px-3 py-2.5 bg-canvas">
+                    <File size={15} className="text-subtle shrink-0" />
+                    <span className="text-sm text-foreground truncate flex-1">{fileLabel}</span>
                     <button
                         type="button"
                         onClick={handleRemove}
-                        className="text-gray-400 hover:text-red-500 shrink-0"
+                        className="text-subtle hover:text-danger shrink-0"
                     >
                         <X size={14} />
                     </button>
@@ -84,23 +84,23 @@ export default function FileUpload({ label, currentUrl, pathPrefix, accept, onUp
                 <div
                     onClick={() => !uploading && inputRef.current?.click()}
                     className="
-                        flex items-center gap-3 border-2 border-dashed border-gray-200
-                        rounded-xl px-4 py-3 cursor-pointer
-                        hover:border-blue-400 hover:bg-blue-50/40 transition
+                        flex items-center gap-3 border-2 border-dashed border-divider
+                        rounded-lg px-4 py-3 cursor-pointer
+                        hover:border-primary hover:bg-primary/5 transition
                     "
                 >
                     {uploading
-                        ? <Loader2 size={16} className="animate-spin text-blue-500 shrink-0" />
-                        : <Paperclip size={16} className="text-gray-400 shrink-0" />
+                        ? <Loader2 size={16} className="animate-spin text-primary shrink-0" />
+                        : <Paperclip size={16} className="text-subtle shrink-0" />
                     }
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-muted">
                         {uploading ? t('uploading') : t('clickToAttach')}
                     </span>
                 </div>
             )}
 
             {error && (
-                <p className="text-xs text-red-500">{error}</p>
+                <p className="text-xs text-danger">{error}</p>
             )}
 
             <input

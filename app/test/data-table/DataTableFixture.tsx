@@ -111,7 +111,7 @@ export default function DataTableFixture() {
 
     const result = useMemo<PageResult<MockRow> | null>(
         () => (isLoading || isError ? null : applyQuery(MOCK, query)),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/use-memo
         [isLoading, isError, JSON.stringify(query)],
     )
 

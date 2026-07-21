@@ -1,4 +1,5 @@
 ﻿'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useCallback, useEffect, useState } from 'react'
 import { supabase }                          from '@/lib/supabase'
@@ -25,6 +26,7 @@ export function useRtRegistration() {
         }
     }, [filter])
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { load() }, [load])
 
     useEffect(() => {

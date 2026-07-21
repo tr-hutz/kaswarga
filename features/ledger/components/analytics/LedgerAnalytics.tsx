@@ -14,17 +14,17 @@ export default function LedgerAnalytics({ income, expense, balance }: Props) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white rounded-2xl border p-5">
-                <p className="text-sm text-slate-500">{t('analytics.income')}</p>
-                <h2 className="mt-2 text-2xl font-bold">{formatRupiah(income)}</h2>
+            <div className="bg-surface rounded-lg shadow-card p-5">
+                <p className="text-sm text-muted">{t('analytics.income')}</p>
+                <h2 className="mt-2 text-2xl font-bold text-foreground">{formatRupiah(income)}</h2>
             </div>
-            <div className="bg-white rounded-2xl border p-5">
-                <p className="text-sm text-slate-500">{t('analytics.expense')}</p>
-                <h2 className="mt-2 text-2xl font-bold">{formatRupiah(expense)}</h2>
+            <div className="bg-surface rounded-lg shadow-card p-5">
+                <p className="text-sm text-muted">{t('analytics.expense')}</p>
+                <h2 className="mt-2 text-2xl font-bold text-foreground">{formatRupiah(expense)}</h2>
             </div>
-            <div className="bg-white rounded-2xl border p-5">
-                <p className="text-sm text-slate-500">{t('analytics.balance')}</p>
-                <h2 className="mt-2 text-2xl font-bold">{formatRupiah(balance)}</h2>
+            <div className="bg-surface rounded-lg shadow-card p-5">
+                <p className="text-sm text-muted">{t('analytics.balance')}</p>
+                <h2 className="mt-2 text-2xl font-bold text-foreground">{formatRupiah(balance)}</h2>
             </div>
         </div>
     )

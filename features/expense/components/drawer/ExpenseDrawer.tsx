@@ -38,26 +38,29 @@ export default function ExpenseDrawer({
 
     return (
         <div
+            data-testid="expense-drawer"
             className="fixed inset-0 bg-black/20 z-50 flex justify-end"
             onClick={onClose}
         >
             <div
-                className="bg-white w-full max-w-lg h-full overflow-y-auto p-6 shadow-xl"
+                className="bg-surface w-full max-w-lg h-full overflow-y-auto p-6 shadow-default"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-6">
                     <div>
-                        <h2 className="text-xl font-semibold">{t('drawer.title')}</h2>
+                        <h2 className="text-xl font-semibold text-foreground">{t('drawer.title')}</h2>
                         {row.receiptNumber && (
-                            <p className="font-mono text-sm text-gray-500 mt-0.5">{row.receiptNumber}</p>
+                            <p className="font-mono text-sm text-muted mt-0.5">{row.receiptNumber}</p>
                         )}
                     </div>
                     <div className="flex items-center gap-3">
                         <ExpenseStatusBadge status={row.status} />
                         <button
+                            data-testid="close-drawer"
                             onClick={onClose}
-                            className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+                            className="text-subtle hover:text-foreground text-xl leading-none"
+                            aria-label="Tutup"
                         >
                             ✕
                         </button>
@@ -83,16 +86,16 @@ export default function ExpenseDrawer({
 
                 {/* Approval / Rejection info */}
                 {row.status === 'approved' && approvedAtLabel && (
-                    <div className="mt-6 p-4 bg-emerald-50 rounded-xl border border-emerald-100 text-sm text-emerald-800">
+                    <div className="mt-6 p-4 bg-success/5 rounded-lg border border-success/20 text-sm text-success">
                         {t('drawer.approvedAt', { date: approvedAtLabel })}
                     </div>
                 )}
 
                 {row.status === 'rejected' && (
-                    <div className="mt-6 p-4 bg-red-50 rounded-xl border border-red-100 text-sm text-red-800 space-y-1">
+                    <div className="mt-6 p-4 bg-danger/5 rounded-lg border border-danger/20 text-sm text-danger space-y-1">
                         <p className="font-medium">{t('drawer.rejected')}</p>
                         {row.rejectionNote && (
-                            <p className="text-red-700">{row.rejectionNote}</p>
+                            <p className="text-danger/80">{row.rejectionNote}</p>
                         )}
                     </div>
                 )}
@@ -100,13 +103,13 @@ export default function ExpenseDrawer({
                 {/* Nota */}
                 {row.receiptUrl && (
                     <div className="mt-6">
-                        <p className="text-sm text-slate-500 mb-2">{t('drawer.receipt')}</p>
+                        <p className="text-sm text-muted mb-2">{t('drawer.receipt')}</p>
                         {row.receiptUrl.endsWith('.pdf') ? (
                             <a
                                 href={row.receiptUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-blue-600 text-sm underline"
+                                className="text-primary text-sm underline"
                             >
                                 {t('drawer.receiptPdf')}
                             </a>
@@ -115,7 +118,7 @@ export default function ExpenseDrawer({
                             <img
                                 src={row.receiptUrl}
                                 alt="Nota"
-                                className="rounded-xl border w-full object-contain"
+                                className="rounded-lg border border-divider w-full object-contain"
                             />
                         )}
                     </div>
@@ -141,8 +144,8 @@ export default function ExpenseDrawer({
 function Field({ label, value }: { label: string; value: string | number }) {
     return (
         <div>
-            <p className="text-sm text-slate-500">{label}</p>
-            <p className="font-medium">{value}</p>
+            <p className="text-sm text-muted">{label}</p>
+            <p className="font-medium text-foreground">{value}</p>
         </div>
     )
 }

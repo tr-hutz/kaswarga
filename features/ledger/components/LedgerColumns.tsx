@@ -19,8 +19,8 @@ export function buildLedgerColumns({ t }: Options): Column<LedgerRow>[] {
             render: (row) => (
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                     row.type === 'pemasukan'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
+                        ? 'bg-success/10 text-success'
+                        : 'bg-danger/10 text-danger'
                 }`}>
                     {row.type}
                 </span>

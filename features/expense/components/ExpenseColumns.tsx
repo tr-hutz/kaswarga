@@ -19,7 +19,7 @@ export function buildExpenseColumns({ t, tc, role, onEdit, onDelete }: Options):
             key:   'receiptNumber',
             title: t('table.receiptNumber'),
             render: (row) => (
-                <span className="font-mono text-xs text-gray-500">{row.receiptNumber || '—'}</span>
+                <span className="font-mono text-xs text-muted">{row.receiptNumber || '—'}</span>
             ),
         },
         {
@@ -60,13 +60,13 @@ export function buildExpenseColumns({ t, tc, role, onEdit, onDelete }: Options):
                     <div className="flex justify-end gap-2">
                         <button
                             onClick={(e) => { e.stopPropagation(); onEdit(row) }}
-                            className="text-sm border px-3 py-1 rounded-lg"
+                            className="text-sm border border-divider px-3 py-1 rounded-lg"
                         >
                             {tc('actions.edit')}
                         </button>
                         <button
                             onClick={(e) => { e.stopPropagation(); onDelete(row) }}
-                            className="text-sm border px-3 py-1 rounded-lg text-red-600"
+                            className="text-sm border border-divider px-3 py-1 rounded-lg text-danger"
                         >
                             {tc('actions.delete')}
                         </button>

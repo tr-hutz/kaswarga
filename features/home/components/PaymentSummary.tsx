@@ -20,10 +20,13 @@ export default function PaymentSummary({ summary }: { summary: any }) {
         className="
           rounded-xl
           border
+          border-divider
+          bg-surface
+          shadow-card
           p-4
         "
       >
-        <div>
+        <div className="text-sm text-muted">
           {t('summary.paid')}
         </div>
 
@@ -31,6 +34,7 @@ export default function PaymentSummary({ summary }: { summary: any }) {
           className="
             text-2xl
             font-bold
+            text-foreground
           "
         >
           {summary.paid}
@@ -41,10 +45,13 @@ export default function PaymentSummary({ summary }: { summary: any }) {
         className="
           rounded-xl
           border
+          border-divider
+          bg-surface
+          shadow-card
           p-4
         "
       >
-        <div>
+        <div className="text-sm text-muted">
           {t('summary.arrears')}
         </div>
 
@@ -52,6 +59,7 @@ export default function PaymentSummary({ summary }: { summary: any }) {
           className="
             text-2xl
             font-bold
+            text-foreground
           "
         >
           {summary.arrears}
@@ -62,10 +70,13 @@ export default function PaymentSummary({ summary }: { summary: any }) {
         className="
           rounded-xl
           border
+          border-divider
+          bg-surface
+          shadow-card
           p-4
         "
       >
-        <div>
+        <div className="text-sm text-muted">
           {t('summary.upcoming')}
         </div>
 
@@ -73,6 +84,7 @@ export default function PaymentSummary({ summary }: { summary: any }) {
           className="
             text-2xl
             font-bold
+            text-foreground
           "
         >
           {summary.upcoming}

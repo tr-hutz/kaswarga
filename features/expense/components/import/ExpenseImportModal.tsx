@@ -44,15 +44,15 @@ export default function ExpenseImportModal({
 
     const columnGuide = (
         <>
-            <span className="font-mono bg-gray-100 px-1 rounded">date</span> ({t('import.required')}){' '}
+            <span className="font-mono bg-canvas px-1 rounded">date</span> ({t('import.required')}){' '}
             &nbsp;·&nbsp;
-            <span className="font-mono bg-gray-100 px-1 rounded">amount</span> ({t('import.required')}){' '}
+            <span className="font-mono bg-canvas px-1 rounded">amount</span> ({t('import.required')}){' '}
             &nbsp;·&nbsp;
-            <span className="font-mono bg-gray-100 px-1 rounded">category</span>{' '}
+            <span className="font-mono bg-canvas px-1 rounded">category</span>{' '}
             &nbsp;·&nbsp;
-            <span className="font-mono bg-gray-100 px-1 rounded">recipient</span>{' '}
+            <span className="font-mono bg-canvas px-1 rounded">recipient</span>{' '}
             &nbsp;·&nbsp;
-            <span className="font-mono bg-gray-100 px-1 rounded">description</span>
+            <span className="font-mono bg-canvas px-1 rounded">description</span>
         </>
     )
 

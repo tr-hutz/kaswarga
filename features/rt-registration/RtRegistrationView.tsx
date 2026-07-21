@@ -24,14 +24,14 @@ export default function RtRegistrationView({ requests, loading, error, filter, s
 
             {/* Header */}
             <div>
-                <h1 className="text-xl font-semibold">{t('title')}</h1>
-                <p className="text-sm text-gray-500 mt-0.5">
+                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                <p className="text-sm text-muted mt-0.5">
                     {t('subtitle')}
                 </p>
             </div>
 
             {/* Filter tabs */}
-            <div className="flex gap-1 bg-gray-100 rounded-xl p-1 w-fit">
+            <div className="flex gap-1 bg-canvas rounded-lg p-1 w-fit">
                 {TAB_KEYS.map(key => (
                     <button
                         key={key}
@@ -40,15 +40,15 @@ export default function RtRegistrationView({ requests, loading, error, filter, s
                         className={`
                             flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition
                             ${filter === key
-                                ? 'bg-black text-white shadow-sm'
-                                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
+                                ? 'bg-primary text-white shadow-card'
+                                : 'text-muted hover:text-foreground hover:bg-divider/50'
                             }
                         `}
                     >
                         {t(`tabs.${key}`)}
                         {filter === key && requests.length > 0 && (
                             <span className={`text-xs rounded-full px-1.5 py-0.5 leading-none ${
-                                filter === key ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-600'
+                                filter === key ? 'bg-white/20 text-white' : 'bg-divider text-muted'
                             }`}>
                                 {requests.length}
                             </span>
@@ -62,10 +62,10 @@ export default function RtRegistrationView({ requests, loading, error, filter, s
                 <ErrorState onRetry={refresh} />
             ) : loading ? (
                 <div className="flex items-center justify-center py-16">
-                    <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
+                    <div className="w-6 h-6 border-2 border-divider border-t-foreground rounded-full animate-spin" />
                 </div>
             ) : requests.length === 0 ? (
-                <div className="text-center py-16 text-gray-400">
+                <div className="text-center py-16 text-subtle">
                     <p className="text-sm">{t('empty')}</p>
                 </div>
             ) : (

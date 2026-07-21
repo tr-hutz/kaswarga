@@ -1,52 +1,26 @@
-﻿'use client'
+'use client'
 
-import SidebarMenu
-
-    from './SidebarMenu'
+import SidebarMenu from './SidebarMenu'
 
 export default function Sidebar({
-
-                                    mobileOpen,
-                                    onClose
-
-                                }: {
+    mobileOpen,
+    onClose,
+}: {
     mobileOpen: boolean
     onClose: () => void
 }) {
-
     return (
-
         <aside
             className={`
-                fixed
-                top-16
-                left-0
-                bottom-0
-                w-72
-                bg-white
-                border-r
+                fixed top-0 left-0 h-screen w-72
+                bg-sidebar text-white
                 z-50
-                transition-transform
-
-                ${mobileOpen
-
-                ? 'translate-x-0'
-
-                : '-translate-x-full'
-            }
-
+                transition-transform duration-300 ease-in-out
+                ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
                 lg:translate-x-0
             `}
         >
-
-            <SidebarMenu
-
-                onClose={
-                    onClose
-                }
-
-            />
-
+            <SidebarMenu onClose={onClose} />
         </aside>
     )
 }

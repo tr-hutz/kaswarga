@@ -5,7 +5,7 @@
  * Public submission tests are unauthenticated.
  * Management tests (create, approve, reject) use storageState for an admin role.
  */
-import { test, expect } from '@playwright/test'
+import { test, expect, type Browser } from '@playwright/test'
 import { ResidentsPage } from './pages/ResidentsPage'
 import { refreshAdminSession } from './utils/refreshSession'
 import path from 'path'
@@ -42,9 +42,9 @@ test.describe('resident registration form (public)', () => {
 test.describe('create resident (admin)', () => {
   test.use({ storageState: path.join(__dirname, '.auth/session.json') })
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async ({ browser }: { browser: Browser }) => {
     await refreshAdminSession(browser)
-  }, { timeout: 60000 })
+  })
 
   test('opens the add resident modal', async ({ page }) => {
     const residents = new ResidentsPage(page)
@@ -107,9 +107,9 @@ test.describe('create resident (admin)', () => {
 test.describe('resident pending requests (admin)', () => {
   test.use({ storageState: path.join(__dirname, '.auth/session.json') })
 
-  test.beforeAll(async ({ browser }) => {
+  test.beforeAll(async ({ browser }: { browser: Browser }) => {
     await refreshAdminSession(browser)
-  }, { timeout: 60000 })
+  })
 
   test('pending requests section renders', async ({ page }) => {
     const residents = new ResidentsPage(page)

@@ -52,8 +52,8 @@ export default function ResidentDetailDrawer({
                     h-full
                     w-full
                     max-w-lg
-                    bg-white
-                    shadow-2xl
+                    bg-surface
+                    shadow-default
                     p-6
                     overflow-y-auto
                 "
@@ -70,8 +70,9 @@ export default function ResidentDetailDrawer({
 
                     <h1
                         className="
-                            text-lg
+                            text-xl
                             font-semibold
+                            text-foreground
                         "
                     >
                         {t('drawer.title')}

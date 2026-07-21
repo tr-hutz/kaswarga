@@ -26,7 +26,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         text-xs
-                        text-slate-500
+                        text-muted
                     "
                 >
                     {t('detail.residentName')}
@@ -35,6 +35,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         font-medium
+                        text-foreground
                     "
                 >
                     {payment.name}
@@ -47,7 +48,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         text-xs
-                        text-slate-500
+                        text-muted
                     "
                 >
                     {t('detail.house')}
@@ -56,6 +57,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         font-medium
+                        text-foreground
                     "
                 >
                     {t('detail.blockPrefix')} {payment.block} / {payment.houseNumber}
@@ -68,7 +70,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         text-xs
-                        text-slate-500
+                        text-muted
                     "
                 >
                     {t('detail.year')}
@@ -77,6 +79,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         font-medium
+                        text-foreground
                     "
                 >
                     {payment.year}
@@ -89,7 +92,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         text-xs
-                        text-slate-500
+                        text-muted
                     "
                 >
                     {t('detail.totalAmount')}
@@ -98,6 +101,7 @@ export default function PaymentDetailSummary({ payment }: { payment: any }) {
                 <p
                     className="
                         font-semibold
+                        text-foreground
                     "
                 >
                     Rp {

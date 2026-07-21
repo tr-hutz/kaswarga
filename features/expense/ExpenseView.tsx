@@ -7,6 +7,7 @@ import ExpenseDrawer          from './components/drawer/ExpenseDrawer'
 import ExpenseForm            from './components/forms/ExpenseForm'
 import ExpenseImportModal     from './components/import/ExpenseImportModal'
 import { buildExpenseColumns } from './components/ExpenseColumns'
+import ConfirmDialog           from '@/components/ui/ConfirmDialog'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 import type { MappedExpense } from './hooks/useExpenseData'
 
@@ -54,6 +55,9 @@ interface Props {
     approveExpense:     (r: MappedExpense) => void
     rejectExpense:      (r: MappedExpense) => void
     approveAllExpenses: () => void
+    deleteTarget:       MappedExpense | null
+    confirmDelete:      () => void
+    cancelDelete:       () => void
 }
 
 export default function ExpenseView({
@@ -69,6 +73,7 @@ export default function ExpenseView({
     importRows, fileName: importFileName, fileRef: importFileRef,
     importing, handleFile, handleImport, downloadTemplate, resetImport,
     approvalLoading, approveExpense, rejectExpense, approveAllExpenses,
+    deleteTarget, confirmDelete, cancelDelete,
 }: Props) {
     const t  = useTranslations('expenses')
     const tc = useTranslations('common')
@@ -91,8 +96,8 @@ export default function ExpenseView({
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
-                <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
+                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
             </div>
 
             <DataTable
@@ -112,7 +117,7 @@ export default function ExpenseView({
                     <select
                         value={String(query.filters?.category ?? 'all')}
                         onChange={(e) => setFilter('category', e.target.value)}
-                        className="h-9 rounded-lg border bg-white px-3 text-sm"
+                        className="h-9 rounded-lg border bg-input px-3 text-sm"
                     >
                         <option value="all">{t('filterPlaceholder')}</option>
                         {categories.map((c) => (
@@ -125,27 +130,27 @@ export default function ExpenseView({
                         {role === 'CHAIR' && pendingCount > 0 && (
                             <button
                                 onClick={approveAllExpenses}
-                                className="bg-emerald-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-emerald-700 transition"
+                                className="bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
                             >
                                 {t('approveAll', { count: pendingCount })}
                             </button>
                         )}
                         <button
                             onClick={() => exportExcel(data)}
-                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
                         >
                             {tc('actions.exportExcel')}
                         </button>
                         <button
                             onClick={() => exportCSV(data)}
-                            className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
                         >
                             {tc('actions.exportCsv')}
                         </button>
                         {role === 'TREASURER' && (
                             <button
                                 onClick={openImport}
-                                className="px-3 py-2 rounded-lg border text-sm bg-white hover:bg-gray-50"
+                                className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
                             >
                                 {tc('actions.import')}
                             </button>
@@ -153,7 +158,7 @@ export default function ExpenseView({
                         {role === 'TREASURER' && (
                             <button
                                 onClick={openCreateForm}
-                                className="px-4 py-2 rounded-lg bg-black text-white text-sm hover:bg-gray-800"
+                                className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary-dark"
                             >
                                 + {tc('actions.add')}
                             </button>
@@ -193,6 +198,16 @@ export default function ExpenseView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
+            />
+
+            <ConfirmDialog
+                open={!!deleteTarget}
+                title={t('deleteTitle')}
+                message={t('deleteConfirm', { description: deleteTarget?.description ?? '' })}
+                confirmLabel={tc('actions.delete')}
+                cancelLabel={tc('actions.cancel')}
+                onConfirm={confirmDelete}
+                onCancel={cancelDelete}
             />
         </div>
     )

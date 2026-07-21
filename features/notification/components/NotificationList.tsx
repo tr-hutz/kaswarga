@@ -1,7 +1,8 @@
-﻿'use client'
+'use client'
 
 import NotificationItem from './NotificationItem'
 import { useTranslations } from 'next-intl'
+import Icon from '@/components/ui/Icon'
 
 interface NotificationListProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -11,53 +12,30 @@ interface NotificationListProps {
 }
 
 export default function NotificationList({
-
-                                             notifications = [],
-
-                                             onNotificationClick
-
-                                         }: NotificationListProps) {
+    notifications = [],
+    onNotificationClick,
+}: NotificationListProps) {
 
     const t = useTranslations('notification')
 
-    if (notifications.length === 0) {
-        return (
-            <div className="p-6 text-center text-gray-500">
-                {t('empty')}
-            </div>
-        )
-    }
-
     return (
+        <div className="bg-surface rounded-xl shadow-card border border-divider overflow-hidden">
 
-        <div>
-
-            {
-
-                notifications.map(
-                    notification => (
-
-                        <NotificationItem
-
-                            key={
-                                notification.id
-                            }
-
-                            notification={
-                                notification
-                            }
-
-                            onClick={
-                                onNotificationClick
-                            }
-                        />
-
-                    )
-                )
-
-            }
+            {notifications.length === 0 ? (
+                <div className="flex flex-col items-center justify-center gap-2 py-16 text-center">
+                    <Icon name="bell" size={32} className="text-subtle" strokeWidth={1.5} />
+                    <p className="text-sm text-muted">{t('empty')}</p>
+                </div>
+            ) : (
+                notifications.map(notification => (
+                    <NotificationItem
+                        key={notification.id}
+                        notification={notification}
+                        onClick={onNotificationClick}
+                    />
+                ))
+            )}
 
         </div>
-
     )
 }
