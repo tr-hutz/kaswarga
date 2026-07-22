@@ -432,17 +432,21 @@ export async function submitPaymentConfirmation(payload: {
     )
 
     // Activity log (fire-and-forget)
-    const membership = await getCurrentMembership()
-    logActivity({
-        rtId:        membership?.rt?.id,
-        actorId:     membership?.user?.id,
-        actorName:   membership?.user?.name,
-        action:      'SUBMIT_PAYMENT',
-        entityType:  'payment_confirmations',
-        entityId:    confirmation.id,
-        description: 'Submit payment confirmation',
-        metadata:    { year, months, totalAmount, residentId },
-    })
+    try {
+        const membership = await getCurrentMembership()
+        logActivity({
+            rtId:        membership?.rt?.id,
+            actorId:     membership?.user?.id,
+            actorName:   membership?.user?.name,
+            action:      'SUBMIT_PAYMENT',
+            entityType:  'payment_confirmations',
+            entityId:    confirmation.id,
+            description: 'Submit payment confirmation',
+            metadata:    { year, months, totalAmount, residentId },
+        })
+    } catch {
+        // Activity log errors must not block the main flow
+    }
 
     // Notify TREASURER so they can review the submission
     try {
