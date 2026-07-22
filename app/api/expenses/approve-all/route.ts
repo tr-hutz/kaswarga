@@ -21,7 +21,7 @@ export async function POST() {
 
         const { data: membership, error: membershipError } = await supabaseAdmin
             .from('memberships')
-            .select('role, rt_id')
+            .select('role, rt_id, user:users(name)')
             .eq('user_id', authData.user.id)
             .eq('status', 'active')
             .maybeSingle()
@@ -40,6 +40,25 @@ export async function POST() {
         })
 
         if (error) throw error
+
+        // Activity log (fire-and-forget)
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const actorName = (membership as any).user?.name ?? null
+
+            await supabaseAdmin.from('activity_logs').insert({
+                rt_id:       membership.rt_id,
+                actor_id:    authData.user.id,
+                actor_name:  actorName,
+                action:      'APPROVE_ALL_EXPENSES',
+                entity_type: 'expenses',
+                entity_id:   null,
+                description: `Approve all pending expenses (${data ?? 0} approved)`,
+                metadata:    { approvedCount: data ?? 0 }
+            })
+        } catch {
+            // Activity log errors must not block the main flow
+        }
 
         return NextResponse.json({ approved: data })
 
