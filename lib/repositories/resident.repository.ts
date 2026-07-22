@@ -94,7 +94,7 @@ export async function insertResident(payload: ResidentInsert) {
 
 export async function findResidentsPaginated(
     rtId: string,
-    query: QueryOptions
+    query: QueryOptions,
 ): Promise<PageResult<ResidentRow>> {
     const from = (query.page - 1) * query.pageSize
     const to   = from + query.pageSize - 1

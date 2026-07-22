@@ -50,9 +50,9 @@ Legend
 
 | Action | Super | Chair | Admin | Treasurer | Resident |
 |---------|--------|--------|---------|------------|------------|
-| View Residents | ❌ | ✅ | ✅ | 👁 | ⚡ |
+| View Residents | ❌ | ✅ | ✅ | 👁 | 👁 |
 | Create Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
-| Update Resident | ❌ | ✅ | ✅ | ❌ | ⚡ |
+| Update Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
 | Delete Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
 
 ---

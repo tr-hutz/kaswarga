@@ -19,7 +19,7 @@ export function useResidentData(query: QueryOptions) {
     const [error,   setError]   = useState(false)
 
     // Serialize query to stable key so the effect fires only when values change
-    const queryKey = JSON.stringify(query)
+    const queryKey = JSON.stringify({ query })
 
     async function load() {
         if (!rtId) return
