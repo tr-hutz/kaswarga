@@ -40,7 +40,7 @@ export async function GET(req: Request) {
 
   const { data: membership, error: membershipError } = await supabaseAdmin
     .from('memberships')
-    .select('role')
+    .select('role, rt_id')
     .eq('user_id', authData.user.id)
     .eq('status', 'active')
     .maybeSingle()
@@ -49,7 +49,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  if (!['CHAIR', 'TREASURER'].includes(membership.role)) {
+  if (!['CHAIR', 'TREASURER', 'ADMIN'].includes(membership.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
@@ -63,7 +63,7 @@ export async function GET(req: Request) {
   const { data: rt } = await supabaseAdmin
     .from('rt')
     .select('*')
-    .limit(1)
+    .eq('id', (membership as any).rt_id)
     .single()
 
   const { data: members } = await supabaseAdmin
