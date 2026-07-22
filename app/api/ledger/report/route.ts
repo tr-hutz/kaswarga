@@ -17,10 +17,10 @@ const maskAccountNumber = (num: string | number | null) => {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const groupByMonth = (rows: any[] = []): Record<number, any[]> => {
+const groupByMonth = (rows: any[] = [], getDate = (r: any) => r.date as string): Record<number, any[]> => {
   const map: Record<number, any[]> = {}
   rows.forEach(r => {
-    const m = new Date(r.date).getMonth() + 1
+    const m = new Date(getDate(r)).getMonth() + 1
     if (!map[m]) map[m] = []
     map[m].push(r)
   })
@@ -229,7 +229,7 @@ export async function GET(req: Request) {
     y -= 18
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const byMonth = groupByMonth((incomeRows as any[]) || [])
+    const byMonth = groupByMonth((incomeRows as any[]) || [], r => r.payments?.date)
 
     Object.keys(byMonth)
       .sort((a, b) => Number(a) - Number(b))
