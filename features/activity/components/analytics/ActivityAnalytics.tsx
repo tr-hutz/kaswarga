@@ -3,20 +3,34 @@
 import { useTranslations } from 'next-intl'
 
 interface Props {
-    total:         number
-    approvals:     number
-    expenseCount:  number
-    residentCount: number
+    total:              number
+    paymentApprovals:   number
+    paymentRejections:  number
+    expenseApprovals:   number
+    expenseRejections:  number
+    expenseCount:       number
+    residentCount:      number
 }
 
-export default function ActivityAnalytics({ total, approvals, expenseCount, residentCount }: Props) {
+export default function ActivityAnalytics({
+    total,
+    paymentApprovals,
+    paymentRejections,
+    expenseApprovals,
+    expenseRejections,
+    expenseCount,
+    residentCount,
+}: Props) {
     const t = useTranslations('activity')
     return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card title={t('analytics.total')}           value={total} />
-            <Card title={t('analytics.approvals')}       value={approvals} />
-            <Card title={t('analytics.expense')}         value={expenseCount} />
-            <Card title={t('analytics.residentUpdates')} value={residentCount} />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card title={t('analytics.total')}             value={total} />
+            <Card title={t('analytics.paymentApprovals')}  value={paymentApprovals} />
+            <Card title={t('analytics.paymentRejections')} value={paymentRejections} />
+            <Card title={t('analytics.expenseApprovals')}  value={expenseApprovals} />
+            <Card title={t('analytics.expenseRejections')} value={expenseRejections} />
+            <Card title={t('analytics.expense')}           value={expenseCount} />
+            <Card title={t('analytics.residentUpdates')}   value={residentCount} />
         </div>
     )
 }

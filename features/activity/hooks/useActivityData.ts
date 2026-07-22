@@ -10,10 +10,13 @@ import type { QueryOptions, PageResult } from '@/lib/types/query'
 export type MappedActivity = ReturnType<typeof transformActivity>[number]
 
 export interface ActivityStats {
-    total:         number
-    approvals:     number
-    expenseCount:  number
-    residentCount: number
+    total:              number
+    paymentApprovals:   number
+    paymentRejections:  number
+    expenseApprovals:   number
+    expenseRejections:  number
+    expenseCount:       number
+    residentCount:      number
 }
 
 export function useActivityData(query: QueryOptions) {
@@ -22,7 +25,7 @@ export function useActivityData(query: QueryOptions) {
     const rtId = membership?.rt?.id as string | undefined
 
     const [result,  setResult]  = useState<PageResult<MappedActivity> | null>(null)
-    const [stats,   setStats]   = useState<ActivityStats>({ total: 0, approvals: 0, expenseCount: 0, residentCount: 0 })
+    const [stats,   setStats]   = useState<ActivityStats>({ total: 0, paymentApprovals: 0, paymentRejections: 0, expenseApprovals: 0, expenseRejections: 0, expenseCount: 0, residentCount: 0 })
     const [loading, setLoading] = useState(false)
     const [error,   setError]   = useState(false)
 

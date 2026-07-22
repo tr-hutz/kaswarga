@@ -215,8 +215,11 @@
       "empty": "Belum ada aktivitas."
     },
     "analytics": {
-      "total": "Total Activity",
-      "approvals": "Approvals",
+      "total": "Total Aktivitas",
+      "paymentApprovals": "Pembayaran Disetujui",
+      "paymentRejections": "Pembayaran Ditolak",
+      "expenseApprovals": "Pengeluaran Disetujui",
+      "expenseRejections": "Pengeluaran Ditolak",
       "expense": "Pengeluaran",
       "residentUpdates": "Pembaruan Warga"
     },

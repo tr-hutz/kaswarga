@@ -54,7 +54,10 @@ export default function ActivityView({
 
             <ActivityAnalytics
                 total={stats.total}
-                approvals={stats.approvals}
+                paymentApprovals={stats.paymentApprovals}
+                paymentRejections={stats.paymentRejections}
+                expenseApprovals={stats.expenseApprovals}
+                expenseRejections={stats.expenseRejections}
                 expenseCount={stats.expenseCount}
                 residentCount={stats.residentCount}
             />
