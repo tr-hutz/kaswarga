@@ -4,6 +4,8 @@ import { formatRupiah } from '../../../../lib/utils'
 import ExpenseStatusBadge   from '../tables/ExpenseStatusBadge'
 import ExpenseApprovalBar   from '../approval/ExpenseApprovalBar'
 import { useTranslations } from 'next-intl'
+import { hasPermission } from '../../../../lib/permissions/permissions'
+import { PERMISSIONS }   from '../../../../lib/permissions/permission-constants'
 
 interface ExpenseDrawerProps {
     open:            boolean
@@ -124,8 +126,8 @@ export default function ExpenseDrawer({
                     </div>
                 )}
 
-                {/* Approval bar — chair only, pending only */}
-                {role === 'CHAIR' && (
+                {/* Approval bar — CHAIR only, pending only */}
+                {hasPermission(role, PERMISSIONS.APPROVE_EXPENSES) && (
                     <div className="mt-6">
                         <ExpenseApprovalBar
                             row={row}
