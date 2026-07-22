@@ -121,7 +121,7 @@ export function useDataTable(
     const setFilter = useCallback(
         (key: string, value: unknown) =>
             push({
-                [`f_${key}`]: value != null && value !== 'all' && value !== '' ? String(value) : null,
+                [`f_${key}`]: value != null && value !== '' ? String(value) : null,
                 page: '1',
             }),
         [push],
