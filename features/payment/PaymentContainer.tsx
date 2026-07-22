@@ -11,10 +11,12 @@ import { useDialog }          from '@/components/ui/DialogProvider'
 import { exportToCSV, exportToExcel } from '@/lib/export/export-utils'
 import { buildPaymentColumns } from './components/PaymentColumns'
 import PaymentView            from './PaymentView'
+import { useAuth }            from '@/lib/auth/useAuth'
 
 export default function PaymentContainer() {
     const t  = useTranslations('payments')
     const tc = useTranslations('common')
+    const { role } = useAuth()
 
     const { query, setPage, setPageSize, setSearch, setSort, setFilter } =
         useDataTable({ filters: { status: 'pending' } }, 'payments')
@@ -82,6 +84,7 @@ export default function PaymentContainer() {
             approvalLoading={approvalLoading}
             onExportCSV={() => exportToCSV({ data, fileName: 'payments.csv' })}
             onExportExcel={() => exportToExcel({ data, fileName: 'payments.xlsx' })}
+            role={role}
         />
     )
 }

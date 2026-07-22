@@ -18,6 +18,13 @@
 import { test, expect } from '@playwright/test'
 import { DataTableFixturePage } from './pages/DataTableFixturePage'
 
+// Fixture page is gated to non-production — skip when targeting a remote URL
+const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000'
+test.skip(
+    !baseURL.includes('localhost'),
+    'DataTable fixture page is not available in production (returns 404)'
+)
+
 const STORAGE_KEY = 'dt:pageSize:dt-fixture'
 
 test.describe('DataTable — contract tests', () => {

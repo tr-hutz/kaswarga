@@ -327,6 +327,7 @@ language plpgsql
 security definer
 as $$
 declare
+    v_caller_role    text;
     v_confirmation   record;
     v_member         record;
     v_payment_id     uuid;
@@ -339,6 +340,18 @@ declare
         'Juli',    'Agustus',  'September', 'Oktober', 'November', 'Desember'
     ];
 begin
+    -- 0. Role check: caller must be TREASURER of this RT
+    select m.role into v_caller_role
+    from   memberships m
+    join   payment_confirmations pc on pc.id = p_confirmation_id
+    where  m.user_id = p_user_id
+    and    m.rt_id   = pc.rt_id;
+
+    if v_caller_role is distinct from 'TREASURER' then
+        raise exception 'Hanya TREASURER yang dapat menyetujui konfirmasi pembayaran'
+            using errcode = 'KW401';
+    end if;
+
     -- 1. Lock row
     select *
     into   v_confirmation
@@ -471,6 +484,7 @@ language plpgsql
 security definer
 as $$
 declare
+    v_caller_role  text;
     v_confirmation record;
     v_member       record;
     v_month_str    text;
@@ -479,6 +493,18 @@ declare
         'Juli',    'Agustus',  'September', 'Oktober', 'November', 'Desember'
     ];
 begin
+    -- 0. Role check: caller must be TREASURER of this RT
+    select m.role into v_caller_role
+    from   memberships m
+    join   payment_confirmations pc on pc.id = p_confirmation_id
+    where  m.user_id = p_user_id
+    and    m.rt_id   = pc.rt_id;
+
+    if v_caller_role is distinct from 'TREASURER' then
+        raise exception 'Hanya TREASURER yang dapat menolak konfirmasi pembayaran'
+            using errcode = 'KW401';
+    end if;
+
     -- 1. Lock row
     select * into v_confirmation
     from   payment_confirmations

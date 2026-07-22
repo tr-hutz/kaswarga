@@ -32,6 +32,7 @@ interface Props {
     approvalLoading: boolean
     onExportCSV:     () => void
     onExportExcel:   () => void
+    role:            string | null | undefined
 }
 
 export default function PaymentView({
@@ -40,7 +41,7 @@ export default function PaymentView({
     columns, data, t, tc,
     drawerOpen, selectedPayment, onRowClick, onCloseDetail,
     onApprove, onReject, approvalLoading,
-    onExportCSV, onExportExcel,
+    onExportCSV, onExportExcel, role,
 }: Props) {
     return (
         <div className="space-y-6">
@@ -98,6 +99,7 @@ export default function PaymentView({
                 onApprove={onApprove}
                 onReject={onReject}
                 loading={approvalLoading}
+                role={role}
             />
         </div>
     )

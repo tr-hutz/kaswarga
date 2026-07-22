@@ -14,7 +14,7 @@ export default function PaymentDetailMonths({ details = [] }: { details?: any[] 
             </h3>
             <div className="flex flex-wrap gap-2">
                 {details.map(detail => {
-                    const month = MONTHS.find(item => Number(item.id) === Number(detail.bulan))
+                    const month = MONTHS.find(item => Number(item.id) === Number(detail.month))
                     return (
                         <div key={detail.id} className="px-3 py-2 rounded-lg bg-canvas text-sm">
                             {month?.name}

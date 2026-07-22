@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl'
 import {
     isPending
 } from '../../services/payment-status'
+import { hasPermission } from '../../../../lib/permissions/permissions'
+import { PERMISSIONS }   from '../../../../lib/permissions/permission-constants'
 
 interface ApprovalActionBarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -13,6 +15,7 @@ interface ApprovalActionBarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onReject:  (payment: any) => void
     loading:   boolean
+    role:      string | null | undefined
 }
 
 export default function ApprovalActionBar({
@@ -23,7 +26,9 @@ export default function ApprovalActionBar({
 
                                               onReject,
 
-                                              loading
+                                              loading,
+
+                                              role
 
                                           }: ApprovalActionBarProps) {
 
@@ -31,7 +36,8 @@ export default function ApprovalActionBar({
 
     if (
         !payment ||
-        !isPending(payment.status)
+        !isPending(payment.status) ||
+        !hasPermission(role, PERMISSIONS.APPROVE_PAYMENTS)
     ) {
 
         return null
