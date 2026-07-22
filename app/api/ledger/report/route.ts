@@ -92,6 +92,8 @@ export async function GET(req: Request) {
     .from('expenses')
     .select('*')
     .eq('rt_id', rt?.id ?? '')
+    .eq('status', 'approved')
+    .is('deleted_at', null)
     .gte('date', start)
     .lt('date', end)
 
