@@ -76,20 +76,22 @@ export default function PaymentView({
                     </select>
                 }
                 renderActions={
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={onExportExcel}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
-                        >
-                            {tc('actions.exportExcel')}
-                        </button>
-                        <button
-                            onClick={onExportCSV}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
-                        >
-                            {tc('actions.exportCsv')}
-                        </button>
-                    </div>
+                    role !== 'RESIDENT' ? (
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={onExportExcel}
+                                className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
+                            >
+                                {tc('actions.exportExcel')}
+                            </button>
+                            <button
+                                onClick={onExportCSV}
+                                className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
+                            >
+                                {tc('actions.exportCsv')}
+                            </button>
+                        </div>
+                    ) : undefined
                 }
             />
 
