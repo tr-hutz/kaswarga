@@ -8,7 +8,6 @@ interface Props {
     paymentRejections:  number
     expenseApprovals:   number
     expenseRejections:  number
-    expenseCount:       number
     residentCount:      number
 }
 
@@ -18,18 +17,16 @@ export default function ActivityAnalytics({
     paymentRejections,
     expenseApprovals,
     expenseRejections,
-    expenseCount,
     residentCount,
 }: Props) {
     const t = useTranslations('activity')
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <Card title={t('analytics.total')}             value={total} />
             <Card title={t('analytics.paymentApprovals')}  value={paymentApprovals} />
             <Card title={t('analytics.paymentRejections')} value={paymentRejections} />
             <Card title={t('analytics.expenseApprovals')}  value={expenseApprovals} />
             <Card title={t('analytics.expenseRejections')} value={expenseRejections} />
-            <Card title={t('analytics.expense')}           value={expenseCount} />
             <Card title={t('analytics.residentUpdates')}   value={residentCount} />
         </div>
     )

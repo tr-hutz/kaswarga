@@ -61,19 +61,17 @@ export async function findActivityStats(rtId: string): Promise<{
     paymentRejections:  number
     expenseApprovals:   number
     expenseRejections:  number
-    expenseCount:       number
     residentCount:      number
 }> {
     const q = (action: string) =>
         supabase.from('activity_logs').select('*', { count: 'exact', head: true }).eq('rt_id', rtId).eq('action', action)
 
-    const [totalRes, payAppRes, payRejRes, expAppRes, expRejRes, expRes, resRes] = await Promise.all([
+    const [totalRes, payAppRes, payRejRes, expAppRes, expRejRes, resRes] = await Promise.all([
         supabase.from('activity_logs').select('*', { count: 'exact', head: true }).eq('rt_id', rtId),
         q('APPROVE_PAYMENT'),
         q('REJECT_PAYMENT'),
         q('APPROVE_EXPENSE'),
         q('REJECT_EXPENSE'),
-        supabase.from('activity_logs').select('*', { count: 'exact', head: true }).eq('rt_id', rtId).eq('entity_type', 'expenses'),
         supabase.from('activity_logs').select('*', { count: 'exact', head: true }).eq('rt_id', rtId).eq('entity_type', 'residents'),
     ])
     return {
@@ -82,7 +80,6 @@ export async function findActivityStats(rtId: string): Promise<{
         paymentRejections: payRejRes.count ?? 0,
         expenseApprovals:  expAppRes.count ?? 0,
         expenseRejections: expRejRes.count ?? 0,
-        expenseCount:      expRes.count    ?? 0,
         residentCount:     resRes.count    ?? 0,
     }
 }

@@ -58,7 +58,6 @@ export default function ActivityView({
                 paymentRejections={stats.paymentRejections}
                 expenseApprovals={stats.expenseApprovals}
                 expenseRejections={stats.expenseRejections}
-                expenseCount={stats.expenseCount}
                 residentCount={stats.residentCount}
             />
 
