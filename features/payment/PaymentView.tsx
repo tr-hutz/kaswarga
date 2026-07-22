@@ -65,7 +65,7 @@ export default function PaymentView({
                 onRowClick={onRowClick}
                 renderFilters={
                     <select
-                        value={String(query.filters?.status ?? 'pending')}
+                        value={String(query.filters?.status ?? '')}
                         onChange={(e) => setFilter('status', e.target.value || undefined)}
                         className="h-9 rounded-lg border bg-input px-3 text-sm"
                     >
