@@ -114,16 +114,28 @@ export default function ExpenseView({
                 onRetry={onRetry}
                 onRowClick={openDrawer}
                 renderFilters={
-                    <select
-                        value={String(query.filters?.category ?? 'all')}
-                        onChange={(e) => setFilter('category', e.target.value)}
-                        className="h-9 rounded-lg border bg-input px-3 text-sm"
-                    >
-                        <option value="all">{t('filterPlaceholder')}</option>
-                        {categories.map((c) => (
-                            <option key={c.name} value={c.name}>{c.name}</option>
-                        ))}
-                    </select>
+                    <div className="flex items-center gap-2">
+                        <select
+                            value={String(query.filters?.category ?? 'all')}
+                            onChange={(e) => setFilter('category', e.target.value)}
+                            className="h-9 rounded-lg border bg-input px-3 text-sm"
+                        >
+                            <option value="all">{t('filterPlaceholder')}</option>
+                            {categories.map((c) => (
+                                <option key={c.name} value={c.name}>{c.name}</option>
+                            ))}
+                        </select>
+                        <select
+                            value={String(query.filters?.status ?? 'all')}
+                            onChange={(e) => setFilter('status', e.target.value)}
+                            className="h-9 rounded-lg border bg-input px-3 text-sm"
+                        >
+                            <option value="all">{tc('expenseStatus.all')}</option>
+                            <option value="pending">{tc('expenseStatus.pending')}</option>
+                            <option value="approved">{tc('expenseStatus.approved')}</option>
+                            <option value="rejected">{tc('expenseStatus.rejected')}</option>
+                        </select>
+                    </div>
                 }
                 renderActions={
                     <div className="flex items-center gap-2 flex-wrap">

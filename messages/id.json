@@ -43,6 +43,12 @@
       "paid": "Lunas",
       "unpaid": "Belum Bayar"
     },
+    "expenseStatus": {
+      "all": "Semua Status",
+      "pending": "Menunggu",
+      "approved": "Disetujui",
+      "rejected": "Ditolak"
+    },
     "table": {
       "actions": "Aksi",
       "status": "Status",
