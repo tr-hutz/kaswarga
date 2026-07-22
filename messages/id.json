@@ -36,6 +36,7 @@
       "empty": "Tidak ada data"
     },
     "paymentStatus": {
+      "all": "Semua",
       "pending": "Menunggu",
       "approved": "Disetujui",
       "rejected": "Ditolak",

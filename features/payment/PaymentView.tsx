@@ -66,9 +66,10 @@ export default function PaymentView({
                 renderFilters={
                     <select
                         value={String(query.filters?.status ?? 'pending')}
-                        onChange={(e) => setFilter('status', e.target.value)}
+                        onChange={(e) => setFilter('status', e.target.value || undefined)}
                         className="h-9 rounded-lg border bg-input px-3 text-sm"
                     >
+                        <option value="">{tc('paymentStatus.all')}</option>
                         <option value="pending">{tc('paymentStatus.pending')}</option>
                         <option value="approved">{tc('paymentStatus.approved')}</option>
                         <option value="rejected">{tc('paymentStatus.rejected')}</option>
