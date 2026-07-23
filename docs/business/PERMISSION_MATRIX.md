@@ -77,6 +77,8 @@ Legend
 | Approve | ❌ | ❌ | ❌ | ✅ | ❌ |
 | Reject | ❌ | ❌ | ❌ | ✅ | ❌ |
 | Export | ❌ | 👁 | 👁 | ✅ | ❌ |
+| Import | ❌ | ❌ | ✅ | ✅ | ❌ |
+| Bulk Approve Imported | ❌ | ❌ | ✅ | ✅ | ❌ |
 
 ---
 

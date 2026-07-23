@@ -22,12 +22,21 @@ export default function PaymentProofPreview({ url }: { url?: string | null }) {
         return <NoBukti label={t('detail.proofError')} />
     }
 
+    const isImportFile = /\.(xlsx|csv)$/i.test(url)
+
     return (
         <div>
             <h3 className="text-sm font-semibold mb-3">
                 {t('detail.proofTitle')}
             </h3>
-            {failed ? (
+            {isImportFile ? (
+                <div className="rounded-lg border border-divider bg-canvas p-4 text-sm text-muted flex items-center gap-2">
+                    <Icon name="file-text" size={16} />
+                    <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                        {t('detail.proofImportFile')}
+                    </a>
+                </div>
+            ) : failed ? (
                 <NoBukti label={t('detail.proofError')} />
             ) : (
                 <img

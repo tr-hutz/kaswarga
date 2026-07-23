@@ -15,7 +15,7 @@ interface ImportModalProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     rows: any[]
     fileName: string | null
-    fileRef: RefObject<HTMLInputElement>
+    fileRef: RefObject<HTMLInputElement | null>
     importing: boolean
     error: string
     onFile: (file: File | undefined) => void

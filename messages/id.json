@@ -553,13 +553,23 @@
       "monthsPaid": "Bulan Dibayar",
       "proofTitle": "Bukti Pembayaran",
       "proofUnavailable": "Bukti pembayaran tidak tersedia",
-      "proofError": "Bukti tidak dapat dimuat"
+      "proofError": "Bukti tidak dapat dimuat",
+      "proofImportFile": "Lihat file impor"
     },
     "reject": {
       "title": "Tolak Pembayaran",
       "description": "Berikan alasan penolakan untuk warga.",
       "placeholder": "Masukkan alasan penolakan...",
       "confirmLabel": "Tolak"
+    },
+    "approveAll": "Setujui Semua ({count})",
+    "approveAllSuccess": "Berhasil menyetujui {count} pembayaran impor",
+    "import": {
+      "title": "Impor Data Pembayaran",
+      "buttonLabel": "Pembayaran",
+      "required": "wajib",
+      "successMessage": "Berhasil mengimpor {inserted} pembayaran",
+      "skippedSuffix": "data dilewati (sudah ada)"
     },
     "approval": {
       "approve": "Setujui",

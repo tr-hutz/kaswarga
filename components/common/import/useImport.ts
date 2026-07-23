@@ -43,7 +43,7 @@ export function useImport({
     templateData: any[]
     templateSheetName?: string
     templateFileName: string
-    onSuccess?: (inserted: number) => void
+    onSuccess?: (inserted: number, skipped?: number) => void
 }) {
     const normalizeKey = makeNormalizer(columnAliases)
 
@@ -115,7 +115,7 @@ export function useImport({
             const body = await res.json()
             if (!res.ok) throw new Error(body.error || 'Import failed')
             closeImport()
-            onSuccess?.(body.inserted)
+            onSuccess?.(body.inserted, body.skipped)
         } catch (err) {
             setError((err as Error).message)
         } finally {
