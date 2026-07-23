@@ -77,7 +77,7 @@ export default function PaymentView({
     confirmDeleteAll, cancelDeleteAll, deleteAllConfirmOpen,
     bulkActionLoading,
 }: Props) {
-    const canManage = role === 'TREASURER' || role === 'ADMIN'
+    const canManage = role === 'TREASURER'
 
     return (
         <div className="space-y-6">

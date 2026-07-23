@@ -11,6 +11,7 @@ import ConfirmDialog           from '@/components/ui/ConfirmDialog'
 import ExportDropdown         from '@/components/ui/ExportDropdown'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 import type { MappedExpense } from './hooks/useExpenseData'
+import Icon from "@/components/ui/Icon";
 
 interface Props {
     result:      PageResult<MappedExpense> | null
@@ -157,8 +158,9 @@ export default function ExpenseView({
                         {role === 'TREASURER' && (
                             <button
                                 onClick={openImport}
-                                className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
+                                className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
                             >
+                                <Icon name="upload" size={15} />
                                 {tc('actions.import')}
                             </button>
                         )}
