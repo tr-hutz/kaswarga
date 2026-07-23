@@ -76,6 +76,9 @@ export default function ExpenseDrawer({
                         <div className="p-5 space-y-5">
                             {/* 2-col grid */}
                             <div className="grid grid-cols-2 gap-4">
+                                <div className="col-span-2">
+                                    <Field label={t('drawer.receiptNumber')} value={row.receiptNumber || '—'} />
+                                </div>
                                 <Field label={t('drawer.date')}     value={row.dateLabel || row.date} />
                                 <Field label={t('drawer.category')} value={row.category || '—'} />
                                 <Field label={t('drawer.amount')}   value={`Rp ${formatRupiah(row.amount)}`} />
