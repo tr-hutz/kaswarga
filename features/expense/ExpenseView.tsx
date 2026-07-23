@@ -8,6 +8,7 @@ import ExpenseForm            from './components/forms/ExpenseForm'
 import ExpenseImportModal     from './components/import/ExpenseImportModal'
 import { buildExpenseColumns } from './components/ExpenseColumns'
 import ConfirmDialog           from '@/components/ui/ConfirmDialog'
+import ExportDropdown         from '@/components/ui/ExportDropdown'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 import type { MappedExpense } from './hooks/useExpenseData'
 
@@ -149,18 +150,10 @@ export default function ExpenseView({
                 }
                 renderActions={
                     <div className="flex items-center gap-2 flex-wrap">
-                        <button
-                            onClick={() => exportExcel(data)}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
-                        >
-                            {tc('actions.exportExcel')}
-                        </button>
-                        <button
-                            onClick={() => exportCSV(data)}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
-                        >
-                            {tc('actions.exportCsv')}
-                        </button>
+                        <ExportDropdown
+                            onExportExcel={() => exportExcel(data)}
+                            onExportCSV={() => exportCSV(data)}
+                        />
                         {role === 'TREASURER' && (
                             <button
                                 onClick={openImport}

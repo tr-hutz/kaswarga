@@ -1,89 +1,18 @@
 'use client'
 
-import Icon from '@/components/ui/Icon'
-
-import { useTranslations } from 'next-intl'
+import ExportDropdown from '@/components/ui/ExportDropdown'
 
 export default function ToolbarExport({
-
-                                          onExportCSV,
-                                          onExportExcel
-
-                                      }: {
-    onExportCSV?: () => void
+    onExportCSV,
+    onExportExcel,
+}: {
+    onExportCSV?:   () => void
     onExportExcel?: () => void
 }) {
-
-    const t = useTranslations('common.actions')
-
     return (
-
-        <div
-            className="
-                flex
-                items-center
-                gap-2
-            "
-        >
-
-            <button
-                onClick={onExportCSV}
-                className="
-                    h-10
-                    px-4
-                    rounded-lg
-                    border
-                    border-divider
-                    bg-surface
-                    text-foreground
-                    text-sm
-
-                    flex
-                    items-center
-                    gap-2
-
-                    hover:bg-canvas
-                    transition
-                "
-            >
-
-                <Icon name="download" size={16} />
-
-                <span>
-                    {t('exportCsv')}
-                </span>
-
-            </button>
-
-            <button
-                onClick={onExportExcel}
-                className="
-                    h-10
-                    px-4
-                    rounded-lg
-                    border
-                    border-divider
-                    bg-surface
-                    text-foreground
-                    text-sm
-
-                    flex
-                    items-center
-                    gap-2
-
-                    hover:bg-canvas
-                    transition
-                "
-            >
-
-                <Icon name="download" size={16} />
-
-                <span>
-                    {t('exportExcel')}
-                </span>
-
-            </button>
-
-        </div>
+        <ExportDropdown
+            onExportExcel={onExportExcel ?? (() => {})}
+            onExportCSV={onExportCSV ?? (() => {})}
+        />
     )
 }

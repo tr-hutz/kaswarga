@@ -9,6 +9,7 @@ import ResidentDetailDrawer from './components/drawer/ResidentDetailDrawer'
 import ResidentForm         from './components/forms/ResidentForm'
 import ResidentImportModal  from './components/import/ResidentImportModal'
 import { buildResidentColumns, type ResidentRow } from './components/ResidentColumns'
+import ExportDropdown from '@/components/ui/ExportDropdown'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 interface Props {
@@ -131,18 +132,10 @@ export default function ResidentView({
                 }
                 renderActions={
                     <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => exportExcel(data)}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
-                        >
-                            {tc('actions.exportExcel')}
-                        </button>
-                        <button
-                            onClick={() => exportCSV(data)}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
-                        >
-                            {tc('actions.exportCsv')}
-                        </button>
+                        <ExportDropdown
+                            onExportExcel={() => exportExcel(data)}
+                            onExportCSV={() => exportCSV(data)}
+                        />
                         {canManage && (
                             <>
                                 <button

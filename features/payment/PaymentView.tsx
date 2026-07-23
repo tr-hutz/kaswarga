@@ -3,6 +3,7 @@
 
 import { DataTable }         from '@/components/common/data-table'
 import PaymentDetailDrawer   from './components/details/PaymentDetailDrawer'
+import ExportDropdown        from '@/components/ui/ExportDropdown'
 import type { Column, QueryOptions, PageResult } from '@/lib/types/query'
 import type { ConfirmationRow } from './hooks/usePaymentData'
 
@@ -77,20 +78,10 @@ export default function PaymentView({
                 }
                 renderActions={
                     role !== 'RESIDENT' ? (
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={onExportExcel}
-                                className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
-                            >
-                                {tc('actions.exportExcel')}
-                            </button>
-                            <button
-                                onClick={onExportCSV}
-                                className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
-                            >
-                                {tc('actions.exportCsv')}
-                            </button>
-                        </div>
+                        <ExportDropdown
+                            onExportExcel={onExportExcel}
+                            onExportCSV={onExportCSV}
+                        />
                     ) : undefined
                 }
             />

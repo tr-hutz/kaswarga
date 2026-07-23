@@ -7,6 +7,7 @@ import LedgerAnalytics       from './components/analytics/LedgerAnalytics'
 import LedgerReport          from './components/LedgerReport'
 import LedgerDrawer          from './components/drawer/LedgerDrawer'
 import { buildLedgerColumns } from './components/LedgerColumns'
+import ExportDropdown from '@/components/ui/ExportDropdown'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 import type { LedgerRow, LedgerTotals } from './hooks/useLedgerData'
 
@@ -74,20 +75,10 @@ export default function LedgerView({
                 onRetry={onRetry}
                 onRowClick={openDrawer}
                 renderActions={
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => exportExcel(data)}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
-                        >
-                            {tc('actions.exportExcel')}
-                        </button>
-                        <button
-                            onClick={() => exportCSV(data)}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
-                        >
-                            {tc('actions.exportCsv')}
-                        </button>
-                    </div>
+                    <ExportDropdown
+                        onExportExcel={() => exportExcel(data)}
+                        onExportCSV={() => exportCSV(data)}
+                    />
                 }
             />
 
