@@ -1,13 +1,20 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import Badge from '@/components/ui/Badge'
-import {
-    getResidentStatusLabel,
-    getResidentStatusClasses
-} from '../../services/resident-status'
+import { getResidentStatusClasses } from '../../services/resident-status'
 
 export default function ResidentStatusBadge({ status }: { status: string }) {
+    const tc = useTranslations('common')
+
+    const labelMap: Record<string, string> = {
+        active:   tc('status.active'),
+        inactive: tc('status.inactive'),
+    }
+
     return (
         <Badge className={getResidentStatusClasses(status)}>
-            {getResidentStatusLabel(status)}
+            {labelMap[status] ?? '-'}
         </Badge>
     )
 }

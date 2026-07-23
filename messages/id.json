@@ -13,8 +13,8 @@
       "close": "Tutup",
       "import": "Import",
       "export": "Ekspor",
-      "exportExcel": "Export Excel",
-      "exportCsv": "Export CSV",
+      "exportExcel": "Ekspor Excel",
+      "exportCsv": "Ekspor CSV",
       "generate": "Generate",
       "search": "Cari",
       "confirm": "Konfirmasi",
@@ -27,7 +27,7 @@
       "loading": "Memuat...",
       "sending": "Mengirim...",
       "importing": "Mengimpor...",
-      "generating": "Generating..."
+      "generating": "Memproses..."
     },
     "status": {
       "active": "Aktif",
@@ -136,9 +136,9 @@
     },
     "report": {
       "title": "Laporan Arus Kas",
-      "subtitle": "Generate laporan kas tahunan dalam format PDF",
+      "subtitle": "Buat laporan kas tahunan dalam format PDF",
       "generating": "Membuat...",
-      "generate": "Generate PDF",
+      "generate": "Buatkan PDF",
       "errorFailed": "Gagal membuat laporan"
     }
   },
@@ -150,7 +150,10 @@
       "paymentStatusSubtitle": "Rekap kepatuhan pembayaran iuran bulanan",
       "finance": "Keuangan RT",
       "financeSubtitle": "Ringkasan arus kas tahun {year}",
-      "cashflowSubtitle": "Pemasukan vs pengeluaran bulanan"
+      "cashflowTitle": "Arus Kas",
+      "cashflowSubtitle": "Pemasukan vs pengeluaran bulanan",
+      "monthlyCollectionTitle": "Pemasukan Bulanan",
+      "monthlyCollectionSubtitle": "Jumlah pembayaran iuran bulanan"
     },
     "cards": {
       "totalResidents": "Total Warga",

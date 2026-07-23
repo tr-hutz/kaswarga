@@ -1,12 +1,21 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import Badge from '@/components/ui/Badge'
-import { getStatusLabel, getStatusClass } from '../../services/expense-status'
+import { getStatusClass } from '../../services/expense-status'
 
 export default function ExpenseStatusBadge({ status }: { status: string }) {
+    const tc = useTranslations('common')
+
+    const labelMap: Record<string, string> = {
+        approved: tc('expenseStatus.approved'),
+        pending:  tc('expenseStatus.pending'),
+        rejected: tc('expenseStatus.rejected'),
+    }
+
     return (
         <Badge className={getStatusClass(status)}>
-            {getStatusLabel(status)}
+            {labelMap[status] ?? '-'}
         </Badge>
     )
 }
