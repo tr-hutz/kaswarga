@@ -59,7 +59,7 @@ export default function LedgerDrawer({ open, row, onClose }: LedgerDrawerProps) 
                     </div>
                     <div>
                         <p className="text-sm text-muted">{t('drawer.date')}</p>
-                        <p className="font-medium">{row.date}</p>
+                        <p className="font-medium">{row.date ? new Date(row.date).toLocaleString('id-ID') : '-'}</p>
                     </div>
                 </div>
 
