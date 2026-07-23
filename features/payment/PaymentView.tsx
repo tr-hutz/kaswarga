@@ -68,7 +68,7 @@ export default function PaymentView({
                     <select
                         value={String(query.filters?.status ?? 'pending')}
                         onChange={(e) => setFilter('status', e.target.value)}
-                        className="h-9 rounded-lg border bg-input px-3 text-sm"
+                        className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
                     >
                         <option value="all">{tc('paymentStatus.all')}</option>
                         <option value="pending">{tc('paymentStatus.pending')}</option>

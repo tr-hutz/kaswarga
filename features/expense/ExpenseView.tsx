@@ -129,7 +129,7 @@ export default function ExpenseView({
                         <select
                             value={String(query.filters?.category ?? 'all')}
                             onChange={(e) => setFilter('category', e.target.value)}
-                            className="h-9 rounded-lg border bg-input px-3 text-sm"
+                            className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
                         >
                             <option value="all">{t('filterPlaceholder')}</option>
                             {categories.map((c) => (
@@ -139,7 +139,7 @@ export default function ExpenseView({
                         <select
                             value={String(query.filters?.status ?? 'all')}
                             onChange={(e) => setFilter('status', e.target.value)}
-                            className="h-9 rounded-lg border bg-input px-3 text-sm"
+                            className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
                         >
                             <option value="all">{tc('expenseStatus.all')}</option>
                             <option value="pending">{tc('expenseStatus.pending')}</option>
