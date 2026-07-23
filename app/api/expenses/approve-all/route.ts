@@ -34,6 +34,10 @@ export async function POST() {
             return NextResponse.json({ error: 'Only the RT chair can approve expenses' }, { status: 403 })
         }
 
+        if (!membership.rt_id) {
+            return NextResponse.json({ error: 'RT not found' }, { status: 403 })
+        }
+
         const { data, error } = await (supabaseAdmin as any).rpc('approve_all_pending_expenses', {
             p_rt_id:   membership.rt_id,
             p_user_id: authData.user.id,

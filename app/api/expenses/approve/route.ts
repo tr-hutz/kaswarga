@@ -33,6 +33,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Only the RT chair can approve expenses' }, { status: 403 })
         }
 
+        if (!membership.rt_id) {
+            return NextResponse.json({ error: 'RT not found' }, { status: 403 })
+        }
+
         const { id } = await req.json()
         if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
 
