@@ -51,6 +51,7 @@ Legend
 | Action | Super | Chair | Admin | Treasurer | Resident |
 |---------|--------|--------|---------|------------|------------|
 | View Residents | ❌ | ✅ | ✅ | 👁 | 👁 |
+| View Payment History | ❌ | ✅ | ✅ | ✅ | ⚡ |
 | Create Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
 | Update Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
 | Delete Resident | ❌ | ✅ | ✅ | ❌ | ❌ |

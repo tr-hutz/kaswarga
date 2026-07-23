@@ -38,7 +38,8 @@ function getStatusColor(status: string) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymentHistory?: any[] }) {
 
-    const t = useTranslations('residents.paymentHistory')
+    const t  = useTranslations('residents.paymentHistory')
+    const tc = useTranslations('common')
 
     return (
 
@@ -151,7 +152,7 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
                   ${getStatusColor(item.status)}
                 `}
               >
-                {item.status}
+                {tc(`paymentStatus.${item.status}`) ?? item.status}
               </span>
 
                         </div>

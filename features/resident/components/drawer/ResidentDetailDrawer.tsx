@@ -10,27 +10,30 @@ import ResidentPaymentHistory
     from './ResidentPaymentHistory'
 
 interface ResidentDetailDrawerProps {
-    open:     boolean
+    open:               boolean
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    resident: any
-    onClose:  () => void
+    resident:           any
+    onClose:            () => void
+    role:               string
+    currentResidentId?: string
 }
 
 export default function ResidentDetailDrawer({
-
-                                              open,
-
-                                              resident,
-
-                                              onClose
-
-                                          }: ResidentDetailDrawerProps) {
+    open,
+    resident,
+    onClose,
+    role,
+    currentResidentId,
+}: ResidentDetailDrawerProps) {
 
     const t = useTranslations('residents')
 
     if (!open || !resident) {
         return null
     }
+
+    const canViewPaymentHistory =
+        role !== 'RESIDENT' || resident?.id === currentResidentId
 
     return (
 
@@ -90,11 +93,15 @@ export default function ResidentDetailDrawer({
                     resident={resident}
                 />
 
-                <ResidentPaymentHistory
-                    paymentHistory={
-                        resident?.paymentHistory || []
-                    }
-                />
+                {canViewPaymentHistory && (
+                    <div className="mt-6">
+                        <ResidentPaymentHistory
+                            paymentHistory={
+                                resident?.paymentHistory || []
+                            }
+                        />
+                    </div>
+                )}
 
             </div>
 

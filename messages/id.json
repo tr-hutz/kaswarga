@@ -517,8 +517,8 @@
       "totalAmount": "Total Nominal"
     },
     "paymentHistory": {
-      "title": "Histori Pembayaran",
-      "empty": "Belum ada histori pembayaran"
+      "title": "Riwayat Pembayaran",
+      "empty": "Belum ada riwayat pembayaran"
     },
     "arrears": {
       "alert": "Anda memiliki tunggakan sebanyak {months} bulan",

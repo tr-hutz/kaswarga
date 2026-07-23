@@ -26,6 +26,7 @@ export default function ResidentContainer() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { membership, role } = (useAuth() as any) ?? {}
     const rtId = membership?.rt?.id as string | undefined
+    const currentResidentId = membership?.resident?.id as string | undefined
     const canManage = hasPermission(role, PERMISSIONS.MANAGE_RESIDENTS)
     const t = useTranslations('residents')
     const tc = useTranslations('common')
@@ -123,6 +124,8 @@ export default function ResidentContainer() {
                 pendingRequests={pendingRequests}
                 pendingLoading={pendingLoading}
                 canManage={canManage}
+                role={role ?? ''}
+                currentResidentId={currentResidentId}
                 query={query}
                 setPage={setPage}
                 setPageSize={setPageSize}

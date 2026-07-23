@@ -21,6 +21,8 @@ interface Props {
     pendingLoading:   boolean
     // permissions
     canManage:        boolean
+    role:             string
+    currentResidentId?: string
     // query
     query:            QueryOptions
     setPage:          (page: number) => void
@@ -64,7 +66,7 @@ interface Props {
 export default function ResidentView({
     result, loading, error, reload,
     pendingRequests, pendingLoading,
-    canManage,
+    canManage, role, currentResidentId,
     query, setPage, setPageSize, setSearch, setSort, setFilter,
     onRowClick, onEdit, onDelete, refresh,
     selectedResident, drawerOpen, closeDrawer,
@@ -166,6 +168,8 @@ export default function ResidentView({
                 open={drawerOpen}
                 onClose={closeDrawer}
                 resident={selectedResident}
+                role={role}
+                currentResidentId={currentResidentId}
             />
 
             <ResidentForm
