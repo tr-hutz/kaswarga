@@ -33,15 +33,13 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
     }
 
     return (
-        <div className="space-y-1.5">
-            <p className="text-sm font-medium text-foreground">{t('receipt.label')}</p>
-
+        <div className="flex flex-col h-full">
             <div
                 onClick={() => inputRef.current?.click()}
                 className={`
                     relative flex flex-col items-center justify-center
                     border-2 border-dashed rounded-xl overflow-hidden
-                    transition cursor-pointer select-none h-36
+                    transition cursor-pointer select-none flex-1 min-h-[120px]
                     ${file
                         ? 'border-primary/30 bg-primary/5'
                         : 'border-divider hover:border-primary/40 hover:bg-primary/5 bg-canvas'
@@ -69,7 +67,8 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
                         </div>
                     </>
                 ) : (
-                    <div className="flex flex-col items-center gap-1.5 text-subtle py-4">
+                    <div className="flex flex-col items-center gap-1.5 text-subtle py-4 text-center px-4">
+                        <p className="text-sm font-medium text-foreground">{t('receipt.label')}</p>
                         <Icon name="image" size={28} strokeWidth={1.5} />
                         <p className="text-xs font-medium">{t('receipt.clickUpload')}</p>
                         <p className="text-[11px]">{t('receipt.format')}</p>
@@ -78,7 +77,7 @@ function BuktiUpload({ file, onChange }: BuktiUploadProps) {
             </div>
 
             {file && (
-                <p className="text-xs text-muted truncate">{file.name}</p>
+                <p className="text-xs text-muted truncate mt-1">{file.name}</p>
             )}
 
             <input

@@ -95,9 +95,19 @@ export default function ExpenseView({
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
-                <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                    <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
+                </div>
+                {role === 'CHAIR' && pendingCount > 0 && (
+                    <button
+                        onClick={approveAllExpenses}
+                        className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
+                    >
+                        {t('approveAll', { count: pendingCount })}
+                    </button>
+                )}
             </div>
 
             <DataTable
@@ -139,14 +149,6 @@ export default function ExpenseView({
                 }
                 renderActions={
                     <div className="flex items-center gap-2 flex-wrap">
-                        {role === 'CHAIR' && pendingCount > 0 && (
-                            <button
-                                onClick={approveAllExpenses}
-                                className="bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
-                            >
-                                {t('approveAll', { count: pendingCount })}
-                            </button>
-                        )}
                         <button
                             onClick={() => exportExcel(data)}
                             className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"

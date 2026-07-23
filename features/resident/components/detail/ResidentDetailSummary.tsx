@@ -66,7 +66,7 @@ export default function ResidentDetailSummary({ resident }: { resident: any }) {
                             font-medium
                         "
                     >
-                        {resident.phone}
+                        {resident.phone || '-'}
                     </p>
 
                 </div>

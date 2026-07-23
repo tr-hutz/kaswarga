@@ -11,7 +11,7 @@
       "reject": "Tolak",
       "back": "Kembali",
       "close": "Tutup",
-      "import": "Import",
+      "import": "Impor",
       "export": "Ekspor",
       "exportExcel": "Ekspor Excel",
       "exportCsv": "Ekspor CSV",
@@ -506,7 +506,7 @@
       "deleteFailed": "Gagal menghapus warga"
     },
     "import": {
-      "title": "Import Data Warga",
+      "title": "Impor Data Warga",
       "buttonLabel": "Warga",
       "required": "wajib"
     },

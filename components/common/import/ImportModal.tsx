@@ -228,7 +228,7 @@ export default function ImportModal({
                         >
                             {importing
                                 ? tCommon('states.importing')
-                                : `Import ${validRows.length} ${importButtonLabel}`
+                                : `Impor ${validRows.length} ${importButtonLabel}`
                             }
                         </button>
                     )}
