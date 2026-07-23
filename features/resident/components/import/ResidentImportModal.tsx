@@ -24,6 +24,9 @@ interface ResidentImportModalProps {
     onImport:           () => void
     onDownloadTemplate: () => void
     onReset:            () => void
+    progress?:          number
+    processedRows?:     number
+    totalRows?:         number
 }
 
 export default function ResidentImportModal({
@@ -38,6 +41,9 @@ export default function ResidentImportModal({
     onImport,
     onDownloadTemplate,
     onReset,
+    progress,
+    processedRows,
+    totalRows,
 }: ResidentImportModalProps) {
     const t = useTranslations('residents')
 
@@ -71,6 +77,9 @@ export default function ResidentImportModal({
             onDownloadTemplate={onDownloadTemplate}
             onReset={onReset}
             importButtonLabel={t('import.buttonLabel')}
+            progress={progress}
+            processedRows={processedRows}
+            totalRows={totalRows}
         />
     )
 }
