@@ -1,11 +1,12 @@
-﻿'use client'
+'use client'
 
-import { formatRupiah } from '../../../../lib/utils'
-import ExpenseStatusBadge   from '../tables/ExpenseStatusBadge'
-import ExpenseApprovalBar   from '../approval/ExpenseApprovalBar'
+import { formatRupiah }    from '../../../../lib/utils'
+import ExpenseApprovalBar  from '../approval/ExpenseApprovalBar'
 import { useTranslations } from 'next-intl'
-import { hasPermission } from '../../../../lib/permissions/permissions'
-import { PERMISSIONS }   from '../../../../lib/permissions/permission-constants'
+import { hasPermission }   from '../../../../lib/permissions/permissions'
+import { PERMISSIONS }     from '../../../../lib/permissions/permission-constants'
+import Icon                from '@/components/ui/Icon'
+import Ribbadge            from '@/components/ui/Ribbadge'
 
 interface ExpenseDrawerProps {
     open:            boolean
@@ -30,13 +31,16 @@ export default function ExpenseDrawer({
     approvalLoading,
 }: ExpenseDrawerProps) {
 
-    const t = useTranslations('expenses')
+    const t  = useTranslations('expenses')
+    const tc = useTranslations('common')
 
     if (!open || !row) return null
 
     const approvedAtLabel = row.approvedAt
         ? new Date(row.approvedAt).toLocaleString('id-ID')
         : null
+
+    const statusLabel = tc(`expenseStatus.${row.status}` as Parameters<typeof tc>[0])
 
     return (
         <div
@@ -45,99 +49,99 @@ export default function ExpenseDrawer({
             onClick={onClose}
         >
             <div
-                className="bg-surface w-full max-w-lg h-full overflow-y-auto p-6 shadow-default"
+                className="bg-surface w-full max-w-lg h-full overflow-y-auto shadow-default"
                 onClick={e => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex justify-between items-start mb-6">
+                <div className="px-6 py-5 border-b border-divider flex justify-between items-start">
                     <div>
                         <h2 className="text-xl font-semibold text-foreground">{t('drawer.title')}</h2>
-                        {row.receiptNumber && (
-                            <p className="font-mono text-sm text-muted mt-0.5">{row.receiptNumber}</p>
-                        )}
+                        <p className="text-sm text-muted mt-0.5">{t('drawer.subtitle')}</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <ExpenseStatusBadge status={row.status} />
-                        <button
-                            data-testid="close-drawer"
-                            onClick={onClose}
-                            className="text-subtle hover:text-foreground text-xl leading-none"
-                            aria-label="Tutup"
-                        >
-                            ✕
-                        </button>
-                    </div>
+                    <button
+                        data-testid="close-drawer"
+                        onClick={onClose}
+                        className="text-subtle hover:text-foreground mt-0.5"
+                        aria-label="Tutup"
+                    >
+                        <Icon name="x" className="w-5 h-5" />
+                    </button>
                 </div>
 
-                {/* Fields */}
-                <div className="space-y-4">
+                <div className="p-6">
+                    {/* Card */}
+                    <div className="relative overflow-hidden rounded-xl border border-divider bg-canvas pt-8">
+                        <Ribbadge label={statusLabel} status={row.status} variant="filled" />
 
-                    <Field label={t('drawer.date')}      value={row.dateLabel || row.date} />
-                    <Field label={t('drawer.category')}  value={row.category || '—'} />
-                    <Field label={t('drawer.amount')}    value={`Rp ${formatRupiah(row.amount)}`} />
+                        <div className="p-5 space-y-5">
+                            {/* 2-col grid */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <Field label={t('drawer.date')}     value={row.dateLabel || row.date} />
+                                <Field label={t('drawer.category')} value={row.category || '—'} />
+                                <Field label={t('drawer.amount')}   value={`Rp ${formatRupiah(row.amount)}`} />
+                                {row.recipient
+                                    ? <Field label={t('drawer.recipient')} value={row.recipient} />
+                                    : <div />
+                                }
+                                {row.description && (
+                                    <div className="col-span-2">
+                                        <Field label={t('drawer.description')} value={row.description} />
+                                    </div>
+                                )}
+                            </div>
 
-                    {row.recipient && (
-                        <Field label={t('drawer.recipient')} value={row.recipient} />
-                    )}
+                            {/* Status info */}
+                            {row.status === 'approved' && approvedAtLabel && (
+                                <div className="p-4 bg-success/5 rounded-lg border border-success/20 text-sm text-success">
+                                    {t('drawer.approvedAt', { date: approvedAtLabel })}
+                                </div>
+                            )}
 
-                    {row.description && (
-                        <Field label={t('drawer.description')} value={row.description} />
-                    )}
+                            {row.status === 'rejected' && (
+                                <div className="p-4 bg-danger/5 rounded-lg border border-danger/20 text-sm text-danger space-y-1">
+                                    <p className="font-medium">{t('drawer.alasanDitolak')}</p>
+                                    {row.rejectionNote && (
+                                        <p className="text-danger/80">{row.rejectionNote}</p>
+                                    )}
+                                </div>
+                            )}
 
+                            {/* Nota */}
+                            {row.receiptUrl && (
+                                <div>
+                                    <p className="text-sm text-muted mb-2">{t('drawer.receipt')}</p>
+                                    {row.receiptUrl.endsWith('.pdf') ? (
+                                        <a
+                                            href={row.receiptUrl}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="text-primary text-sm underline"
+                                        >
+                                            {t('drawer.receiptPdf')}
+                                        </a>
+                                    ) : (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img
+                                            src={row.receiptUrl}
+                                            alt="Nota"
+                                            className="rounded-lg border border-divider w-full object-contain"
+                                        />
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Approval bar — CHAIR only, pending only */}
+                            {hasPermission(role, PERMISSIONS.APPROVE_EXPENSES) && (
+                                <ExpenseApprovalBar
+                                    row={row}
+                                    onApprove={onApprove}
+                                    onReject={onReject}
+                                    loading={approvalLoading}
+                                />
+                            )}
+                        </div>
+                    </div>
                 </div>
-
-                {/* Approval / Rejection info */}
-                {row.status === 'approved' && approvedAtLabel && (
-                    <div className="mt-6 p-4 bg-success/5 rounded-lg border border-success/20 text-sm text-success">
-                        {t('drawer.approvedAt', { date: approvedAtLabel })}
-                    </div>
-                )}
-
-                {row.status === 'rejected' && (
-                    <div className="mt-6 p-4 bg-danger/5 rounded-lg border border-danger/20 text-sm text-danger space-y-1">
-                        <p className="font-medium">{t('drawer.rejected')}</p>
-                        {row.rejectionNote && (
-                            <p className="text-danger/80">{row.rejectionNote}</p>
-                        )}
-                    </div>
-                )}
-
-                {/* Nota */}
-                {row.receiptUrl && (
-                    <div className="mt-6">
-                        <p className="text-sm text-muted mb-2">{t('drawer.receipt')}</p>
-                        {row.receiptUrl.endsWith('.pdf') ? (
-                            <a
-                                href={row.receiptUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-primary text-sm underline"
-                            >
-                                {t('drawer.receiptPdf')}
-                            </a>
-                        ) : (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                                src={row.receiptUrl}
-                                alt="Nota"
-                                className="rounded-lg border border-divider w-full object-contain"
-                            />
-                        )}
-                    </div>
-                )}
-
-                {/* Approval bar — CHAIR only, pending only */}
-                {hasPermission(role, PERMISSIONS.APPROVE_EXPENSES) && (
-                    <div className="mt-6">
-                        <ExpenseApprovalBar
-                            row={row}
-                            onApprove={onApprove}
-                            onReject={onReject}
-                            loading={approvalLoading}
-                        />
-                    </div>
-                )}
-
             </div>
         </div>
     )

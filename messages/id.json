@@ -233,6 +233,7 @@
     },
     "drawer": {
       "title": "Detail Aktivitas",
+      "subtitle": "Informasi detail aktivitas sistem",
       "close": "Tutup",
       "actor": "Pelaku",
       "action": "Aksi",
@@ -483,7 +484,8 @@
       "saveFailed": "Gagal menyimpan warga"
     },
     "drawer": {
-      "title": "Detail Warga"
+      "title": "Detail Warga",
+      "subtitle": "Informasi detail dan histori pembayaran warga"
     },
     "pending": {
       "title": "Permintaan Bergabung",
@@ -629,6 +631,7 @@
     },
     "drawer": {
       "title": "Detail Pengeluaran",
+      "subtitle": "Informasi detail pengeluaran RT",
       "date": "Tanggal",
       "category": "Kategori",
       "amount": "Nominal",
@@ -636,6 +639,7 @@
       "description": "Deskripsi",
       "approvedAt": "Disetujui pada {date}",
       "rejected": "Ditolak",
+      "alasanDitolak": "Alasan Ditolak",
       "receipt": "Nota",
       "receiptPdf": "Buka Nota (PDF)"
     },
