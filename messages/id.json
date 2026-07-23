@@ -510,7 +510,9 @@
     "import": {
       "title": "Impor Data Warga",
       "buttonLabel": "Warga",
-      "required": "wajib"
+      "required": "wajib",
+      "successMessage": "Berhasil mengimpor {inserted} warga",
+      "skippedSuffix": "warga dilewati (sudah ada)"
     },
     "clusterSubtitle": "Data warga cluster",
     "analytics": {
@@ -632,6 +634,7 @@
     "drawer": {
       "title": "Detail Pengeluaran",
       "subtitle": "Informasi detail pengeluaran RT",
+      "receiptNumber": "Nomor Bukti",
       "date": "Tanggal",
       "category": "Kategori",
       "amount": "Nominal",

@@ -117,28 +117,64 @@ export async function POST(req: Request) {
             if (existingResident) {
                 residentId = existingResident.id
             } else {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const residentData: any = {
-                    rt_id:  invite.rt_id,
-                    name:   displayName,
-                    email:  user.email,
-                    active: true,
+                // Claim an imported resident at the same address if one exists and is not yet linked
+                let claimed = false
+                if (invite.role === 'RESIDENT' && (regReq as any)?.block && (regReq as any)?.house_number) {
+                    const { data: importedResident } = await supabaseAdmin
+                        .from('residents')
+                        .select('id')
+                        .eq('rt_id', invite.rt_id)
+                        .ilike('block', (regReq as any).block)
+                        .ilike('house_number', (regReq as any).house_number)
+                        .maybeSingle()
+
+                    if (importedResident) {
+                        const { data: linkedMembership } = await supabaseAdmin
+                            .from('memberships')
+                            .select('id')
+                            .eq('resident_id', importedResident.id)
+                            .maybeSingle()
+
+                        if (!linkedMembership) {
+                            await supabaseAdmin
+                                .from('residents')
+                                .update({
+                                    name:  displayName,
+                                    email: user.email,
+                                    phone: (regReq as any).phone || null,
+                                })
+                                .eq('id', importedResident.id)
+
+                            residentId = importedResident.id
+                            claimed = true
+                        }
+                    }
                 }
-                if (invite.role === 'RESIDENT' && regReq) {
-                    residentData.block        = (regReq as any).block        || null
-                    residentData.house_number = (regReq as any).house_number || null
-                    residentData.phone        = (regReq as any).phone        || null
+
+                if (!claimed) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const residentData: any = {
+                        rt_id:  invite.rt_id,
+                        name:   displayName,
+                        email:  user.email,
+                        active: true,
+                    }
+                    if (invite.role === 'RESIDENT' && regReq) {
+                        residentData.block        = (regReq as any).block        || null
+                        residentData.house_number = (regReq as any).house_number || null
+                        residentData.phone        = (regReq as any).phone        || null
+                    }
+                    const { data: resident, error: residentError } = await supabaseAdmin
+                        .from('residents')
+                        .insert(residentData)
+                        .select('id')
+                        .single()
+                    if (residentError) {
+                        console.error('[activate] resident error:', residentError)
+                        return NextResponse.json({ error: residentError.message }, { status: 500 })
+                    }
+                    residentId = resident.id
                 }
-                const { data: resident, error: residentError } = await supabaseAdmin
-                    .from('residents')
-                    .insert(residentData)
-                    .select('id')
-                    .single()
-                if (residentError) {
-                    console.error('[activate] resident error:', residentError)
-                    return NextResponse.json({ error: residentError.message }, { status: 500 })
-                }
-                residentId = resident.id
             }
         }
 

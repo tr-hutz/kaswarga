@@ -55,6 +55,7 @@ Legend
 | Create Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
 | Update Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
 | Delete Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
+| Import | ❌ | ✅ | ✅ | ❌ | ❌ |
 
 ---
 

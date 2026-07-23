@@ -10,6 +10,7 @@ import ResidentForm         from './components/forms/ResidentForm'
 import ResidentImportModal  from './components/import/ResidentImportModal'
 import { buildResidentColumns, type ResidentRow } from './components/ResidentColumns'
 import ExportDropdown from '@/components/ui/ExportDropdown'
+import Icon from '@/components/ui/Icon'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 interface Props {
@@ -140,8 +141,9 @@ export default function ResidentView({
                             <>
                                 <button
                                     onClick={openImport}
-                                    className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
+                                    className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
                                 >
+                                    <Icon name="upload" size={15} />
                                     {tc('actions.import')}
                                 </button>
                                 <button
