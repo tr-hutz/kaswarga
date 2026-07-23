@@ -755,6 +755,16 @@
       "title": "Permintaan Pendaftaran RT"
     }
   },
+  "maintenance": {
+    "title": "Sedang Dalam Pemeliharaan",
+    "description": "Sistem sedang dalam proses pemeliharaan. Kami akan segera kembali.",
+    "notice": "Terima kasih atas kesabaran Anda."
+  },
+  "comingSoon": {
+    "title": "Segera Hadir",
+    "description": "Fitur ini sedang dalam pengembangan dan akan segera tersedia.",
+    "back": "Kembali ke Beranda"
+  },
   "notFound": {
     "title": "Halaman Tidak Ditemukan",
     "description": "Halaman yang kamu cari tidak ada atau telah dipindahkan.",
