@@ -564,6 +564,22 @@
     },
     "approveAll": "Setujui Semua ({count})",
     "approveAllSuccess": "Berhasil menyetujui {count} pembayaran impor",
+    "rejectAll": {
+      "button": "Tolak",
+      "option": "Tolak Semua",
+      "title": "Tolak Semua Pembayaran Impor",
+      "description": "Berikan alasan penolakan untuk semua pembayaran impor yang menunggu.",
+      "placeholder": "Masukkan alasan penolakan...",
+      "confirmLabel": "Tolak Semua"
+    },
+    "rejectAllSuccess": "Berhasil menolak {count} pembayaran impor",
+    "deleteAll": {
+      "option": "Hapus Semua",
+      "title": "Hapus Semua Pembayaran Impor",
+      "confirm": "Apakah kamu yakin ingin menghapus semua pembayaran impor yang menunggu? Tindakan ini tidak dapat dibatalkan.",
+      "confirmLabel": "Hapus Semua"
+    },
+    "deleteAllSuccess": "Berhasil menghapus {count} pembayaran impor",
     "import": {
       "title": "Impor Data Pembayaran",
       "buttonLabel": "Pembayaran",

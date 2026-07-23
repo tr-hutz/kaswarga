@@ -5,6 +5,9 @@ import { DataTable }            from '@/components/common/data-table'
 import PaymentDetailDrawer      from './components/details/PaymentDetailDrawer'
 import PaymentImportModal       from './components/import/PaymentImportModal'
 import ExportDropdown           from '@/components/ui/ExportDropdown'
+import DangerDropdown           from '@/components/ui/DangerDropdown'
+import ConfirmDialog            from '@/components/ui/ConfirmDialog'
+import Icon                     from '@/components/ui/Icon'
 import type { Column, QueryOptions, PageResult } from '@/lib/types/query'
 import type { ConfirmationRow } from './hooks/usePaymentData'
 
@@ -50,6 +53,13 @@ interface Props {
     importedPendingCount: number
     approveAllImported:   () => void
     approveAllLoading:    boolean
+    // reject / delete all imported
+    rejectAllImported:    () => void
+    deleteAllImported:    () => void
+    confirmDeleteAll:     () => void
+    cancelDeleteAll:      () => void
+    deleteAllConfirmOpen: boolean
+    bulkActionLoading:    boolean
 }
 
 export default function PaymentView({
@@ -63,6 +73,9 @@ export default function PaymentView({
     importRows, importFileName, importFileRef,
     importing, importError, handleFile, handleImport, downloadTemplate, resetImport,
     importedPendingCount, approveAllImported, approveAllLoading,
+    rejectAllImported, deleteAllImported,
+    confirmDeleteAll, cancelDeleteAll, deleteAllConfirmOpen,
+    bulkActionLoading,
 }: Props) {
     const canManage = role === 'TREASURER' || role === 'ADMIN'
 
@@ -74,13 +87,23 @@ export default function PaymentView({
                     <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
                 </div>
                 {canManage && importedPendingCount > 0 && (
-                    <button
-                        onClick={approveAllImported}
-                        disabled={approveAllLoading}
-                        className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition disabled:opacity-60"
-                    >
-                        {t('approveAll', { count: importedPendingCount })}
-                    </button>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        <DangerDropdown
+                            label={t('rejectAll.button')}
+                            disabled={bulkActionLoading || approveAllLoading}
+                            items={[
+                                { label: t('rejectAll.option'), iconName: 'x-circle', onClick: rejectAllImported },
+                                { label: t('deleteAll.option'), iconName: 'trash-2',  onClick: deleteAllImported },
+                            ]}
+                        />
+                        <button
+                            onClick={approveAllImported}
+                            disabled={approveAllLoading || bulkActionLoading}
+                            className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition disabled:opacity-60"
+                        >
+                            {t('approveAll', { count: importedPendingCount })}
+                        </button>
+                    </div>
                 )}
             </div>
 
@@ -119,8 +142,9 @@ export default function PaymentView({
                             {canManage && (
                                 <button
                                     onClick={openImport}
-                                    className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
+                                    className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
                                 >
+                                    <Icon name="upload" size={15} />
                                     {tc('actions.import')}
                                 </button>
                             )}
@@ -151,6 +175,16 @@ export default function PaymentView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
+            />
+
+            <ConfirmDialog
+                open={deleteAllConfirmOpen}
+                title={t('deleteAll.title')}
+                message={t('deleteAll.confirm')}
+                confirmLabel={t('deleteAll.confirmLabel')}
+                cancelLabel={tc('actions.cancel')}
+                onConfirm={confirmDeleteAll}
+                onCancel={cancelDeleteAll}
             />
         </div>
     )
