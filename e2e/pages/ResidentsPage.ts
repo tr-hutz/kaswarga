@@ -82,6 +82,18 @@ export class ResidentsPage {
     await row.getByRole('button', { name: 'Setujui' }).click()
   }
 
+  importButton(): Locator {
+    return this.page.getByRole('button', { name: /Impor/i })
+  }
+
+  importModal(): Locator {
+    return this.page.locator('.fixed.inset-0').filter({ hasText: /Impor Data Warga/i })
+  }
+
+  downloadTemplateButton(): Locator {
+    return this.importModal().getByRole('button', { name: /Unduh Template/i })
+  }
+
   async rejectPendingRequest(index = 0) {
     this.page.on('dialog', dialog => dialog.accept())
     const rows = this.pendingRows()

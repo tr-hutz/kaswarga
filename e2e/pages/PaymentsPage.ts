@@ -59,9 +59,31 @@ export class PaymentsPage {
     await expect(this.drawer()).toBeVisible()
   }
 
+  /** Closes via data-testid="close-drawer" (Icon X button — no visible ✕ text since drawer refactor) */
   async closeDrawer() {
     await this.closeDrawerButton().click()
     await expect(this.drawer()).not.toBeVisible()
+  }
+
+  importButton(): Locator {
+    return this.page.getByRole('button', { name: /Impor/i })
+  }
+
+  importModal(): Locator {
+    return this.page.locator('.fixed.inset-0').filter({ hasText: /Impor Data Pembayaran/i })
+  }
+
+  downloadTemplateButton(): Locator {
+    return this.importModal().getByRole('button', { name: /Unduh Template/i })
+  }
+
+  approveAllImportedButton(): Locator {
+    return this.page.getByRole('button', { name: /Setujui Semua/i })
+  }
+
+  dangerDropdownTrigger(): Locator {
+    // The red "Tolak" dropdown trigger — outside any drawer
+    return this.page.locator('button.bg-danger', { hasText: /Tolak/ }).first()
   }
 
   async approvePayment() {

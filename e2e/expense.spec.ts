@@ -223,3 +223,26 @@ test.describe('approve / reject expense (admin — buttons absent)', () => {
     await expect(page).toHaveURL(/\/expenses/)
   })
 })
+
+// ---------------------------------------------------------------------------
+// Treasurer: expense drawer fields
+// ---------------------------------------------------------------------------
+
+test.describe('expense drawer fields (treasurer)', () => {
+  test.use({ storageState: path.join(__dirname, '.auth/treasurer.json') })
+
+  test('"Nomor Bukti" field label is visible in expense drawer', async ({ page }) => {
+    const expenses = new ExpensesPage(page)
+    await expenses.goto()
+
+    const rowCount = await expenses.tableRows().count()
+    if (rowCount === 0) {
+      test.skip()
+      return
+    }
+
+    await expenses.clickRow(0)
+    await expect(page.getByText(/Nomor Bukti/i)).toBeVisible()
+    await expenses.closeDrawer()
+  })
+})

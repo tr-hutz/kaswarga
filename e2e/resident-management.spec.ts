@@ -149,3 +149,57 @@ test.describe('resident pending requests (admin)', () => {
     await expect(page).toHaveURL(/\/residents/)
   })
 })
+
+// ---------------------------------------------------------------------------
+// Admin: resident import
+// ---------------------------------------------------------------------------
+
+test.describe('resident import (admin)', () => {
+  test.use({ storageState: path.join(__dirname, '.auth/session.json') })
+
+  test.beforeAll(async ({ browser }: { browser: Browser }) => {
+    await refreshAdminSession(browser)
+  })
+
+  test('import button is visible for admin', async ({ page }) => {
+    const residents = new ResidentsPage(page)
+    await residents.goto()
+
+    await expect(residents.importButton()).toBeVisible()
+  })
+
+  test('import modal opens and has expected elements', async ({ page }) => {
+    const residents = new ResidentsPage(page)
+    await residents.goto()
+
+    await residents.importButton().click()
+    await expect(residents.importModal()).toBeVisible()
+    await expect(residents.downloadTemplateButton()).toBeVisible()
+  })
+
+  test('import modal can be closed', async ({ page }) => {
+    const residents = new ResidentsPage(page)
+    await residents.goto()
+
+    await residents.importButton().click()
+    await expect(residents.importModal()).toBeVisible()
+
+    await residents.importModal().getByRole('button', { name: /Batal|Tutup/i }).last().click()
+    await expect(residents.importModal()).not.toBeVisible()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Resident: import button must not be visible
+// ---------------------------------------------------------------------------
+
+test.describe('resident import button not visible for non-managers', () => {
+  test.use({ storageState: path.join(__dirname, '.auth/resident.json') })
+
+  test('import button is not visible for resident role', async ({ page }) => {
+    const residents = new ResidentsPage(page)
+    await residents.goto()
+
+    expect(await residents.importButton().count()).toBe(0)
+  })
+})
