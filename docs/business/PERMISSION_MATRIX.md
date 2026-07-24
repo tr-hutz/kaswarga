@@ -91,6 +91,8 @@ Legend
 | Create | ❌ | ❌ | ❌ | ✅ | ❌ |
 | Update | ❌ | ❌ | ❌ | ✅ | ❌ |
 | Delete | ❌ | ❌ | ❌ | ✅ | ❌ |
+| Approve | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Reject | ❌ | ✅ | ❌ | ❌ | ❌ |
 
 ---
 

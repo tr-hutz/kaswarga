@@ -186,10 +186,10 @@ test.describe('navigation visibility — RESIDENT', () => {
     await expect(page.getByRole('link', { name: 'Buku Kas' })).toBeVisible()
   })
 
-  test('RESIDENT does NOT see Warga nav item', async ({ page }) => {
+  test('RESIDENT sees Warga nav item', async ({ page }) => {
     await page.goto('/')
     await waitForShell(page, /\//)
-    await expect(page.getByRole('link', { name: 'Warga' })).not.toBeVisible()
+    await expect(page.getByRole('link', { name: 'Warga' })).toBeVisible()
   })
 
   test('RESIDENT does NOT see RT management nav items', async ({ page }) => {
@@ -239,11 +239,9 @@ test.describe('navigation visibility — TREASURER', () => {
     await expect(page.getByRole('link', { name: 'Buku Kas' })).toBeVisible()
   })
 
-  test('TREASURER does NOT see Warga management (MANAGE_RESIDENTS not granted)', async ({ page }) => {
+  test('TREASURER sees Warga nav item (VIEW_RESIDENTS granted)', async ({ page }) => {
     await page.goto('/')
     await waitForShell(page, /\//)
-    // TREASURER has VIEW_RESIDENTS (see Warga link) but not MANAGE_RESIDENTS
-    // Nav shows Warga link — this test verifies TREASURER can at least navigate there
     await expect(page.getByRole('link', { name: 'Warga' })).toBeVisible()
   })
 })

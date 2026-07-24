@@ -120,8 +120,9 @@ test.describe('expense drawer (admin)', () => {
 
     await expenses.clickRow(0)
 
-    // Drawer shows "Detail Pengeluaran"
-    await expect(page.getByText(/Detail Pengeluaran/i)).toBeVisible({ timeout: 5000 })
+    // Scope to drawer to avoid false matches from other page elements
+    await expect(expenses.drawer()).toBeVisible({ timeout: 5000 })
+    await expect(expenses.drawer().getByText(/Detail Pengeluaran/i)).toBeVisible()
   })
 
   test('closing the drawer with ✕ hides it', async ({ page }) => {
@@ -136,92 +137,10 @@ test.describe('expense drawer (admin)', () => {
 
     await expenses.clickRow(0)
     await page.locator('[data-testid="close-drawer"]').click()
-    await expect(page.getByText(/Detail Pengeluaran/i)).not.toBeVisible({ timeout: 3000 })
-  })
-})
-
-// ---------------------------------------------------------------------------
-// Admin: view expense drawer (approve/reject buttons must be absent for ADMIN)
-// NOTE: Expense approval requires CHAIR role. A chair.json session must be
-//       created via setup:chair once a CHAIR account exists in seed data.
-// ---------------------------------------------------------------------------
-
-test.describe('approve / reject expense (admin — buttons absent)', () => {
-  test.use({ storageState: path.join(__dirname, '.auth/session.json') })
-
-  test.beforeAll(async ({ browser }: { browser: Browser }) => {
-    await refreshAdminSession(browser)
+    await expect(expenses.drawer()).not.toBeVisible({ timeout: 3000 })
   })
 
-  test('approve first pending expense (if data exists)', async ({ page }) => {
-    const expenses = new ExpensesPage(page)
-    await expenses.goto()
-
-    const rowCount = await expenses.tableRows().count()
-    if (rowCount === 0) {
-      test.skip()
-      return
-    }
-
-    // Open each row until we find one with the approve button
-    let approved = false
-    for (let i = 0; i < Math.min(rowCount, 5); i++) {
-      await expenses.clickRow(i)
-      const approveBtn = page.getByRole('button', { name: 'Setujui' })
-      if (await approveBtn.count() > 0) {
-        await approveBtn.click()
-        approved = true
-        break
-      }
-      await page.locator('[data-testid="close-drawer"]').click()
-    }
-
-    if (!approved) {
-      test.skip()
-      return
-    }
-
-    await expect(page).toHaveURL(/\/expenses/)
-  })
-
-  test('reject pending expense with reason (if data exists)', async ({ page }) => {
-    const expenses = new ExpensesPage(page)
-    await expenses.goto()
-
-    const rowCount = await expenses.tableRows().count()
-    if (rowCount === 0) {
-      test.skip()
-      return
-    }
-
-    let rejected = false
-    for (let i = 0; i < Math.min(rowCount, 5); i++) {
-      await expenses.clickRow(i)
-      const rejectBtn = page.getByRole('button', { name: 'Tolak' })
-      if (await rejectBtn.count() > 0) {
-        await rejectBtn.click()
-
-        // Reject mode: textarea + "Konfirmasi Tolak" button
-        const textarea = page.locator('textarea').last()
-        if (await textarea.isVisible()) {
-          await textarea.fill('Alasan penolakan dari e2e test')
-        }
-
-        const confirmBtn = page.getByRole('button', { name: 'Konfirmasi Tolak' })
-        await confirmBtn.click()
-        rejected = true
-        break
-      }
-      await page.locator('[data-testid="close-drawer"]').click()
-    }
-
-    if (!rejected) {
-      test.skip()
-      return
-    }
-
-    await expect(page).toHaveURL(/\/expenses/)
-  })
+  // Approve/reject buttons are CHAIR-only — covered in permissions.spec.ts
 })
 
 // ---------------------------------------------------------------------------
@@ -242,7 +161,8 @@ test.describe('expense drawer fields (treasurer)', () => {
     }
 
     await expenses.clickRow(0)
-    await expect(page.getByText(/Nomor Bukti/i)).toBeVisible()
+    // Scope to drawer — "Nomor Bukti" also appears in the expense form modal
+    await expect(expenses.drawer().getByText(/Nomor Bukti/i)).toBeVisible()
     await expenses.closeDrawer()
   })
 })
