@@ -1,4 +1,4 @@
-﻿import { NextResponse }      from 'next/server'
+import { NextResponse }      from 'next/server'
 import { cookies }            from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { supabaseAdmin }      from '@/lib/supabase-admin'
@@ -12,6 +12,10 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 |
 | Bulk-inserts resident rows for the caller's RT.
 | Restricted to chair and admin.
+|
+| Dedup strategy: fetch all existing (block, house_number) pairs for this
+| RT in one query, filter in memory, then bulk-insert the remainder in one
+| query. This avoids N sequential round-trips to Supabase.
 |--------------------------------------------------------------------------
 */
 
@@ -56,7 +60,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'No rows provided' }, { status: 400 })
         }
 
-        const toInsert = rows
+        const validRows = rows
             .filter(r => r.name?.trim())
             .map(r => ({
                 rt_id:        membership.rt_id!,
@@ -67,35 +71,42 @@ export async function POST(req: Request) {
                 active:       true,
             }))
 
-        let inserted = 0
-        let skipped  = 0
-
-        for (const r of toInsert) {
-            if (r.block && r.house_number) {
-                const { data: existing } = await supabaseAdmin
-                    .from('residents')
-                    .select('id')
-                    .eq('rt_id', r.rt_id)
-                    .ilike('block', r.block)
-                    .ilike('house_number', r.house_number)
-                    .maybeSingle()
-
-                if (existing) {
-                    skipped++
-                    continue
-                }
-            }
-
-            const { error: insertError } = await supabaseAdmin
-                .from('residents')
-                .insert(r)
-
-            if (insertError) throw insertError
-            inserted++
+        if (validRows.length === 0) {
+            return NextResponse.json({ error: 'No valid rows to insert' }, { status: 400 })
         }
 
-        if (inserted === 0 && skipped === 0) {
-            return NextResponse.json({ error: 'No valid rows to insert' }, { status: 400 })
+        // 1. Fetch all existing residents for this RT in ONE query
+        const { data: existingResidents } = await supabaseAdmin
+            .from('residents')
+            .select('block, house_number')
+            .eq('rt_id', membership.rt_id)
+
+        // 2. Build dedup set in memory — key: `${block.lower}:${house.lower}`
+        const existingKeys = new Set(
+            (existingResidents || [])
+                .filter(r => r.block && r.house_number)
+                .map(r =>
+                    `${String(r.block).toLowerCase().trim()}:${String(r.house_number).toLowerCase().trim()}`
+                )
+        )
+
+        // 3. Filter out duplicates in memory
+        const toInsert = validRows.filter(r => {
+            if (!r.block || !r.house_number) return true
+            return !existingKeys.has(`${r.block.toLowerCase()}:${r.house_number.toLowerCase()}`)
+        })
+
+        const skipped  = validRows.length - toInsert.length
+        let   inserted = 0
+
+        // 4. Bulk-insert all new rows in ONE query
+        if (toInsert.length > 0) {
+            const { error: insertError } = await supabaseAdmin
+                .from('residents')
+                .insert(toInsert)
+
+            if (insertError) throw insertError
+            inserted = toInsert.length
         }
 
         await supabaseAdmin.from('activity_logs').insert({
