@@ -1,7 +1,6 @@
 'use client'
 
 import Icon        from '@/components/ui/Icon'
-import ProgressBar from '@/components/ui/ProgressBar'
 import { useTranslations } from 'next-intl'
 import type { ReactNode, RefObject } from 'react'
 
@@ -17,16 +16,12 @@ interface ImportModalProps {
     rows: any[]
     fileName: string | null
     fileRef: RefObject<HTMLInputElement | null>
-    importing: boolean
     error: string
     onFile: (file: File | undefined) => void
     onImport: () => void
     onDownloadTemplate: () => void
     onReset: () => void
     importButtonLabel: string
-    progress?:      number
-    processedRows?: number
-    totalRows?:     number
 }
 
 export default function ImportModal({
@@ -39,16 +34,12 @@ export default function ImportModal({
     rows,
     fileName,
     fileRef,
-    importing,
     error,
     onFile,
     onImport,
     onDownloadTemplate,
     onReset,
     importButtonLabel,
-    progress,
-    processedRows,
-    totalRows,
 }: ImportModalProps) {
 
     const t = useTranslations('import')
@@ -73,8 +64,7 @@ export default function ImportModal({
                     </div>
                     <button
                         onClick={onClose}
-                        disabled={importing}
-                        className="p-1.5 rounded-lg hover:bg-canvas text-subtle hover:text-foreground disabled:opacity-40"
+                        className="p-1.5 rounded-lg hover:bg-canvas text-subtle hover:text-foreground"
                     >
                         <Icon name="x" size={18} />
                     </button>
@@ -152,8 +142,7 @@ export default function ImportModal({
                                 <button
                                     type="button"
                                     onClick={onReset}
-                                    disabled={importing}
-                                    className="text-xs text-subtle hover:text-foreground underline shrink-0 disabled:opacity-40"
+                                    className="text-xs text-subtle hover:text-foreground underline shrink-0"
                                 >
                                     {t('changeFile')}
                                 </button>
@@ -224,34 +213,19 @@ export default function ImportModal({
                     <button
                         type="button"
                         onClick={onClose}
-                        disabled={importing}
-                        className="border border-divider rounded-lg px-4 py-2 text-sm text-muted hover:bg-canvas disabled:opacity-50"
+                        className="border border-divider rounded-lg px-4 py-2 text-sm text-muted hover:bg-canvas"
                     >
                         {tCommon('actions.cancel')}
                     </button>
                     {hasFile && (
-                        importing ? (
-                            <div className="flex-1 max-w-xs">
-                                <ProgressBar
-                                    value={progress ?? 0}
-                                    label={tCommon('states.importing')}
-                                    sublabel={
-                                        (totalRows ?? 0) > 0
-                                            ? `${processedRows ?? 0} / ${totalRows ?? 0} baris`
-                                            : undefined
-                                    }
-                                />
-                            </div>
-                        ) : (
-                            <button
-                                type="button"
-                                onClick={onImport}
-                                disabled={validRows.length === 0}
-                                className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50"
-                            >
-                                {`Impor ${validRows.length} ${importButtonLabel}`}
-                            </button>
-                        )
+                        <button
+                            type="button"
+                            onClick={onImport}
+                            disabled={validRows.length === 0}
+                            className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50"
+                        >
+                            {`Impor ${validRows.length} ${importButtonLabel}`}
+                        </button>
                     )}
                 </div>
 

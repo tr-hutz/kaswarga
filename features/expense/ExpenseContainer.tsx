@@ -6,14 +6,11 @@ import { useExpenseData }       from './hooks/useExpenseData'
 import { useExpenseRealtime }   from './hooks/useExpenseRealtime'
 import { useExpenseActions }    from './hooks/useExpenseActions'
 import { useExpenseCategories } from './hooks/useExpenseCategory'
-import { useToast }             from '@/components/ui/ToastProvider'
 import { useAuth }              from '@/lib/auth/useAuth'
 
 export default function ExpenseContainer() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { role } = (useAuth() as any) ?? {}
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { toast } = (useToast() as any) ?? {}
 
     const { query, setPage, setPageSize, setSearch, setSort, setFilter } =
         useDataTable({}, 'expenses')
@@ -25,9 +22,8 @@ export default function ExpenseContainer() {
 
     const { error: importError, ...actions } = useExpenseActions({
         onReload:          reload,
-        onImportSuccess:   (inserted: number) => {
+        onImportSuccess:   () => {
             reload()
-            toast({ message: `${inserted} expenses imported successfully.`, type: 'success' })
         },
         onApprovalSuccess: () => { reload() },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

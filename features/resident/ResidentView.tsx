@@ -57,11 +57,7 @@ interface Props {
     rows:             unknown[]
     fileName:         string | null
     fileRef:          React.RefObject<HTMLInputElement>
-    importing:        boolean
     importError:      string
-    progress?:        number
-    processedRows?:   number
-    totalRows?:       number
     handleFile:       (file: File | undefined) => void
     handleImport:     () => void
     downloadTemplate: () => void
@@ -79,8 +75,7 @@ export default function ResidentView({
     exportCSV, exportExcel,
     importOpen, openImport, closeImport,
     rows: importRows, fileName: importFileName, fileRef: importFileRef,
-    importing, importError,
-    progress, processedRows, totalRows,
+    importError,
     handleFile, handleImport, downloadTemplate, resetImport,
 }: Props) {
     const t  = useTranslations('residents')
@@ -184,15 +179,11 @@ export default function ResidentView({
                 rows={importRows}
                 fileName={importFileName}
                 fileRef={importFileRef}
-                importing={importing}
                 error={importError}
                 onFile={handleFile}
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
-                progress={progress}
-                processedRows={processedRows}
-                totalRows={totalRows}
             />
         </div>
     )

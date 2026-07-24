@@ -19,15 +19,11 @@ interface ExpenseImportModalProps {
     rows:               any[]
     fileName:           string | null
     fileRef:            RefObject<HTMLInputElement>
-    importing:          boolean
     error:              string
     onFile:             (file: File | undefined) => void
     onImport:           () => void
     onDownloadTemplate: () => void
     onReset:            () => void
-    progress?:          number
-    processedRows?:     number
-    totalRows?:         number
 }
 
 export default function ExpenseImportModal({
@@ -36,15 +32,11 @@ export default function ExpenseImportModal({
     rows,
     fileName,
     fileRef,
-    importing,
     error,
     onFile,
     onImport,
     onDownloadTemplate,
     onReset,
-    progress,
-    processedRows,
-    totalRows,
 }: ExpenseImportModalProps) {
     const t = useTranslations('expenses')
 
@@ -73,16 +65,12 @@ export default function ExpenseImportModal({
             rows={rows}
             fileName={fileName}
             fileRef={fileRef}
-            importing={importing}
             error={error}
             onFile={onFile}
             onImport={onImport}
             onDownloadTemplate={onDownloadTemplate}
             onReset={onReset}
             importButtonLabel={t('import.buttonLabel')}
-            progress={progress}
-            processedRows={processedRows}
-            totalRows={totalRows}
         />
     )
 }

@@ -43,11 +43,7 @@ interface Props {
     importRows:      unknown[]
     importFileName:  string | null
     importFileRef:   React.RefObject<HTMLInputElement | null>
-    importing:       boolean
     importError:     string
-    progress?:       number
-    processedRows?:  number
-    totalRows?:      number
     handleFile:      (file: File | undefined) => void
     handleImport:    () => void
     downloadTemplate: () => void
@@ -74,8 +70,7 @@ export default function PaymentView({
     onExportCSV, onExportExcel, role,
     importOpen, openImport, closeImport,
     importRows, importFileName, importFileRef,
-    importing, importError, handleFile, handleImport, downloadTemplate, resetImport,
-    progress, processedRows, totalRows,
+    importError, handleFile, handleImport, downloadTemplate, resetImport,
     importedPendingCount, approveAllImported, approveAllLoading,
     rejectAllImported, deleteAllImported,
     confirmDeleteAll, cancelDeleteAll, deleteAllConfirmOpen,
@@ -173,15 +168,11 @@ export default function PaymentView({
                 rows={importRows}
                 fileName={importFileName}
                 fileRef={importFileRef}
-                importing={importing}
                 error={importError}
                 onFile={handleFile}
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
-                progress={progress}
-                processedRows={processedRows}
-                totalRows={totalRows}
             />
 
             <ConfirmDialog

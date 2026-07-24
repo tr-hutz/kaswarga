@@ -19,21 +19,16 @@ interface PaymentImportModalProps {
     rows:               any[]
     fileName:           string | null
     fileRef:            RefObject<HTMLInputElement | null>
-    importing:          boolean
     error:              string
     onFile:             (file: File | undefined) => void
     onImport:           () => void
     onDownloadTemplate: () => void
     onReset:            () => void
-    progress?:          number
-    processedRows?:     number
-    totalRows?:         number
 }
 
 export default function PaymentImportModal({
     open, onClose, rows, fileName, fileRef,
-    importing, error, onFile, onImport, onDownloadTemplate, onReset,
-    progress, processedRows, totalRows,
+    error, onFile, onImport, onDownloadTemplate, onReset,
 }: PaymentImportModalProps) {
     const t = useTranslations('payments')
 
@@ -68,16 +63,12 @@ export default function PaymentImportModal({
             rows={rows}
             fileName={fileName}
             fileRef={fileRef}
-            importing={importing}
             error={error}
             onFile={onFile}
             onImport={onImport}
             onDownloadTemplate={onDownloadTemplate}
             onReset={onReset}
             importButtonLabel={t('import.buttonLabel')}
-            progress={progress}
-            processedRows={processedRows}
-            totalRows={totalRows}
         />
     )
 }

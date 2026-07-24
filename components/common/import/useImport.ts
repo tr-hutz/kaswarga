@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import * as XLSX from 'xlsx'
+import { useToast } from '@/components/ui/ToastProvider'
 
 function makeNormalizer(aliases: Record<string, string>) {
     return function normalizeKey(raw: string) {
@@ -33,7 +34,7 @@ export function useImport({
     templateData,
     templateSheetName = 'Data',
     templateFileName,
-    batchSize = 150,
+    entityLabel,
     onSuccess,
 }: {
     columnAliases?: Record<string, string>
@@ -44,19 +45,16 @@ export function useImport({
     templateData: any[]
     templateSheetName?: string
     templateFileName: string
-    batchSize?: number
+    entityLabel: string
     onSuccess?: (inserted: number, skipped?: number) => void
 }) {
+    const { toast, dismiss } = useToast()
     const normalizeKey = makeNormalizer(columnAliases)
 
-    const [open,          setOpen]          = useState(false)
-    const [rows,          setRows]          = useState<Record<string, string>[]>([])
-    const [fileName,      setFileName]      = useState('')
-    const [importing,     setImporting]     = useState(false)
-    const [error,         setError]         = useState('')
-    const [progress,      setProgress]      = useState(0)
-    const [processedRows, setProcessedRows] = useState(0)
-    const [totalRows,     setTotalRows]     = useState(0)
+    const [open,     setOpen]     = useState(false)
+    const [rows,     setRows]     = useState<Record<string, string>[]>([])
+    const [fileName, setFileName] = useState('')
+    const [error,    setError]    = useState('')
     const fileRef = useRef<HTMLInputElement>(null)
 
     function openImport()  { setOpen(true) }
@@ -70,9 +68,6 @@ export function useImport({
         setRows([])
         setFileName('')
         setError('')
-        setProgress(0)
-        setProcessedRows(0)
-        setTotalRows(0)
         if (fileRef.current) fileRef.current.value = ''
     }
 
@@ -111,42 +106,47 @@ export function useImport({
             return
         }
 
-        setImporting(true)
-        setError('')
-        setProgress(0)
-        setProcessedRows(0)
-        setTotalRows(valid.length)
+        const count    = valid.length
+        const snapshot = [...valid]
 
-        const batches: typeof valid[] = []
-        for (let i = 0; i < valid.length; i += batchSize) {
-            batches.push(valid.slice(i, i + batchSize))
-        }
+        // Close modal immediately — API call happens in the background
+        setOpen(false)
+        reset()
 
-        let totalInserted = 0
-        let totalSkipped  = 0
-        let processed     = 0
+        const processingId = toast({
+            type:     'info',
+            message:  `Sedang memproses ${count} ${entityLabel}...`,
+            duration: 0,
+        })
 
         try {
-            for (const batch of batches) {
-                const res = await fetch(apiEndpoint, {
-                    method:  'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body:    JSON.stringify({ rows: batch }),
-                })
-                const body = await res.json()
-                if (!res.ok) throw new Error(body.error || 'Import failed')
-                totalInserted += body.inserted ?? 0
-                totalSkipped  += body.skipped  ?? 0
-                processed     += batch.length
-                setProcessedRows(processed)
-                setProgress(Math.round((processed / valid.length) * 100))
-            }
-            closeImport()
-            onSuccess?.(totalInserted, totalSkipped)
+            const res = await fetch(apiEndpoint, {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ rows: snapshot }),
+            })
+            const body = await res.json()
+            if (!res.ok) throw new Error(body.error || 'Import failed')
+
+            dismiss(processingId)
+
+            const inserted = body.inserted ?? 0
+            const skipped  = body.skipped  ?? 0
+            const skipMsg  = skipped > 0 ? `, ${skipped} dilewati` : ''
+            toast({
+                type:     'success',
+                message:  `Impor data '${entityLabel}' selesai: ${inserted}/${count}${skipMsg}`,
+                duration: 6000,
+            })
+
+            onSuccess?.(inserted, skipped)
         } catch (err) {
-            setError((err as Error).message)
-        } finally {
-            setImporting(false)
+            dismiss(processingId)
+            toast({
+                type:     'error',
+                message:  `Impor gagal: ${(err as Error).message}`,
+                duration: 6000,
+            })
         }
     }
 
@@ -157,11 +157,7 @@ export function useImport({
         rows,
         fileName,
         fileRef,
-        importing,
         error,
-        progress,
-        processedRows,
-        totalRows,
         handleFile,
         handleImport,
         downloadTemplate,

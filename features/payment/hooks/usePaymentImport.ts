@@ -40,6 +40,7 @@ export function usePaymentImport(onSuccess?: (inserted: number, skipped: number)
         ],
         templateSheetName: 'Pembayaran',
         templateFileName:  'payment-import-template.xlsx',
+        entityLabel:       'pembayaran',
         onSuccess: (inserted, skipped) => onSuccess?.(inserted, skipped ?? 0),
     })
 }
