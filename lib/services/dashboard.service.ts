@@ -255,6 +255,11 @@ export async function getDashboardData(
         date
       `)
 
+      .eq(
+        'status',
+        'approved'
+      )
+
       .gte(
         'date',
         `${year}-01-01`
