@@ -85,16 +85,15 @@ export default function PaymentDetailDrawer({
                             </div>
                             <div>
                                 <p className="text-xs text-muted">{t('detail.monthsPaid')}</p>
-                                <div className="flex flex-wrap gap-1.5 mt-1">
-                                    {(payment.details || []).map((d: { id: string; month: number }) => {
-                                        const month = MONTHS.find(m => Number(m.id) === Number(d.month))
-                                        return (
-                                            <span key={d.id} className="px-2 py-1 rounded-md bg-surface text-xs">
-                                                {month?.name}
-                                            </span>
-                                        )
-                                    })}
-                                </div>
+                                <p className="font-medium text-foreground">
+                                    {(payment.details || [])
+                                        .map((d: { id: string; month: number }) => {
+                                            const month = MONTHS.find(m => Number(m.id) === Number(d.month))
+                                            return month ? `${month.name} ${payment.year}` : ''
+                                        })
+                                        .filter(Boolean)
+                                        .join(', ')}
+                                </p>
                             </div>
                             <div>
                                 <p className="text-xs text-muted">{t('detail.totalAmount')}</p>
