@@ -50,10 +50,12 @@ Legend
 
 | Action | Super | Chair | Admin | Treasurer | Resident |
 |---------|--------|--------|---------|------------|------------|
-| View Residents | ❌ | ✅ | ✅ | 👁 | ⚡ |
+| View Residents | ❌ | ✅ | ✅ | 👁 | 👁 |
+| View Payment History | ❌ | ✅ | ✅ | ✅ | ⚡ |
 | Create Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
-| Update Resident | ❌ | ✅ | ✅ | ❌ | ⚡ |
+| Update Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
 | Delete Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
+| Import | ❌ | ✅ | ✅ | ❌ | ❌ |
 
 ---
 
@@ -76,6 +78,8 @@ Legend
 | Approve | ❌ | ❌ | ❌ | ✅ | ❌ |
 | Reject | ❌ | ❌ | ❌ | ✅ | ❌ |
 | Export | ❌ | 👁 | 👁 | ✅ | ❌ |
+| Import | ❌ | ❌ | ✅ | ✅ | ❌ |
+| Bulk Approve Imported | ❌ | ❌ | ✅ | ✅ | ❌ |
 
 ---
 

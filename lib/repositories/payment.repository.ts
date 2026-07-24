@@ -329,6 +329,7 @@ export async function findConfirmationsPaginated(
     rtId: string,
     query: QueryOptions,
     year = new Date().getFullYear(),
+    residentId?: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<PageResult<any>> {
     const from = (query.page - 1) * query.pageSize
@@ -356,6 +357,10 @@ export async function findConfirmationsPaginated(
         .eq('rt_id', rtId)
         .eq('year', year)
         .order('created_at', { ascending: false })
+
+    if (residentId) {
+        q = q.eq('resident_id', residentId)
+    }
 
     const status = query.filters?.status
     if (status && status !== 'all') {

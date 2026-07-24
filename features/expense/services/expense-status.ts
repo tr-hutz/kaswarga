@@ -1,12 +1,3 @@
-export function getStatusLabel(status: string) {
-    switch (status) {
-        case 'approved': return 'Approved'
-        case 'pending':  return 'Pending'
-        case 'rejected': return 'Rejected'
-        default:         return '-'
-    }
-}
-
 export function getStatusClass(status: string) {
     switch (status) {
         case 'approved': return 'bg-success/10 text-success'

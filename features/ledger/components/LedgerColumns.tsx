@@ -12,6 +12,7 @@ export function buildLedgerColumns({ t }: Options): Column<LedgerRow>[] {
         {
             key:   'date',
             title: t('table.date'),
+            render: (row) => row.date ? new Date(row.date).toLocaleString('id-ID') : '-',
         },
         {
             key:   'type',

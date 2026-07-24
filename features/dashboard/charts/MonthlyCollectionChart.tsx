@@ -12,11 +12,13 @@ import {
 
 } from 'recharts'
 
+import { useTranslations } from 'next-intl'
 import { useTheme } from '@/hooks/useTheme'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function MonthlyCollectionChart({ data = [] }: { data?: any[] }) {
 
+  const t = useTranslations('dashboard.sections')
   const { resolvedTheme } = useTheme()
 
   const isDark       = resolvedTheme === 'dark'
@@ -39,11 +41,11 @@ export default function MonthlyCollectionChart({ data = [] }: { data?: any[] }) 
       >
 
         <h2 className="text-lg font-semibold text-foreground">
-          Monthly Collection
+          {t('monthlyCollectionTitle')}
         </h2>
 
         <p className="text-sm text-muted">
-          Number of payments per month
+          {t('monthlyCollectionSubtitle')}
         </p>
 
       </div>

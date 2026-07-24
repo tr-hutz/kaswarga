@@ -19,7 +19,7 @@ import UserThemeSync   from './UserThemeSync'
 import { useAuth }  from '../../lib/auth/useAuth'
 import { logout }   from '../../lib/services/auth.service'
 
-const PUBLIC_PATHS = ['/login', '/register', '/activation', '/test']
+const PUBLIC_PATHS = ['/login', '/register', '/activation', '/test', '/maintenance']
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))

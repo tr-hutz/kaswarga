@@ -26,6 +26,7 @@ export default function ResidentContainer() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { membership, role } = (useAuth() as any) ?? {}
     const rtId = membership?.rt?.id as string | undefined
+    const currentResidentId = membership?.resident?.id as string | undefined
     const canManage = hasPermission(role, PERMISSIONS.MANAGE_RESIDENTS)
     const t = useTranslations('residents')
     const tc = useTranslations('common')
@@ -80,9 +81,10 @@ export default function ResidentContainer() {
     // Drawer / form / export / import
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { toast } = (useToast() as any) ?? {}
-    const { error: importError, ...actions } = useResidentActions((inserted: number) => {
+    const { error: importError, ...actions } = useResidentActions((inserted: number, skipped?: number) => {
         refresh()
-        toast({ message: `${inserted} residents imported successfully.`, type: 'success' })
+        const skipMsg = skipped ? `, ${skipped} ${t('import.skippedSuffix')}` : ''
+        toast({ message: t('import.successMessage', { inserted }) + skipMsg, type: 'success' })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
 
@@ -123,6 +125,8 @@ export default function ResidentContainer() {
                 pendingRequests={pendingRequests}
                 pendingLoading={pendingLoading}
                 canManage={canManage}
+                role={role ?? ''}
+                currentResidentId={currentResidentId}
                 query={query}
                 setPage={setPage}
                 setPageSize={setPageSize}

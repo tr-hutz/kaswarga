@@ -102,7 +102,7 @@ test.describe('payments list (admin)', () => {
     await expect(payments.drawer()).toBeVisible()
   })
 
-  test('drawer can be closed with the ✕ button', async ({ page }) => {
+  test('drawer can be closed', async ({ page }) => {
     const payments = new PaymentsPage(page)
     await payments.goto()
 
@@ -190,6 +190,78 @@ test.describe('approve payment (treasurer)', () => {
     const confirmReject = page.getByRole('button', { name: /Tolak/i }).last()
     await confirmReject.click()
 
+    await expect(page).toHaveURL(/\/payments/)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Treasurer: payment import
+// ---------------------------------------------------------------------------
+
+test.describe('payment import (treasurer)', () => {
+  test.use({ storageState: path.join(__dirname, '.auth/treasurer.json') })
+
+  test('import button is visible for treasurer', async ({ page }) => {
+    const payments = new PaymentsPage(page)
+    await payments.goto()
+
+    await expect(payments.importButton()).toBeVisible()
+  })
+
+  test('import modal opens and has expected elements', async ({ page }) => {
+    const payments = new PaymentsPage(page)
+    await payments.goto()
+
+    await payments.importButton().click()
+    await expect(payments.importModal()).toBeVisible()
+    await expect(payments.downloadTemplateButton()).toBeVisible()
+  })
+
+  test('import modal can be closed', async ({ page }) => {
+    const payments = new PaymentsPage(page)
+    await payments.goto()
+
+    await payments.importButton().click()
+    await expect(payments.importModal()).toBeVisible()
+
+    await payments.importModal().getByRole('button', { name: /Batal|Tutup/i }).last().click()
+    await expect(payments.importModal()).not.toBeVisible()
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Treasurer: payment bulk actions
+// ---------------------------------------------------------------------------
+
+test.describe('payment bulk actions (treasurer)', () => {
+  test.use({ storageState: path.join(__dirname, '.auth/treasurer.json') })
+
+  test('"Setujui Semua" button is not visible when no imported pending rows', async ({ page }) => {
+    const payments = new PaymentsPage(page)
+    await payments.goto()
+
+    // Default seed data has no imported rows — button must be absent
+    expect(await payments.approveAllImportedButton().count()).toBe(0)
+  })
+
+  test('"Tolak" danger dropdown is not visible when no imported pending rows', async ({ page }) => {
+    const payments = new PaymentsPage(page)
+    await payments.goto()
+
+    expect(await payments.dangerDropdownTrigger().count()).toBe(0)
+  })
+
+  test('if imported pending rows exist, "Setujui Semua" approves them', async ({ page }) => {
+    const payments = new PaymentsPage(page)
+    await payments.goto()
+
+    if (await payments.approveAllImportedButton().count() === 0) {
+      test.skip()
+      return
+    }
+
+    await payments.approveAllImportedButton().click()
+    await page.waitForLoadState('networkidle')
     await expect(page).toHaveURL(/\/payments/)
   })
 })

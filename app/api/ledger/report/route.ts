@@ -17,10 +17,10 @@ const maskAccountNumber = (num: string | number | null) => {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const groupByMonth = (rows: any[] = []): Record<number, any[]> => {
+const groupByMonth = (rows: any[] = [], getDate = (r: any) => r.date as string): Record<number, any[]> => {
   const map: Record<number, any[]> = {}
   rows.forEach(r => {
-    const m = new Date(r.date).getMonth() + 1
+    const m = new Date(getDate(r)).getMonth() + 1
     if (!map[m]) map[m] = []
     map[m].push(r)
   })
@@ -40,7 +40,7 @@ export async function GET(req: Request) {
 
   const { data: membership, error: membershipError } = await supabaseAdmin
     .from('memberships')
-    .select('role')
+    .select('role, rt_id')
     .eq('user_id', authData.user.id)
     .eq('status', 'active')
     .maybeSingle()
@@ -49,7 +49,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  if (!['CHAIR', 'TREASURER'].includes(membership.role)) {
+  if (!['CHAIR', 'TREASURER', 'ADMIN', 'RESIDENT'].includes(membership.role)) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
@@ -63,7 +63,7 @@ export async function GET(req: Request) {
   const { data: rt } = await supabaseAdmin
     .from('rt')
     .select('*')
-    .limit(1)
+    .eq('id', (membership as any).rt_id)
     .single()
 
   const { data: members } = await supabaseAdmin
@@ -92,6 +92,8 @@ export async function GET(req: Request) {
     .from('expenses')
     .select('*')
     .eq('rt_id', rt?.id ?? '')
+    .eq('status', 'approved')
+    .is('deleted_at', null)
     .gte('date', start)
     .lt('date', end)
 
@@ -229,7 +231,7 @@ export async function GET(req: Request) {
     y -= 18
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const byMonth = groupByMonth((incomeRows as any[]) || [])
+    const byMonth = groupByMonth((incomeRows as any[]) || [], r => r.payments?.date)
 
     Object.keys(byMonth)
       .sort((a, b) => Number(a) - Number(b))

@@ -56,22 +56,31 @@ export async function findActivitiesPaginated(
 }
 
 export async function findActivityStats(rtId: string): Promise<{
-    total: number
-    approvals: number
-    expenseCount: number
-    residentCount: number
+    total:              number
+    paymentApprovals:   number
+    paymentRejections:  number
+    expenseApprovals:   number
+    expenseRejections:  number
+    residentCount:      number
 }> {
-    const [totalRes, approvalsRes, expenseRes, residentRes] = await Promise.all([
+    const q = (action: string) =>
+        supabase.from('activity_logs').select('*', { count: 'exact', head: true }).eq('rt_id', rtId).eq('action', action)
+
+    const [totalRes, payAppRes, payRejRes, expAppRes, expRejRes, resRes] = await Promise.all([
         supabase.from('activity_logs').select('*', { count: 'exact', head: true }).eq('rt_id', rtId),
-        supabase.from('activity_logs').select('*', { count: 'exact', head: true }).eq('rt_id', rtId).eq('action', 'APPROVE_PAYMENT'),
-        supabase.from('activity_logs').select('*', { count: 'exact', head: true }).eq('rt_id', rtId).eq('entity_type', 'expenses'),
+        q('APPROVE_PAYMENT'),
+        q('REJECT_PAYMENT'),
+        q('APPROVE_EXPENSE'),
+        q('REJECT_EXPENSE'),
         supabase.from('activity_logs').select('*', { count: 'exact', head: true }).eq('rt_id', rtId).eq('entity_type', 'residents'),
     ])
     return {
-        total:         totalRes.count    ?? 0,
-        approvals:     approvalsRes.count ?? 0,
-        expenseCount:  expenseRes.count   ?? 0,
-        residentCount: residentRes.count  ?? 0,
+        total:             totalRes.count  ?? 0,
+        paymentApprovals:  payAppRes.count ?? 0,
+        paymentRejections: payRejRes.count ?? 0,
+        expenseApprovals:  expAppRes.count ?? 0,
+        expenseRejections: expRejRes.count ?? 0,
+        residentCount:     resRes.count    ?? 0,
     }
 }
 

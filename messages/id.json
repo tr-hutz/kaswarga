@@ -11,10 +11,10 @@
       "reject": "Tolak",
       "back": "Kembali",
       "close": "Tutup",
-      "import": "Import",
+      "import": "Impor",
       "export": "Ekspor",
-      "exportExcel": "Export Excel",
-      "exportCsv": "Export CSV",
+      "exportExcel": "Ekspor Excel",
+      "exportCsv": "Ekspor CSV",
       "generate": "Generate",
       "search": "Cari",
       "confirm": "Konfirmasi",
@@ -27,7 +27,7 @@
       "loading": "Memuat...",
       "sending": "Mengirim...",
       "importing": "Mengimpor...",
-      "generating": "Generating..."
+      "generating": "Memproses..."
     },
     "status": {
       "active": "Aktif",
@@ -36,11 +36,18 @@
       "empty": "Tidak ada data"
     },
     "paymentStatus": {
+      "all": "Semua",
       "pending": "Menunggu",
       "approved": "Disetujui",
       "rejected": "Ditolak",
       "paid": "Lunas",
       "unpaid": "Belum Bayar"
+    },
+    "expenseStatus": {
+      "all": "Semua Status",
+      "pending": "Menunggu",
+      "approved": "Disetujui",
+      "rejected": "Ditolak"
     },
     "table": {
       "actions": "Aksi",
@@ -129,9 +136,9 @@
     },
     "report": {
       "title": "Laporan Arus Kas",
-      "subtitle": "Generate laporan kas tahunan dalam format PDF",
+      "subtitle": "Buat laporan kas tahunan dalam format PDF",
       "generating": "Membuat...",
-      "generate": "Generate PDF",
+      "generate": "Buatkan PDF",
       "errorFailed": "Gagal membuat laporan"
     }
   },
@@ -143,7 +150,10 @@
       "paymentStatusSubtitle": "Rekap kepatuhan pembayaran iuran bulanan",
       "finance": "Keuangan RT",
       "financeSubtitle": "Ringkasan arus kas tahun {year}",
-      "cashflowSubtitle": "Pemasukan vs pengeluaran bulanan"
+      "cashflowTitle": "Arus Kas",
+      "cashflowSubtitle": "Pemasukan vs pengeluaran bulanan",
+      "monthlyCollectionTitle": "Pemasukan Bulanan",
+      "monthlyCollectionSubtitle": "Jumlah pembayaran iuran bulanan"
     },
     "cards": {
       "totalResidents": "Total Warga",
@@ -162,7 +172,7 @@
     }
   },
   "home": {
-    "title": "Beranda Warga",
+    "title": "Beranda",
     "loading": "Loading...",
     "summary": {
       "sectionTitle": "Rangkuman Status Pembayaran",
@@ -214,13 +224,16 @@
       "empty": "Belum ada aktivitas."
     },
     "analytics": {
-      "total": "Total Activity",
-      "approvals": "Approvals",
-      "expense": "Pengeluaran",
+      "total": "Total Aktivitas",
+      "paymentApprovals": "Pembayaran Disetujui",
+      "paymentRejections": "Pembayaran Ditolak",
+      "expenseApprovals": "Pengeluaran Disetujui",
+      "expenseRejections": "Pengeluaran Ditolak",
       "residentUpdates": "Pembaruan Warga"
     },
     "drawer": {
       "title": "Detail Aktivitas",
+      "subtitle": "Informasi detail aktivitas sistem",
       "close": "Tutup",
       "actor": "Pelaku",
       "action": "Aksi",
@@ -471,7 +484,8 @@
       "saveFailed": "Gagal menyimpan warga"
     },
     "drawer": {
-      "title": "Detail Warga"
+      "title": "Detail Warga",
+      "subtitle": "Informasi detail dan histori pembayaran warga"
     },
     "pending": {
       "title": "Permintaan Bergabung",
@@ -494,9 +508,11 @@
       "deleteFailed": "Gagal menghapus warga"
     },
     "import": {
-      "title": "Import Data Warga",
+      "title": "Impor Data Warga",
       "buttonLabel": "Warga",
-      "required": "wajib"
+      "required": "wajib",
+      "successMessage": "Berhasil mengimpor {inserted} warga",
+      "skippedSuffix": "warga dilewati (sudah ada)"
     },
     "clusterSubtitle": "Data warga cluster",
     "analytics": {
@@ -505,8 +521,8 @@
       "totalAmount": "Total Nominal"
     },
     "paymentHistory": {
-      "title": "Histori Pembayaran",
-      "empty": "Belum ada histori pembayaran"
+      "title": "Riwayat Pembayaran",
+      "empty": "Belum ada riwayat pembayaran"
     },
     "arrears": {
       "alert": "Anda memiliki tunggakan sebanyak {months} bulan",
@@ -541,13 +557,39 @@
       "monthsPaid": "Bulan Dibayar",
       "proofTitle": "Bukti Pembayaran",
       "proofUnavailable": "Bukti pembayaran tidak tersedia",
-      "proofError": "Bukti tidak dapat dimuat"
+      "proofError": "Bukti tidak dapat dimuat",
+      "proofImportFile": "Lihat file impor"
     },
     "reject": {
       "title": "Tolak Pembayaran",
       "description": "Berikan alasan penolakan untuk warga.",
       "placeholder": "Masukkan alasan penolakan...",
       "confirmLabel": "Tolak"
+    },
+    "approveAll": "Setujui Semua ({count})",
+    "approveAllSuccess": "Berhasil menyetujui {count} pembayaran impor",
+    "rejectAll": {
+      "button": "Tolak",
+      "option": "Tolak Semua",
+      "title": "Tolak Semua Pembayaran Impor",
+      "description": "Berikan alasan penolakan untuk semua pembayaran impor yang menunggu.",
+      "placeholder": "Masukkan alasan penolakan...",
+      "confirmLabel": "Tolak Semua"
+    },
+    "rejectAllSuccess": "Berhasil menolak {count} pembayaran impor",
+    "deleteAll": {
+      "option": "Hapus Semua",
+      "title": "Hapus Semua Pembayaran Impor",
+      "confirm": "Apakah kamu yakin ingin menghapus semua pembayaran impor yang menunggu? Tindakan ini tidak dapat dibatalkan.",
+      "confirmLabel": "Hapus Semua"
+    },
+    "deleteAllSuccess": "Berhasil menghapus {count} pembayaran impor",
+    "import": {
+      "title": "Impor Data Pembayaran",
+      "buttonLabel": "Pembayaran",
+      "required": "wajib",
+      "successMessage": "Berhasil mengimpor {inserted} pembayaran",
+      "skippedSuffix": "data dilewati (sudah ada)"
     },
     "approval": {
       "approve": "Setujui",
@@ -591,6 +633,8 @@
     },
     "drawer": {
       "title": "Detail Pengeluaran",
+      "subtitle": "Informasi detail pengeluaran RT",
+      "receiptNumber": "Nomor Bukti",
       "date": "Tanggal",
       "category": "Kategori",
       "amount": "Nominal",
@@ -598,6 +642,7 @@
       "description": "Deskripsi",
       "approvedAt": "Disetujui pada {date}",
       "rejected": "Ditolak",
+      "alasanDitolak": "Alasan Ditolak",
       "receipt": "Nota",
       "receiptPdf": "Buka Nota (PDF)"
     },
@@ -709,6 +754,16 @@
     "pendingSection": {
       "title": "Permintaan Pendaftaran RT"
     }
+  },
+  "maintenance": {
+    "title": "Sedang Dalam Pemeliharaan",
+    "description": "Sistem sedang dalam proses pemeliharaan. Kami akan segera kembali.",
+    "notice": "Terima kasih atas kesabaran Anda."
+  },
+  "comingSoon": {
+    "title": "Segera Hadir",
+    "description": "Fitur ini sedang dalam pengembangan dan akan segera tersedia.",
+    "back": "Kembali ke Beranda"
   },
   "notFound": {
     "title": "Halaman Tidak Ditemukan",

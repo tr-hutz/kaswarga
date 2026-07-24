@@ -16,7 +16,7 @@ export default function ResidentFilters({ active = '', onActiveChange }: Props) 
             data-testid="dt-status-filter"
             value={active}
             onChange={(e) => onActiveChange(e.target.value)}
-            className="rounded-lg border border-divider px-3 py-2 text-sm bg-input focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
         >
             <option value="">{t('filterPlaceholder')}</option>
             <option value="true">{tc('status.active')}</option>

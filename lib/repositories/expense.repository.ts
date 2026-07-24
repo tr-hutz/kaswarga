@@ -84,6 +84,11 @@ export async function findExpensesPaginated(
         q = q.eq('category', category)
     }
 
+    const status = query.filters?.status
+    if (status && status !== 'all') {
+        q = q.eq('status', status)
+    }
+
     q = q.range(from, to)
 
     const { data, error, count } = await q

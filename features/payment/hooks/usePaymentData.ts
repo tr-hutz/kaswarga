@@ -11,21 +11,24 @@ export type ConfirmationRow = ReturnType<typeof mapConfirmation>[number]
 
 export function usePaymentData(query: QueryOptions, year = new Date().getFullYear()) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { membership } = (useAuth() as any) ?? {}
-    const rtId = membership?.rt?.id as string | undefined
+    const { role, membership } = (useAuth() as any) ?? {}
+    const rtId      = membership?.rt?.id       as string | undefined
+    const residentId = role === 'RESIDENT'
+        ? membership?.resident?.id as string | undefined
+        : undefined
 
     const [result,  setResult]  = useState<PageResult<ConfirmationRow> | null>(null)
     const [loading, setLoading] = useState(false)
     const [error,   setError]   = useState(false)
 
-    const queryKey = JSON.stringify({ query, year })
+    const queryKey = JSON.stringify({ query, year, residentId })
 
     async function load() {
         if (!rtId) return
         setLoading(true)
         setError(false)
         try {
-            const raw  = await findConfirmationsPaginated(rtId, query, year)
+            const raw  = await findConfirmationsPaginated(rtId, query, year, residentId)
             const data = mapConfirmation(raw.data)
             setResult({ ...raw, data })
         } catch (err) {

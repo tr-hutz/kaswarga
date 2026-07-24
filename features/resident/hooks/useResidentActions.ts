@@ -14,7 +14,7 @@ import {
 
 import { useResidentImport } from './useResidentImport'
 
-export function useResidentActions(onImportSuccess?: (inserted: number) => void) {
+export function useResidentActions(onImportSuccess?: (inserted: number, skipped?: number) => void) {
 
     /*
      |------------------------------------------------------------------

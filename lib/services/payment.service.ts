@@ -1,6 +1,7 @@
 import { supabase } from '../supabase'
 import { getCurrentMembership } from '../auth/getCurrentMembership'
 import { logActivity } from './activity-logger'
+import { ROLES } from '../permissions/permission-constants'
 import { transformConfirmation, transformPayment } from '../../features/payment/services/payment-transform'
 import { MONTHS } from '../../constants/months'
 import {
@@ -310,6 +311,10 @@ export async function approvePayment(
         getCurrentMembership()
     ])
 
+    if (membership?.role !== ROLES.TREASURER) {
+        throw new Error('Unauthorized')
+    }
+
     const confirmation = await findConfirmationById(confirmationId)
 
     const data = await callApproveConfirmation(confirmationId, user?.id ?? '')
@@ -346,6 +351,10 @@ export async function rejectPayment(
         supabase.auth.getUser(),
         getCurrentMembership()
     ])
+
+    if (membership?.role !== ROLES.TREASURER) {
+        throw new Error('Unauthorized')
+    }
 
     const confirmation = await findConfirmationById(confirmationId)
 
@@ -423,17 +432,21 @@ export async function submitPaymentConfirmation(payload: {
     )
 
     // Activity log (fire-and-forget)
-    const membership = await getCurrentMembership()
-    logActivity({
-        rtId:        membership?.rt?.id,
-        actorId:     membership?.user?.id,
-        actorName:   membership?.user?.name,
-        action:      'SUBMIT_PAYMENT',
-        entityType:  'payment_confirmations',
-        entityId:    confirmation.id,
-        description: 'Submit payment confirmation',
-        metadata:    { year, months, totalAmount, residentId },
-    })
+    try {
+        const membership = await getCurrentMembership()
+        logActivity({
+            rtId:        membership?.rt?.id,
+            actorId:     membership?.user?.id,
+            actorName:   membership?.user?.name,
+            action:      'SUBMIT_PAYMENT',
+            entityType:  'payment_confirmations',
+            entityId:    confirmation.id,
+            description: 'Submit payment confirmation',
+            metadata:    { year, months, totalAmount, residentId },
+        })
+    } catch {
+        // Activity log errors must not block the main flow
+    }
 
     // Notify TREASURER so they can review the submission
     try {

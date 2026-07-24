@@ -9,6 +9,8 @@ import ResidentDetailDrawer from './components/drawer/ResidentDetailDrawer'
 import ResidentForm         from './components/forms/ResidentForm'
 import ResidentImportModal  from './components/import/ResidentImportModal'
 import { buildResidentColumns, type ResidentRow } from './components/ResidentColumns'
+import ExportDropdown from '@/components/ui/ExportDropdown'
+import Icon from '@/components/ui/Icon'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 interface Props {
@@ -21,6 +23,8 @@ interface Props {
     pendingLoading:   boolean
     // permissions
     canManage:        boolean
+    role:             string
+    currentResidentId?: string
     // query
     query:            QueryOptions
     setPage:          (page: number) => void
@@ -55,6 +59,9 @@ interface Props {
     fileRef:          React.RefObject<HTMLInputElement>
     importing:        boolean
     importError:      string
+    progress?:        number
+    processedRows?:   number
+    totalRows?:       number
     handleFile:       (file: File | undefined) => void
     handleImport:     () => void
     downloadTemplate: () => void
@@ -64,7 +71,7 @@ interface Props {
 export default function ResidentView({
     result, loading, error, reload,
     pendingRequests, pendingLoading,
-    canManage,
+    canManage, role, currentResidentId,
     query, setPage, setPageSize, setSearch, setSort, setFilter,
     onRowClick, onEdit, onDelete, refresh,
     selectedResident, drawerOpen, closeDrawer,
@@ -73,6 +80,7 @@ export default function ResidentView({
     importOpen, openImport, closeImport,
     rows: importRows, fileName: importFileName, fileRef: importFileRef,
     importing, importError,
+    progress, processedRows, totalRows,
     handleFile, handleImport, downloadTemplate, resetImport,
 }: Props) {
     const t  = useTranslations('residents')
@@ -129,24 +137,17 @@ export default function ResidentView({
                 }
                 renderActions={
                     <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => exportExcel(data)}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
-                        >
-                            {tc('actions.exportExcel')}
-                        </button>
-                        <button
-                            onClick={() => exportCSV(data)}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
-                        >
-                            {tc('actions.exportCsv')}
-                        </button>
+                        <ExportDropdown
+                            onExportExcel={() => exportExcel(data)}
+                            onExportCSV={() => exportCSV(data)}
+                        />
                         {canManage && (
                             <>
                                 <button
                                     onClick={openImport}
-                                    className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
+                                    className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
                                 >
+                                    <Icon name="upload" size={15} />
                                     {tc('actions.import')}
                                 </button>
                                 <button
@@ -166,6 +167,8 @@ export default function ResidentView({
                 open={drawerOpen}
                 onClose={closeDrawer}
                 resident={selectedResident}
+                role={role}
+                currentResidentId={currentResidentId}
             />
 
             <ResidentForm
@@ -187,6 +190,9 @@ export default function ResidentView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
+                progress={progress}
+                processedRows={processedRows}
+                totalRows={totalRows}
             />
         </div>
     )

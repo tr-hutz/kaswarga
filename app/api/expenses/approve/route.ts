@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 
         const { data: membership, error: membershipError } = await supabaseAdmin
             .from('memberships')
-            .select('role, rt_id')
+            .select('role, rt_id, user:users(name)')
             .eq('user_id', authData.user.id)
             .eq('status', 'active')
             .maybeSingle()
@@ -33,6 +33,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Only the RT chair can approve expenses' }, { status: 403 })
         }
 
+        if (!membership.rt_id) {
+            return NextResponse.json({ error: 'RT not found' }, { status: 403 })
+        }
+
         const { id } = await req.json()
         if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
 
@@ -42,6 +46,36 @@ export async function POST(req: Request) {
         })
 
         if (error) throw error
+
+        // Activity log (fire-and-forget)
+        try {
+            const { data: expense } = await supabaseAdmin
+                .from('expenses')
+                .select('description, amount, category, date')
+                .eq('id', id)
+                .single()
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const actorName = (membership as any).user?.name ?? null
+
+            await supabaseAdmin.from('activity_logs').insert({
+                rt_id:       membership.rt_id,
+                actor_id:    authData.user.id,
+                actor_name:  actorName,
+                action:      'APPROVE_EXPENSE',
+                entity_type: 'expenses',
+                entity_id:   id,
+                description: `Approve expense: ${expense?.description ?? ''}`,
+                metadata:    {
+                    category:    expense?.category,
+                    description: expense?.description,
+                    amount:      expense?.amount,
+                    date:        expense?.date,
+                }
+            })
+        } catch {
+            // Activity log errors must not block the main flow
+        }
 
         return NextResponse.json({ ok: true })
 

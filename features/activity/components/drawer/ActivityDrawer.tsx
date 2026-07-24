@@ -1,5 +1,6 @@
 'use client'
 
+import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,15 +15,24 @@ export default function ActivityDrawer({ open, row, onClose }: { open: boolean; 
             onClick={onClose}
         >
             <div
-                className="w-full max-w-lg bg-surface h-full overflow-y-auto p-6 shadow-default"
+                className="w-full max-w-lg bg-surface h-full overflow-y-auto shadow-default"
                 onClick={e => e.stopPropagation()}
             >
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold">{t('drawer.title')}</h2>
-                    <button onClick={onClose}>{t('drawer.close')}</button>
+                <div className="px-6 py-5 border-b border-divider flex items-start justify-between">
+                    <div>
+                        <h2 className="text-xl font-semibold text-foreground">{t('drawer.title')}</h2>
+                        <p className="text-sm text-muted mt-0.5">{t('drawer.subtitle')}</p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-subtle hover:text-foreground mt-0.5"
+                        aria-label="Tutup"
+                    >
+                        <Icon name="x" className="w-5 h-5" />
+                    </button>
                 </div>
 
-                <div className="space-y-4 text-sm">
+                <div className="p-6 space-y-4 text-sm">
 
                     <div>
                         <p className="text-muted">{t('drawer.actor')}</p>

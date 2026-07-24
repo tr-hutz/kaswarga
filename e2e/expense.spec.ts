@@ -141,10 +141,12 @@ test.describe('expense drawer (admin)', () => {
 })
 
 // ---------------------------------------------------------------------------
-// Admin/Chair: approve pending expense
+// Admin: view expense drawer (approve/reject buttons must be absent for ADMIN)
+// NOTE: Expense approval requires CHAIR role. A chair.json session must be
+//       created via setup:chair once a CHAIR account exists in seed data.
 // ---------------------------------------------------------------------------
 
-test.describe('approve / reject expense (admin)', () => {
+test.describe('approve / reject expense (admin — buttons absent)', () => {
   test.use({ storageState: path.join(__dirname, '.auth/session.json') })
 
   test.beforeAll(async ({ browser }: { browser: Browser }) => {
@@ -219,5 +221,28 @@ test.describe('approve / reject expense (admin)', () => {
     }
 
     await expect(page).toHaveURL(/\/expenses/)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Treasurer: expense drawer fields
+// ---------------------------------------------------------------------------
+
+test.describe('expense drawer fields (treasurer)', () => {
+  test.use({ storageState: path.join(__dirname, '.auth/treasurer.json') })
+
+  test('"Nomor Bukti" field label is visible in expense drawer', async ({ page }) => {
+    const expenses = new ExpensesPage(page)
+    await expenses.goto()
+
+    const rowCount = await expenses.tableRows().count()
+    if (rowCount === 0) {
+      test.skip()
+      return
+    }
+
+    await expenses.clickRow(0)
+    await expect(page.getByText(/Nomor Bukti/i)).toBeVisible()
+    await expenses.closeDrawer()
   })
 })

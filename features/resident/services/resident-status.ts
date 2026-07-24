@@ -13,23 +13,6 @@ export function getResidentStatus(
         : 'inactive'
 }
 
-export function getResidentStatusLabel(
-    status: string
-) {
-
-    switch (status) {
-
-        case 'active':
-            return 'Active'
-
-        case 'inactive':
-            return 'Inactive'
-
-        default:
-            return '-'
-    }
-}
-
 export function getResidentStatusClasses(
     status: string
 ) {

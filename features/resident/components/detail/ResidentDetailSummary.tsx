@@ -1,6 +1,7 @@
 ﻿'use client'
 
 import { useTranslations } from 'next-intl'
+import ResidentStatusBadge from '../tables/ResidentStatusBadge'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ResidentDetailSummary({ resident }: { resident: any }) {
@@ -65,7 +66,7 @@ export default function ResidentDetailSummary({ resident }: { resident: any }) {
                             font-medium
                         "
                     >
-                        {resident.phone}
+                        {resident.phone || '-'}
                     </p>
 
                 </div>
@@ -81,13 +82,11 @@ export default function ResidentDetailSummary({ resident }: { resident: any }) {
                         {t('table.status')}
                     </p>
 
-                    <p
-                        className="
-                            font-medium
-                        "
-                    >
-                        {resident.status}
-                    </p>
+                    <div className="mt-1">
+                        <ResidentStatusBadge
+                            status={resident.active ? 'active' : 'inactive'}
+                        />
+                    </div>
 
                 </div>
 

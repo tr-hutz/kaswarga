@@ -8,8 +8,10 @@ import ExpenseForm            from './components/forms/ExpenseForm'
 import ExpenseImportModal     from './components/import/ExpenseImportModal'
 import { buildExpenseColumns } from './components/ExpenseColumns'
 import ConfirmDialog           from '@/components/ui/ConfirmDialog'
+import ExportDropdown         from '@/components/ui/ExportDropdown'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 import type { MappedExpense } from './hooks/useExpenseData'
+import Icon from "@/components/ui/Icon";
 
 interface Props {
     result:      PageResult<MappedExpense> | null
@@ -25,6 +27,9 @@ interface Props {
     setSort:         (by: string, dir: 'asc' | 'desc') => void
     setFilter:       (key: string, value: unknown) => void
     importError:     string
+    progress?:       number
+    processedRows?:  number
+    totalRows?:      number
     // from useExpenseActions
     selectedRow:     MappedExpense | null
     drawerOpen:      boolean
@@ -72,6 +77,7 @@ export default function ExpenseView({
     importOpen, openImport, closeImport,
     importRows, fileName: importFileName, fileRef: importFileRef,
     importing, handleFile, handleImport, downloadTemplate, resetImport,
+    progress, processedRows, totalRows,
     approvalLoading, approveExpense, rejectExpense, approveAllExpenses,
     deleteTarget, confirmDelete, cancelDelete,
 }: Props) {
@@ -95,9 +101,19 @@ export default function ExpenseView({
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
-                <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                    <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
+                </div>
+                {role === 'CHAIR' && pendingCount > 0 && (
+                    <button
+                        onClick={approveAllExpenses}
+                        className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
+                    >
+                        {t('approveAll', { count: pendingCount })}
+                    </button>
+                )}
             </div>
 
             <DataTable
@@ -114,44 +130,41 @@ export default function ExpenseView({
                 onRetry={onRetry}
                 onRowClick={openDrawer}
                 renderFilters={
-                    <select
-                        value={String(query.filters?.category ?? 'all')}
-                        onChange={(e) => setFilter('category', e.target.value)}
-                        className="h-9 rounded-lg border bg-input px-3 text-sm"
-                    >
-                        <option value="all">{t('filterPlaceholder')}</option>
-                        {categories.map((c) => (
-                            <option key={c.name} value={c.name}>{c.name}</option>
-                        ))}
-                    </select>
+                    <div className="flex items-center gap-2">
+                        <select
+                            value={String(query.filters?.category ?? 'all')}
+                            onChange={(e) => setFilter('category', e.target.value)}
+                            className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
+                        >
+                            <option value="all">{t('filterPlaceholder')}</option>
+                            {categories.map((c) => (
+                                <option key={c.name} value={c.name}>{c.name}</option>
+                            ))}
+                        </select>
+                        <select
+                            value={String(query.filters?.status ?? 'all')}
+                            onChange={(e) => setFilter('status', e.target.value)}
+                            className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
+                        >
+                            <option value="all">{tc('expenseStatus.all')}</option>
+                            <option value="pending">{tc('expenseStatus.pending')}</option>
+                            <option value="approved">{tc('expenseStatus.approved')}</option>
+                            <option value="rejected">{tc('expenseStatus.rejected')}</option>
+                        </select>
+                    </div>
                 }
                 renderActions={
                     <div className="flex items-center gap-2 flex-wrap">
-                        {role === 'CHAIR' && pendingCount > 0 && (
-                            <button
-                                onClick={approveAllExpenses}
-                                className="bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
-                            >
-                                {t('approveAll', { count: pendingCount })}
-                            </button>
-                        )}
-                        <button
-                            onClick={() => exportExcel(data)}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
-                        >
-                            {tc('actions.exportExcel')}
-                        </button>
-                        <button
-                            onClick={() => exportCSV(data)}
-                            className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
-                        >
-                            {tc('actions.exportCsv')}
-                        </button>
+                        <ExportDropdown
+                            onExportExcel={() => exportExcel(data)}
+                            onExportCSV={() => exportCSV(data)}
+                        />
                         {role === 'TREASURER' && (
                             <button
                                 onClick={openImport}
-                                className="px-3 py-2 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas"
+                                className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
                             >
+                                <Icon name="upload" size={15} />
                                 {tc('actions.import')}
                             </button>
                         )}
@@ -198,6 +211,9 @@ export default function ExpenseView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
+                progress={progress}
+                processedRows={processedRows}
+                totalRows={totalRows}
             />
 
             <ConfirmDialog

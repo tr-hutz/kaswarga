@@ -42,7 +42,7 @@ export default function CashflowChart({ data = [] }: { data?: any[] }) {
       >
 
         <h2 className="text-lg font-semibold text-foreground">
-          Cashflow
+          {t('cashflowTitle')}
         </h2>
 
         <p className="text-sm text-muted">
@@ -89,6 +89,7 @@ export default function CashflowChart({ data = [] }: { data?: any[] }) {
             <Line
               type="monotone"
               dataKey="income"
+              name="Pemasukan"
               strokeWidth={2}
               stroke="#219653"
             />
@@ -96,6 +97,7 @@ export default function CashflowChart({ data = [] }: { data?: any[] }) {
             <Line
               type="monotone"
               dataKey="expense"
+              name="Pengeluaran"
               strokeWidth={2}
               stroke="#D34053"
             />
@@ -103,6 +105,7 @@ export default function CashflowChart({ data = [] }: { data?: any[] }) {
             <Line
               type="monotone"
               dataKey="balance"
+              name="Saldo"
               strokeWidth={2}
               stroke="#3C50E0"
             />

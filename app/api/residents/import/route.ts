@@ -67,16 +67,36 @@ export async function POST(req: Request) {
                 active:       true,
             }))
 
-        if (toInsert.length === 0) {
-            return NextResponse.json({ error: 'No valid rows to insert' }, { status: 400 })
+        let inserted = 0
+        let skipped  = 0
+
+        for (const r of toInsert) {
+            if (r.block && r.house_number) {
+                const { data: existing } = await supabaseAdmin
+                    .from('residents')
+                    .select('id')
+                    .eq('rt_id', r.rt_id)
+                    .ilike('block', r.block)
+                    .ilike('house_number', r.house_number)
+                    .maybeSingle()
+
+                if (existing) {
+                    skipped++
+                    continue
+                }
+            }
+
+            const { error: insertError } = await supabaseAdmin
+                .from('residents')
+                .insert(r)
+
+            if (insertError) throw insertError
+            inserted++
         }
 
-        const { data, error } = await supabaseAdmin
-            .from('residents')
-            .insert(toInsert)
-            .select('id')
-
-        if (error) throw error
+        if (inserted === 0 && skipped === 0) {
+            return NextResponse.json({ error: 'No valid rows to insert' }, { status: 400 })
+        }
 
         await supabaseAdmin.from('activity_logs').insert({
             rt_id:       membership.rt_id,
@@ -85,11 +105,11 @@ export async function POST(req: Request) {
             action:      'IMPORT_RESIDENTS',
             entity_type: 'residents',
             entity_id:   membership.rt_id,
-            description: `Import ${data.length} residents`,
-            metadata:    { count: data.length }
+            description: `Import ${inserted} residents`,
+            metadata:    { count: inserted, skipped }
         })
 
-        return NextResponse.json({ inserted: data.length })
+        return NextResponse.json({ inserted, skipped })
 
     } catch (err) {
         console.error('[residents/import]', err)
