@@ -2,7 +2,7 @@ import { NextResponse }      from 'next/server'
 import { cookies }            from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { supabaseAdmin }      from '@/lib/supabase-admin'
-import * as XLSX              from 'xlsx'
+import ExcelJS                from 'exceljs'
 
 const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || ''
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
@@ -77,10 +77,13 @@ export async function POST(req: Request) {
 
         // Upload Excel file to storage
         const fileName   = buildFileName(rtName)
-        const ws         = XLSX.utils.json_to_sheet(rows)
-        const wb         = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(wb, ws, 'Data')
-        const xlsxBuffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }) as Buffer
+        const workbook   = new ExcelJS.Workbook()
+        const sheet      = workbook.addWorksheet('Data')
+        if (rows.length > 0) {
+            sheet.addRow(Object.keys(rows[0]))
+            rows.forEach(row => sheet.addRow(Object.values(row).map(v => v ?? '')))
+        }
+        const xlsxBuffer = Buffer.from(await workbook.xlsx.writeBuffer())
 
         // Upload is best-effort: a bucket config issue must never block the import.
         const { data: uploadData, error: uploadError } = await supabaseAdmin.storage

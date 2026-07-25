@@ -1,51 +1,52 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-import * as XLSX
-    from 'xlsx'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import ExcelJS from 'exceljs'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function buildRows(rows: any[] = []) {
+    return rows.map(item => ({
+
+        Date:
+        item.date,
+
+        Type:
+        item.type,
+
+        Source:
+        item.source,
+
+        Description:
+        item.description,
+
+        Amount:
+        item.amount,
+
+        Balance:
+        item.balance
+
+    }))
+}
+
 export async function exportLedgerToCSV(
 
     rows: any[] = []
 
 ) {
 
-    const data =
-        rows.map(item => ({
+    const data = buildRows(rows)
 
-            Date:
-            item.date,
+    if (!data.length) return
 
-            Type:
-            item.type,
-
-            Source:
-            item.source,
-
-            Description:
-            item.description,
-
-            Amount:
-            item.amount,
-
-            Balance:
-            item.balance
-
-        }))
-
-    const worksheet =
-        XLSX.utils.json_to_sheet(
-            data
-        )
-
-    const csv =
-        XLSX.utils.sheet_to_csv(
-            worksheet
-        )
+    const headers = Object.keys(data[0])
+    const lines   = [
+        headers.join(','),
+        ...data.map(row =>
+            headers.map(h => `"${(row as any)[h] ?? ''}"`).join(',')
+        ),
+    ]
 
     const blob =
         new Blob(
 
-            [csv],
+            [lines.join('\n')],
 
             {
                 type:
@@ -69,56 +70,30 @@ export async function exportLedgerToCSV(
     link.click()
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function exportLedgerToExcel(
 
     rows: any[] = []
 
 ) {
 
-    const data =
-        rows.map(item => ({
+    const data = buildRows(rows)
 
-            Date:
-            item.date,
+    const workbook = new ExcelJS.Workbook()
+    const sheet    = workbook.addWorksheet('Ledger')
 
-            Type:
-            item.type,
+    if (data.length > 0) {
+        sheet.addRow(Object.keys(data[0]))
+        data.forEach(row => sheet.addRow(Object.values(row).map(v => v ?? '')))
+    }
 
-            Source:
-            item.source,
-
-            Description:
-            item.description,
-
-            Amount:
-            item.amount,
-
-            Balance:
-            item.balance
-
-        }))
-
-    const worksheet =
-        XLSX.utils.json_to_sheet(
-            data
-        )
-
-    const workbook =
-        XLSX.utils.book_new()
-
-    XLSX.utils.book_append_sheet(
-
-        workbook,
-        worksheet,
-        'Ledger'
-
-    )
-
-    XLSX.writeFile(
-
-        workbook,
-
-        'ledger.xlsx'
-    )
+    const buffer = await workbook.xlsx.writeBuffer()
+    const blob   = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    })
+    const url  = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href     = url
+    link.download = 'ledger.xlsx'
+    link.click()
+    URL.revokeObjectURL(url)
 }

@@ -1,8 +1,6 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-import * as XLSX
-    from 'xlsx'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import ExcelJS from 'exceljs'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildRows(
     data: any[] = []
 ) {
@@ -38,55 +36,51 @@ function buildRows(
     }))
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function exportResidentsToExcel(
     data: any[] = []
 ) {
 
-    const rows =
-        buildRows(data)
+    const rows = buildRows(data)
 
-    const worksheet =
-        XLSX.utils.json_to_sheet(
-            rows
-        )
+    const workbook = new ExcelJS.Workbook()
+    const sheet    = workbook.addWorksheet('Residents')
 
-    const workbook =
-        XLSX.utils.book_new()
+    if (rows.length > 0) {
+        sheet.addRow(Object.keys(rows[0]))
+        rows.forEach(row => sheet.addRow(Object.values(row).map(v => v ?? '')))
+    }
 
-    XLSX.utils.book_append_sheet(
-        workbook,
-        worksheet,
-        'Residents'
-    )
-
-    XLSX.writeFile(
-        workbook,
-        'residents.xlsx'
-    )
+    const buffer = await workbook.xlsx.writeBuffer()
+    const blob   = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    })
+    const url  = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href  = url
+    link.download = 'residents.xlsx'
+    link.click()
+    URL.revokeObjectURL(url)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function exportResidentsToCSV(
     data: any[] = []
 ) {
 
-    const rows =
-        buildRows(data)
+    const rows = buildRows(data)
 
-    const worksheet =
-        XLSX.utils.json_to_sheet(
-            rows
-        )
+    if (!rows.length) return
 
-    const csv =
-        XLSX.utils.sheet_to_csv(
-            worksheet
-        )
+    const headers = Object.keys(rows[0])
+    const lines   = [
+        headers.join(','),
+        ...rows.map(row =>
+            headers.map(h => `"${(row as any)[h] ?? ''}"`).join(',')
+        ),
+    ]
 
     const blob =
         new Blob(
-            [csv],
+            [lines.join('\n')],
             {
                 type:
                     'text/csv;charset=utf-8;'
@@ -107,4 +101,5 @@ export async function exportResidentsToCSV(
         'residents.csv'
 
     link.click()
+    URL.revokeObjectURL(url)
 }

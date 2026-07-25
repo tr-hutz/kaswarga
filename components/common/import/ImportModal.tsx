@@ -104,7 +104,7 @@ export default function ImportModal({
                                 <input
                                     ref={fileRef}
                                     type="file"
-                                    accept=".csv,.xlsx,.xls"
+                                    accept=".csv,.xlsx"
                                     className="hidden"
                                     onChange={e => onFile(e.target.files?.[0])}
                                 />
