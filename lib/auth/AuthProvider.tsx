@@ -94,6 +94,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 supabase.realtime.setAuth(session?.access_token ?? null)
 
                 if (event === 'SIGNED_IN') {
+                    // Show spinner immediately so AppShell doesn't redirect back
+                    // to /login while getCurrentMembership() is still in flight.
+                    setLoading(true)
                     getCurrentMembership()
                         .then(m => {
                             setMembership(m)
@@ -111,6 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             }
                         })
                         .catch(() => {})
+                        .finally(() => setLoading(false))
                 }
 
                 if (event === 'SIGNED_OUT') {
