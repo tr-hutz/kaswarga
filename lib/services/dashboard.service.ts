@@ -397,6 +397,28 @@ export async function getDashboardData(
         12 -
         currentMonth
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const residentConfs = (confirmationData || []).filter((c: any) =>
+          c.resident_id === resident.id &&
+          c.status === 'pending'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ).map((c: any) => {
+          const details = (c.confirmation_details || []) as { id: string; month: number; amount: number }[]
+          const months  = details.map(d => Number(d.month)).sort((a, b) => a - b)
+          return {
+              id:          c.id as string,
+              year:        c.year as number,
+              status:      c.status as string,
+              totalAmount: details.reduce((s, d) => s + Number(d.amount || 0), 0),
+              proofUrl:    c.proof_url as string | null,
+              name:        resident.name,
+              block:       resident.block,
+              houseNumber: resident.house_number,
+              months,
+              details:     details.map(d => ({ id: d.id, month: d.month })),
+          }
+      })
+
       return {
 
         id: resident.id,
@@ -410,13 +432,18 @@ export async function getDashboardData(
 
         paidCount,
 
+        paidMonths:
+          paidMonths.map(Number).sort((a: number, b: number) => a - b),
+
         arrears:
           Math.max(
             arrears,
             0
           ),
 
-        upcoming
+        upcoming,
+
+        confirmations: residentConfs,
 
       }
 

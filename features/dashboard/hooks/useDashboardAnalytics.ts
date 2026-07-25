@@ -1,8 +1,10 @@
-﻿'use client'
+'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
+  useCallback,
   useEffect,
+  useRef,
   useState
 } from 'react'
 
@@ -52,6 +54,15 @@ export function useDashboardAnalytics() {
     financialInsight,
     setFinancialInsight
   ] = useState<any>(null)
+
+  const [role,              setRole             ] = useState<string | null>(null)
+  const [residentAnalytics, setResidentAnalytics] = useState<any[]>([])
+  const [monthlyFee,        setMonthlyFee       ] = useState(0)
+
+  // incrementing key used to force a reload without changing year
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  const refresh = useCallback(() => setRefreshKey(k => k + 1), [])
 
   /*
    |--------------------------------------------------------------------------
@@ -104,6 +115,10 @@ export function useDashboardAnalytics() {
           arrears: data.insight.totalArrears
         })
 
+        setRole(data.role ?? null)
+        setResidentAnalytics(data.residentAnalytics || [])
+        setMonthlyFee(data.rt?.monthly_fee || 0)
+
       } catch (err) {
 
         console.error(
@@ -121,7 +136,8 @@ export function useDashboardAnalytics() {
 
     loadData()
 
-  }, [year])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [year, refreshKey])
 
   /*
    |--------------------------------------------------------------------------
@@ -135,6 +151,10 @@ export function useDashboardAnalytics() {
     setYear,
     analytics,
     paymentHealth,
-    financialInsight
+    financialInsight,
+    role,
+    residentAnalytics,
+    monthlyFee,
+    refresh,
   }
 }

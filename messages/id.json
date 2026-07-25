@@ -155,6 +155,23 @@
       "monthlyCollectionTitle": "Pemasukan Bulanan",
       "monthlyCollectionSubtitle": "Total pemasukan iuran per bulan"
     },
+    "arrearsSummary": {
+      "title": "Daftar Tunggakan Warga",
+      "subtitle": "Warga yang belum lunas iuran tahun {year}",
+      "searchPlaceholder": "Cari nama atau blok / no...",
+      "empty": "Tidak ada warga dengan tunggakan",
+      "columns": {
+        "name": "Nama",
+        "address": "Blok / No",
+        "paid": "Sudah Bayar",
+        "arrears": "Menunggak",
+        "owed": "Tagihan",
+        "confirmations": "Konfirmasi"
+      },
+      "confirmationStatus": {
+        "pending": "menunggu"
+      }
+    },
     "cards": {
       "totalResidents": "Total Warga",
       "paid": "Lunas",
@@ -593,7 +610,9 @@
     },
     "approval": {
       "approve": "Setujui",
-      "reject": "Tolak"
+      "reject": "Tolak",
+      "approveSuccess": "Pembayaran berhasil disetujui.",
+      "rejectSuccess": "Pembayaran berhasil ditolak."
     }
   },
   "expenses": {

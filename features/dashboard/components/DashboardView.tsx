@@ -10,6 +10,9 @@ import CashflowChart
 import MonthlyCollectionChart
   from '../charts/MonthlyCollectionChart'
 
+import ResidentArrearsSummary
+  from '@/features/resident/components/analytics/ResidentArrearsSummary'
+
 import {
   formatRupiah
 } from '../../../lib/utils'
@@ -35,6 +38,11 @@ interface DashboardViewProps {
   paymentHealth:    any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   financialInsight: any
+  role?:            string | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  residentAnalytics?: any[]
+  monthlyFee?:        number
+  refresh?:           () => void
 }
 
 export default function DashboardView({
@@ -48,7 +56,12 @@ export default function DashboardView({
 
   paymentHealth,
 
-  financialInsight
+  financialInsight,
+
+  role,
+  residentAnalytics = [],
+  monthlyFee        = 0,
+  refresh,
 
 }: DashboardViewProps) {
 
@@ -182,6 +195,18 @@ export default function DashboardView({
 
       </div>
 
+      {/* ARREARS TABLE — TREASURER ONLY */}
+
+      {role === 'TREASURER' && (
+        <ResidentArrearsSummary
+          residentAnalytics={residentAnalytics}
+          monthlyFee={monthlyFee}
+          year={year}
+          role={role}
+          onRefresh={refresh}
+        />
+      )}
+
       {/* KEUANGAN RT */}
 
       <div className="space-y-3">
@@ -253,6 +278,7 @@ export default function DashboardView({
         />
 
       </div>
+
 
     </div>
   )
