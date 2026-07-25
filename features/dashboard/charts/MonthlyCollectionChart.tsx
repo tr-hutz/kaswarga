@@ -14,17 +14,35 @@ const Chart = dynamic(() => import('react-apexcharts'), {
     ),
 })
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function MonthlyCollectionChart({ data = [] }: { data?: any[] }) {
+function fmtRupiah(val: number): string {
+    if (val >= 1_000_000) return `Rp ${(val / 1_000_000).toFixed(1).replace('.0', '')}jt`
+    if (val >= 1_000)     return `Rp ${Math.round(val / 1_000)}rb`
+    return `Rp ${val}`
+}
+
+interface CollectionPoint {
+    month:         string
+    amount:        number
+    residentsPaid: number
+}
+
+export default function MonthlyCollectionChart({
+    data           = [],
+    totalResidents = 0,
+}: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data?:           any[]
+    totalResidents?: number
+}) {
 
     const t      = useTranslations('dashboard.sections')
     const { resolvedTheme } = useTheme()
     const isDark = resolvedTheme === 'dark'
 
-    const categories = data.map(d => d.month)
+    const points = data as CollectionPoint[]
 
     const series = [
-        { name: 'Pembayaran', data: data.map(d => d.total) },
+        { name: 'Pemasukan', data: points.map(d => d.amount) },
     ]
 
     const options: ApexOptions = {
@@ -41,19 +59,28 @@ export default function MonthlyCollectionChart({ data = [] }: { data?: any[] }) 
                 columnWidth:  '55%',
             },
         },
-        xaxis: { categories },
+        xaxis: { categories: points.map(d => d.month) },
         yaxis: {
             labels: {
-                formatter: (val: number) => String(Math.round(val)),
+                formatter: (val: number) => fmtRupiah(val),
             },
         },
         tooltip: {
-            y: {
-                formatter: (val: number) => `${val} pembayaran`,
+            custom: ({ dataPointIndex }: { dataPointIndex: number }) => {
+                const d   = points[dataPointIndex]
+                const pct = totalResidents > 0
+                    ? Math.round((d.residentsPaid / totalResidents) * 100)
+                    : 0
+                return `
+                    <div style="padding:8px 12px;line-height:1.6">
+                        <div style="font-weight:600">${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(d.amount)}</div>
+                        <div style="font-size:12px;opacity:0.75">${d.residentsPaid} / ${totalResidents} warga &nbsp;·&nbsp; ${pct}%</div>
+                    </div>
+                `
             },
         },
-        grid:   { borderColor: isDark ? '#2E3A47' : '#E2E8F0' },
-        theme:  { mode: isDark ? 'dark' : 'light' },
+        grid:       { borderColor: isDark ? '#2E3A47' : '#E2E8F0' },
+        theme:      { mode: isDark ? 'dark' : 'light' },
         dataLabels: { enabled: false },
     }
 

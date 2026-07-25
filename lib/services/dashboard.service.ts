@@ -36,9 +36,6 @@ export async function getDashboardData(
   const rtId =
     membership.rt?.id
 
-  const residentId =
-    membership.resident?.id || null
-
   /*
    |--------------------------------------------------------------------------
    | TOTAL RESIDENTS
@@ -116,25 +113,6 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
-   | FILTER RESIDENT
-   |--------------------------------------------------------------------------
-   */
-
-  if (
-    role === 'RESIDENT'
-    &&
-    residentId
-  ) {
-
-    paymentQuery =
-      paymentQuery.eq(
-        'resident_id',
-        residentId
-      )
-  }
-
-  /*
-   |--------------------------------------------------------------------------
    | FILTER RT
    |--------------------------------------------------------------------------
    */
@@ -190,25 +168,6 @@ export async function getDashboardData(
       'year',
       year
     )
-
-  /*
-   |--------------------------------------------------------------------------
-   | FILTER RESIDENT
-   |--------------------------------------------------------------------------
-   */
-
-  if (
-    role === 'RESIDENT'
-    &&
-    residentId
-  ) {
-
-    confirmationQuery =
-      confirmationQuery.eq(
-        'resident_id',
-        residentId
-      )
-  }
 
   /*
    |--------------------------------------------------------------------------
@@ -585,51 +544,23 @@ export async function getDashboardData(
     const collection =
         MONTHS.map(month => {
 
-            const total =
-                paymentData.reduce(
+            const paid   = new Set<string>()
+            let   amount = 0
 
-                    (
-                        sum,
-                        payment
-                    ) => {
-
-                        const monthlyCount =
-
-                            (
-                                payment
-                                    .payment_details || []
-                            )
-
-                                .filter(detail =>
-
-                                    Number(
-                                        detail.month
-                                    ) ===
-
-                                    Number(
-                                        month.id
-                                    )
-                                )
-
-                                .length
-
-                        return (
-                            sum +
-                            monthlyCount
-                        )
-
-                    },
-
-                    0
-                )
+            for (const payment of paymentData) {
+                for (const detail of (payment.payment_details || [])) {
+                    if (Number(detail.month) === Number(month.id)) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        paid.add((payment as any).resident_id)
+                        amount += Number(detail.amount || 0)
+                    }
+                }
+            }
 
             return {
-
-                month:
-                month.short,
-
-                total
-
+                month:         month.short,
+                amount,
+                residentsPaid: paid.size,
             }
 
         })

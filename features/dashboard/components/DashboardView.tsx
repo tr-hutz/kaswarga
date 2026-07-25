@@ -249,6 +249,7 @@ export default function DashboardView({
 
         <MonthlyCollectionChart
           data={analytics.collection}
+          totalResidents={paymentHealth.totalResidents}
         />
 
       </div>
