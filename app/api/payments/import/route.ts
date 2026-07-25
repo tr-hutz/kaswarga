@@ -82,6 +82,7 @@ export async function POST(req: Request) {
         XLSX.utils.book_append_sheet(wb, ws, 'Data')
         const xlsxBuffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }) as Buffer
 
+        // Upload is best-effort: a bucket config issue must never block the import.
         const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
             .from('payment-proof')
             .upload(fileName, xlsxBuffer, {
@@ -89,11 +90,13 @@ export async function POST(req: Request) {
                 upsert: false,
             })
 
-        if (uploadError) throw uploadError
+        if (uploadError) {
+            console.warn('[payments/import] storage upload skipped:', uploadError.message)
+        }
 
-        const { data: { publicUrl } } = supabaseAdmin.storage
-            .from('payment-proof')
-            .getPublicUrl(uploadData.path)
+        const publicUrl = uploadData
+            ? supabaseAdmin.storage.from('payment-proof').getPublicUrl(uploadData.path).data.publicUrl
+            : null
 
         // Group rows by block + house_number + year
         const groups = new Map<string, Record<string, string>[]>()
