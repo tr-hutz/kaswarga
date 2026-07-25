@@ -9,7 +9,7 @@ import {
     KeyRound, LayoutDashboard, Link2, Loader2, LogIn, LogOut, Mail,
     Menu, Monitor, Moon, Paperclip, Pencil, Plus, Receipt, RefreshCw, Search,
     Settings, ShelvingUnit, Sun, Trash2, Upload, UserCog, UserPlus, Users,
-    Vibrate, Wallet, X, XCircle,
+    Table2, Vibrate, Wallet, X, XCircle,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
 
@@ -63,6 +63,7 @@ const ICONS = {
     'user-cog':         UserCog,
     'user-plus':        UserPlus,
     users:              Users,
+    'table-2':          Table2,
     vibrate:            Vibrate,
     wallet:             Wallet,
     x:                  X,

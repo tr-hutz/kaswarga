@@ -146,3 +146,42 @@ export async function updateResidentById(id: string, payload: ResidentUpdate) {
     if (error) throw error
     return data
 }
+
+export async function findResidentsWithPaymentsForLedger(rtId: string, year: number) {
+    const { data: residents, error: resErr } = await supabase
+        .from('residents')
+        .select('id, name, block, house_number')
+        .eq('rt_id', rtId)
+        .is('deleted_at', null)
+        .order('block',        { ascending: true })
+        .order('house_number', { ascending: true })
+    if (resErr) throw resErr
+
+    const { data: payments, error: payErr } = await supabase
+        .from('payments')
+        .select(`
+            resident_id,
+            payment_details ( month, amount )
+        `)
+        .eq('rt_id', rtId)
+        .eq('year',  year)
+    if (payErr) throw payErr
+
+    const payMap: Record<string, Record<number, number>> = {}
+    for (const p of (payments ?? [])) {
+        if (!payMap[p.resident_id]) payMap[p.resident_id] = {}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        for (const d of ((p as any).payment_details ?? [])) {
+            const m = Number(d.month)
+            payMap[p.resident_id][m] = (payMap[p.resident_id][m] ?? 0) + Number(d.amount ?? 0)
+        }
+    }
+
+    return (residents ?? []).map(r => ({
+        id:             r.id,
+        name:           r.name,
+        block:          r.block ?? '',
+        houseNumber:    r.house_number ?? '',
+        monthlyAmounts: payMap[r.id] ?? {} as Record<number, number>,
+    }))
+}

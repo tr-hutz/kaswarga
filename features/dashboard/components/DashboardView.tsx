@@ -13,6 +13,7 @@ import MonthlyCollectionChart
 import ResidentArrearsSummary
   from '@/features/resident/components/analytics/ResidentArrearsSummary'
 
+import Icon       from '@/components/ui/Icon'
 import {
   formatRupiah
 } from '../../../lib/utils'
@@ -43,6 +44,8 @@ interface DashboardViewProps {
   residentAnalytics?: any[]
   monthlyFee?:        number
   refresh?:           () => void
+  exportLoading?:     boolean
+  onExportLedger?:    () => void
 }
 
 export default function DashboardView({
@@ -62,6 +65,8 @@ export default function DashboardView({
   residentAnalytics = [],
   monthlyFee        = 0,
   refresh,
+  exportLoading     = false,
+  onExportLedger,
 
 }: DashboardViewProps) {
 
@@ -148,10 +153,23 @@ export default function DashboardView({
 
       <div className="space-y-3">
 
-        <SectionLabel
-          title={t('sections.paymentStatus')}
-          subtitle={t('sections.paymentStatusSubtitle')}
-        />
+        <div className="flex items-center justify-between gap-4">
+          <SectionLabel
+            title={t('sections.paymentStatus')}
+            subtitle={t('sections.paymentStatusSubtitle')}
+          />
+          {role === 'TREASURER' && onExportLedger && (
+            <button
+              onClick={onExportLedger}
+              disabled={exportLoading}
+              title={t('exportLedger.title')}
+              className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground disabled:opacity-60 flex-shrink-0"
+            >
+              <Icon name="table-2" size={15} />
+              {exportLoading ? t('exportLedger.loading') : t('exportLedger.button')}
+            </button>
+          )}
+        </div>
 
         <div
           className="

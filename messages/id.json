@@ -147,7 +147,7 @@
     "loading": "Memuat data...",
     "sections": {
       "paymentStatus": "Status Iuran Warga",
-      "paymentStatusSubtitle": "Rekap kepatuhan pembayaran iuran bulanan",
+      "paymentStatusSubtitle": "Rekap pembayaran iuran bulanan",
       "finance": "Keuangan RT",
       "financeSubtitle": "Ringkasan arus kas tahun {year}",
       "cashflowTitle": "Arus Kas",
@@ -171,6 +171,11 @@
       "confirmationStatus": {
         "pending": "menunggu"
       }
+    },
+    "exportLedger": {
+      "title": "Ekspor laporan kas iuran warga",
+      "button": "Catatan Pemasukan",
+      "loading": "Mengekspor..."
     },
     "cards": {
       "totalResidents": "Total Warga",
