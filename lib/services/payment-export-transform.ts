@@ -1,6 +1,6 @@
 import {
     MONTHS
-} from '../../constants/months'
+} from '@/lib/constants/months'
 
 interface PaymentExportRow {
     name?: string

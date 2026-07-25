@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useAuth } from '../../lib/auth/useAuth'
-import { useTheme } from '../../hooks/useTheme'
+import { useTheme } from '@/lib/hooks/useTheme'
 
 /**
  * Syncs the active theme storage key to the logged-in user.

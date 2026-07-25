@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { useTranslations } from 'next-intl'
-import { MONTHS } from '../../../../constants/months'
+import { MONTHS } from '@/lib/constants/months'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function PaymentDetailMonths({ details = [] }: { details?: any[] }) {

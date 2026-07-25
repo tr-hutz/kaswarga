@@ -3,7 +3,7 @@
 
 import { useMemo, useState }  from 'react'
 import { useTranslations }    from 'next-intl'
-import { useDataTable }       from '@/hooks/useDataTable'
+import { useDataTable }       from '@/lib/hooks/useDataTable'
 import { usePaymentData }     from './hooks/usePaymentData'
 import { usePaymentDetail }   from './hooks/usePaymentDetail'
 import { useApprovalActions } from './hooks/useApprovalAction'

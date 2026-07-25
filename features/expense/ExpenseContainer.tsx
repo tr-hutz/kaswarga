@@ -1,7 +1,7 @@
 'use client'
 
 import ExpenseView              from './ExpenseView'
-import { useDataTable }         from '@/hooks/useDataTable'
+import { useDataTable }         from '@/lib/hooks/useDataTable'
 import { useExpenseData }       from './hooks/useExpenseData'
 import { useExpenseRealtime }   from './hooks/useExpenseRealtime'
 import { useExpenseActions }    from './hooks/useExpenseActions'

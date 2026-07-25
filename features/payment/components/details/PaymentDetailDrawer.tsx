@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import Icon       from '@/components/ui/Icon'
 import Ribbadge   from '@/components/ui/Ribbadge'
-import { MONTHS } from '@/constants/months'
+import { MONTHS } from '@/lib/constants/months'
 
 import PaymentProofPreview from './PaymentProofPreview'
 import ApprovalActionBar   from '../approval/ApprovalActionBar'

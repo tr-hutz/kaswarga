@@ -2,7 +2,7 @@
 
 import dynamic        from 'next/dynamic'
 import { useTranslations } from 'next-intl'
-import { useTheme }   from '@/hooks/useTheme'
+import { useTheme }   from '@/lib/hooks/useTheme'
 import type { ApexOptions } from 'apexcharts'
 
 const Chart = dynamic(() => import('react-apexcharts'), {

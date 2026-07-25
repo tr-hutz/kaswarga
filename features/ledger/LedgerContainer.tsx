@@ -1,7 +1,7 @@
 'use client'
 
 import LedgerView           from './LedgerView'
-import { useDataTable }     from '@/hooks/useDataTable'
+import { useDataTable }     from '@/lib/hooks/useDataTable'
 import { useLedgerData }    from './hooks/useLedgerData'
 import { useLedgerActions } from './hooks/useLedgerActions'
 import { useLedgerRealtime } from './hooks/useLedgerRealtime'

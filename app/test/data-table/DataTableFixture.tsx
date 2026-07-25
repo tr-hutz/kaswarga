@@ -3,7 +3,7 @@
 import { useMemo }         from 'react'
 import { useSearchParams } from 'next/navigation'
 import { DataTable }       from '@/components/common/data-table'
-import { useDataTable }    from '@/hooks/useDataTable'
+import { useDataTable }    from '@/lib/hooks/useDataTable'
 import type { Column, QueryOptions, PageResult } from '@/lib/types/query'
 
 // ─── Mock dataset ─────────────────────────────────────────────────────────────

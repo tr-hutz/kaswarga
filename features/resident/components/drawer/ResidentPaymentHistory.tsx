@@ -2,7 +2,7 @@
 
 import {
     MONTHS
-} from '../../../../constants/months'
+} from '@/lib/constants/months'
 
 import { useTranslations } from 'next-intl'
 

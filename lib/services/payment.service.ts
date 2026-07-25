@@ -3,7 +3,7 @@ import { getCurrentMembership } from '../auth/getCurrentMembership'
 import { logActivity } from './activity-logger'
 import { ROLES } from '../permissions/permission-constants'
 import { transformConfirmation, transformPayment } from '../../features/payment/services/payment-transform'
-import { MONTHS } from '../../constants/months'
+import { MONTHS } from '@/lib/constants/months'
 import {
     findApprovedPaymentDetails,
     findPendingConfirmationDetailsForHome,
