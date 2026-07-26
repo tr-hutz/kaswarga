@@ -153,7 +153,12 @@
       "cashflowTitle": "Arus Kas",
       "cashflowSubtitle": "Pemasukan vs pengeluaran bulanan",
       "monthlyCollectionTitle": "Pemasukan Bulanan",
-      "monthlyCollectionSubtitle": "Total pemasukan iuran per bulan"
+      "monthlyCollectionSubtitle": "Total pemasukan iuran per bulan",
+      "expenseCategoryTitle": "Pengeluaran per Kategori",
+      "expenseCategorySubtitle": "Komposisi pengeluaran berdasarkan kategori tahun {year}",
+      "monthlyExpenseCategoryTitle": "Pengeluaran Bulanan",
+      "monthlyExpenseCategorySubtitle": "Rincian pengeluaran per kategori per bulan",
+      "noExpenseData": "Belum ada data pengeluaran"
     },
     "arrearsSummary": {
       "title": "Daftar Tunggakan Warga",

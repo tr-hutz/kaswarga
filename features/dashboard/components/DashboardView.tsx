@@ -10,6 +10,12 @@ import CashflowChart
 import MonthlyCollectionChart
   from '../charts/MonthlyCollectionChart'
 
+import ExpenseCategoryDonutChart
+  from '../charts/ExpenseCategoryDonutChart'
+
+import MonthlyExpenseByCategoryChart
+  from '../charts/MonthlyExpenseByCategoryChart'
+
 import ResidentArrearsSummary
   from '@/features/resident/components/analytics/ResidentArrearsSummary'
 
@@ -275,7 +281,7 @@ export default function DashboardView({
 
       </div>
 
-      {/* CHARTS */}
+      {/* CHARTS ROW 1 — Income */}
 
       <div
         className="
@@ -293,6 +299,31 @@ export default function DashboardView({
         <MonthlyCollectionChart
           data={analytics.collection}
           totalResidents={paymentHealth.totalResidents}
+        />
+
+      </div>
+
+      {/* CHARTS ROW 2 — Expense breakdown */}
+
+      <div
+        className="
+          grid
+          grid-cols-1
+          xl:grid-cols-3
+          gap-6
+        "
+      >
+
+        <div className="xl:col-span-2">
+          <MonthlyExpenseByCategoryChart
+            data={analytics.monthlyExpenseByCategory ?? []}
+            categories={analytics.expenseCategories ?? []}
+          />
+        </div>
+
+        <ExpenseCategoryDonutChart
+          data={analytics.expenseByCategory ?? []}
+          year={year}
         />
 
       </div>

@@ -594,6 +594,42 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
+   | EXPENSE BY CATEGORY
+   |--------------------------------------------------------------------------
+   */
+
+  const categoryTotals: Record<string, number> = {}
+  for (const e of expenseData) {
+    const cat = e.category || 'Lainnya'
+    categoryTotals[cat] = (categoryTotals[cat] ?? 0) + Number(e.amount ?? 0)
+  }
+  const expenseByCategory = Object.entries(categoryTotals)
+    .map(([category, total]) => ({ category, total }))
+    .sort((a, b) => b.total - a.total)
+
+  const expenseCategories = expenseByCategory.map(e => e.category)
+
+  /*
+   |--------------------------------------------------------------------------
+   | MONTHLY EXPENSE BY CATEGORY
+   |--------------------------------------------------------------------------
+   */
+
+  const monthlyExpenseByCategory = MONTHS.map(month => {
+    const values: Record<string, number> = {}
+    for (const cat of expenseCategories) {
+      values[cat] = expenseData
+        .filter(e => {
+          const m = new Date(e.date!).getMonth() + 1
+          return m === month.id && (e.category || 'Lainnya') === cat
+        })
+        .reduce((s, e) => s + Number(e.amount ?? 0), 0)
+    }
+    return { month: month.short, values }
+  })
+
+  /*
+   |--------------------------------------------------------------------------
    | RETURN
    |--------------------------------------------------------------------------
    */
@@ -635,6 +671,12 @@ export async function getDashboardData(
     cashflow,
 
     collection,
+
+    expenseByCategory,
+
+    expenseCategories,
+
+    monthlyExpenseByCategory,
 
     paymentData,
 

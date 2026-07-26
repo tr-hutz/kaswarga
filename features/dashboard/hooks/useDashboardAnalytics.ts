@@ -85,11 +85,15 @@ export function useDashboardAnalytics() {
 
         setAnalytics({
 
-          cashflow:
-            data.cashflow,
+          cashflow:                 data.cashflow,
 
-          collection:
-            data.collection
+          collection:               data.collection,
+
+          expenseByCategory:        data.expenseByCategory        || [],
+
+          expenseCategories:        data.expenseCategories        || [],
+
+          monthlyExpenseByCategory: data.monthlyExpenseByCategory || [],
 
         })
 
