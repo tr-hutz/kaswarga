@@ -35,7 +35,9 @@ export function transformPaymentHistory(
                     monthEntry?.name || '-',
 
                 amount:
-                    Number(detail.amount || 0)
+                    Number(detail.amount || 0),
+
+                status: 'approved',
             }
         })
     })

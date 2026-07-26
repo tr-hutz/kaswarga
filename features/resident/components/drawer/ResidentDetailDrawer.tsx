@@ -1,10 +1,12 @@
 'use client'
 
+import { useState } from 'react'
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
 import ResidentDetailSummary from '../detail/ResidentDetailSummary'
 import ResidentPaymentHistory from './ResidentPaymentHistory'
+import { usePaymentHistory } from '../../hooks/usePaymentHistory'
 
 interface ResidentDetailDrawerProps {
     open:               boolean
@@ -24,13 +26,20 @@ export default function ResidentDetailDrawer({
 }: ResidentDetailDrawerProps) {
 
     const t = useTranslations('residents')
+    const currentYear = new Date().getFullYear()
+    const [year, setYear] = useState(currentYear)
+
+    const canViewPaymentHistory =
+        role !== 'RESIDENT' || resident?.id === currentResidentId
+
+    const { history, loading: historyLoading } = usePaymentHistory(
+        canViewPaymentHistory ? resident?.id : null,
+        year,
+    )
 
     if (!open || !resident) {
         return null
     }
-
-    const canViewPaymentHistory =
-        role !== 'RESIDENT' || resident?.id === currentResidentId
 
     return (
         <div
@@ -62,7 +71,10 @@ export default function ResidentDetailDrawer({
                     {canViewPaymentHistory && (
                         <div className="mt-6">
                             <ResidentPaymentHistory
-                                paymentHistory={resident?.paymentHistory || []}
+                                paymentHistory={history}
+                                loading={historyLoading}
+                                year={year}
+                                onYearChange={setYear}
                             />
                         </div>
                     )}
