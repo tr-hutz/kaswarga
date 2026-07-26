@@ -16,7 +16,18 @@ import {
   buildPaymentHealth
 } from '../helpers/dashboard-analytics'
 
+import { useAuth } from '@/lib/auth/useAuth'
+
 export function useDashboardAnalytics() {
+
+  /*
+   |--------------------------------------------------------------------------
+   | AUTH — wait for auth to settle before fetching so we don't race against
+   | Supabase restoring its session from storage on client-side navigation.
+   |--------------------------------------------------------------------------
+   */
+
+  const { loading: authLoading, rtId } = (useAuth() as any) ?? {}
 
   /*
    |--------------------------------------------------------------------------
@@ -32,6 +43,11 @@ export function useDashboardAnalytics() {
     loading,
     setLoading
   ] = useState(true)
+
+  const [
+    error,
+    setError
+  ] = useState(false)
 
   const [
     year,
@@ -72,9 +88,16 @@ export function useDashboardAnalytics() {
 
   useEffect(() => {
 
+    // Don't fetch until AuthProvider has finished loading the session.
+    // On client-side navigation the Supabase client may not yet have restored
+    // its in-memory session, causing getCurrentMembership() to throw
+    // 'Unauthorized' and leaving all data states null (infinite loading).
+    if (authLoading || !rtId) return
+
     async function loadData() {
 
       setLoading(true)
+      setError(false)
 
       try {
 
@@ -130,6 +153,8 @@ export function useDashboardAnalytics() {
           err
         )
 
+        setError(true)
+
       } finally {
 
         setLoading(false)
@@ -141,7 +166,7 @@ export function useDashboardAnalytics() {
     loadData()
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [year, refreshKey])
+  }, [year, refreshKey, authLoading, rtId])
 
   /*
    |--------------------------------------------------------------------------
@@ -151,6 +176,7 @@ export function useDashboardAnalytics() {
 
   return {
     loading,
+    error,
     year,
     setYear,
     analytics,

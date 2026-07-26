@@ -37,6 +37,7 @@ function SectionLabel({ title, subtitle }: { title: string; subtitle?: string })
 
 interface DashboardViewProps {
   loading:          boolean
+  error?:           boolean
   year:             number
   setYear:          (y: number) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,6 +58,7 @@ interface DashboardViewProps {
 export default function DashboardView({
 
   loading,
+  error,
 
   year,
   setYear,
@@ -76,15 +78,27 @@ export default function DashboardView({
 
 }: DashboardViewProps) {
 
-  const t = useTranslations('dashboard')
+  const t  = useTranslations('dashboard')
+  const tc = useTranslations('common')
 
-  if (
-    loading ||
-    !analytics ||
-    !paymentHealth ||
-    !financialInsight
-  ) {
+  if (error && !analytics) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 p-12 text-center">
+        <p className="text-sm text-muted">{t('error')}</p>
+        {refresh && (
+          <button
+            onClick={refresh}
+            className="flex items-center gap-1.5 h-9 px-4 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
+          >
+            <Icon name="refresh-cw" size={14} />
+            {tc('actions.retry')}
+          </button>
+        )}
+      </div>
+    )
+  }
 
+  if (loading || !analytics || !paymentHealth || !financialInsight) {
     return (
       <div className="text-sm text-subtle p-6">
         {t('loading')}

@@ -145,6 +145,7 @@
   "dashboard": {
     "title": "Dasbor",
     "loading": "Memuat data...",
+    "error": "Gagal memuat data. Silakan coba lagi.",
     "sections": {
       "paymentStatus": "Status Iuran Warga",
       "paymentStatusSubtitle": "Rekap pembayaran iuran bulanan",
