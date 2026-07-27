@@ -24,18 +24,22 @@ function loadEnv(file) {
       if (!process.env[key]) process.env[key] = val
     }
   } catch {
-    // file not found — use defaults below
+    // file not found — env vars must be set in the environment
   }
 }
 
 loadEnv('.env.local')
 
-const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://bftwjxpotkmpofdruiqc.supabase.co'
+const SUPABASE_URL     = process.env.NEXT_PUBLIC_SUPABASE_URL
+const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-const SERVICE_ROLE_KEY =
-  process.env.SUPABASE_SERVICE_ROLE_KEY ??
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hj04zWl196z2-SBc0'
+if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
+  console.error('Missing required environment variables:')
+  if (!SUPABASE_URL)     console.error('  NEXT_PUBLIC_SUPABASE_URL')
+  if (!SERVICE_ROLE_KEY) console.error('  SUPABASE_SERVICE_ROLE_KEY')
+  console.error('\nAdd these to .env.local and try again.')
+  process.exit(1)
+}
 
 const HEADERS = {
   apikey:         SERVICE_ROLE_KEY,
