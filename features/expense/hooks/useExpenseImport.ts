@@ -34,7 +34,6 @@ export function useExpenseImport(onSuccess?: (inserted: number) => void) {
         ],
         templateSheetName: 'Expenses',
         templateFileName:  'expense-import-template.xlsx',
-        entityLabel:       'pengeluaran',
         onSuccess,
     })
 }

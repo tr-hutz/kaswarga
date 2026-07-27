@@ -38,7 +38,6 @@ export function useResidentImport(onSuccess?: (inserted: number) => void) {
         ],
         templateSheetName: 'Residents',
         templateFileName:  'resident-import-template.xlsx',
-        entityLabel:       'warga',
         onSuccess,
     })
 }

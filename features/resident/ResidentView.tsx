@@ -57,6 +57,7 @@ interface Props {
     rows:             unknown[]
     fileName:         string | null
     fileRef:          React.RefObject<HTMLInputElement>
+    importing:        boolean
     importError:      string
     progress?:        number
     processedRows?:   number
