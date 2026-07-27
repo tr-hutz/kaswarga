@@ -37,10 +37,13 @@ export default function PaymentContainer() {
     const {
         importOpen, openImport, closeImport,
         rows: importRows, fileName: importFileName, fileRef: importFileRef,
-        error: importError,
+        importing, error: importError,
+        progress, processedRows, totalRows,
         handleFile, handleImport, downloadTemplate, resetImport,
-    } = usePaymentImport(() => {
+    } = usePaymentImport((inserted, skipped) => {
         reload()
+        const skipMsg = skipped ? `, ${skipped} ${t('import.skippedSuffix')}` : ''
+        toast({ message: t('import.successMessage', { inserted }) + skipMsg, type: 'success' })
     })
 
     // Approve all imported
@@ -174,7 +177,11 @@ export default function PaymentContainer() {
             importRows={importRows}
             importFileName={importFileName}
             importFileRef={importFileRef}
+            importing={importing}
             importError={importError}
+            progress={progress}
+            processedRows={processedRows}
+            totalRows={totalRows}
             handleFile={handleFile}
             handleImport={handleImport}
             downloadTemplate={downloadTemplate}

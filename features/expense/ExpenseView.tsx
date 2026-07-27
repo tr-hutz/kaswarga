@@ -27,6 +27,9 @@ interface Props {
     setSort:         (by: string, dir: 'asc' | 'desc') => void
     setFilter:       (key: string, value: unknown) => void
     importError:     string
+    progress?:       number
+    processedRows?:  number
+    totalRows?:      number
     // from useExpenseActions
     selectedRow:     MappedExpense | null
     drawerOpen:      boolean
@@ -48,6 +51,7 @@ interface Props {
     fileName:        string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fileRef:         React.RefObject<any>
+    importing:       boolean
     handleFile:      (file: File | undefined) => void
     handleImport:    () => void
     downloadTemplate: () => void
@@ -72,7 +76,8 @@ export default function ExpenseView({
     removeRow, exportCSV, exportExcel,
     importOpen, openImport, closeImport,
     importRows, fileName: importFileName, fileRef: importFileRef,
-    handleFile, handleImport, downloadTemplate, resetImport,
+    importing, handleFile, handleImport, downloadTemplate, resetImport,
+    progress, processedRows, totalRows,
     approvalLoading, approveExpense, rejectExpense, approveAllExpenses,
     deleteTarget, confirmDelete, cancelDelete,
 }: Props) {
@@ -200,11 +205,15 @@ export default function ExpenseView({
                 rows={importRows}
                 fileName={importFileName}
                 fileRef={importFileRef}
+                importing={importing}
                 error={importError}
                 onFile={handleFile}
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
+                progress={progress}
+                processedRows={processedRows}
+                totalRows={totalRows}
             />
 
             <ConfirmDialog

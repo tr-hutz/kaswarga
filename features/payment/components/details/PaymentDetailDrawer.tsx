@@ -9,35 +9,6 @@ import PaymentProofPreview from './PaymentProofPreview'
 import ApprovalActionBar   from '../approval/ApprovalActionBar'
 import { useKeyDown }      from '../../../../lib/hooks/useKeyDown'
 
-function formatMonthRanges(details: { id: string; month: number }[], year: number): string {
-    const months = [...new Set(details.map(d => Number(d.month)))]
-        .filter(m => m >= 1 && m <= 12)
-        .sort((a, b) => a - b)
-
-    if (!months.length) return ''
-
-    const runs: number[][] = []
-    let run = [months[0]]
-    for (let i = 1; i < months.length; i++) {
-        if (months[i] === months[i - 1] + 1) {
-            run.push(months[i])
-        } else {
-            runs.push(run)
-            run = [months[i]]
-        }
-    }
-    runs.push(run)
-
-    const parts = runs.map(r => {
-        const first = MONTHS.find(m => m.id === r[0])?.name ?? ''
-        if (r.length === 1) return first
-        const last = MONTHS.find(m => m.id === r[r.length - 1])?.name ?? ''
-        return `${first} – ${last}`
-    })
-
-    return `${parts.join(', ')} ${year}`
-}
-
 interface PaymentDetailDrawerProps {
     open:        boolean
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,10 +17,9 @@ interface PaymentDetailDrawerProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onApprove:   (payment?: any) => void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onReject:    (payment?: any) => void
-    loading:     boolean
-    role:        string | null | undefined
-    headerNote?: string
+    onReject:  (payment?: any) => void
+    loading:   boolean
+    role:      string | null | undefined
 }
 
 export default function PaymentDetailDrawer({
@@ -60,7 +30,6 @@ export default function PaymentDetailDrawer({
     onReject,
     loading,
     role,
-    headerNote,
 }: PaymentDetailDrawerProps) {
 
     const t  = useTranslations('payments')
@@ -86,9 +55,7 @@ export default function PaymentDetailDrawer({
                 <div className="pb-4 border-b border-divider flex items-start justify-between">
                     <div>
                         <h2 className="text-xl font-bold text-foreground">{t('detail.title')}</h2>
-                        <p className="text-sm text-muted mt-0.5">
-                            {headerNote ?? t('detail.subtitle')}
-                        </p>
+                        <p className="text-sm text-muted mt-0.5">{t('detail.subtitle')}</p>
                     </div>
                     <button
                         data-testid="close-drawer"
@@ -118,9 +85,16 @@ export default function PaymentDetailDrawer({
                             </div>
                             <div>
                                 <p className="text-xs text-muted">{t('detail.monthsPaid')}</p>
-                                <p className="font-medium text-foreground">
-                                    {formatMonthRanges(payment.details || [], payment.year)}
-                                </p>
+                                <div className="flex flex-wrap gap-1.5 mt-1">
+                                    {(payment.details || []).map((d: { id: string; month: number }) => {
+                                        const month = MONTHS.find(m => Number(m.id) === Number(d.month))
+                                        return (
+                                            <span key={d.id} className="px-2 py-1 rounded-md bg-surface text-xs">
+                                                {month?.name}
+                                            </span>
+                                        )
+                                    })}
+                                </div>
                             </div>
                             <div>
                                 <p className="text-xs text-muted">{t('detail.totalAmount')}</p>

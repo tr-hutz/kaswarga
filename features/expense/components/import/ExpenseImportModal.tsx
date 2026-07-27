@@ -24,6 +24,9 @@ interface ExpenseImportModalProps {
     onImport:           () => void
     onDownloadTemplate: () => void
     onReset:            () => void
+    progress?:          number
+    processedRows?:     number
+    totalRows?:         number
 }
 
 export default function ExpenseImportModal({
@@ -37,6 +40,9 @@ export default function ExpenseImportModal({
     onImport,
     onDownloadTemplate,
     onReset,
+    progress,
+    processedRows,
+    totalRows,
 }: ExpenseImportModalProps) {
     const t = useTranslations('expenses')
 
@@ -71,6 +77,9 @@ export default function ExpenseImportModal({
             onDownloadTemplate={onDownloadTemplate}
             onReset={onReset}
             importButtonLabel={t('import.buttonLabel')}
+            progress={progress}
+            processedRows={processedRows}
+            totalRows={totalRows}
         />
     )
 }
