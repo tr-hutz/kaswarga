@@ -11,7 +11,7 @@ const ALWAYS_ALLOW = [
     '/api/resend-invite',
 ]
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
 
     if (!MAINTENANCE_MODE) return NextResponse.next()
