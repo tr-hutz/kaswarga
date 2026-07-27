@@ -117,7 +117,7 @@ export default function ResidentPaymentHistory({
                 !loading && paymentHistory.map(item => (
 
                     <div
-                        key={item.id}
+                        key={`${item.paymentId}-${item.month}`}
                         className="
               border
               rounded-xl
