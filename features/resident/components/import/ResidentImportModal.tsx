@@ -18,6 +18,7 @@ interface ResidentImportModalProps {
     rows:               any[]
     fileName:           string | null
     fileRef:            RefObject<HTMLInputElement>
+    importing:          boolean
     error:              string
     onFile:             (file: File | undefined) => void
     onImport:           () => void
@@ -34,6 +35,7 @@ export default function ResidentImportModal({
     rows,
     fileName,
     fileRef,
+    importing,
     error,
     onFile,
     onImport,
@@ -68,6 +70,7 @@ export default function ResidentImportModal({
             rows={rows}
             fileName={fileName}
             fileRef={fileRef}
+            importing={importing}
             error={error}
             onFile={onFile}
             onImport={onImport}

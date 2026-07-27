@@ -19,6 +19,7 @@ interface ExpenseImportModalProps {
     rows:               any[]
     fileName:           string | null
     fileRef:            RefObject<HTMLInputElement>
+    importing:          boolean
     error:              string
     onFile:             (file: File | undefined) => void
     onImport:           () => void
@@ -35,6 +36,7 @@ export default function ExpenseImportModal({
     rows,
     fileName,
     fileRef,
+    importing,
     error,
     onFile,
     onImport,
@@ -71,6 +73,7 @@ export default function ExpenseImportModal({
             rows={rows}
             fileName={fileName}
             fileRef={fileRef}
+            importing={importing}
             error={error}
             onFile={onFile}
             onImport={onImport}

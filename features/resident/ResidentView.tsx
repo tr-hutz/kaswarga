@@ -183,6 +183,7 @@ export default function ResidentView({
                 rows={importRows}
                 fileName={importFileName}
                 fileRef={importFileRef}
+                importing={importing}
                 error={importError}
                 onFile={handleFile}
                 onImport={handleImport}

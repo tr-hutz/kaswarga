@@ -39,6 +39,7 @@ export default function ImportModal({
     rows,
     fileName,
     fileRef,
+    importing,
     error,
     onFile,
     onImport,
