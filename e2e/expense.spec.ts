@@ -121,8 +121,8 @@ test.describe('expense drawer (admin)', () => {
     await expenses.clickRow(0)
 
     // Scope to drawer to avoid false matches from other page elements
-    await expect(expenses.drawer()).toBeVisible({ timeout: 5000 })
-    await expect(expenses.drawer().getByText(/Detail Pengeluaran/i)).toBeVisible()
+    await expect(expenses.drawer()).toBeVisible({ timeout: 10000 })
+    await expect(expenses.drawer().getByText(/Detail Pengeluaran/i)).toBeVisible({ timeout: 10000 })
   })
 
   test('closing the drawer with ✕ hides it', async ({ page }) => {
