@@ -6,6 +6,14 @@
  */
 
 export { getRequestContext }        from './server'
+export {
+  hasPermission,
+  hasAnyPermission,
+  hasAllPermissions,
+  requirePermission,
+  requireAnyPermission,
+  requireAllPermissions,
+}                                   from './helpers'
 export { AuthorizationContext }    from './authorization-context'
 export type { AuthorizationContextInput } from './authorization-context'
 export { RequestContext,
