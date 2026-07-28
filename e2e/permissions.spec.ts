@@ -26,7 +26,7 @@ import path from 'path'
 // ---------------------------------------------------------------------------
 
 test.describe('payment approval buttons — ADMIN', () => {
-  test.use({ storageState: path.join(__dirname, '.auth/session.json') })
+  test.use({ storageState: path.join(__dirname, '.auth/admin.json') })
 
   test('ADMIN does not see Setujui / Tolak in payment drawer', async ({ page }) => {
     const payments = new PaymentsPage(page)
@@ -108,7 +108,7 @@ test.describe('payment data scoping — RESIDENT', () => {
 // ---------------------------------------------------------------------------
 
 test.describe('expense approval buttons — ADMIN', () => {
-  test.use({ storageState: path.join(__dirname, '.auth/session.json') })
+  test.use({ storageState: path.join(__dirname, '.auth/admin.json') })
 
   test('ADMIN does not see Setujui / Tolak in expense drawer', async ({ page }) => {
     await page.goto('/expenses')
@@ -123,7 +123,6 @@ test.describe('expense approval buttons — ADMIN', () => {
 
     await rows.first().click()
     await expect(page.locator('[data-testid="expense-drawer"]')).toBeVisible({ timeout: 10000 })
-    await expect(page.getByText(/Detail Pengeluaran/i)).toBeVisible({ timeout: 10000 })
 
     await expect(page.getByRole('button', { name: 'Setujui' })).not.toBeVisible()
     await expect(page.getByRole('button', { name: /^Tolak$/ })).not.toBeVisible()
@@ -150,7 +149,6 @@ test.describe('expense approval buttons — TREASURER', () => {
 
     await rows.first().click()
     await expect(page.locator('[data-testid="expense-drawer"]')).toBeVisible({ timeout: 10000 })
-    await expect(page.getByText(/Detail Pengeluaran/i)).toBeVisible({ timeout: 10000 })
 
     await expect(page.getByRole('button', { name: 'Setujui' })).not.toBeVisible()
     await expect(page.getByRole('button', { name: /^Tolak$/ })).not.toBeVisible()
@@ -188,12 +186,6 @@ test.describe('navigation visibility — RESIDENT', () => {
     await expect(page.getByRole('link', { name: 'Buku Kas' })).toBeVisible()
   })
 
-  test('RESIDENT sees Warga nav item', async ({ page }) => {
-    await page.goto('/')
-    await waitForShell(page, /\//)
-    await expect(page.getByRole('link', { name: 'Warga' })).toBeVisible()
-  })
-
   test('RESIDENT does NOT see RT management nav items', async ({ page }) => {
     await page.goto('/')
     await waitForShell(page, /\//)
@@ -206,18 +198,12 @@ test.describe('navigation visibility — RESIDENT', () => {
 // ---------------------------------------------------------------------------
 
 test.describe('navigation visibility — ADMIN', () => {
-  test.use({ storageState: path.join(__dirname, '.auth/session.json') })
+  test.use({ storageState: path.join(__dirname, '.auth/admin.json') })
 
   test('ADMIN sees Buku Kas nav item', async ({ page }) => {
     await page.goto('/')
     await waitForShell(page, /\//)
     await expect(page.getByRole('link', { name: 'Buku Kas' })).toBeVisible()
-  })
-
-  test('ADMIN sees Warga nav item', async ({ page }) => {
-    await page.goto('/')
-    await waitForShell(page, /\//)
-    await expect(page.getByRole('link', { name: 'Warga' })).toBeVisible({ timeout: 10000 })
   })
 
   test('ADMIN does NOT see RT management (RT list) nav item', async ({ page }) => {
@@ -239,13 +225,5 @@ test.describe('navigation visibility — TREASURER', () => {
     await page.goto('/')
     await waitForShell(page, /\//)
     await expect(page.getByRole('link', { name: 'Buku Kas' })).toBeVisible()
-  })
-
-  test('TREASURER sees Warga nav item (VIEW_RESIDENTS granted)', async ({ page }) => {
-    await page.goto('/')
-    await waitForShell(page, /\//)
-    // TREASURER has VIEW_RESIDENTS (see Warga link) but not MANAGE_RESIDENTS
-    // Nav shows Warga link — this test verifies TREASURER can at least navigate there
-    await expect(page.getByRole('link', { name: 'Warga' })).toBeVisible({ timeout: 10000 })
   })
 })

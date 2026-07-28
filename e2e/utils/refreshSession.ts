@@ -2,7 +2,7 @@ import { type Browser } from '@playwright/test'
 import path from 'path'
 import fs from 'fs'
 
-const SESSION_FILE = path.join(__dirname, '../.auth/session.json')
+const SESSION_FILE = path.join(__dirname, '../.auth/admin.json')
 const BASE_URL     = process.env.E2E_BASE_URL ?? 'http://localhost:3000'
 
 /**
@@ -18,12 +18,12 @@ const BASE_URL     = process.env.E2E_BASE_URL ?? 'http://localhost:3000'
  *  A clean login always produces a brand-new token pair with no rotation risk.
  */
 export async function refreshAdminSession(browser: Browser): Promise<void> {
-    const email    = process.env.E2E_TEST_EMAIL
-    const password = process.env.E2E_TEST_PASSWORD
+    const email    = process.env.E2E_ADMIN_EMAIL
+    const password = process.env.E2E_ADMIN_PASSWORD
 
     if (!email || !password) {
         throw new Error(
-            'E2E_TEST_EMAIL / E2E_TEST_PASSWORD must be set in .env.test.local'
+            'E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD must be set in .env.test.local'
         )
     }
 

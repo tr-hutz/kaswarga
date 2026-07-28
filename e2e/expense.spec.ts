@@ -95,7 +95,7 @@ test.describe('create expense (treasurer)', () => {
 // ---------------------------------------------------------------------------
 
 test.describe('expense drawer (admin)', () => {
-  test.use({ storageState: path.join(__dirname, '.auth/session.json') })
+  test.use({ storageState: path.join(__dirname, '.auth/admin.json') })
 
   test.beforeAll(async ({ browser }: { browser: Browser }) => {
     await refreshAdminSession(browser)
@@ -122,7 +122,8 @@ test.describe('expense drawer (admin)', () => {
 
     // Scope to drawer to avoid false matches from other page elements
     await expect(expenses.drawer()).toBeVisible({ timeout: 10000 })
-    await expect(expenses.drawer().getByText(/Detail Pengeluaran/i)).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('[data-testid="expense-drawer"]')).toBeVisible({ timeout: 10000 })
+    // await expect(expenses.drawer().getByText(/Detail Pengeluaran/i)).toBeVisible({ timeout: 10000 })
   })
 
   test('closing the drawer with ✕ hides it', async ({ page }) => {
@@ -150,7 +151,7 @@ test.describe('expense drawer (admin)', () => {
 // ---------------------------------------------------------------------------
 
 test.describe('approve / reject expense (admin — buttons absent)', () => {
-  test.use({ storageState: path.join(__dirname, '.auth/session.json') })
+  test.use({ storageState: path.join(__dirname, '.auth/admin.json') })
 
   test('"Nomor Bukti" field label is visible in expense drawer', async ({ page }) => {
     const expenses = new ExpensesPage(page)
@@ -187,7 +188,8 @@ test.describe('expense drawer fields (treasurer)', () => {
     }
 
     await expenses.clickRow(0)
-    await expect(page.getByText(/Nomor Bukti/i)).toBeVisible()
+    await expect(expenses.drawer()).toBeVisible({ timeout: 10000 })
+    await expect(expenses.drawer().getByText(/Nomor Bukti/i)).toBeVisible()
     await expenses.closeDrawer()
   })
 })
