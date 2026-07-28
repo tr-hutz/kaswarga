@@ -5,6 +5,7 @@
  * Import exclusively from '@/lib/auth', never from individual files.
  */
 
+export { getRequestContext }        from './server'
 export { AuthorizationContext }    from './authorization-context'
 export type { AuthorizationContextInput } from './authorization-context'
 export { RequestContext,

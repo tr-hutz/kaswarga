@@ -98,7 +98,7 @@ export class RequestContext {
  */
 export async function createRequestContext(
   userId:   string,
-  request?: { headers: Headers }
+  request?: { headers: Pick<Headers, 'get'> }
 ): Promise<RequestContext> {
   const authorization = await permissionService.buildContext(userId)
 
@@ -130,7 +130,7 @@ export function createMockRequestContext(
 /* Header extraction helpers                                                  */
 /* -------------------------------------------------------------------------- */
 
-function extractLocale(headers?: Headers): string {
+function extractLocale(headers?: Pick<Headers, 'get'>): string {
   const raw = headers?.get('accept-language')
   if (!raw) return 'id'
   // 'id,en-US;q=0.9,en;q=0.8' → 'id'
@@ -138,11 +138,11 @@ function extractLocale(headers?: Headers): string {
   return first || 'id'
 }
 
-function extractTimezone(headers?: Headers): string {
+function extractTimezone(headers?: Pick<Headers, 'get'>): string {
   return headers?.get('x-timezone') ?? 'Asia/Jakarta'
 }
 
-function extractIpAddress(headers?: Headers): string {
+function extractIpAddress(headers?: Pick<Headers, 'get'>): string {
   const forwarded = headers?.get('x-forwarded-for')
   if (forwarded) return forwarded.split(',')[0]?.trim() ?? ''
   return headers?.get('x-real-ip') ?? ''
