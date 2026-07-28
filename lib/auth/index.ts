@@ -11,12 +11,15 @@ export { RequestContext,
          createMockRequestContext } from './request-context'
 export { PermissionService,
          permissionService }        from './permission-service'
+export type { PermissionSet }       from './permission-service'
 export {
   AuthorizationError,
   UnauthorizedError,
   ForbiddenError,
   UnknownRoleError,
   UnknownUserError,
+  MembershipNotFoundError,
+  RoleNotFoundError,
 }                                   from './errors'
 export {
   PERMISSION,

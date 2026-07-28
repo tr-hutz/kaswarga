@@ -53,3 +53,19 @@ export class UnknownUserError extends AuthorizationError {
     this.name = 'UnknownUserError'
   }
 }
+
+/** Thrown when no active membership exists for (userId, neighborhoodId). */
+export class MembershipNotFoundError extends AuthorizationError {
+  constructor(userId: string, neighborhoodId: string) {
+    super(`No active membership for user ${userId} in RT ${neighborhoodId}`)
+    this.name = 'MembershipNotFoundError'
+  }
+}
+
+/** Thrown when the role code resolved from the membership is not in the roles table. */
+export class RoleNotFoundError extends AuthorizationError {
+  constructor(roleCode: string) {
+    super(`Role not found: ${roleCode}`)
+    this.name = 'RoleNotFoundError'
+  }
+}
