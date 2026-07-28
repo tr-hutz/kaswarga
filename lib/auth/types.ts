@@ -109,26 +109,7 @@ export const ROLE_CODE = {
 export type RoleCode = typeof ROLE_CODE[keyof typeof ROLE_CODE]
 
 /* -------------------------------------------------------------------------- */
-/* Supporting types                                                            */
+/* Shared utility type                                                         */
 /* -------------------------------------------------------------------------- */
 
 export type EffectivePermissions = ReadonlySet<Permission>
-
-export interface AuthorizationContextParams {
-  readonly userId:         string
-  readonly neighborhoodId: string
-  readonly roleCode:       RoleCode | string
-  readonly permissions:    EffectivePermissions
-  readonly locale:         string
-  readonly timezone:       string
-  readonly requestId:      string
-}
-
-export interface RequestContextParams {
-  readonly requestId:     string
-  readonly locale:        string
-  readonly timezone:      string
-  readonly ipAddress:     string
-  readonly userAgent:     string
-  readonly authorization: import('./authorization-context').AuthorizationContext
-}

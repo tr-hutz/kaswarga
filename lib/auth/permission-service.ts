@@ -27,7 +27,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { supabaseAdmin }             from '../supabase-admin'
-import type { AuthorizationContext } from './authorization-context'
+import { AuthorizationContext }      from './authorization-context'
 import { MembershipNotFoundError, RoleNotFoundError } from './errors'
 import { PERMISSION, type Permission }                from './types'
 
@@ -49,6 +49,7 @@ type OverrideRow = {
 }
 
 type MembershipRoleRow = {
+  id:   string
   role: string
 }
 
@@ -80,11 +81,13 @@ function toRoleCode(enumValue: string): string {
 /**
  * The result of resolving a user's effective permissions.
  * Immutable — safe to cache and pass through service layers.
- * Will be embedded inside AuthorizationContext in Task 2.3.
+ * Embedded inside AuthorizationContext to separate loading from querying.
  */
 export interface PermissionSet {
   readonly userId:         string
+  readonly membershipId:   string
   readonly neighborhoodId: string
+  readonly roleId:         string
   readonly roleCode:       string
 
   /** Returns true when the user holds this permission. */
@@ -103,18 +106,24 @@ export interface PermissionSet {
 /* Standard (role-based + overrides) implementation */
 class StandardPermissionSet implements PermissionSet {
   readonly userId:         string
+  readonly membershipId:   string
   readonly neighborhoodId: string
+  readonly roleId:         string
   readonly roleCode:       string
   private readonly _permissions: ReadonlySet<Permission>
 
   constructor(
     userId:         string,
+    membershipId:   string,
     neighborhoodId: string,
+    roleId:         string,
     roleCode:       string,
     permissions:    ReadonlySet<Permission>
   ) {
     this.userId         = userId
+    this.membershipId   = membershipId
     this.neighborhoodId = neighborhoodId
+    this.roleId         = roleId
     this.roleCode       = roleCode
     this._permissions   = permissions
     Object.freeze(this)
@@ -137,14 +146,18 @@ class StandardPermissionSet implements PermissionSet {
   }
 }
 
-/* SUPER_ADMIN override — bypasses all permission checks */
+/* SUPER_ADMIN override — bypasses all permission checks. roleId is empty string
+ * because SUPER_ADMIN is not constrained to a specific RT role row. */
 class SuperAdminPermissionSet implements PermissionSet {
   readonly userId:         string
+  readonly membershipId:   string
   readonly neighborhoodId: string
-  readonly roleCode = 'SUPER_ADMIN'
+  readonly roleId         = ''
+  readonly roleCode       = 'SUPER_ADMIN'
 
-  constructor(userId: string, neighborhoodId: string) {
+  constructor(userId: string, membershipId: string, neighborhoodId: string) {
     this.userId         = userId
+    this.membershipId   = membershipId
     this.neighborhoodId = neighborhoodId
     Object.freeze(this)
   }
@@ -182,9 +195,9 @@ export class PermissionService {
     neighborhoodId: string
   ): Promise<PermissionSet> {
     // SUPER_ADMIN check — any SUPER_ADMIN membership bypasses all permission rules
-    const isSuperAdmin = await this.checkSuperAdmin(userId)
-    if (isSuperAdmin) {
-      return new SuperAdminPermissionSet(userId, neighborhoodId)
+    const superAdminMembershipId = await this.checkSuperAdmin(userId)
+    if (superAdminMembershipId !== null) {
+      return new SuperAdminPermissionSet(userId, superAdminMembershipId, neighborhoodId)
     }
 
     const membership = await this.resolveMembership(userId, neighborhoodId)
@@ -198,15 +211,22 @@ export class PermissionService {
 
     const effective = this.merge(granted, overrides)
 
-    return new StandardPermissionSet(userId, neighborhoodId, roleCode, effective)
+    return new StandardPermissionSet(
+      userId, membership.id, neighborhoodId, roleId, roleCode, effective
+    )
   }
 
   /**
-   * TODO(Task 2.3): build a fully initialized AuthorizationContext.
-   * Requires AuthorizationContext to be implemented first.
+   * Builds a fully resolved AuthorizationContext for a user.
+   * Finds the user's active RT membership automatically.
+   *
+   * Throws MembershipNotFoundError when the user has no active RT membership.
    */
-  async buildContext(_userId: string): Promise<AuthorizationContext> {
-    throw new Error('PermissionService.buildContext — not yet implemented (Task 2.3)')
+  async buildContext(userId: string): Promise<AuthorizationContext> {
+    const neighborhoodId = await this.loadUserNeighborhood(userId)
+    const permissionSet  = await this.loadPermissions(userId, neighborhoodId)
+
+    return new AuthorizationContext({ permissionSet })
   }
 
   /** No-op hook for future cache invalidation (Task 2.4). */
@@ -215,10 +235,51 @@ export class PermissionService {
   }
 
   /* ------------------------------------------------------------------ */
+  /* Private — neighborhood resolution                                   */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * Returns the rt_id of the user's first active RT membership.
+   * For SUPER_ADMIN the rt_id is NULL in the database; returns '' to signal
+   * platform-level context (no RT constraint).
+   */
+  private async loadUserNeighborhood(userId: string): Promise<string> {
+    // SUPER_ADMIN: no RT constraint — return empty string as sentinel
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: saData } = await (this.db as any)
+      .from('memberships')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('role', 'SUPER_ADMIN')
+      .maybeSingle()
+
+    if (saData) return ''
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (this.db as any)
+      .from('memberships')
+      .select('rt_id')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .not('rt_id', 'is', null)
+      .limit(1)
+      .maybeSingle()
+
+    if (error) throw error
+    if (!data?.rt_id) throw new MembershipNotFoundError(userId, '')
+
+    return data.rt_id as string
+  }
+
+  /* ------------------------------------------------------------------ */
   /* Private — permission resolution                                     */
   /* ------------------------------------------------------------------ */
 
-  private async checkSuperAdmin(userId: string): Promise<boolean> {
+  /**
+   * Returns the membership ID if the user has a SUPER_ADMIN membership,
+   * or null otherwise.
+   */
+  private async checkSuperAdmin(userId: string): Promise<string | null> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data } = await (this.db as any)
       .from('memberships')
@@ -227,7 +288,7 @@ export class PermissionService {
       .eq('role', 'SUPER_ADMIN')
       .maybeSingle()
 
-    return data !== null
+    return (data as { id: string } | null)?.id ?? null
   }
 
   private async resolveMembership(
@@ -237,7 +298,7 @@ export class PermissionService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (this.db as any)
       .from('memberships')
-      .select('role')
+      .select('id, role')
       .eq('user_id', userId)
       .eq('rt_id', neighborhoodId)
       .eq('status', 'active')

@@ -6,6 +6,7 @@
  */
 
 export { AuthorizationContext }    from './authorization-context'
+export type { AuthorizationContextInput } from './authorization-context'
 export { RequestContext,
          createRequestContext,
          createMockRequestContext } from './request-context'
@@ -29,6 +30,4 @@ export type {
   Permission,
   RoleCode,
   EffectivePermissions,
-  AuthorizationContextParams,
-  RequestContextParams,
 }                                   from './types'
