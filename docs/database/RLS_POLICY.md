@@ -2,501 +2,323 @@
 
 > Project: KasWarga
 >
-> Version: 1.0
->
-> Last Updated: July 2026
+> Version: 2.0 (RBAC v2)
 
 ---
 
 # Purpose
 
-This document defines the Row Level Security (RLS) policies for every database table in KasWarga.
+This document defines the Row-Level Security (RLS) strategy used by KasWarga.
 
-RLS is the last line of defense against unauthorized data access.
+RLS provides the final authorization layer protecting all application data.
 
-Application-level authorization does NOT replace RLS.
+Even if the application layer fails, PostgreSQL must continue enforcing data isolation.
 
 ---
 
-# Security Principles
+# Design Principles
 
-1. RLS must be enabled on every business table.
-2. Every query is evaluated against Membership.
-3. Super Administrator bypasses tenant isolation only for system management.
-4. Financial data is always isolated by RT.
-5. Users may only access resources belonging to their active Membership.
+KasWarga follows a Defense in Depth security model.
+
+Authorization is enforced at multiple layers:
+
+```
+Authentication
+
+↓
+
+AuthorizationContext
+
+↓
+
+Business Service
+
+↓
+
+Repository
+
+↓
+
+PostgreSQL RLS
+```
+
+PostgreSQL RLS is the final security boundary.
 
 ---
 
 # Authorization Model
 
+RLS must never depend directly on role names.
+
+Incorrect
+
+```
+role = 'TREASURER'
 ```
 
-User
+Correct
+
+```
+has_permission(
+    'payment.approve'
+)
+```
+
+Permission evaluation is independent from organizational roles.
+
+---
+
+# Effective Permission
+
+RLS evaluates the effective permission of the authenticated user.
+
+Effective Permission is calculated from:
+
+```
+Assigned Role
 
 ↓
 
+Role Permissions
+
+↓
+
+Permission Overrides
+
+↓
+
+Effective Permission
+```
+
+RLS never evaluates Role directly.
+
+---
+
+# Neighborhood Isolation
+
+Every query must remain isolated to its own RT.
+
+```
 Membership
 
 ↓
 
-Role
+Neighborhood
 
 ↓
 
-Permission
+Accessible Data
+```
+
+Cross-RT access is prohibited unless explicitly authorized.
+
+---
+
+# Permission Evaluation
+
+The application provides the authenticated identity.
+
+RLS validates whether the authenticated user owns the required permission.
+
+Example
+
+```
+payment.approve
+```
+
+or
+
+```
+expense.delete
+```
+
+The permission name is evaluated instead of organizational role.
+
+---
+
+# Policy Categories
+
+Typical policy groups include:
+
+## Read
+
+View records.
+
+## Create
+
+Insert records.
+
+## Update
+
+Modify records.
+
+## Delete
+
+Soft Delete or physical deletion where permitted.
+
+Each operation should have an independent policy.
+
+---
+
+# Example
+
+Instead of
+
+```
+Treasurer may approve payment.
+```
+
+Policy becomes
+
+```
+Current user owns
+payment.approve
+permission.
+```
+
+Business Rules determine whether approval is allowed.
+
+RLS determines whether the user may execute the operation.
+
+---
+
+# Authorization Flow
+
+```
+Authenticated User
 
 ↓
 
-RLS
+AuthorizationContext
+
+↓
+
+Business Service
+
+↓
+
+Repository
+
+↓
+
+PostgreSQL RLS
 
 ↓
 
 Database
-
 ```
 
+Every protected operation must successfully pass all stages.
+
 ---
 
-# Helper Functions
+# Permission Override
 
-Recommended helper functions
+Permission Overrides are transparent to RLS.
+
+RLS evaluates only the effective permission.
+
+It does not distinguish whether the permission originates from:
+
+- Default Role
+- RT Override
+
+---
+
+# Runtime Dependency
+
+RLS relies on:
+
+- authenticated user
+- active membership
+- effective permission
+
+It never depends on:
+
+- UI
+- React
+- Navigation
+- Route visibility
+
+---
+
+# Security Rules
+
+RLS must guarantee:
+
+✓ Cross-RT isolation
+
+✓ Permission enforcement
+
+✓ Default deny
+
+✓ Least privilege
+
+✓ Defense in Depth
+
+---
+
+# Default Deny
+
+When authorization cannot be determined,
+
+the operation must be denied.
 
 ```
-current_user_id()
+Permission Unknown
 
-current_membership_id()
+↓
 
-current_rt_id()
-
-current_role()
-
-is_super_admin()
-
-has_permission(permission_name)
+DENY
 ```
 
-Business logic should NOT be duplicated inside RLS.
-
-RLS only determines visibility and write access.
+Fail-open behavior is prohibited.
 
 ---
 
-# users
+# Performance
 
-Purpose
+RLS policies should remain deterministic.
 
-Authentication profile.
+Permission evaluation should rely on indexed tables.
 
-SELECT
-
-User may read only own profile.
-
-UPDATE
-
-User may update own profile.
-
-DELETE
-
-Not allowed.
-
-INSERT
-
-Supabase Auth only.
+Recursive permission evaluation should be avoided.
 
 ---
 
-# memberships
+# Testing
 
-SELECT
+Every policy must be verified using:
 
-User may read own memberships.
-
-Chair/Admin may read memberships within the same RT.
-
-Super Administrator may read all.
-
-UPDATE
-
-Super Administrator only.
-
-DELETE
-
-Super Administrator only.
+- Positive test
+- Negative test
+- Cross-RT test
+- Permission Override test
+- Anonymous access test
 
 ---
 
-# rts
+# Audit
 
-SELECT
+Sensitive operations protected by RLS should generate Audit Logs.
 
-Members may view their own RT.
+Typical examples:
 
-Super Administrator may view all.
-
-UPDATE
-
-Chair
-
-Administrator
-
-Super Administrator
-
-DELETE
-
-Not allowed.
-
-Archive instead.
+- Payment Approval
+- Expense Update
+- Resident Approval
+- Permission Override Update
 
 ---
 
-# residents
+# Architecture Decision
 
-SELECT
+RLS is the final authorization layer.
 
-Resident
+Application code may evolve.
 
-Own profile only.
+Business Rules may evolve.
 
-Chair/Admin/Treasurer
+Permission assignments may evolve.
 
-All residents in same RT.
-
-Super Administrator
-
-No access to resident data.
-
-Reason
-
-Super Administrator must not access RT business data.
-
-INSERT
-
-Chair
-
-Administrator
-
-UPDATE
-
-Chair
-
-Administrator
-
-Resident
-
-Own contact information only.
-
-DELETE
-
-Chair
-
-Administrator
-
----
-
-# payments
-
-SELECT
-
-Resident
-
-Own payments.
-
-Treasurer
-
-All payments in own RT.
-
-Chair/Admin
-
-Read-only.
-
-Super Administrator
-
-No access.
-
-INSERT
-
-Resident only.
-
-UPDATE
-
-Treasurer
-
-Approval only.
-
-Resident
-
-Cannot modify approved payment.
-
-DELETE
-
-Never.
-
-Payments are immutable.
-
----
-
-# payment_details
-
-Visibility follows parent payment.
-
----
-
-# expenses
-
-SELECT
-
-Treasurer
-
-Chair
-
-Administrator
-
-Same RT only.
-
-Resident
-
-Not allowed.
-
-Super Administrator
-
-Not allowed.
-
-INSERT
-
-Treasurer only.
-
-UPDATE
-
-Treasurer only.
-
-DELETE
-
-Never.
-
----
-
-# ledger_entries
-
-SELECT
-
-Treasurer
-
-Chair
-
-Administrator
-
-Same RT only.
-
-Resident
-
-Not allowed.
-
-Super Administrator
-
-Not allowed.
-
-INSERT
-
-System only.
-
-UPDATE
-
-Never.
-
-DELETE
-
-Never.
-
----
-
-# notifications
-
-SELECT
-
-Owner only.
-
-INSERT
-
-System only.
-
-UPDATE
-
-Owner may mark as READ.
-
-DELETE
-
-Owner only.
-
----
-
-# activity_logs
-
-SELECT
-
-Super Administrator
-
-All.
-
-Chair/Admin/Treasurer
-
-Own RT only.
-
-Resident
-
-None.
-
-INSERT
-
-System only.
-
-UPDATE
-
-Never.
-
-DELETE
-
-Never.
-
----
-
-# rt_registration_requests
-
-SELECT
-
-Super Administrator
-
-INSERT
-
-Public
-
-UPDATE
-
-Super Administrator
-
-DELETE
-
-Never.
-
----
-
-# resident_registration_requests
-
-SELECT
-
-Chair/Admin
-
-Matching RT.
-
-INSERT
-
-Public.
-
-UPDATE
-
-Chair/Admin
-
-DELETE
-
-Never.
-
----
-
-# activation_tokens
-
-SELECT
-
-Owner only.
-
-INSERT
-
-System.
-
-UPDATE
-
-System.
-
-DELETE
-
-Expired cleanup job only.
-
----
-
-# Storage Policies
-
-Payment Proof
-
-Resident
-
-Upload own file.
-
-Treasurer
-
-Read.
-
-Others
-
-Denied.
-
----
-
-Avatar
-
-Owner
-
-Upload.
-
-Owner
-
-Read.
-
----
-
-# Service Role
-
-Only background jobs may use Service Role.
-
-Examples
-
-- Email sender
-- Cleanup jobs
-- Scheduled tasks
-- Data migration
-
-Never expose Service Role Key to frontend.
-
----
-
-# Testing Checklist
-
-Verify
-
-✓ Resident cannot read another resident.
-
-✓ Treasurer cannot access another RT.
-
-✓ Chair cannot approve payment.
-
-✓ Super Administrator cannot access financial records.
-
-✓ Activity Logs are immutable.
-
-✓ Ledger Entries are immutable.
-
-✓ Notifications are owner-only.
-
----
-
-# RLS Principles
-
-RLS protects data.
-
-Business rules remain inside Services.
-
-Never disable RLS in production.
-
-Every new table must define RLS before release.
-
----
-
-End of Document
+RLS remains the final protection ensuring that unauthorized data access is impossible.
