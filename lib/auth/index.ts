@@ -10,6 +10,7 @@ export type { AuthorizationContextInput } from './authorization-context'
 export { RequestContext,
          createRequestContext,
          createMockRequestContext } from './request-context'
+export type { RequestContextParams }  from './request-context'
 export { PermissionService,
          permissionService }        from './permission-service'
 export type { PermissionSet }       from './permission-service'
