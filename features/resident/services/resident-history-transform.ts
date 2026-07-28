@@ -1,4 +1,4 @@
-import { MONTHS } from '../../../constants/months'
+import { MONTHS } from '@/lib/constants/months'
 
 export function transformPaymentHistory(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,7 +35,9 @@ export function transformPaymentHistory(
                     monthEntry?.name || '-',
 
                 amount:
-                    Number(detail.amount || 0)
+                    Number(detail.amount || 0),
+
+                status: 'approved',
             }
         })
     })

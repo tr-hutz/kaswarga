@@ -68,7 +68,7 @@ test.describe('submit payment (resident)', () => {
 // ---------------------------------------------------------------------------
 
 test.describe('payments list (admin)', () => {
-  test.use({ storageState: path.join(__dirname, '.auth/session.json') })
+  test.use({ storageState: path.join(__dirname, '.auth/admin.json') })
 
   test.beforeAll(async ({ browser }: { browser: Browser }) => {
     await refreshAdminSession(browser)

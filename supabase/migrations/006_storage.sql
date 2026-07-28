@@ -40,8 +40,14 @@ insert into storage.buckets (
     now(),
     true,
     false,
-    5242880,
-    array['image/jpeg', 'image/png', 'application/pdf'],
+    10485760,   -- 10 MB (xlsx import files can be large)
+    array[
+        'image/jpeg',
+        'image/png',
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel'
+    ],
     'STANDARD'
 ) on conflict (id) do update set
     public             = excluded.public,

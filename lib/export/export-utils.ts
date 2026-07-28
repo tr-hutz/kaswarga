@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
 
 import {
     saveAs
@@ -10,7 +10,7 @@ import {
  |-------------------------------------------------------------
  */
 
-export function exportToExcel({
+export async function exportToExcel({
     data = [],
     fileName = 'export.xlsx',
     sheetName = 'Sheet1'
@@ -20,60 +20,21 @@ export function exportToExcel({
     sheetName?: string
 }) {
 
-    /*
-     |---------------------------------------------------------
-     | WORKSHEET
-     |---------------------------------------------------------
-     */
+    const workbook = new ExcelJS.Workbook()
+    const sheet    = workbook.addWorksheet(sheetName)
 
-    const worksheet =
-        XLSX.utils.json_to_sheet(
-            data
+    if (data.length > 0) {
+        sheet.addRow(Object.keys(data[0]))
+        data.forEach(row =>
+            sheet.addRow(Object.values(row).map(v => v ?? ''))
         )
+    }
 
-    /*
-     |---------------------------------------------------------
-     | WORKBOOK
-     |---------------------------------------------------------
-     */
-
-    const workbook =
-        XLSX.utils.book_new()
-
-    XLSX.utils.book_append_sheet(
-
-        workbook,
-
-        worksheet,
-
-        sheetName
-
-    )
-
-    /*
-     |---------------------------------------------------------
-     | BUFFER
-     |---------------------------------------------------------
-     */
-
-    const excelBuffer =
-        XLSX.write(
-            workbook,
-            {
-                bookType: 'xlsx',
-                type: 'array'
-            }
-        )
-
-    /*
-     |---------------------------------------------------------
-     | FILE
-     |---------------------------------------------------------
-     */
+    const buffer = await workbook.xlsx.writeBuffer()
 
     const blob =
         new Blob(
-            [excelBuffer],
+            [buffer],
             {
                 type:
                     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'

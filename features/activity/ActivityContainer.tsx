@@ -1,7 +1,7 @@
 'use client'
 
 import ActivityView            from './ActivityView'
-import { useDataTable }        from '@/hooks/useDataTable'
+import { useDataTable }        from '@/lib/hooks/useDataTable'
 import { useActivityData }     from './hooks/useActivityData'
 import { useActivityRealtime } from './hooks/useActivityRealtime'
 

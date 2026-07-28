@@ -1,8 +1,10 @@
-﻿'use client'
+'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
+  useCallback,
   useEffect,
+  useRef,
   useState
 } from 'react'
 
@@ -14,7 +16,18 @@ import {
   buildPaymentHealth
 } from '../helpers/dashboard-analytics'
 
+import { useAuth } from '@/lib/auth/useAuth'
+
 export function useDashboardAnalytics() {
+
+  /*
+   |--------------------------------------------------------------------------
+   | AUTH — wait for auth to settle before fetching so we don't race against
+   | Supabase restoring its session from storage on client-side navigation.
+   |--------------------------------------------------------------------------
+   */
+
+  const { loading: authLoading, rtId } = (useAuth() as any) ?? {}
 
   /*
    |--------------------------------------------------------------------------
@@ -30,6 +43,11 @@ export function useDashboardAnalytics() {
     loading,
     setLoading
   ] = useState(true)
+
+  const [
+    error,
+    setError
+  ] = useState(false)
 
   const [
     year,
@@ -53,6 +71,15 @@ export function useDashboardAnalytics() {
     setFinancialInsight
   ] = useState<any>(null)
 
+  const [role,              setRole             ] = useState<string | null>(null)
+  const [residentAnalytics, setResidentAnalytics] = useState<any[]>([])
+  const [monthlyFee,        setMonthlyFee       ] = useState(0)
+
+  // incrementing key used to force a reload without changing year
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  const refresh = useCallback(() => setRefreshKey(k => k + 1), [])
+
   /*
    |--------------------------------------------------------------------------
    | LOAD
@@ -61,9 +88,16 @@ export function useDashboardAnalytics() {
 
   useEffect(() => {
 
+    // Don't fetch until AuthProvider has finished loading the session.
+    // On client-side navigation the Supabase client may not yet have restored
+    // its in-memory session, causing getCurrentMembership() to throw
+    // 'Unauthorized' and leaving all data states null (infinite loading).
+    if (authLoading || !rtId) return
+
     async function loadData() {
 
       setLoading(true)
+      setError(false)
 
       try {
 
@@ -74,11 +108,15 @@ export function useDashboardAnalytics() {
 
         setAnalytics({
 
-          cashflow:
-            data.cashflow,
+          cashflow:                 data.cashflow,
 
-          collection:
-            data.collection
+          collection:               data.collection,
+
+          expenseByCategory:        data.expenseByCategory        || [],
+
+          expenseCategories:        data.expenseCategories        || [],
+
+          monthlyExpenseByCategory: data.monthlyExpenseByCategory || [],
 
         })
 
@@ -104,12 +142,18 @@ export function useDashboardAnalytics() {
           arrears: data.insight.totalArrears
         })
 
+        setRole(data.role ?? null)
+        setResidentAnalytics(data.residentAnalytics || [])
+        setMonthlyFee(data.rt?.monthly_fee || 0)
+
       } catch (err) {
 
         console.error(
           '[Dashboard Analytics]',
           err
         )
+
+        setError(true)
 
       } finally {
 
@@ -121,7 +165,8 @@ export function useDashboardAnalytics() {
 
     loadData()
 
-  }, [year])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [year, refreshKey, authLoading, rtId])
 
   /*
    |--------------------------------------------------------------------------
@@ -131,10 +176,15 @@ export function useDashboardAnalytics() {
 
   return {
     loading,
+    error,
     year,
     setYear,
     analytics,
     paymentHealth,
-    financialInsight
+    financialInsight,
+    role,
+    residentAnalytics,
+    monthlyFee,
+    refresh,
   }
 }

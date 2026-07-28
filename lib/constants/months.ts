@@ -1,4 +1,4 @@
-import type { Month } from '../types'
+import type { Month } from '@/types'
 
 export const MONTHS: Month[] = [
   {

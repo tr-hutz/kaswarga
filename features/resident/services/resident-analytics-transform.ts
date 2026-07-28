@@ -1,4 +1,4 @@
-import { MONTHS } from '../../../constants/months'
+import { MONTHS } from '@/lib/constants/months'
 
 export function transformResidentAnalytics(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -8,7 +8,7 @@ import {
 
 import {
   MONTHS
-} from '../../constants/months'
+} from '@/lib/constants/months'
 
 
 /*
@@ -35,9 +35,6 @@ export async function getDashboardData(
 
   const rtId =
     membership.rt?.id
-
-  const residentId =
-    membership.resident?.id || null
 
   /*
    |--------------------------------------------------------------------------
@@ -116,25 +113,6 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
-   | FILTER RESIDENT
-   |--------------------------------------------------------------------------
-   */
-
-  if (
-    role === 'RESIDENT'
-    &&
-    residentId
-  ) {
-
-    paymentQuery =
-      paymentQuery.eq(
-        'resident_id',
-        residentId
-      )
-  }
-
-  /*
-   |--------------------------------------------------------------------------
    | FILTER RT
    |--------------------------------------------------------------------------
    */
@@ -193,25 +171,6 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
-   | FILTER RESIDENT
-   |--------------------------------------------------------------------------
-   */
-
-  if (
-    role === 'RESIDENT'
-    &&
-    residentId
-  ) {
-
-    confirmationQuery =
-      confirmationQuery.eq(
-        'resident_id',
-        residentId
-      )
-  }
-
-  /*
-   |--------------------------------------------------------------------------
    | FILTER RT
    |--------------------------------------------------------------------------
    */
@@ -254,6 +213,11 @@ export async function getDashboardData(
         amount,
         date
       `)
+
+      .eq(
+        'status',
+        'approved'
+      )
 
       .gte(
         'date',
@@ -433,6 +397,28 @@ export async function getDashboardData(
         12 -
         currentMonth
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const residentConfs = (confirmationData || []).filter((c: any) =>
+          c.resident_id === resident.id &&
+          c.status === 'pending'
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ).map((c: any) => {
+          const details = (c.confirmation_details || []) as { id: string; month: number; amount: number }[]
+          const months  = details.map(d => Number(d.month)).sort((a, b) => a - b)
+          return {
+              id:          c.id as string,
+              year:        c.year as number,
+              status:      c.status as string,
+              totalAmount: details.reduce((s, d) => s + Number(d.amount || 0), 0),
+              proofUrl:    c.proof_url as string | null,
+              name:        resident.name,
+              block:       resident.block,
+              houseNumber: resident.house_number,
+              months,
+              details:     details.map(d => ({ id: d.id, month: d.month })),
+          }
+      })
+
       return {
 
         id: resident.id,
@@ -446,13 +432,18 @@ export async function getDashboardData(
 
         paidCount,
 
+        paidMonths:
+          paidMonths.map(Number).sort((a: number, b: number) => a - b),
+
         arrears:
           Math.max(
             arrears,
             0
           ),
 
-        upcoming
+        upcoming,
+
+        confirmations: residentConfs,
 
       }
 
@@ -580,54 +571,62 @@ export async function getDashboardData(
     const collection =
         MONTHS.map(month => {
 
-            const total =
-                paymentData.reduce(
+            const paid   = new Set<string>()
+            let   amount = 0
 
-                    (
-                        sum,
-                        payment
-                    ) => {
-
-                        const monthlyCount =
-
-                            (
-                                payment
-                                    .payment_details || []
-                            )
-
-                                .filter(detail =>
-
-                                    Number(
-                                        detail.month
-                                    ) ===
-
-                                    Number(
-                                        month.id
-                                    )
-                                )
-
-                                .length
-
-                        return (
-                            sum +
-                            monthlyCount
-                        )
-
-                    },
-
-                    0
-                )
+            for (const payment of paymentData) {
+                for (const detail of (payment.payment_details || [])) {
+                    if (Number(detail.month) === Number(month.id)) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        paid.add((payment as any).resident_id)
+                        amount += Number(detail.amount || 0)
+                    }
+                }
+            }
 
             return {
-
-                month:
-                month.short,
-
-                total
-
+                month:         month.short,
+                amount,
+                residentsPaid: paid.size,
             }
 
         })
+
+  /*
+   |--------------------------------------------------------------------------
+   | EXPENSE BY CATEGORY
+   |--------------------------------------------------------------------------
+   */
+
+  const categoryTotals: Record<string, number> = {}
+  for (const e of expenseData) {
+    const cat = e.category || 'Lainnya'
+    categoryTotals[cat] = (categoryTotals[cat] ?? 0) + Number(e.amount ?? 0)
+  }
+  const expenseByCategory = Object.entries(categoryTotals)
+    .map(([category, total]) => ({ category, total }))
+    .sort((a, b) => b.total - a.total)
+
+  const expenseCategories = expenseByCategory.map(e => e.category)
+
+  /*
+   |--------------------------------------------------------------------------
+   | MONTHLY EXPENSE BY CATEGORY
+   |--------------------------------------------------------------------------
+   */
+
+  const monthlyExpenseByCategory = MONTHS.map(month => {
+    const values: Record<string, number> = {}
+    for (const cat of expenseCategories) {
+      values[cat] = expenseData
+        .filter(e => {
+          const m = new Date(e.date!).getMonth() + 1
+          return m === month.id && (e.category || 'Lainnya') === cat
+        })
+        .reduce((s, e) => s + Number(e.amount ?? 0), 0)
+    }
+    return { month: month.short, values }
+  })
 
   /*
    |--------------------------------------------------------------------------
@@ -672,6 +671,12 @@ export async function getDashboardData(
     cashflow,
 
     collection,
+
+    expenseByCategory,
+
+    expenseCategories,
+
+    monthlyExpenseByCategory,
 
     paymentData,
 

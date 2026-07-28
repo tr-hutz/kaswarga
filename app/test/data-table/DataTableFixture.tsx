@@ -2,9 +2,8 @@
 
 import { useMemo }         from 'react'
 import { useSearchParams } from 'next/navigation'
-import * as XLSX           from 'xlsx'
 import { DataTable }       from '@/components/common/data-table'
-import { useDataTable }    from '@/hooks/useDataTable'
+import { useDataTable }    from '@/lib/hooks/useDataTable'
 import type { Column, QueryOptions, PageResult } from '@/lib/types/query'
 
 // ─── Mock dataset ─────────────────────────────────────────────────────────────
@@ -89,11 +88,18 @@ function downloadCSV() {
     URL.revokeObjectURL(url)
 }
 
-function downloadExcel() {
-    const ws = XLSX.utils.json_to_sheet(MOCK)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'Data')
-    XLSX.writeFile(wb, 'data-table-test.xlsx')
+async function downloadExcel() {
+    const ExcelJS  = (await import('exceljs')).default
+    const workbook = new ExcelJS.Workbook()
+    const sheet    = workbook.addWorksheet('Data')
+    sheet.addRow(Object.keys(MOCK[0]))
+    MOCK.forEach(row => sheet.addRow(Object.values(row)))
+    const buffer = await workbook.xlsx.writeBuffer()
+    const blob   = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url    = URL.createObjectURL(blob)
+    const a      = Object.assign(document.createElement('a'), { href: url, download: 'data-table-test.xlsx' })
+    a.click()
+    URL.revokeObjectURL(url)
 }
 
 // ─── Fixture component ────────────────────────────────────────────────────────

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
+import { useToast } from '@/components/ui/ToastProvider'
 
 function makeNormalizer(aliases: Record<string, string>) {
     return function normalizeKey(raw: string) {
@@ -14,15 +15,57 @@ function makeNormalizer(aliases: Record<string, string>) {
     }
 }
 
-function parseWorkbook(workbook: XLSX.WorkBook, normalizeKey: (k: string) => string) {
-    const sheet = workbook.Sheets[workbook.SheetNames[0]]
-    const raw   = XLSX.utils.sheet_to_json(sheet, { defval: '' }) as Record<string, unknown>[]
-    return raw.map(row => {
-        const out: Record<string, string> = {}
-        for (const [k, v] of Object.entries(row)) {
-            out[normalizeKey(k)] = String(v).trim()
+function cellToString(value: ExcelJS.CellValue): string {
+    if (value === null || value === undefined) return ''
+    if (value instanceof Date) return value.toISOString().split('T')[0]
+    if (typeof value === 'object') {
+        if ('text' in value) return String((value as { text: unknown }).text)
+        if ('result' in value) return String((value as { result?: unknown }).result ?? '')
+    }
+    return String(value)
+}
+
+async function parseXLSX(
+    buffer: ArrayBuffer,
+    normalizeKey: (k: string) => string
+): Promise<Record<string, string>[]> {
+    const workbook = new ExcelJS.Workbook()
+    await workbook.xlsx.load(buffer)
+    const sheet = workbook.worksheets[0]
+    if (!sheet) return []
+
+    const result: Record<string, string>[] = []
+    let headers: string[] = []
+
+    sheet.eachRow((row, rowNumber) => {
+        const vals = row.values as ExcelJS.CellValue[]
+        // row.values is 1-indexed; index 0 is always undefined
+        if (rowNumber === 1) {
+            headers = vals.slice(1).map(v => cellToString(v).trim())
+        } else {
+            const obj: Record<string, string> = {}
+            headers.forEach((h, i) => {
+                obj[normalizeKey(h)] = cellToString(vals[i + 1]).trim()
+            })
+            result.push(obj)
         }
-        return out
+    })
+
+    return result
+}
+
+function parseCSV(
+    text: string,
+    normalizeKey: (k: string) => string
+): Record<string, string>[] {
+    const lines = text.split(/\r?\n/).filter(l => l.trim())
+    if (lines.length < 2) return []
+    const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim())
+    return lines.slice(1).map(line => {
+        const values = line.split(',').map(v => v.replace(/^"|"$/g, '').trim())
+        const obj: Record<string, string> = {}
+        headers.forEach((h, i) => { obj[normalizeKey(h)] = values[i] ?? '' })
+        return obj
     })
 }
 
@@ -47,6 +90,7 @@ export function useImport({
     batchSize?: number
     onSuccess?: (inserted: number, skipped?: number) => void
 }) {
+    const { toast, dismiss } = useToast()
     const normalizeKey = makeNormalizer(columnAliases)
 
     const [open,          setOpen]          = useState(false)
@@ -70,6 +114,7 @@ export function useImport({
         setRows([])
         setFileName('')
         setError('')
+        setImporting(false)
         setProgress(0)
         setProcessedRows(0)
         setTotalRows(0)
@@ -79,11 +124,18 @@ export function useImport({
     function handleFile(file: File | null | undefined) {
         if (!file) return
         setError('')
+        const isCSV = file.name.toLowerCase().endsWith('.csv')
         const reader = new FileReader()
-        reader.onload = e => {
+        reader.onload = async (e) => {
             try {
-                const wb     = XLSX.read(e.target?.result, { type: 'array' })
-                const parsed = parseWorkbook(wb, normalizeKey)
+                const result = e.target?.result
+                if (result === undefined || result === null) return
+                let parsed: Record<string, string>[]
+                if (isCSV) {
+                    parsed = parseCSV(result as string, normalizeKey)
+                } else {
+                    parsed = await parseXLSX(result as ArrayBuffer, normalizeKey)
+                }
                 if (parsed.length === 0) {
                     setError('File has no data.')
                     return
@@ -94,14 +146,33 @@ export function useImport({
                 setError('Failed to read file. Ensure it is a valid CSV or Excel format.')
             }
         }
-        reader.readAsArrayBuffer(file)
+        if (isCSV) {
+            reader.readAsText(file)
+        } else {
+            reader.readAsArrayBuffer(file)
+        }
     }
 
-    function downloadTemplate() {
-        const ws = XLSX.utils.json_to_sheet(templateData)
-        const wb = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(wb, ws, templateSheetName)
-        XLSX.writeFile(wb, templateFileName)
+    async function downloadTemplate() {
+        const workbook = new ExcelJS.Workbook()
+        const sheet    = workbook.addWorksheet(templateSheetName)
+        if (templateData.length > 0) {
+            sheet.addRow(Object.keys(templateData[0]))
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            templateData.forEach((row: any) =>
+                sheet.addRow(Object.values(row).map((v: unknown) => v ?? ''))
+            )
+        }
+        const buffer = await workbook.xlsx.writeBuffer()
+        const blob   = new Blob([buffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+        const url  = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href     = url
+        link.download = templateFileName
+        link.click()
+        URL.revokeObjectURL(url)
     }
 
     async function handleImport() {
@@ -144,9 +215,12 @@ export function useImport({
             closeImport()
             onSuccess?.(totalInserted, totalSkipped)
         } catch (err) {
-            setError((err as Error).message)
-        } finally {
             setImporting(false)
+            toast({
+                type:     'error',
+                message:  `Impor gagal: ${(err as Error).message}`,
+                duration: 6000,
+            })
         }
     }
 

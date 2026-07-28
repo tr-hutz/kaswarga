@@ -131,7 +131,7 @@ $$;
 
 create or replace function seed_dev_data(
     p_rt_id              uuid  default null,
-    p_tahun              int   default 2025,
+    p_tahun              int   default 2026,
     p_jumlah_pembayaran  int   default 40,
     p_jumlah_konfirmasi  int   default 10,
     p_jumlah_pengeluaran int   default 24

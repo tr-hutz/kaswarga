@@ -4,6 +4,7 @@ import {
 
     createContext,
     useEffect,
+    useRef,
     useState,
     type ReactNode
 
@@ -54,6 +55,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     ] = useState(true)
 
+    // Tracks the authenticated user id so we can skip reloads caused by
+    // Supabase's silent token refresh (which also fires SIGNED_IN).
+    const activeUserIdRef = useRef<string | null>(null)
+
     /*
      |-------------------------------------------------------------
      | LOAD MEMBERSHIP
@@ -68,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
                 await getCurrentMembership()
 
+            activeUserIdRef.current = result?.user?.id ?? null
             setMembership(result)
 
         } catch (err) {
@@ -94,8 +100,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 supabase.realtime.setAuth(session?.access_token ?? null)
 
                 if (event === 'SIGNED_IN') {
+                    const incomingUserId = session?.user?.id ?? null
+
+                    // Skip reload when it's just a silent token refresh for the
+                    // same user — Supabase fires SIGNED_IN on every token refresh,
+                    // which would otherwise cause a visible loading flash on tab focus.
+                    if (incomingUserId && incomingUserId === activeUserIdRef.current) {
+                        return
+                    }
+
+                    // New login: show spinner so AppShell doesn't redirect to /login
+                    // while getCurrentMembership() is still in flight.
+                    setLoading(true)
                     getCurrentMembership()
                         .then(m => {
+                            activeUserIdRef.current = m?.user?.id ?? null
                             setMembership(m)
                             if (m?.status === 'active' && m?.rt?.id) {
                                 logActivity({
@@ -111,9 +130,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             }
                         })
                         .catch(() => {})
+                        .finally(() => setLoading(false))
                 }
 
                 if (event === 'SIGNED_OUT') {
+                    activeUserIdRef.current = null
                     setMembership(null)
                 }
             })

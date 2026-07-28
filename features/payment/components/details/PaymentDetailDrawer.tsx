@@ -3,23 +3,24 @@
 import { useTranslations } from 'next-intl'
 import Icon       from '@/components/ui/Icon'
 import Ribbadge   from '@/components/ui/Ribbadge'
-import { MONTHS } from '@/constants/months'
+import { MONTHS } from '@/lib/constants/months'
 
 import PaymentProofPreview from './PaymentProofPreview'
 import ApprovalActionBar   from '../approval/ApprovalActionBar'
 import { useKeyDown }      from '../../../../lib/hooks/useKeyDown'
 
 interface PaymentDetailDrawerProps {
-    open:      boolean
+    open:        boolean
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    payment:   any
-    onClose:   () => void
+    payment:     any
+    onClose:     () => void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onApprove: (payment?: any) => void
+    onApprove:   (payment?: any) => void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onReject:  (payment?: any) => void
-    loading:   boolean
-    role:      string | null | undefined
+    loading:     boolean
+    role:        string | null | undefined
+    headerNote?: string
 }
 
 export default function PaymentDetailDrawer({
@@ -30,6 +31,7 @@ export default function PaymentDetailDrawer({
     onReject,
     loading,
     role,
+    headerNote,
 }: PaymentDetailDrawerProps) {
 
     const t  = useTranslations('payments')
@@ -55,7 +57,9 @@ export default function PaymentDetailDrawer({
                 <div className="pb-4 border-b border-divider flex items-start justify-between">
                     <div>
                         <h2 className="text-xl font-bold text-foreground">{t('detail.title')}</h2>
-                        <p className="text-sm text-muted mt-0.5">{t('detail.subtitle')}</p>
+                        <p className="text-sm text-muted mt-0.5">
+                            {headerNote ?? t('detail.subtitle')}
+                        </p>
                     </div>
                     <button
                         data-testid="close-drawer"

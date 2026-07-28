@@ -10,6 +10,16 @@ import CashflowChart
 import MonthlyCollectionChart
   from '../charts/MonthlyCollectionChart'
 
+import ExpenseCategoryDonutChart
+  from '../charts/ExpenseCategoryDonutChart'
+
+import MonthlyExpenseByCategoryChart
+  from '../charts/MonthlyExpenseByCategoryChart'
+
+import ResidentArrearsSummary
+  from '@/features/resident/components/analytics/ResidentArrearsSummary'
+
+import Icon       from '@/components/ui/Icon'
 import {
   formatRupiah
 } from '../../../lib/utils'
@@ -27,6 +37,7 @@ function SectionLabel({ title, subtitle }: { title: string; subtitle?: string })
 
 interface DashboardViewProps {
   loading:          boolean
+  error?:           boolean
   year:             number
   setYear:          (y: number) => void
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,11 +46,19 @@ interface DashboardViewProps {
   paymentHealth:    any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   financialInsight: any
+  role?:            string | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  residentAnalytics?: any[]
+  monthlyFee?:        number
+  refresh?:           () => void
+  exportLoading?:     boolean
+  onExportLedger?:    () => void
 }
 
 export default function DashboardView({
 
   loading,
+  error,
 
   year,
   setYear,
@@ -48,19 +67,38 @@ export default function DashboardView({
 
   paymentHealth,
 
-  financialInsight
+  financialInsight,
+
+  role,
+  residentAnalytics = [],
+  monthlyFee        = 0,
+  refresh,
+  exportLoading     = false,
+  onExportLedger,
 
 }: DashboardViewProps) {
 
-  const t = useTranslations('dashboard')
+  const t  = useTranslations('dashboard')
+  const tc = useTranslations('common')
 
-  if (
-    loading ||
-    !analytics ||
-    !paymentHealth ||
-    !financialInsight
-  ) {
+  if (error && !analytics) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 p-12 text-center">
+        <p className="text-sm text-muted">{t('error')}</p>
+        {refresh && (
+          <button
+            onClick={refresh}
+            className="flex items-center gap-1.5 h-9 px-4 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
+          >
+            <Icon name="refresh-cw" size={14} />
+            {tc('actions.retry')}
+          </button>
+        )}
+      </div>
+    )
+  }
 
+  if (loading || !analytics || !paymentHealth || !financialInsight) {
     return (
       <div className="text-sm text-subtle p-6">
         {t('loading')}
@@ -135,10 +173,23 @@ export default function DashboardView({
 
       <div className="space-y-3">
 
-        <SectionLabel
-          title={t('sections.paymentStatus')}
-          subtitle={t('sections.paymentStatusSubtitle')}
-        />
+        <div className="flex items-center justify-between gap-4">
+          <SectionLabel
+            title={t('sections.paymentStatus')}
+            subtitle={t('sections.paymentStatusSubtitle')}
+          />
+          {role === 'TREASURER' && onExportLedger && (
+            <button
+              onClick={onExportLedger}
+              disabled={exportLoading}
+              title={t('exportLedger.title')}
+              className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground disabled:opacity-60 flex-shrink-0"
+            >
+              <Icon name="table-2" size={15} />
+              {exportLoading ? t('exportLedger.loading') : t('exportLedger.button')}
+            </button>
+          )}
+        </div>
 
         <div
           className="
@@ -181,6 +232,18 @@ export default function DashboardView({
         </div>
 
       </div>
+
+      {/* ARREARS TABLE — TREASURER ONLY */}
+
+      {role === 'TREASURER' && (
+        <ResidentArrearsSummary
+          residentAnalytics={residentAnalytics}
+          monthlyFee={monthlyFee}
+          year={year}
+          role={role}
+          onRefresh={refresh}
+        />
+      )}
 
       {/* KEUANGAN RT */}
 
@@ -232,7 +295,7 @@ export default function DashboardView({
 
       </div>
 
-      {/* CHARTS */}
+      {/* CHARTS ROW 1 — Income */}
 
       <div
         className="
@@ -249,9 +312,36 @@ export default function DashboardView({
 
         <MonthlyCollectionChart
           data={analytics.collection}
+          totalResidents={paymentHealth.totalResidents}
         />
 
       </div>
+
+      {/* CHARTS ROW 2 — Expense breakdown */}
+
+      <div
+        className="
+          grid
+          grid-cols-1
+          xl:grid-cols-3
+          gap-6
+        "
+      >
+
+        <div className="xl:col-span-2">
+          <MonthlyExpenseByCategoryChart
+            data={analytics.monthlyExpenseByCategory ?? []}
+            categories={analytics.expenseCategories ?? []}
+          />
+        </div>
+
+        <ExpenseCategoryDonutChart
+          data={analytics.expenseByCategory ?? []}
+          year={year}
+        />
+
+      </div>
+
 
     </div>
   )

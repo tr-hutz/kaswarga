@@ -11,26 +11,28 @@
     "start": "next start",
     "lint": "eslint",
     "test:e2e": "playwright test",
-    "test:e2e:retry": "playwright test --project=setup --project=setup:superadmin --project=setup:treasurer --project=setup:resident && playwright test --last-failed",
+    "test:e2e:retry": "playwright test --last-failed --no-deps --pass-with-no-tests",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
     "seed:auth": "node scripts/seed-auth.mjs",
     "seed:dev": "node scripts/seed-dev.mjs",
-    "seed:e2e": "node scripts/seed-e2e.mjs"
+    "seed:e2e": "node scripts/seed-e2e.mjs",
+    "seed:financial": "node scripts/seed-financial.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.1",
+    "apexcharts": "^6.5.0",
     "date-fns": "^4.3.0",
+    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "lucide-react": "^1.14.0",
     "next": "16.2.4",
     "next-intl": "^4.13.1",
     "pdf-lib": "^1.17.1",
     "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "recharts": "^3.8.1",
-    "xlsx": "^0.18.5"
+    "react-apexcharts": "^2.1.1",
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",

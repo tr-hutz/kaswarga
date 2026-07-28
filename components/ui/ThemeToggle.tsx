@@ -1,7 +1,7 @@
 'use client'
 
 import { Sun, Moon, Monitor } from 'lucide-react'
-import { useTheme } from '@/hooks/useTheme'
+import { useTheme } from '@/lib/hooks/useTheme'
 import type { Theme } from '@/types/theme'
 
 const ICON: Record<Theme, typeof Sun> = {

@@ -4,7 +4,7 @@
 import { useRef, useState } from 'react'
 import type { ChangeEvent, FormEvent, MouseEvent } from 'react'
 import Icon from '@/components/ui/Icon'
-import { MONTHS } from '../../../constants/months'
+import { MONTHS } from '@/lib/constants/months'
 import { useTranslations } from 'next-intl'
 
 /* -------------------------------------------------------------------------- */

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { useDataTable }       from '@/hooks/useDataTable'
+import { useDataTable }       from '@/lib/hooks/useDataTable'
 import { useResidentData }    from './hooks/useResidentData'
 import { useResidentActions } from './hooks/useResidentActions'
 import { useAuth }            from '@/lib/auth/useAuth'

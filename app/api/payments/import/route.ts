@@ -2,7 +2,7 @@ import { NextResponse }      from 'next/server'
 import { cookies }            from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { supabaseAdmin }      from '@/lib/supabase-admin'
-import * as XLSX              from 'xlsx'
+import ExcelJS                from 'exceljs'
 
 const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || ''
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
@@ -13,10 +13,15 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 |
 | Bulk-imports payment confirmations from Excel for the caller's RT.
 | Restricted to treasurer and admin.
-| Each imported row group (block + house_number + year) becomes one
-| payment_confirmation with pending status. The uploaded Excel file is
-| stored in the payment-proof bucket and used as proof_url for all
-| created confirmations, distinguishing them from resident-submitted ones.
+|
+| Dedup strategy:
+|   1. Fetch all RT residents in one query, build an in-memory lookup map.
+|   2. Fetch all existing confirmation_details for matched residents in one
+|      query, build an in-memory dedup set.
+|   3. Bulk-insert payment_confirmations (one per group) and get IDs back.
+|   4. Bulk-insert all confirmation_details in one query.
+|
+| This reduces N×4 sequential Supabase round-trips to ~4 total.
 |--------------------------------------------------------------------------
 */
 
@@ -70,13 +75,17 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'No rows provided' }, { status: 400 })
         }
 
-        // 1. Reconstruct Excel from rows and upload to payment-proof bucket
+        // Upload Excel file to storage
         const fileName   = buildFileName(rtName)
-        const ws         = XLSX.utils.json_to_sheet(rows)
-        const wb         = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(wb, ws, 'Data')
-        const xlsxBuffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' }) as Buffer
+        const workbook   = new ExcelJS.Workbook()
+        const sheet      = workbook.addWorksheet('Data')
+        if (rows.length > 0) {
+            sheet.addRow(Object.keys(rows[0]))
+            rows.forEach(row => sheet.addRow(Object.values(row).map(v => v ?? '')))
+        }
+        const xlsxBuffer = Buffer.from(await workbook.xlsx.writeBuffer())
 
+        // Upload is best-effort: a bucket config issue must never block the import.
         const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
             .from('payment-proof')
             .upload(fileName, xlsxBuffer, {
@@ -84,13 +93,15 @@ export async function POST(req: Request) {
                 upsert: false,
             })
 
-        if (uploadError) throw uploadError
+        if (uploadError) {
+            console.warn('[payments/import] storage upload skipped:', uploadError.message)
+        }
 
-        const { data: { publicUrl } } = supabaseAdmin.storage
-            .from('payment-proof')
-            .getPublicUrl(uploadData.path)
+        const publicUrl = uploadData
+            ? supabaseAdmin.storage.from('payment-proof').getPublicUrl(uploadData.path).data.publicUrl
+            : null
 
-        // 2. Group rows by block + house_number + year
+        // Group rows by block + house_number + year
         const groups = new Map<string, Record<string, string>[]>()
         for (const row of rows) {
             const block = row.block?.trim() ?? ''
@@ -105,77 +116,151 @@ export async function POST(req: Request) {
         let inserted = 0
         let skipped  = 0
 
-        // 3. For each group: resolve resident, deduplicate months, insert
+        if (groups.size === 0) {
+            return NextResponse.json({ inserted: 0, skipped: rows.length })
+        }
+
+        // 1. Fetch ALL residents for this RT in one query, build lookup map
+        const { data: allResidents } = await supabaseAdmin
+            .from('residents')
+            .select('id, block, house_number')
+            .eq('rt_id', rtId)
+
+        const residentMap = new Map<string, string>() // `${block.lower}:${house.lower}` → id
+        for (const r of allResidents || []) {
+            if (r.block && r.house_number) {
+                residentMap.set(
+                    `${String(r.block).toLowerCase().trim()}:${String(r.house_number).toLowerCase().trim()}`,
+                    r.id
+                )
+            }
+        }
+
+        // 2. Resolve each group to a resident + compute months/amount
+        type ResolvedGroup = {
+            residentId:  string
+            year:        number
+            months:      number[]
+            totalAmount: number
+            groupRows:   Record<string, string>[]
+        }
+
+        const resolved: ResolvedGroup[] = []
+
         for (const [key, groupRows] of groups) {
             const [block, house, yearStr] = key.split('||')
             const year = parseInt(yearStr, 10)
             if (isNaN(year)) { skipped += groupRows.length; continue }
 
-            const { data: resident } = await supabaseAdmin
-                .from('residents')
-                .select('id')
-                .eq('rt_id', rtId)
-                .ilike('block', block)
-                .ilike('house_number', house)
-                .maybeSingle()
+            const residentId = residentMap.get(`${block.toLowerCase()}:${house.toLowerCase()}`)
+            if (!residentId) { skipped += groupRows.length; continue }
 
-            if (!resident) { skipped += groupRows.length; continue }
-
-            const monthsInGroup = groupRows
+            const months = groupRows
                 .map(r => parseInt(r.month?.trim() ?? '', 10))
                 .filter(m => !isNaN(m) && m >= 1 && m <= 12)
 
-            if (!monthsInGroup.length) { skipped += groupRows.length; continue }
+            if (!months.length) { skipped += groupRows.length; continue }
 
-            // Deduplication: resident_id + year + month must be unique
-            const { data: existing } = await supabaseAdmin
-                .from('confirmation_details')
-                .select('month')
-                .eq('resident_id', resident.id)
-                .eq('year', year)
-                .in('month', monthsInGroup)
-
-            const existingMonths = new Set((existing ?? []).map((d: { month: number }) => d.month))
-            const newRows = groupRows.filter(r => {
-                const m = parseInt(r.month?.trim() ?? '', 10)
-                return !isNaN(m) && !existingMonths.has(m)
-            })
-
-            skipped += groupRows.length - newRows.length
-            if (!newRows.length) continue
-
-            const totalAmount = newRows.reduce((sum, r) => {
-                return sum + (parseInt(r.amount?.replace(/[^0-9]/g, '') ?? '0', 10) || 0)
-            }, 0)
-
-            const { data: confirmation, error: confirmError } = await supabaseAdmin
-                .from('payment_confirmations')
-                .insert({
-                    resident_id:  resident.id,
-                    rt_id:        rtId,
-                    year,
-                    total_amount: totalAmount,
-                    status:       'pending',
-                    proof_url:    publicUrl,
-                })
-                .select('id')
-                .single()
-
-            if (confirmError || !confirmation) { skipped += newRows.length; continue }
-
-            await supabaseAdmin.from('confirmation_details').insert(
-                newRows.map(r => ({
-                    confirmation_id: confirmation.id,
-                    resident_id:     resident.id,
-                    year,
-                    month:           parseInt(r.month.trim(), 10),
-                    amount:          parseInt(r.amount?.replace(/[^0-9]/g, '') ?? '0', 10) || 0,
-                }))
-            )
-            inserted++
+            resolved.push({ residentId, year, months, groupRows, totalAmount: 0 })
         }
 
-        // 4. Activity log
+        if (resolved.length === 0) {
+            return NextResponse.json({ inserted: 0, skipped })
+        }
+
+        // 3. Fetch existing confirmation_details for all resolved residents in ONE query
+        const residentIds = [...new Set(resolved.map(g => g.residentId))]
+        const years       = [...new Set(resolved.map(g => g.year))]
+
+        const { data: existingDetails } = await supabaseAdmin
+            .from('confirmation_details')
+            .select('resident_id, year, month')
+            .in('resident_id', residentIds)
+            .in('year', years)
+
+        const existingSet = new Set(
+            (existingDetails || []).map(
+                (d: { resident_id: string; year: number; month: number }) =>
+                    `${d.resident_id}:${d.year}:${d.month}`
+            )
+        )
+
+        // 4. Filter out already-existing months from each group
+        const toInsert = resolved
+            .map(g => {
+                const newMonths = g.months.filter(
+                    m => !existingSet.has(`${g.residentId}:${g.year}:${m}`)
+                )
+                skipped += g.months.length - newMonths.length
+
+                const totalAmount = g.groupRows
+                    .filter(r => {
+                        const m = parseInt(r.month?.trim() ?? '', 10)
+                        return newMonths.includes(m)
+                    })
+                    .reduce((sum, r) =>
+                        sum + (parseInt(r.amount?.replace(/[^0-9]/g, '') ?? '0', 10) || 0), 0
+                    )
+
+                return { ...g, months: newMonths, totalAmount }
+            })
+            .filter(g => g.months.length > 0)
+
+        if (toInsert.length === 0) {
+            return NextResponse.json({ inserted: 0, skipped })
+        }
+
+        // 5. Bulk-insert payment_confirmations and get IDs back
+        const { data: insertedConfirmations, error: confirmError } = await supabaseAdmin
+            .from('payment_confirmations')
+            .insert(
+                toInsert.map(g => ({
+                    resident_id:  g.residentId,
+                    rt_id:        rtId,
+                    year:         g.year,
+                    total_amount: g.totalAmount,
+                    status:       'pending',
+                    proof_url:    publicUrl,
+                }))
+            )
+            .select('id, resident_id, year')
+
+        if (confirmError || !insertedConfirmations) throw confirmError ?? new Error('Insert confirmations failed')
+
+        // Build map: `${resident_id}:${year}` → confirmation_id
+        const confirmMap = new Map<string, string>()
+        for (const c of insertedConfirmations) {
+            confirmMap.set(`${c.resident_id}:${c.year}`, c.id)
+        }
+
+        // 6. Build and bulk-insert all confirmation_details in ONE query
+        const allDetails = toInsert.flatMap(g => {
+            const confirmId = confirmMap.get(`${g.residentId}:${g.year}`)
+            if (!confirmId) return []
+
+            return g.months.map(month => {
+                const row = g.groupRows.find(r => parseInt(r.month?.trim() ?? '', 10) === month)
+                return {
+                    confirmation_id: confirmId,
+                    resident_id:     g.residentId,
+                    year:            g.year,
+                    month,
+                    amount:          parseInt(row?.amount?.replace(/[^0-9]/g, '') ?? '0', 10) || 0,
+                }
+            })
+        })
+
+        if (allDetails.length > 0) {
+            const { error: detailsError } = await supabaseAdmin
+                .from('confirmation_details')
+                .insert(allDetails)
+
+            if (detailsError) throw detailsError
+        }
+
+        inserted = toInsert.length
+
+        // Activity log
         await supabaseAdmin.from('activity_logs').insert({
             rt_id:       rtId,
             actor_id:    authData.user.id,
@@ -188,7 +273,7 @@ export async function POST(req: Request) {
             metadata:    { inserted, skipped, fileName },
         })
 
-        // 5. Notify all TREASURER members so they can review
+        // Notify treasurers
         if (inserted > 0) {
             const { data: treasurers } = await supabaseAdmin
                 .from('memberships')

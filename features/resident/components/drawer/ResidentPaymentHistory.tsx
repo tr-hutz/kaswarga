@@ -2,7 +2,7 @@
 
 import {
     MONTHS
-} from '../../../../constants/months'
+} from '@/lib/constants/months'
 
 import { useTranslations } from 'next-intl'
 
@@ -35,11 +35,26 @@ function getStatusColor(status: string) {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymentHistory?: any[] }) {
+interface Props {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    paymentHistory?: any[]
+    loading?:        boolean
+    year?:           number
+    onYearChange?:   (y: number) => void
+}
+
+export default function ResidentPaymentHistory({
+    paymentHistory = [],
+    loading        = false,
+    year,
+    onYearChange,
+}: Props) {
 
     const t  = useTranslations('residents.paymentHistory')
     const tc = useTranslations('common')
+
+    const currentYear = new Date().getFullYear()
+    const displayYear = year ?? currentYear
 
     return (
 
@@ -49,7 +64,7 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
       "
         >
 
-            <div>
+            <div className="flex items-center justify-between gap-3">
 
                 <h3
                     className="
@@ -61,10 +76,28 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
                     {t('title')}
                 </h3>
 
+                {onYearChange && (
+                    <select
+                        value={displayYear}
+                        onChange={e => onYearChange(Number(e.target.value))}
+                        className="h-8 px-2 text-xs border border-divider rounded-lg bg-input text-foreground outline-none focus:border-primary"
+                    >
+                        {[displayYear - 1, displayYear, displayYear + 1].map(y => (
+                            <option key={y} value={y}>{y}</option>
+                        ))}
+                    </select>
+                )}
+
             </div>
 
+            {loading && (
+                <div className="text-sm text-muted border rounded-xl p-4">
+                    {tc('states.loading')}
+                </div>
+            )}
+
             {
-                paymentHistory.length === 0 && (
+                !loading && paymentHistory.length === 0 && (
 
                     <div
                         className="
@@ -81,10 +114,10 @@ export default function ResidentPaymentHistory({ paymentHistory = [] }: { paymen
             }
 
             {
-                paymentHistory.map(item => (
+                !loading && paymentHistory.map(item => (
 
                     <div
-                        key={item.id}
+                        key={`${item.paymentId}-${item.month}`}
                         className="
               border
               rounded-xl

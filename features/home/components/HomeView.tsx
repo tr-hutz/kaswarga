@@ -9,7 +9,7 @@ import MonthCard
 import PaymentForm
   from './PaymentForm'
 
-import { MONTHS } from '../../../constants/months'
+import { MONTHS } from '@/lib/constants/months'
 
 interface HomeViewProps {
   loading:        boolean

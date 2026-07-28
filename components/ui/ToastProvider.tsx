@@ -24,7 +24,8 @@ interface ToastOptions {
 }
 
 interface ToastContextType {
-    toast: (opts: ToastOptions) => void
+    toast: (opts: ToastOptions) => string
+    dismiss: (id: string) => void
 }
 
 interface ToastItem extends ToastOptions {
@@ -67,7 +68,7 @@ export default function ToastProvider({ children }: { children: ReactNode }) {
         )
     }, [])
 
-    const toast = useCallback((opts: ToastOptions) => {
+    const toast = useCallback((opts: ToastOptions): string => {
         const { title, message, type = 'info', duration = 4000, onClick } = opts
         const id = crypto.randomUUID()
 
@@ -79,11 +80,13 @@ export default function ToastProvider({ children }: { children: ReactNode }) {
         if (duration > 0) {
             setTimeout(() => dismiss(id), duration)
         }
+
+        return id
     }, [dismiss])
 
     return (
 
-        <ToastContext.Provider value={{ toast }}>
+        <ToastContext.Provider value={{ toast, dismiss }}>
 
             {children}
 

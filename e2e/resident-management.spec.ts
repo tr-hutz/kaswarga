@@ -40,7 +40,7 @@ test.describe('resident registration form (public)', () => {
 // ---------------------------------------------------------------------------
 
 test.describe('create resident (admin)', () => {
-  test.use({ storageState: path.join(__dirname, '.auth/session.json') })
+  test.use({ storageState: path.join(__dirname, '.auth/admin.json') })
 
   test.beforeAll(async ({ browser }: { browser: Browser }) => {
     await refreshAdminSession(browser)
@@ -105,7 +105,7 @@ test.describe('create resident (admin)', () => {
 // ---------------------------------------------------------------------------
 
 test.describe('resident pending requests (admin)', () => {
-  test.use({ storageState: path.join(__dirname, '.auth/session.json') })
+  test.use({ storageState: path.join(__dirname, '.auth/admin.json') })
 
   test.beforeAll(async ({ browser }: { browser: Browser }) => {
     await refreshAdminSession(browser)
@@ -155,7 +155,7 @@ test.describe('resident pending requests (admin)', () => {
 // ---------------------------------------------------------------------------
 
 test.describe('resident import (admin)', () => {
-  test.use({ storageState: path.join(__dirname, '.auth/session.json') })
+  test.use({ storageState: path.join(__dirname, '.auth/admin.json') })
 
   test.beforeAll(async ({ browser }: { browser: Browser }) => {
     await refreshAdminSession(browser)
