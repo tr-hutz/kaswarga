@@ -1,5 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabaseAdmin } from '@/lib/supabase-admin'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
+
+// Cast to any because the generated Database types don't include the RBAC tables
+// (roles, role_permissions) added in migrations 011–013 / 021.
+const db = supabaseAdmin as any
 
 export interface RoleRow {
     id:           string
@@ -43,7 +48,7 @@ export async function listRoles(options: QueryOptions): Promise<PageResult<RoleR
     const from = (page - 1) * pageSize
     const to   = from + pageSize - 1
 
-    let query = supabaseAdmin
+    let query = db
         .from('roles')
         .select('id, code, name, description, is_system, is_active, created_at, updated_at', { count: 'exact' })
 
@@ -58,18 +63,17 @@ export async function listRoles(options: QueryOptions): Promise<PageResult<RoleR
     const { data, error, count } = await query.range(from, to)
     if (error) throw error
 
-    // Fetch member counts in a single query using the enum→code mapping
-    const rows = data ?? []
-    const roleCodes = rows.map(r => r.code)
+    const rows = (data as RoleRow[]) ?? []
+    const roleCodes = rows.map((r: RoleRow) => r.code)
     const memberCountMap = await fetchMemberCounts(roleCodes)
 
-    const enriched: RoleRow[] = rows.map(r => ({
+    const enriched: RoleRow[] = rows.map((r: RoleRow) => ({
         ...r,
         is_active:    r.is_active ?? true,
         member_count: memberCountMap[r.code] ?? 0,
     }))
 
-    const total = count ?? 0
+    const total = (count as number) ?? 0
 
     return {
         data:       enriched,
@@ -83,22 +87,21 @@ export async function listRoles(options: QueryOptions): Promise<PageResult<RoleR
 async function fetchMemberCounts(roleCodes: string[]): Promise<Record<string, number>> {
     if (!roleCodes.length) return {}
 
-    // Reverse the enum map: roles.code → memberships.role enum values
     const reverseMap: Record<string, string> = {}
     for (const [enumVal, code] of Object.entries(ROLE_ENUM_MAP)) {
         reverseMap[code] = enumVal
     }
 
     const enumValues = roleCodes
-        .map(code => reverseMap[code] ?? code)
+        .map((code: string) => reverseMap[code] ?? code)
         .filter(Boolean)
 
     if (!enumValues.length) return {}
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await (supabaseAdmin as any)
         .from('memberships')
         .select('role')
-        .in('role', enumValues as string[])
+        .in('role', enumValues)
         .eq('status', 'active')
 
     if (error) {
@@ -115,7 +118,7 @@ async function fetchMemberCounts(roleCodes: string[]): Promise<Record<string, nu
 }
 
 export async function findRoleById(id: string): Promise<RoleRow | null> {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await db
         .from('roles')
         .select('id, code, name, description, is_system, is_active, created_at, updated_at')
         .eq('id', id)
@@ -124,27 +127,29 @@ export async function findRoleById(id: string): Promise<RoleRow | null> {
     if (error) throw error
     if (!data) return null
 
-    const memberCountMap = await fetchMemberCounts([data.code])
+    const memberCountMap = await fetchMemberCounts([(data as RoleRow).code])
+    const row = data as RoleRow
     return {
-        ...data,
-        is_active:    data.is_active ?? true,
-        member_count: memberCountMap[data.code] ?? 0,
+        ...row,
+        is_active:    row.is_active ?? true,
+        member_count: memberCountMap[row.code] ?? 0,
     }
 }
 
 export async function insertRole(payload: RoleInsert): Promise<RoleRow> {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await db
         .from('roles')
         .insert(payload)
         .select('id, code, name, description, is_system, is_active, created_at, updated_at')
         .single()
 
     if (error) throw error
-    return { ...data, is_active: data.is_active ?? true, member_count: 0 }
+    const row = data as RoleRow
+    return { ...row, is_active: row.is_active ?? true, member_count: 0 }
 }
 
 export async function updateRoleById(id: string, payload: RoleUpdate): Promise<RoleRow> {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await db
         .from('roles')
         .update({ ...payload, updated_at: new Date().toISOString() })
         .eq('id', id)
@@ -152,10 +157,11 @@ export async function updateRoleById(id: string, payload: RoleUpdate): Promise<R
         .single()
 
     if (error) throw error
-    const memberCountMap = await fetchMemberCounts([data.code])
+    const row = data as RoleRow
+    const memberCountMap = await fetchMemberCounts([row.code])
     return {
-        ...data,
-        is_active:    data.is_active ?? true,
-        member_count: memberCountMap[data.code] ?? 0,
+        ...row,
+        is_active:    row.is_active ?? true,
+        member_count: memberCountMap[row.code] ?? 0,
     }
 }

@@ -213,6 +213,7 @@ PostgreSQL RLS
 | Permission | Description | Status | Notes |
 |------------|-------------|--------|-------|
 | permission.view | View permissions | Active | |
+| permission.update | Edit global role-permission assignments | Active | |
 | permission.override | Manage RT permission overrides | Active | RBAC v2 |
 
 ---

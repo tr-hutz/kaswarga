@@ -85,6 +85,7 @@ export const PERMISSION = {
 
   // Permission Management
   PERMISSION_VIEW:     'permission.view',
+  PERMISSION_UPDATE:   'permission.update',
   PERMISSION_OVERRIDE: 'permission.override',
 
   // Audit

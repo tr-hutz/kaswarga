@@ -88,7 +88,8 @@
     "rt": "Kelola RT",
     "rtRegistration": "Pendaftaran RT",
     "users": "Kelola Users",
-    "roles": "Manajemen Role"
+    "roles": "Manajemen Role",
+    "permissionMatrix": "Matriks Izin"
   },
   "topbar": {
     "brand": "Kas Warga",
@@ -819,6 +820,39 @@
     "prev": "Sebelumnya",
     "next": "Selanjutnya",
     "rowsPerPage": "Baris per halaman"
+  },
+  "permissions": {
+    "title": "Matriks Izin",
+    "subtitle": "Konfigurasikan hak akses untuk setiap role",
+    "roleLabel": "Role",
+    "searchLabel": "Cari",
+    "searchPlaceholder": "Nama izin, kode, atau modul...",
+    "saveChanges": "Simpan Perubahan",
+    "saved": "Tersimpan",
+    "unsavedChanges": "Ada perubahan yang belum disimpan",
+    "bulkSelectAll": "Pilih Semua",
+    "bulkClearAll": "Hapus Semua",
+    "toast": {
+      "saved": "Pengaturan izin berhasil disimpan",
+      "saveFailed": "Gagal menyimpan pengaturan izin"
+    },
+    "modules": {
+      "resident":     "Warga",
+      "membership":   "Keanggotaan",
+      "payment":      "Pembayaran",
+      "expense":      "Pengeluaran",
+      "ledger":       "Buku Kas",
+      "report":       "Laporan",
+      "announcement": "Pengumuman",
+      "event":        "Acara",
+      "document":     "Dokumen",
+      "settings":     "Pengaturan",
+      "user":         "Pengguna",
+      "role":         "Role",
+      "permission":   "Izin",
+      "audit":        "Audit",
+      "other":        "Lainnya"
+    }
   },
   "roles": {
     "title": "Manajemen Role",
