@@ -80,6 +80,7 @@ export const PERMISSION = {
 
   // Role Management
   ROLE_VIEW:   'role.view',
+  ROLE_CREATE: 'role.create',
   ROLE_UPDATE: 'role.update',
 
   // Permission Management

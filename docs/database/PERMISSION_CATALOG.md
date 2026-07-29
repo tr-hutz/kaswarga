@@ -203,6 +203,7 @@ PostgreSQL RLS
 | Permission | Description | Status | Notes |
 |------------|-------------|--------|-------|
 | role.view | View roles | Active | |
+| role.create | Create custom role | Active | |
 | role.update | Update role metadata | Active | System only |
 
 ---

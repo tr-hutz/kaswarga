@@ -110,6 +110,13 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
+        label: 'roles',
+        href: '/settings/authorization/roles',
+        icon: 'shield',
+        permission: PERMISSIONS.MANAGE_ROLES
+    },
+
+    {
         label: 'changePassword',
         href: '/change-password',
         icon: 'key-round',

@@ -87,7 +87,8 @@
     "changePassword": "Ganti Password",
     "rt": "Kelola RT",
     "rtRegistration": "Pendaftaran RT",
-    "users": "Kelola Users"
+    "users": "Kelola Users",
+    "roles": "Manajemen Role"
   },
   "topbar": {
     "brand": "Kas Warga",
@@ -818,5 +819,53 @@
     "prev": "Sebelumnya",
     "next": "Selanjutnya",
     "rowsPerPage": "Baris per halaman"
+  },
+  "roles": {
+    "title": "Manajemen Role",
+    "subtitle": "Kelola role dan hak akses pengguna dalam sistem",
+    "searchPlaceholder": "Cari role...",
+    "columns": {
+      "name": "Nama Role",
+      "description": "Deskripsi",
+      "members": "Anggota",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Aktif",
+      "inactive": "Nonaktif"
+    },
+    "actions": {
+      "create": "Tambah Role",
+      "edit": "Edit",
+      "activate": "Aktifkan",
+      "deactivate": "Nonaktifkan"
+    },
+    "form": {
+      "createTitle": "Tambah Role",
+      "editTitle": "Edit Role",
+      "name": "Nama Role",
+      "namePlaceholder": "Contoh: Koordinator Lingkungan",
+      "code": "Kode Role",
+      "codePlaceholder": "Contoh: COORDINATOR",
+      "codeHint": "Kode unik, huruf kapital dan underscore saja",
+      "codeReadonly": "Kode tidak dapat diubah setelah dibuat",
+      "description": "Deskripsi",
+      "descriptionPlaceholder": "Deskripsi singkat tentang role ini...",
+      "systemProtected": "Role sistem tidak dapat diubah namanya."
+    },
+    "confirm": {
+      "activateTitle": "Aktifkan Role",
+      "deactivateTitle": "Nonaktifkan Role",
+      "activateMessage": "Aktifkan role \"{name}\"?",
+      "deactivateMessage": "Nonaktifkan role \"{name}\"? Pengguna dengan role ini tidak akan dapat mengakses fitur terkait.",
+      "deactivateSystemMessage": "Role sistem \"{name}\" akan dinonaktifkan. Pengguna dengan role ini tidak akan dapat mengakses fitur terkait."
+    },
+    "toast": {
+      "created": "Role berhasil dibuat",
+      "updated": "Role berhasil diperbarui",
+      "activated": "Role berhasil diaktifkan",
+      "deactivated": "Role berhasil dinonaktifkan",
+      "saveFailed": "Gagal menyimpan role"
+    }
   }
 }
