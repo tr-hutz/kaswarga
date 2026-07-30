@@ -1,10 +1,19 @@
 'use client'
 
-import type { Column } from '@/lib/types/query'
+import Link             from 'next/link'
+import type { Column }  from '@/lib/types/query'
 import type { RoleRow } from '@/lib/repositories/role.repository'
 import Ribbadge         from '@/components/ui/Ribbadge'
 import Button           from '@/components/ui/Button'
 import Icon             from '@/components/ui/Icon'
+
+const CODE_TO_ENUM: Record<string, string> = {
+    RT_CHAIR:  'CHAIR',
+    RT_ADMIN:  'ADMIN',
+    TREASURER: 'TREASURER',
+    SECRETARY: 'SECRETARY',
+    RESIDENT:  'RESIDENT',
+}
 
 interface BuildColumnsOptions {
     t:               (key: string) => string
@@ -61,6 +70,25 @@ export function buildRoleColumns({
                 />
             ),
         },
+        {
+            key:   'overrides',
+            title: '',
+            width: '160px',
+            render: (row: RoleRow) => {
+                const roleEnum = CODE_TO_ENUM[row.code]
+                if (!roleEnum) return null
+                return (
+                    <Link
+                        href={`/settings/authorization/overrides?role=${roleEnum}`}
+                        className="inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded border border-divider text-muted hover:text-primary hover:border-primary transition-colors"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <Icon name="user-cog" size={12} />
+                        {t('actions.viewOverrides')}
+                    </Link>
+                )
+            },
+        } as Column<RoleRow>,
         ...(canUpdate
             ? [{
                 key:   'actions',

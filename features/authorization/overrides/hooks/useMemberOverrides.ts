@@ -36,6 +36,11 @@ export interface OverrideSummary {
     overrides: number
 }
 
+export interface RoleGroup {
+    roleEnum: string
+    count:    number
+}
+
 type OverrideMap = Map<string, boolean | null>
 
 function groupPermissions(perms: PermissionDetail[]): PermissionGroup[] {
@@ -60,18 +65,19 @@ function overrideMapsEqual(a: OverrideMap, b: OverrideMap): boolean {
 interface HookOptions {
     canEdit:             boolean
     singleMembershipId?: string
+    initialRole?:        string
 }
 
-export function useMemberOverrides({ canEdit, singleMembershipId }: HookOptions) {
+export function useMemberOverrides({ canEdit, singleMembershipId, initialRole }: HookOptions) {
     const t          = useTranslations('overrides')
     const singleMode = !!singleMembershipId
 
-    const [members,        setMembers]        = useState<MemberRow[]>([])
+    const [allMembers,     setAllMembers]     = useState<MemberRow[]>([])
     const [memberSearch,   setMemberSearch]   = useState('')
+    const [selectedRole,   setSelectedRole]   = useState<string | null>(initialRole ?? null)
     const [selectedId,     setSelectedId]     = useState<string | null>(singleMembershipId ?? null)
     const [memberInfo,     setMemberInfo]     = useState<MemberInfo | null>(null)
     const [roleId,         setRoleId]         = useState<string>('')
-    const [allPerms,       setAllPerms]       = useState<PermissionDetail[]>([])
     const [groups,         setGroups]         = useState<PermissionGroup[]>([])
     const [filteredGroups, setFilteredGroups] = useState<PermissionGroup[]>([])
     const [search,         setSearch]         = useState('')
@@ -107,6 +113,15 @@ export function useMemberOverrides({ canEdit, singleMembershipId }: HookOptions)
         return { granted, denied, overrides }
     }, [groups, localOverrides])
 
+    // Role groups derived from all members (for Stage 1 left panel)
+    const roleGroups: RoleGroup[] = useMemo(() => {
+        const map = new Map<string, number>()
+        for (const m of allMembers) {
+            map.set(m.roleEnum, (map.get(m.roleEnum) ?? 0) + 1)
+        }
+        return Array.from(map.entries()).map(([roleEnum, count]) => ({ roleEnum, count }))
+    }, [allMembers])
+
     useEffect(() => {
         function onBeforeUnload(e: BeforeUnloadEvent) {
             if (isDirty) e.preventDefault()
@@ -124,7 +139,7 @@ export function useMemberOverrides({ canEdit, singleMembershipId }: HookOptions)
             try {
                 const res = await fetch('/api/members')
                 if (!res.ok) throw new Error('Failed to load members')
-                setMembers(await res.json() as MemberRow[])
+                setAllMembers(await res.json() as MemberRow[])
             } catch (err) {
                 setError((err as Error).message)
             } finally {
@@ -155,7 +170,6 @@ export function useMemberOverrides({ canEdit, singleMembershipId }: HookOptions)
 
                 setMemberInfo(data.member)
                 setRoleId(data.roleId)
-                setAllPerms(data.permissions)
                 setGroups(groupPermissions(data.permissions))
 
                 const map: OverrideMap = new Map()
@@ -202,15 +216,34 @@ export function useMemberOverrides({ canEdit, singleMembershipId }: HookOptions)
         setFilteredGroups(filtered)
     }, [search, groups, filter, localOverrides, t])
 
-    const filteredMembers = members.filter(m => {
-        if (!memberSearch.trim()) return true
-        const q = memberSearch.toLowerCase()
-        return (
-            (m.name  ?? '').toLowerCase().includes(q) ||
-            m.membershipId.toLowerCase().includes(q)  ||
-            (m.email ?? '').toLowerCase().includes(q)
-        )
-    })
+    // Members for Stage 2: filtered by selected role + member search
+    const members = useMemo(() => {
+        return allMembers.filter(m => {
+            if (selectedRole && m.roleEnum !== selectedRole) return false
+            if (!memberSearch.trim()) return true
+            const q = memberSearch.toLowerCase()
+            return (
+                (m.name  ?? '').toLowerCase().includes(q) ||
+                m.membershipId.toLowerCase().includes(q)  ||
+                (m.email ?? '').toLowerCase().includes(q)
+            )
+        })
+    }, [allMembers, selectedRole, memberSearch])
+
+    function selectRole(roleEnum: string | null) {
+        if (isDirty && !confirm('Ada perubahan yang belum disimpan. Lanjutkan?')) return
+        setSelectedRole(roleEnum)
+        setSelectedId(null)
+        prevSelectedId.current = null
+        setMemberSearch('')
+        setMemberInfo(null)
+        setGroups([])
+        setFilteredGroups([])
+        setSavedOverrides(new Map())
+        setLocalOverrides(new Map())
+        setSearch('')
+        setFilter('all')
+    }
 
     function selectMember(membershipId: string) {
         if (isDirty && !confirm('Ada perubahan yang belum disimpan. Lanjutkan?')) return
@@ -221,7 +254,6 @@ export function useMemberOverrides({ canEdit, singleMembershipId }: HookOptions)
         setSavedOverrides(new Map())
         setLocalOverrides(new Map())
         setMemberInfo(null)
-        setAllPerms([])
         setGroups([])
         setFilteredGroups([])
     }
@@ -272,13 +304,14 @@ export function useMemberOverrides({ canEdit, singleMembershipId }: HookOptions)
 
     return {
         singleMode,
-        members: filteredMembers,
+        roleGroups,
+        selectedRole,
+        members,
         memberSearch,
         setMemberSearch,
         selectedId,
         memberInfo,
         roleId,
-        allPerms,
         filteredGroups,
         search,
         setSearch,
@@ -293,6 +326,7 @@ export function useMemberOverrides({ canEdit, singleMembershipId }: HookOptions)
         loadingMember,
         saving,
         error,
+        selectRole,
         selectMember,
         setOverride,
         discardChanges,

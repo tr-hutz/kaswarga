@@ -24,6 +24,8 @@ export default function SingleMemberOverrideContainer({ membershipId, canEdit }:
     return (
         <MemberOverridesView
             singleMode={true}
+            roleGroups={[]}
+            selectedRole={null}
             members={[]}
             memberSearch=""
             selectedId={membershipId}
@@ -41,6 +43,7 @@ export default function SingleMemberOverrideContainer({ membershipId, canEdit }:
             loadingMember={ov.loadingMember}
             saving={ov.saving}
             error={ov.error}
+            onSelectRole={() => {}}
             onMemberSearch={() => {}}
             onSelectMember={() => {}}
             onSearch={ov.setSearch}

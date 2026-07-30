@@ -6,13 +6,14 @@ import { useMemberOverrides } from './hooks/useMemberOverrides'
 import MemberOverridesView    from './MemberOverridesView'
 
 interface Props {
-    canEdit: boolean
+    canEdit:      boolean
+    initialRole?: string
 }
 
-export default function MemberOverridesContainer({ canEdit }: Props) {
+export default function MemberOverridesContainer({ canEdit, initialRole }: Props) {
     const t         = useTranslations('overrides')
     const { toast } = useToast()
-    const ov        = useMemberOverrides({ canEdit })
+    const ov        = useMemberOverrides({ canEdit, initialRole })
 
     async function handleSave() {
         const ok = await ov.save()
@@ -23,6 +24,8 @@ export default function MemberOverridesContainer({ canEdit }: Props) {
     return (
         <MemberOverridesView
             singleMode={false}
+            roleGroups={ov.roleGroups}
+            selectedRole={ov.selectedRole}
             members={ov.members}
             memberSearch={ov.memberSearch}
             selectedId={ov.selectedId}
@@ -40,6 +43,7 @@ export default function MemberOverridesContainer({ canEdit }: Props) {
             loadingMember={ov.loadingMember}
             saving={ov.saving}
             error={ov.error}
+            onSelectRole={ov.selectRole}
             onMemberSearch={ov.setMemberSearch}
             onSelectMember={ov.selectMember}
             onSearch={ov.setSearch}

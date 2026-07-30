@@ -5,10 +5,13 @@ import { UnauthorizedError }     from '@/lib/auth/errors'
 import ForbiddenState            from '@/components/ui/ForbiddenState'
 import MemberOverridesContainer  from '@/features/authorization/overrides/MemberOverridesContainer'
 
-export default async function Page() {
+type PageProps = { searchParams: Promise<{ role?: string }> }
+
+export default async function Page({ searchParams }: PageProps) {
     try {
-        const ctx  = await getRequestContext()
-        const auth = ctx.authorization
+        const { role } = await searchParams
+        const ctx       = await getRequestContext()
+        const auth      = ctx.authorization
 
         if (!auth.hasPermission(PERMISSION.PERMISSION_VIEW)) {
             return <ForbiddenState />
@@ -18,6 +21,7 @@ export default async function Page() {
             <Suspense>
                 <MemberOverridesContainer
                     canEdit={auth.hasPermission(PERMISSION.PERMISSION_OVERRIDE)}
+                    initialRole={role}
                 />
             </Suspense>
         )

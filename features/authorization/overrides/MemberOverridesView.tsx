@@ -7,7 +7,7 @@ import Icon                from '@/components/ui/Icon'
 import Ribbadge            from '@/components/ui/Ribbadge'
 import OverrideTable       from './components/OverrideTable'
 import type { MemberRow }  from '@/lib/repositories/member-override.repository'
-import type { MemberInfo, PermissionGroup, OverrideSummary, OverrideFilter } from './hooks/useMemberOverrides'
+import type { MemberInfo, PermissionGroup, OverrideSummary, OverrideFilter, RoleGroup } from './hooks/useMemberOverrides'
 
 const ROLE_LABELS: Record<string, string> = {
     ADMIN:     'Administrator',
@@ -19,6 +19,8 @@ const ROLE_LABELS: Record<string, string> = {
 
 interface Props {
     singleMode:     boolean
+    roleGroups:     RoleGroup[]
+    selectedRole:   string | null
     members:        MemberRow[]
     memberSearch:   string
     selectedId:     string | null
@@ -36,6 +38,7 @@ interface Props {
     loadingMember:  boolean
     saving:         boolean
     error:          string | null
+    onSelectRole:   (roleEnum: string | null) => void
     onMemberSearch: (s: string) => void
     onSelectMember: (id: string) => void
     onSearch:       (s: string) => void
@@ -47,10 +50,11 @@ interface Props {
 
 export default function MemberOverridesView({
     singleMode,
+    roleGroups, selectedRole,
     members, memberSearch, selectedId, memberInfo,
     filteredGroups, localOverrides, savedOverrides, summary, search, filter,
     isDirty, dirtyCount, canEdit, loading, loadingMember, saving, error,
-    onMemberSearch, onSelectMember, onSearch, onFilterChange, onSetOverride,
+    onSelectRole, onMemberSearch, onSelectMember, onSearch, onFilterChange, onSetOverride,
     onSave, onDiscard,
 }: Props) {
     const t  = useTranslations('overrides')
@@ -71,28 +75,28 @@ export default function MemberOverridesView({
     return (
         <div className="space-y-6">
 
-            {!singleMode && (
-                <div className="flex items-start justify-between gap-4">
-                    <div>
-                        <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
-                        <p className="text-sm text-muted mt-0.5">{t('subtitle')}</p>
-                    </div>
-                    {canEdit && selectedId && (
-                        <div className="flex items-center gap-2 shrink-0">
-                            {isDirty && (
-                                <Button variant="outline" size="sm" onClick={onDiscard} disabled={saving}>
-                                    {tc('actions.cancel')}
-                                </Button>
-                            )}
-                            <Button size="sm" onClick={onSave} loading={saving} disabled={!isDirty}>
-                                <Icon name="check" size={14} />
-                                {saveLabel}
-                            </Button>
-                        </div>
-                    )}
+            {/* Page header */}
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                    <p className="text-sm text-muted mt-0.5">{t('subtitle')}</p>
                 </div>
-            )}
+                {!singleMode && canEdit && selectedId && (
+                    <div className="flex items-center gap-2 shrink-0">
+                        {isDirty && (
+                            <Button variant="outline" size="sm" onClick={onDiscard} disabled={saving}>
+                                {tc('actions.cancel')}
+                            </Button>
+                        )}
+                        <Button size="sm" onClick={onSave} loading={saving} disabled={!isDirty}>
+                            <Icon name="check" size={14} />
+                            {saveLabel}
+                        </Button>
+                    </div>
+                )}
+            </div>
 
+            {/* Dirty banner */}
             {isDirty && (
                 <div className="flex items-center gap-2 px-4 py-2.5 bg-warning/10 border border-warning/30 rounded-lg text-sm text-warning">
                     <Icon name="alert-triangle" size={14} />
@@ -100,6 +104,7 @@ export default function MemberOverridesView({
                 </div>
             )}
 
+            {/* Error */}
             {error && (
                 <div className="flex items-center gap-2 px-4 py-2.5 bg-danger/10 border border-danger/30 rounded-lg text-sm text-danger">
                     <Icon name="alert-triangle" size={14} />
@@ -109,36 +114,93 @@ export default function MemberOverridesView({
 
             <div className={singleMode ? 'space-y-4' : 'grid grid-cols-1 lg:grid-cols-3 gap-6'}>
 
+                {/* Left panel (full-page mode only) */}
                 {!singleMode && (
-                    <div className="lg:col-span-1 space-y-3">
-                        <Input
-                            label={t('memberSearch')}
-                            value={memberSearch}
-                            onChange={e => onMemberSearch(e.target.value)}
-                            placeholder={t('memberSearchPlaceholder')}
-                        />
-                        <div className="rounded-xl border border-divider bg-surface divide-y divide-divider max-h-[calc(100vh-380px)] overflow-y-auto">
-                            {members.length === 0 ? (
-                                <p className="px-4 py-6 text-center text-sm text-muted">{tc('status.empty')}</p>
-                            ) : members.map(m => (
+                    <div className="lg:col-span-1">
+
+                        {selectedRole === null ? (
+                            /* Stage 1 — Role list */
+                            <div className="space-y-2">
+                                <p className="text-xs font-semibold text-muted uppercase tracking-wider px-1">
+                                    {t('selectRolePrompt')}
+                                </p>
+                                <div className="rounded-xl border border-divider bg-surface divide-y divide-divider">
+                                    {roleGroups.length === 0 ? (
+                                        <p className="px-4 py-6 text-center text-sm text-muted">
+                                            {tc('status.empty')}
+                                        </p>
+                                    ) : roleGroups.map(r => (
+                                        <button
+                                            key={r.roleEnum}
+                                            className="w-full px-4 py-3 text-left hover:bg-canvas transition-colors flex items-center justify-between"
+                                            onClick={() => onSelectRole(r.roleEnum)}
+                                        >
+                                            <div>
+                                                <p className="font-medium text-foreground text-sm">
+                                                    {ROLE_LABELS[r.roleEnum] ?? r.roleEnum}
+                                                </p>
+                                                <p className="text-xs text-muted">
+                                                    {t('memberCount', { count: r.count })}
+                                                </p>
+                                            </div>
+                                            <Icon name="chevron-right" size={14} className="text-muted shrink-0" />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            /* Stage 2 — Member list for selected role */
+                            <div className="space-y-3">
                                 <button
-                                    key={m.membershipId}
-                                    className={`w-full px-4 py-3 text-left hover:bg-canvas transition-colors ${selectedId === m.membershipId ? 'bg-primary/5 border-l-2 border-l-primary' : ''}`}
-                                    onClick={() => onSelectMember(m.membershipId)}
+                                    className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-foreground"
+                                    onClick={() => onSelectRole(null)}
                                 >
-                                    <p className="font-medium text-foreground text-sm">{m.name ?? '—'}</p>
-                                    <p className="text-xs text-muted">{ROLE_LABELS[m.roleEnum] ?? m.roleEnum}</p>
+                                    <Icon name="arrow-left" size={14} />
+                                    {ROLE_LABELS[selectedRole] ?? selectedRole}
                                 </button>
-                            ))}
-                        </div>
+
+                                <Input
+                                    value={memberSearch}
+                                    onChange={e => onMemberSearch(e.target.value)}
+                                    placeholder={t('memberSearchPlaceholder')}
+                                />
+
+                                <div className="rounded-xl border border-divider bg-surface divide-y divide-divider max-h-[calc(100vh-420px)] overflow-y-auto">
+                                    {members.length === 0 ? (
+                                        <p className="px-4 py-6 text-center text-sm text-muted">
+                                            {tc('status.empty')}
+                                        </p>
+                                    ) : members.map(m => (
+                                        <button
+                                            key={m.membershipId}
+                                            className={`w-full px-4 py-3 text-left hover:bg-canvas transition-colors ${
+                                                selectedId === m.membershipId
+                                                    ? 'bg-primary/5 border-l-2 border-l-primary'
+                                                    : ''
+                                            }`}
+                                            onClick={() => onSelectMember(m.membershipId)}
+                                        >
+                                            <p className="font-medium text-foreground text-sm">{m.name ?? '—'}</p>
+                                            <p className="text-xs text-muted">{m.email ?? ''}</p>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
+                {/* Right panel — override editor */}
                 <div className={singleMode ? '' : 'lg:col-span-2'}>
                     {!selectedId && !singleMode ? (
                         <div className="flex flex-col items-center justify-center h-64 gap-2 text-muted">
                             <Icon name="user-cog" size={32} />
-                            <p className="text-sm">{t('selectMemberPrompt')}</p>
+                            <p className="text-sm">
+                                {selectedRole === null
+                                    ? t('selectRolePrompt')
+                                    : t('selectMemberPrompt')
+                                }
+                            </p>
                         </div>
                     ) : loadingMember ? (
                         <div className="flex items-center justify-center h-64 text-muted text-sm">
@@ -147,18 +209,13 @@ export default function MemberOverridesView({
                     ) : memberInfo ? (
                         <div className="space-y-4">
 
+                            {/* Member info card */}
                             <div className="rounded-xl border border-divider bg-surface p-4 flex flex-wrap gap-6 items-center justify-between">
                                 <div className="flex flex-wrap gap-6">
                                     <div className="space-y-0.5">
                                         <p className="text-xs text-muted uppercase tracking-wider">{t('info.name')}</p>
                                         <p className="font-semibold text-foreground">{memberInfo.name ?? '—'}</p>
                                     </div>
-                                    {!singleMode && (
-                                        <div className="space-y-0.5">
-                                            <p className="text-xs text-muted uppercase tracking-wider">{t('info.role')}</p>
-                                            <p className="font-medium text-foreground">{memberInfo.roleName}</p>
-                                        </div>
-                                    )}
                                     <div className="space-y-0.5">
                                         <p className="text-xs text-muted uppercase tracking-wider">{t('info.status')}</p>
                                         <Ribbadge
@@ -187,6 +244,7 @@ export default function MemberOverridesView({
                                 )}
                             </div>
 
+                            {/* Summary card */}
                             <div className="grid grid-cols-3 gap-3">
                                 <div className="rounded-xl border border-divider bg-surface p-3 text-center">
                                     <p className="text-xs text-muted uppercase tracking-wider mb-1">{t('summary.granted')}</p>
@@ -202,19 +260,22 @@ export default function MemberOverridesView({
                                 </div>
                             </div>
 
+                            {/* Info banner */}
                             {canEdit && (
                                 <div className="flex items-start gap-2 px-4 py-2.5 bg-primary/5 border border-primary/20 rounded-lg text-sm text-foreground">
                                     <Icon name="alert-circle" size={14} className="mt-0.5 shrink-0 text-primary" />
-                                    <span>{t('overrideNote', { memberName: memberInfo.name ?? '—', roleName: memberInfo.roleName })}</span>
+                                    <span>{t('overrideNote', { memberName: memberInfo.name ?? '—' })}</span>
                                 </div>
                             )}
 
+                            {/* Permission search */}
                             <Input
                                 value={search}
                                 onChange={e => onSearch(e.target.value)}
                                 placeholder={t('searchPlaceholder')}
                             />
 
+                            {/* Override table */}
                             <OverrideTable
                                 groups={filteredGroups}
                                 localOverrides={localOverrides}
