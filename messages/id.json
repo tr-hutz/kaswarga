@@ -91,7 +91,8 @@
         "roles": "Manajemen Role",
         "permissionMatrix": "Matriks Perijinan",
         "memberOverrides": "Override Izin Anggota",
-        "effectivePermissions": "Lihat Izin Efektif"
+        "effectivePermissions": "Lihat Izin Efektif",
+        "authorizationDebug": "Debug Otorisasi"
     },
     "topbar": {
         "brand": "Kas Warga",
@@ -1064,6 +1065,62 @@
             "grant": "Grant",
             "revoke": "Revoke",
             "none": "Tidak Ada"
+        }
+    },
+    "debug": {
+        "title": "Debug Otorisasi",
+        "subtitle": "Visualisasi pipeline otorisasi secara real-time",
+        "refresh": "Refresh",
+        "exportJson": "Export JSON",
+        "generatedAt": "Dibuat pada",
+        "sections": {
+            "currentUser":          "Pengguna Aktif",
+            "authorizationContext": "AuthorizationContext",
+            "roleResolution":       "Role Resolution",
+            "permissionResolution": "Permission Resolution",
+            "effectivePermission":  "Izin Efektif",
+            "requestInfo":          "Informasi Request",
+            "decisionTrace":        "Decision Trace"
+        },
+        "fields": {
+            "userId":              "User ID",
+            "membershipId":        "Membership ID",
+            "neighborhoodId":      "RT ID",
+            "roleCode":            "Role Code",
+            "roleId":              "Role ID",
+            "requestId":           "Request ID",
+            "locale":              "Locale",
+            "timezone":            "Timezone",
+            "ipAddress":           "IP Address",
+            "userAgent":           "User Agent",
+            "currentPath":         "Path",
+            "method":              "HTTP Method",
+            "requiredPermission":  "Permission Dibutuhkan",
+            "authorizationResult": "Hasil Otorisasi"
+        },
+        "stats": {
+            "rolePermissions": "Role Permissions",
+            "overrideGrants":  "Override Grant",
+            "overrideRevokes": "Override Revoke",
+            "effectiveCount":  "Izin Efektif"
+        },
+        "source": {
+            "role":            "Role",
+            "override_grant":  "Override (+)",
+            "override_revoke": "Override (−)",
+            "none":            "Tidak Ada"
+        },
+        "trace": {
+            "request":             "Request",
+            "permissionRequired":  "Permission Dibutuhkan",
+            "rolePermission":      "Role Permission",
+            "override":            "Override",
+            "effectivePermission": "Izin Efektif",
+            "finalDecision":       "Keputusan Akhir"
+        },
+        "result": {
+            "granted": "GRANTED",
+            "denied":  "DENIED"
         }
     }
 }
