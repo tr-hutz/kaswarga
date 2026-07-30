@@ -67,6 +67,7 @@ const ENUM_TO_ROLE_CODE: Record<string, string> = {
   CHAIR:       'RT_CHAIR',
   ADMIN:       'RT_ADMIN',
   TREASURER:   'TREASURER',
+  SECRETARY:   'SECRETARY',
   RESIDENT:    'RESIDENT',
 }
 

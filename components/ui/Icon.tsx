@@ -10,7 +10,7 @@ import {
     Menu, Monitor, Moon, Paperclip, Pencil, Plus, Receipt, RefreshCw, Search,
     Settings, ShelvingUnit, Shield, Sun, ToggleLeft, ToggleRight,
     Trash2, Upload, UserCog, UserPlus, Users,
-    Table2, Vibrate, Wallet, X, XCircle,
+    Table2, Vibrate, Wallet, X, XCircle, TableProperties,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
 
@@ -52,6 +52,7 @@ const ICONS = {
     moon:               Moon,
     paperclip:          Paperclip,
     pencil:             Pencil,
+    properties:         TableProperties,
     plus:               Plus,
     receipt:            Receipt,
     'refresh-cw':       RefreshCw,

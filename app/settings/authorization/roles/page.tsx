@@ -19,6 +19,7 @@ export default async function Page() {
                 <RolesContainer
                     canCreate={auth.hasPermission(PERMISSION.ROLE_CREATE)}
                     canUpdate={auth.hasPermission(PERMISSION.ROLE_UPDATE)}
+                    currentRoleCode={auth.roleCode}
                 />
             </Suspense>
         )

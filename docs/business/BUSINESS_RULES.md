@@ -417,7 +417,89 @@ Scope restrictions (`own data only`) are enforced by RLS, not by the application
 
 ---
 
-# 13. Security
+# 13. Role Management
+
+## BR-130
+
+Roles may be created and updated. Roles must never be deleted.
+
+Deactivation is the only way to retire a role.
+
+---
+
+## BR-131
+
+System roles (`is_system = true`) are platform-managed.
+
+Their `code` and `name` are immutable and cannot be changed by operators.
+
+`description` may be updated by an authorized administrator.
+
+---
+
+## BR-132
+
+A user may not deactivate the role they currently hold.
+
+Self-deactivation would lock the user out of the system and is prohibited.
+
+This is enforced at the service layer and is not bypassable through the UI.
+
+---
+
+## BR-133
+
+SUPER_ADMIN is a platform-level role that operates outside RT scope.
+
+It must not appear in RT-level role management lists or the permission matrix.
+
+SUPER_ADMIN bypasses the permission system unconditionally and has no configurable permissions.
+
+---
+
+## BR-134
+
+Deactivating a role does not revoke permissions of existing members who hold that role.
+
+It prevents the role from being newly assigned and hides it from management UIs.
+
+---
+
+# 14. Permission Matrix
+
+## BR-140
+
+The Permission Matrix defines the default permission assignments for each role.
+
+Changes to the matrix apply globally to all RTs that have not overridden the affected permissions.
+
+---
+
+## BR-141
+
+Permission Matrix changes require an explicit Save action.
+
+Changes are never applied automatically. Unsaved changes must be discarded or confirmed before navigating away.
+
+---
+
+## BR-142
+
+RT-specific permission overrides take precedence over the global Permission Matrix.
+
+A change to the global matrix does not override existing RT overrides for the same permission.
+
+---
+
+## BR-143
+
+SUPER_ADMIN is excluded from the Permission Matrix.
+
+Its permissions cannot be configured because it unconditionally bypasses the permission system.
+
+---
+
+# 15. Security
 
 ## BR-100
 
@@ -439,7 +521,7 @@ RLS is the final data protection layer and cannot be bypassed by application log
 
 ---
 
-# 14. General Principles
+# 16. General Principles
 
 ## BR-110
 

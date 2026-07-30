@@ -29,7 +29,6 @@ export default function PermissionMatrixContainer({ canEdit }: Props) {
             selectedRoleId={matrix.selectedRoleId}
             filteredGroups={matrix.filteredGroups}
             localSet={matrix.localSet}
-            collapsed={matrix.collapsed}
             search={matrix.search}
             isDirty={matrix.isDirty}
             canEdit={canEdit}
@@ -42,7 +41,6 @@ export default function PermissionMatrixContainer({ canEdit }: Props) {
             onToggle={matrix.togglePermission}
             onSelectAll={matrix.selectAllInModule}
             onClearAll={matrix.clearAllInModule}
-            onCollapse={matrix.toggleCollapse}
             onSave={handleSave}
             onDiscard={matrix.discardChanges}
         />

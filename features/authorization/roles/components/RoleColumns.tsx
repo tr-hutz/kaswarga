@@ -7,15 +7,17 @@ import Button           from '@/components/ui/Button'
 import Icon             from '@/components/ui/Icon'
 
 interface BuildColumnsOptions {
-    t:              (key: string) => string
-    canUpdate:      boolean
-    onEdit:         (role: RoleRow) => void
-    onToggleActive: (role: RoleRow) => void
+    t:               (key: string) => string
+    canUpdate:       boolean
+    currentRoleCode: string
+    onEdit:          (role: RoleRow) => void
+    onToggleActive:  (role: RoleRow) => void
 }
 
 export function buildRoleColumns({
     t,
     canUpdate,
+    currentRoleCode,
     onEdit,
     onToggleActive,
 }: BuildColumnsOptions): Column<RoleRow>[] {
@@ -78,8 +80,13 @@ export function buildRoleColumns({
                         <Button
                             variant="ghost"
                             size="sm"
-                            title={row.is_active ? t('actions.deactivate') : t('actions.activate')}
+                            title={
+                                row.code === currentRoleCode
+                                    ? t('actions.cannotDeactivateSelf')
+                                    : row.is_active ? t('actions.deactivate') : t('actions.activate')
+                            }
                             onClick={e => { e.stopPropagation(); onToggleActive(row) }}
+                            disabled={row.code === currentRoleCode}
                         >
                             <Icon name={row.is_active ? 'toggle-right' : 'toggle-left'} size={14} />
                         </Button>

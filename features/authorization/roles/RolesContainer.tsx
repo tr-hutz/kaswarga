@@ -8,11 +8,12 @@ import { buildRoleColumns }    from './components/RoleColumns'
 import RolesView               from './RolesView'
 
 interface Props {
-    canCreate: boolean
-    canUpdate: boolean
+    canCreate:       boolean
+    canUpdate:       boolean
+    currentRoleCode: string
 }
 
-export default function RolesContainer({ canCreate, canUpdate }: Props) {
+export default function RolesContainer({ canCreate, canUpdate, currentRoleCode }: Props) {
     const t = useTranslations('roles')
 
     const data    = useRolesData()
@@ -20,13 +21,14 @@ export default function RolesContainer({ canCreate, canUpdate }: Props) {
 
     const columns = useMemo(
         () => buildRoleColumns({
-            t:              (k: string) => t(k as Parameters<typeof t>[0]),
+            t:               (k: string) => t(k as Parameters<typeof t>[0]),
             canUpdate,
-            onEdit:         actions.openEdit,
-            onToggleActive: actions.openToggleActive,
+            currentRoleCode,
+            onEdit:          actions.openEdit,
+            onToggleActive:  actions.openToggleActive,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [canUpdate],
+        [canUpdate, currentRoleCode],
     )
 
     return (

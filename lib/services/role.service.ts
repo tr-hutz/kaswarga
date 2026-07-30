@@ -70,5 +70,9 @@ export async function setRoleActive(
     const existing = await findRoleById(id)
     if (!existing) throw new Error('Role not found')
 
+    if (!isActive && existing.code === auth.roleCode) {
+        throw new Error('Cannot deactivate your own role')
+    }
+
     return updateRoleById(id, { is_active: isActive })
 }

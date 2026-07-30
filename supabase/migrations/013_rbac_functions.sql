@@ -1,17 +1,17 @@
 /*
  * =============================================================================
- * 018_RBAC_AUTHORIZATION_FUNCTIONS
+ * 013_RBAC_FUNCTIONS
  *
  * PostgreSQL helper functions for RBAC v2 permission evaluation.
  *
  * These functions are the single source of truth for runtime authorization.
- * They are called by:
- *   - RLS policies (019_update_rls_policies)
+ * Called by:
+ *   - RLS policies (014_rbac_rls)
  *   - PermissionService (application layer)
  *
- * All functions are SECURITY DEFINER to bypass the RLS policies on
- * memberships — querying memberships from within its own RLS context
- * would create a circular dependency.
+ * All functions are SECURITY DEFINER to bypass RLS on memberships —
+ * querying memberships from within its own RLS context would create a
+ * circular dependency.
  *
  * Role mapping note:
  *   The user_role enum in memberships predates RBAC v2 and uses different
@@ -19,9 +19,7 @@
  *   The CASE mapping below bridges the two until a future migration adds
  *   a role_id FK directly to memberships.
  *
- * Dependencies : 011_rbac_roles, 012_rbac_permissions,
- *                013_rbac_role_permissions, 014_rbac_permission_overrides,
- *                015_seed_roles, 016_seed_permissions
+ * Dependencies : 011_rbac_tables, 012_rbac_seed
  * =============================================================================
  */
 
@@ -92,7 +90,6 @@ COMMENT ON FUNCTION has_permission(uuid, text) IS
  * current_membership
  *
  * Returns all active memberships for the currently authenticated user.
- *
  * Used by PermissionService to build AuthorizationContext at request start.
  * --------------------------------------------------------------------------- */
 
@@ -116,9 +113,7 @@ COMMENT ON FUNCTION current_membership() IS
  * current_neighborhood
  *
  * Returns every RT ID that the currently authenticated user actively belongs to.
- *
- * Used by PermissionService and AuthorizationContext to scope data access.
- * SUPER_ADMIN memberships have a NULL rt_id and are excluded from this set.
+ * SUPER_ADMIN memberships (rt_id IS NULL) are excluded from this set.
  * --------------------------------------------------------------------------- */
 
 CREATE OR REPLACE FUNCTION current_neighborhood()

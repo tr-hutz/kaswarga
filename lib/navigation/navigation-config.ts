@@ -113,14 +113,16 @@ export const NAVIGATION: NavItem[] = [
         label: 'roles',
         href: '/settings/authorization/roles',
         icon: 'shield',
-        permission: PERMISSIONS.MANAGE_ROLES
+        permission: PERMISSIONS.MANAGE_ROLES,
+        hideForRoles: ['SUPER_ADMIN']
     },
 
     {
         label: 'permissionMatrix',
         href: '/settings/authorization/permissions',
-        icon: 'key-round',
-        permission: PERMISSIONS.MANAGE_ROLES
+        icon: 'properties',
+        permission: PERMISSIONS.MANAGE_ROLES,
+        hideForRoles: ['SUPER_ADMIN']
     },
 
     {

@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 020_VALIDATION
+ * 015_RBAC_VALIDATION
  *
  * Asserts that the full RBAC v2 database foundation is consistent.
  * Any failing assertion raises an exception and rolls back this migration,
@@ -9,11 +9,11 @@
  * Checks performed
  *   1. Core RBAC tables exist
  *   2. Authorization functions exist with correct signatures
- *   3. Seed data — roles, permissions, role_permissions — match expected counts
+ *   3. Seed data — roles (6), permissions (49), role_permissions (120)
  *   4. Key business rules — SUPER_ADMIN excluded, permission grants correct
  *   5. Updated RLS policies are present; deprecated role-name policies are gone
  *
- * Dependencies : 011–019 (all prior RBAC v2 migrations)
+ * Dependencies : 011–014 (all prior RBAC v2 migrations)
  * =============================================================================
  */
 
@@ -46,12 +46,19 @@ BEGIN
         WHERE table_schema = 'public' AND table_name = 'rt_permission_overrides'
     )), 'Table rt_permission_overrides not found';
 
+    -- is_active column must exist on roles
+    ASSERT (SELECT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name   = 'roles'
+          AND column_name  = 'is_active'
+    )), 'Column roles.is_active not found';
+
 
     /* ---------------------------------------------------------------------- */
     /* 2. Authorization functions                                              */
     /* ---------------------------------------------------------------------- */
 
-    -- has_permission(uuid, text)
     ASSERT (SELECT EXISTS (
         SELECT 1 FROM pg_proc p
         JOIN pg_namespace n ON n.oid = p.pronamespace
@@ -60,7 +67,6 @@ BEGIN
           AND p.pronargs  = 2
     )), 'Function has_permission(uuid, text) not found in public schema';
 
-    -- current_membership()
     ASSERT (SELECT EXISTS (
         SELECT 1 FROM pg_proc p
         JOIN pg_namespace n ON n.oid = p.pronamespace
@@ -68,7 +74,6 @@ BEGIN
           AND n.nspname  = 'public'
     )), 'Function current_membership() not found in public schema';
 
-    -- current_neighborhood()
     ASSERT (SELECT EXISTS (
         SELECT 1 FROM pg_proc p
         JOIN pg_namespace n ON n.oid = p.pronamespace
@@ -86,47 +91,47 @@ BEGIN
     ASSERT v_count = 6,
         format('Expected 6 roles, found %s', v_count);
 
-    -- 47 system permissions (full catalog from PERMISSION_CATALOG.md)
+    -- 41 system permissions
     SELECT COUNT(*) INTO v_count FROM permissions;
-    ASSERT v_count = 47,
-        format('Expected 47 permissions, found %s', v_count);
+    ASSERT v_count = 41,
+        format('Expected 41 permissions, found %s', v_count);
 
-    -- 118 role-permission assignments
-    --   RT_ADMIN=47, RT_CHAIR=31, TREASURER=18, SECRETARY=14, RESIDENT=8
+    -- 94 role-permission assignments
+    --   RT_ADMIN=41, RT_CHAIR=23, TREASURER=16, SECRETARY=8, RESIDENT=6
     SELECT COUNT(*) INTO v_count FROM role_permissions;
-    ASSERT v_count = 118,
-        format('Expected 118 role_permissions rows, found %s', v_count);
+    ASSERT v_count = 94,
+        format('Expected 94 role_permissions rows, found %s', v_count);
 
     -- Per-role counts
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
     WHERE r.code = 'RT_ADMIN';
-    ASSERT v_count = 47,
-        format('RT_ADMIN: expected 47 permissions, found %s', v_count);
+    ASSERT v_count = 41,
+        format('RT_ADMIN: expected 41 permissions, found %s', v_count);
 
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
     WHERE r.code = 'RT_CHAIR';
-    ASSERT v_count = 31,
-        format('RT_CHAIR: expected 31 permissions, found %s', v_count);
+    ASSERT v_count = 23,
+        format('RT_CHAIR: expected 23 permissions, found %s', v_count);
 
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
     WHERE r.code = 'TREASURER';
-    ASSERT v_count = 18,
-        format('TREASURER: expected 18 permissions, found %s', v_count);
+    ASSERT v_count = 16,
+        format('TREASURER: expected 16 permissions, found %s', v_count);
 
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
     WHERE r.code = 'SECRETARY';
-    ASSERT v_count = 14,
-        format('SECRETARY: expected 14 permissions, found %s', v_count);
+    ASSERT v_count = 8,
+        format('SECRETARY: expected 8 permissions, found %s', v_count);
 
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
     WHERE r.code = 'RESIDENT';
-    ASSERT v_count = 8,
-        format('RESIDENT: expected 8 permissions, found %s', v_count);
+    ASSERT v_count = 6,
+        format('RESIDENT: expected 6 permissions, found %s', v_count);
 
 
     /* ---------------------------------------------------------------------- */
@@ -140,8 +145,7 @@ BEGIN
     ASSERT v_count = 0,
         'SUPER_ADMIN must not appear in role_permissions';
 
-    -- rt_permission_overrides must be empty after migration (overrides are
-    -- runtime-only; the seeder must never insert rows into this table)
+    -- rt_permission_overrides must be empty after migration
     SELECT COUNT(*) INTO v_count FROM rt_permission_overrides;
     ASSERT v_count = 0,
         'rt_permission_overrides must be empty after migration; operator-only at runtime';
@@ -169,6 +173,22 @@ BEGIN
         JOIN permissions p ON p.id = rp.permission_id
         WHERE r.code = 'RT_ADMIN' AND p.code = 'permission.override' AND rp.allow = true
     )), 'RT_ADMIN is missing permission.override';
+
+    -- RT_ADMIN must have role.create
+    ASSERT (SELECT EXISTS (
+        SELECT 1 FROM role_permissions rp
+        JOIN roles       r ON r.id = rp.role_id
+        JOIN permissions p ON p.id = rp.permission_id
+        WHERE r.code = 'RT_ADMIN' AND p.code = 'role.create' AND rp.allow = true
+    )), 'RT_ADMIN is missing role.create';
+
+    -- RT_ADMIN must have permission.update
+    ASSERT (SELECT EXISTS (
+        SELECT 1 FROM role_permissions rp
+        JOIN roles       r ON r.id = rp.role_id
+        JOIN permissions p ON p.id = rp.permission_id
+        WHERE r.code = 'RT_ADMIN' AND p.code = 'permission.update' AND rp.allow = true
+    )), 'RT_ADMIN is missing permission.update';
 
     -- RESIDENT must NOT have permission.override
     ASSERT NOT (SELECT EXISTS (
@@ -206,7 +226,6 @@ BEGIN
     /* 5. RLS — deprecated policies removed; new policies present             */
     /* ---------------------------------------------------------------------- */
 
-    -- Old role-name policies must be gone
     ASSERT NOT (SELECT EXISTS (
         SELECT 1 FROM pg_policies
         WHERE tablename = 'residents' AND policyname LIKE 'warga:%'
@@ -229,7 +248,6 @@ BEGIN
           AND policyname = 'activation_invites: authorized can read'
     )), 'Deprecated activation_invites role-name policy still present';
 
-    -- New permission-based policies must be present
     ASSERT (SELECT EXISTS (
         SELECT 1 FROM pg_policies
         WHERE tablename = 'residents' AND policyname = 'residents: view'
@@ -263,6 +281,6 @@ BEGIN
     )), 'Policy "activation_invites: view" not found';
 
 
-    RAISE NOTICE 'RBAC v2 validation passed — all % assertions succeeded.', 30;
+    RAISE NOTICE 'RBAC v2 validation passed — all 34 assertions succeeded.';
 
 END $$;

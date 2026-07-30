@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useTranslations }     from 'next-intl'
 import type { PermissionRow }  from '@/lib/repositories/permission.repository'
 import type { RoleRow }        from '@/lib/repositories/role.repository'
 import type { PageResult }     from '@/lib/types/query'
@@ -28,6 +29,7 @@ function setsEqual(a: Set<string>, b: Set<string>): boolean {
 }
 
 export function usePermissionMatrix(canEdit: boolean) {
+    const t = useTranslations('permissions')
 
     const [roles,          setRoles]          = useState<RoleRow[]>([])
     const [selectedRoleId, setSelectedRoleId] = useState<string>('')
@@ -117,14 +119,18 @@ export function usePermissionMatrix(canEdit: boolean) {
         }
         const q = search.toLowerCase()
         const filtered = groups
-            .map(g => ({
-                module:      g.module,
-                permissions: g.permissions.filter(
-                    p => p.name.toLowerCase().includes(q) ||
-                         p.code.toLowerCase().includes(q) ||
-                         g.module.toLowerCase().includes(q)
-                ),
-            }))
+            .map(g => {
+                const moduleLabel = t(`modules.${g.module}` as Parameters<typeof t>[0]).toLowerCase()
+                return {
+                    module:      g.module,
+                    permissions: g.permissions.filter(
+                        p => p.name.toLowerCase().includes(q) ||
+                             p.code.toLowerCase().includes(q) ||
+                             g.module.toLowerCase().includes(q) ||
+                             moduleLabel.includes(q)
+                    ),
+                }
+            })
             .filter(g => g.permissions.length > 0)
         setFilteredGroups(filtered)
     }, [search, groups])

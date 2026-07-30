@@ -5,31 +5,29 @@ import Input               from '@/components/ui/Input'
 import Button              from '@/components/ui/Button'
 import Icon                from '@/components/ui/Icon'
 import Select              from '@/components/ui/Select'
-import ModuleGroup         from './components/ModuleGroup'
+import PermissionGrid      from './components/PermissionGrid'
 import type { RoleRow }    from '@/lib/repositories/role.repository'
 import type { PermissionGroup } from './hooks/usePermissionMatrix'
 
 interface Props {
-    roles:            RoleRow[]
-    selectedRoleId:   string
-    filteredGroups:   PermissionGroup[]
-    localSet:         Set<string>
-    collapsed:        Set<string>
-    search:           string
-    isDirty:          boolean
-    canEdit:          boolean
-    loading:          boolean
-    loadingRole:      boolean
-    saving:           boolean
-    error:            string | null
-    onRoleChange:     (id: string) => void
-    onSearch:         (s: string) => void
-    onToggle:         (permId: string) => void
-    onSelectAll:      (module: string) => void
-    onClearAll:       (module: string) => void
-    onCollapse:       (module: string) => void
-    onSave:           () => void
-    onDiscard:        () => void
+    roles:          RoleRow[]
+    selectedRoleId: string
+    filteredGroups: PermissionGroup[]
+    localSet:       Set<string>
+    search:         string
+    isDirty:        boolean
+    canEdit:        boolean
+    loading:        boolean
+    loadingRole:    boolean
+    saving:         boolean
+    error:          string | null
+    onRoleChange:   (id: string) => void
+    onSearch:       (s: string) => void
+    onToggle:       (permId: string) => void
+    onSelectAll:    (module: string) => void
+    onClearAll:     (module: string) => void
+    onSave:         () => void
+    onDiscard:      () => void
 }
 
 export default function PermissionMatrixView({
@@ -37,7 +35,6 @@ export default function PermissionMatrixView({
     selectedRoleId,
     filteredGroups,
     localSet,
-    collapsed,
     search,
     isDirty,
     canEdit,
@@ -50,7 +47,6 @@ export default function PermissionMatrixView({
     onToggle,
     onSelectAll,
     onClearAll,
-    onCollapse,
     onSave,
     onDiscard,
 }: Props) {
@@ -88,7 +84,6 @@ export default function PermissionMatrixView({
                     <p className="text-sm text-muted mt-0.5">{t('subtitle')}</p>
                 </div>
 
-                {/* Save / Discard */}
                 {canEdit && (
                     <div className="flex items-center gap-2 shrink-0">
                         {isDirty && (
@@ -138,7 +133,7 @@ export default function PermissionMatrixView({
                 </div>
             </div>
 
-            {/* Matrix */}
+            {/* Grid */}
             {loadingRole ? (
                 <div className="flex items-center justify-center h-40 text-muted text-sm">
                     {tc('states.loading')}
@@ -148,22 +143,14 @@ export default function PermissionMatrixView({
                     {tc('status.empty')}
                 </div>
             ) : (
-                <div className="space-y-3">
-                    {filteredGroups.map(g => (
-                        <ModuleGroup
-                            key={g.module}
-                            module={g.module}
-                            permissions={g.permissions}
-                            localSet={localSet}
-                            collapsed={collapsed.has(g.module)}
-                            canEdit={canEdit}
-                            onToggle={onToggle}
-                            onSelectAll={() => onSelectAll(g.module)}
-                            onClearAll={() => onClearAll(g.module)}
-                            onCollapse={() => onCollapse(g.module)}
-                        />
-                    ))}
-                </div>
+                <PermissionGrid
+                    groups={filteredGroups}
+                    localSet={localSet}
+                    canEdit={canEdit}
+                    onToggle={onToggle}
+                    onSelectAll={onSelectAll}
+                    onClearAll={onClearAll}
+                />
             )}
         </div>
     )

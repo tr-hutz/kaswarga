@@ -51,6 +51,7 @@ export async function listRoles(options: QueryOptions): Promise<PageResult<RoleR
     let query = db
         .from('roles')
         .select('id, code, name, description, is_system, is_active, created_at, updated_at', { count: 'exact' })
+        .neq('code', 'SUPER_ADMIN')
 
     if (search) {
         query = query.or(`name.ilike.%${search}%,code.ilike.%${search}%`)

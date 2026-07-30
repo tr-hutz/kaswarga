@@ -89,7 +89,7 @@
     "rtRegistration": "Pendaftaran RT",
     "users": "Kelola Users",
     "roles": "Manajemen Role",
-    "permissionMatrix": "Matriks Izin"
+    "permissionMatrix": "Matriks Perijinan"
   },
   "topbar": {
     "brand": "Kas Warga",
@@ -822,7 +822,7 @@
     "rowsPerPage": "Baris per halaman"
   },
   "permissions": {
-    "title": "Matriks Izin",
+    "title": "Matriks Perijinan",
     "subtitle": "Konfigurasikan hak akses untuk setiap role",
     "roleLabel": "Role",
     "searchLabel": "Cari",
@@ -852,6 +852,19 @@
       "permission":   "Izin",
       "audit":        "Audit",
       "other":        "Lainnya"
+    },
+    "grid": {
+      "module": "Modul",
+      "actions": {
+        "view":     "Lihat",
+        "create":   "Buat",
+        "update":   "Edit",
+        "delete":   "Hapus",
+        "approve":  "Setujui",
+        "reject":   "Tolak",
+        "export":   "Ekspor",
+        "override": "Override"
+      }
     }
   },
   "roles": {
@@ -872,7 +885,8 @@
       "create": "Tambah Role",
       "edit": "Edit",
       "activate": "Aktifkan",
-      "deactivate": "Nonaktifkan"
+      "deactivate": "Nonaktifkan",
+      "cannotDeactivateSelf": "Tidak dapat menonaktifkan role Anda sendiri"
     },
     "form": {
       "createTitle": "Tambah Role",
