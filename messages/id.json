@@ -89,7 +89,8 @@
     "rtRegistration": "Pendaftaran RT",
     "users": "Kelola Users",
     "roles": "Manajemen Role",
-    "permissionMatrix": "Matriks Perijinan"
+    "permissionMatrix": "Matriks Perijinan",
+    "memberOverrides": "Override Izin Anggota"
   },
   "topbar": {
     "brand": "Kas Warga",
@@ -914,6 +915,60 @@
       "activated": "Role berhasil diaktifkan",
       "deactivated": "Role berhasil dinonaktifkan",
       "saveFailed": "Gagal menyimpan role"
+    }
+  },
+  "overrides": {
+    "title": "Override Izin Anggota",
+    "subtitle": "Konfigurasi pengecualian izin untuk anggota RT berdasarkan role-nya",
+    "memberSearch": "Cari Anggota",
+    "memberSearchPlaceholder": "Nama, email, atau ID keanggotaan...",
+    "selectMemberPrompt": "Pilih anggota dari daftar kiri",
+    "searchPlaceholder": "Cari izin, kode, atau modul...",
+    "saved": "Tersimpan",
+    "unsavedChanges": "Ada perubahan yang belum disimpan",
+    "overrideNote": "Override yang Anda buat berlaku untuk semua anggota dengan role {roleName} di RT ini.",
+    "info": {
+      "name": "Nama Anggota",
+      "role": "Role",
+      "status": "Status"
+    },
+    "source": {
+      "role": "Role",
+      "overrideGrant": "Override (+)",
+      "overrideRevoke": "Override (−)",
+      "none": "Tidak Ada"
+    },
+    "override": {
+      "none": "Bawaan",
+      "grant": "Izinkan",
+      "revoke": "Cabut"
+    },
+    "table": {
+      "permission": "Izin",
+      "source": "Sumber",
+      "override": "Override",
+      "effective": "Efektif"
+    },
+    "modules": {
+      "resident": "Warga",
+      "membership": "Keanggotaan",
+      "payment": "Pembayaran",
+      "expense": "Pengeluaran",
+      "ledger": "Buku Kas",
+      "report": "Laporan",
+      "announcement": "Pengumuman",
+      "event": "Acara",
+      "document": "Dokumen",
+      "settings": "Pengaturan",
+      "user": "Pengguna",
+      "role": "Role",
+      "permission": "Izin",
+      "audit": "Audit",
+      "other": "Lainnya"
+    },
+    "toast": {
+      "saved": "Override izin berhasil disimpan",
+      "saveFailed": "Gagal menyimpan override izin"
     }
   }
 }
