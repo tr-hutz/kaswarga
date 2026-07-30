@@ -90,7 +90,8 @@
         "users": "Kelola Users",
         "roles": "Manajemen Role",
         "permissionMatrix": "Matriks Perijinan",
-        "memberOverrides": "Override Izin Anggota"
+        "memberOverrides": "Override Izin Anggota",
+        "effectivePermissions": "Lihat Izin Efektif"
     },
     "topbar": {
         "brand": "Kas Warga",
@@ -1002,5 +1003,67 @@
         },
         "selectRolePrompt": "Pilih Role",
         "memberCount": "{count} anggota"
+    },
+    "viewer": {
+        "title": "Lihat Izin Efektif",
+        "subtitle": "Periksa izin efektif yang dimiliki anggota RT",
+        "memberSearchPlaceholder": "Cari nama, email, atau ID keanggotaan...",
+        "selectMemberPrompt": "Pilih anggota untuk melihat izin efektifnya",
+        "searchPlaceholder": "Cari izin, kode, atau modul...",
+        "refresh": "Refresh",
+        "exportCsv": "Export CSV",
+        "sortBy": "Urutkan",
+        "source": {
+            "role": "Role",
+            "override_grant": "Override (+)",
+            "override_revoke": "Override (-)",
+            "none": "Tidak Ada"
+        },
+        "reason": {
+            "role": "Diberikan oleh Role",
+            "override_grant": "Diberikan oleh Override",
+            "override_revoke": "Dicabut oleh Override",
+            "none": "Izin tidak ditetapkan"
+        },
+        "filter": {
+            "all": "Semua",
+            "granted": "Diberikan",
+            "denied": "Dicabut",
+            "overrideOnly": "Override Saja",
+            "roleOnly": "Role Saja",
+            "allRoles": "Semua Role"
+        },
+        "sort": {
+            "module": "Modul",
+            "name": "Nama",
+            "effective": "Efektif"
+        },
+        "table": {
+            "permission": "Izin",
+            "module": "Modul",
+            "source": "Sumber",
+            "effective": "Efektif",
+            "reason": "Alasan"
+        },
+        "summary": {
+            "member": "Anggota",
+            "role": "Role",
+            "status": "Status",
+            "total": "Total",
+            "granted": "Diberikan",
+            "denied": "Ditolak",
+            "overrides": "Override"
+        },
+        "detail": {
+            "role": "Role",
+            "override": "Override",
+            "finalDecision": "Keputusan Akhir",
+            "granted": "Diberikan",
+            "denied": "Ditolak",
+            "notAssigned": "Tidak Ditetapkan",
+            "grant": "Grant",
+            "revoke": "Revoke",
+            "none": "Tidak Ada"
+        }
     }
 }

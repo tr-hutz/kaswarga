@@ -134,6 +134,14 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
+        label: 'effectivePermissions',
+        href: '/settings/authorization/viewer',
+        icon: 'eye',
+        permission: PERMISSIONS.MANAGE_ROLES,
+        hideForRoles: ['SUPER_ADMIN']
+    },
+
+    {
         label: 'changePassword',
         href: '/change-password',
         icon: 'key-round',
