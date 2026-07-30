@@ -6,13 +6,14 @@ import { useMemberOverrides } from './hooks/useMemberOverrides'
 import MemberOverridesView    from './MemberOverridesView'
 
 interface Props {
-    canEdit: boolean
+    membershipId: string
+    canEdit:      boolean
 }
 
-export default function MemberOverridesContainer({ canEdit }: Props) {
+export default function SingleMemberOverrideContainer({ membershipId, canEdit }: Props) {
     const t         = useTranslations('overrides')
     const { toast } = useToast()
-    const ov        = useMemberOverrides({ canEdit })
+    const ov        = useMemberOverrides({ canEdit, singleMembershipId: membershipId })
 
     async function handleSave() {
         const ok = await ov.save()
@@ -22,10 +23,10 @@ export default function MemberOverridesContainer({ canEdit }: Props) {
 
     return (
         <MemberOverridesView
-            singleMode={false}
-            members={ov.members}
-            memberSearch={ov.memberSearch}
-            selectedId={ov.selectedId}
+            singleMode={true}
+            members={[]}
+            memberSearch=""
+            selectedId={membershipId}
             memberInfo={ov.memberInfo}
             filteredGroups={ov.filteredGroups}
             localOverrides={ov.localOverrides}
@@ -36,12 +37,12 @@ export default function MemberOverridesContainer({ canEdit }: Props) {
             isDirty={ov.isDirty}
             dirtyCount={ov.dirtyCount}
             canEdit={canEdit}
-            loading={ov.loading}
+            loading={false}
             loadingMember={ov.loadingMember}
             saving={ov.saving}
             error={ov.error}
-            onMemberSearch={ov.setMemberSearch}
-            onSelectMember={ov.selectMember}
+            onMemberSearch={() => {}}
+            onSelectMember={() => {}}
             onSearch={ov.setSearch}
             onFilterChange={ov.setFilter}
             onSetOverride={ov.setOverride}

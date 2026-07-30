@@ -1,8 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useTranslations }     from 'next-intl'
-import type { MemberRow }      from '@/lib/repositories/member-override.repository'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
+import type { MemberRow }  from '@/lib/repositories/member-override.repository'
+
+export type OverrideFilter = 'all' | 'granted' | 'denied' | 'override'
 
 export interface PermissionDetail {
     id:            string
@@ -28,6 +30,12 @@ export interface PermissionGroup {
     permissions: PermissionDetail[]
 }
 
+export interface OverrideSummary {
+    granted:   number
+    denied:    number
+    overrides: number
+}
+
 type OverrideMap = Map<string, boolean | null>
 
 function groupPermissions(perms: PermissionDetail[]): PermissionGroup[] {
@@ -49,25 +57,55 @@ function overrideMapsEqual(a: OverrideMap, b: OverrideMap): boolean {
     return true
 }
 
-export function useMemberOverrides(canEdit: boolean) {
-    const t = useTranslations('overrides')
+interface HookOptions {
+    canEdit:             boolean
+    singleMembershipId?: string
+}
+
+export function useMemberOverrides({ canEdit, singleMembershipId }: HookOptions) {
+    const t          = useTranslations('overrides')
+    const singleMode = !!singleMembershipId
 
     const [members,        setMembers]        = useState<MemberRow[]>([])
     const [memberSearch,   setMemberSearch]   = useState('')
-    const [selectedId,     setSelectedId]     = useState<string | null>(null)
+    const [selectedId,     setSelectedId]     = useState<string | null>(singleMembershipId ?? null)
     const [memberInfo,     setMemberInfo]     = useState<MemberInfo | null>(null)
     const [roleId,         setRoleId]         = useState<string>('')
+    const [allPerms,       setAllPerms]       = useState<PermissionDetail[]>([])
     const [groups,         setGroups]         = useState<PermissionGroup[]>([])
     const [filteredGroups, setFilteredGroups] = useState<PermissionGroup[]>([])
     const [search,         setSearch]         = useState('')
+    const [filter,         setFilter]         = useState<OverrideFilter>('all')
     const [savedOverrides, setSavedOverrides] = useState<OverrideMap>(new Map())
     const [localOverrides, setLocalOverrides] = useState<OverrideMap>(new Map())
-    const [loading,        setLoading]        = useState(true)
-    const [loadingMember,  setLoadingMember]  = useState(false)
+    const [loading,        setLoading]        = useState(!singleMode)
+    const [loadingMember,  setLoadingMember]  = useState(singleMode)
     const [saving,         setSaving]         = useState(false)
     const [error,          setError]          = useState<string | null>(null)
 
     const isDirty = !overrideMapsEqual(localOverrides, savedOverrides)
+
+    const dirtyCount = useMemo(() => {
+        let count = 0
+        for (const [permId, localAllow] of localOverrides) {
+            const savedAllow = savedOverrides.get(permId) ?? null
+            if (localAllow !== savedAllow) count++
+        }
+        return count
+    }, [localOverrides, savedOverrides])
+
+    const summary: OverrideSummary = useMemo(() => {
+        let granted = 0, denied = 0, overrides = 0
+        for (const group of groups) {
+            for (const p of group.permissions) {
+                const localOverride = localOverrides.get(p.id) ?? null
+                const effective     = localOverride !== null ? localOverride : (p.roleAllow === true)
+                if (effective) granted++; else denied++
+                if (localOverride !== null) overrides++
+            }
+        }
+        return { granted, denied, overrides }
+    }, [groups, localOverrides])
 
     useEffect(() => {
         function onBeforeUnload(e: BeforeUnloadEvent) {
@@ -77,16 +115,16 @@ export function useMemberOverrides(canEdit: boolean) {
         return () => window.removeEventListener('beforeunload', onBeforeUnload)
     }, [isDirty])
 
-    // Load members on mount
+    // Load member list (full mode only)
     useEffect(() => {
+        if (singleMode) return
         async function init() {
             setLoading(true)
             setError(null)
             try {
                 const res = await fetch('/api/members')
                 if (!res.ok) throw new Error('Failed to load members')
-                const data = await res.json() as MemberRow[]
-                setMembers(data)
+                setMembers(await res.json() as MemberRow[])
             } catch (err) {
                 setError((err as Error).message)
             } finally {
@@ -94,11 +132,13 @@ export function useMemberOverrides(canEdit: boolean) {
             }
         }
         init()
-    }, [])
+    }, [singleMode])
 
     // Load overrides when selected member changes
+    const prevSelectedId = useRef<string | null>(null)
     useEffect(() => {
-        if (!selectedId) return
+        if (!selectedId || selectedId === prevSelectedId.current) return
+        prevSelectedId.current = selectedId
 
         async function loadOverrides() {
             setLoadingMember(true)
@@ -115,16 +155,13 @@ export function useMemberOverrides(canEdit: boolean) {
 
                 setMemberInfo(data.member)
                 setRoleId(data.roleId)
+                setAllPerms(data.permissions)
+                setGroups(groupPermissions(data.permissions))
 
-                const grps = groupPermissions(data.permissions)
-                setGroups(grps)
-
-                const overrideMap: OverrideMap = new Map()
-                for (const p of data.permissions) {
-                    overrideMap.set(p.id, p.overrideAllow)
-                }
-                setSavedOverrides(new Map(overrideMap))
-                setLocalOverrides(new Map(overrideMap))
+                const map: OverrideMap = new Map()
+                for (const p of data.permissions) map.set(p.id, p.overrideAllow)
+                setSavedOverrides(new Map(map))
+                setLocalOverrides(new Map(map))
             } catch (err) {
                 setError((err as Error).message)
             } finally {
@@ -134,29 +171,36 @@ export function useMemberOverrides(canEdit: boolean) {
         loadOverrides()
     }, [selectedId])
 
-    // Filter by search
+    // Filter + search
     useEffect(() => {
-        if (!search.trim()) {
-            setFilteredGroups(groups)
-            return
-        }
-        const q = search.toLowerCase()
+        const q = search.toLowerCase().trim()
         const filtered = groups
             .map(g => {
                 const moduleLabel = t(`modules.${g.module}` as Parameters<typeof t>[0]).toLowerCase()
                 return {
                     module:      g.module,
-                    permissions: g.permissions.filter(
-                        p => p.name.toLowerCase().includes(q) ||
-                             p.code.toLowerCase().includes(q) ||
-                             g.module.toLowerCase().includes(q) ||
-                             moduleLabel.includes(q)
-                    ),
+                    permissions: g.permissions.filter(p => {
+                        const matchSearch = !q ||
+                            p.name.toLowerCase().includes(q) ||
+                            p.code.toLowerCase().includes(q) ||
+                            g.module.toLowerCase().includes(q) ||
+                            moduleLabel.includes(q)
+                        if (!matchSearch) return false
+
+                        const localOverride = localOverrides.get(p.id) ?? null
+                        const effective     = localOverride !== null ? localOverride : (p.roleAllow === true)
+                        const hasOverride   = localOverride !== null
+
+                        if (filter === 'granted')  return effective
+                        if (filter === 'denied')   return !effective
+                        if (filter === 'override') return hasOverride
+                        return true
+                    }),
                 }
             })
             .filter(g => g.permissions.length > 0)
         setFilteredGroups(filtered)
-    }, [search, groups])
+    }, [search, groups, filter, localOverrides, t])
 
     const filteredMembers = members.filter(m => {
         if (!memberSearch.trim()) return true
@@ -170,11 +214,14 @@ export function useMemberOverrides(canEdit: boolean) {
 
     function selectMember(membershipId: string) {
         if (isDirty && !confirm('Ada perubahan yang belum disimpan. Lanjutkan?')) return
+        prevSelectedId.current = null
         setSelectedId(membershipId)
         setSearch('')
+        setFilter('all')
         setSavedOverrides(new Map())
         setLocalOverrides(new Map())
         setMemberInfo(null)
+        setAllPerms([])
         setGroups([])
         setFilteredGroups([])
     }
@@ -199,9 +246,7 @@ export function useMemberOverrides(canEdit: boolean) {
         try {
             const overrides: { permissionId: string; allow: boolean }[] = []
             for (const [permId, allow] of localOverrides) {
-                if (allow !== null) {
-                    overrides.push({ permissionId: permId, allow })
-                }
+                if (allow !== null) overrides.push({ permissionId: permId, allow })
             }
 
             const res = await fetch(`/api/members/${selectedId}/overrides`, {
@@ -226,17 +271,24 @@ export function useMemberOverrides(canEdit: boolean) {
     }
 
     return {
+        singleMode,
         members: filteredMembers,
         memberSearch,
         setMemberSearch,
         selectedId,
         memberInfo,
         roleId,
+        allPerms,
         filteredGroups,
         search,
         setSearch,
+        filter,
+        setFilter,
         localOverrides,
+        savedOverrides,
         isDirty,
+        dirtyCount,
+        summary,
         loading,
         loadingMember,
         saving,

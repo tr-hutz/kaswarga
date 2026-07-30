@@ -141,3 +141,14 @@ export async function upsertRtOverrides(
         if (error) throw error
     }
 }
+
+export async function getOverrideCountForRole(rtId: string, roleId: string): Promise<number> {
+    const { count, error } = await db
+        .from('rt_permission_overrides')
+        .select('id', { count: 'exact', head: true })
+        .eq('rt_id', rtId)
+        .eq('role_id', roleId)
+
+    if (error) throw error
+    return count ?? 0
+}

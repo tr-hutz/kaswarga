@@ -89,8 +89,7 @@
     "rtRegistration": "Pendaftaran RT",
     "users": "Kelola Users",
     "roles": "Manajemen Role",
-    "permissionMatrix": "Matriks Perijinan",
-    "memberOverrides": "Override Izin Anggota"
+    "permissionMatrix": "Matriks Perijinan"
   },
   "topbar": {
     "brand": "Kas Warga",
@@ -915,6 +914,23 @@
       "activated": "Role berhasil diaktifkan",
       "deactivated": "Role berhasil dinonaktifkan",
       "saveFailed": "Gagal menyimpan role"
+    },
+    "detail": {
+      "back": "Kembali ke Manajemen Role",
+      "tabs": {
+        "members": "Anggota",
+        "matrix": "Matriks Perijinan",
+        "audit": "Audit"
+      },
+      "matrixRedirect": "Buka matriks perijinan untuk mengelola izin role ini.",
+      "openMatrix": "Buka Matriks Perijinan",
+      "auditComingSoon": "Riwayat audit akan tersedia di versi mendatang."
+    },
+    "members": {
+      "overrideBanner": "{count} override aktif untuk role ini di RT Anda.",
+      "overrideCount": "Override: {count}",
+      "configure": "Konfigurasi",
+      "drawerTitle": "Override Izin Anggota"
     }
   },
   "overrides": {
@@ -926,11 +942,17 @@
     "searchPlaceholder": "Cari izin, kode, atau modul...",
     "saved": "Tersimpan",
     "unsavedChanges": "Ada perubahan yang belum disimpan",
-    "overrideNote": "Override yang Anda buat berlaku untuk semua anggota dengan role {roleName} di RT ini.",
+    "overrideNote": "Konfigurasi izin ini diterapkan untuk {memberName} melalui role {roleName}. Anggota lain dengan role yang sama juga akan terpengaruh.",
     "info": {
       "name": "Nama Anggota",
       "role": "Role",
-      "status": "Status"
+      "status": "Status",
+      "overrideCount": "Override"
+    },
+    "summary": {
+      "granted": "Diberikan",
+      "denied": "Dicabut",
+      "overrides": "Override"
     },
     "source": {
       "role": "Role",
@@ -939,9 +961,15 @@
       "none": "Tidak Ada"
     },
     "override": {
-      "none": "Bawaan",
-      "grant": "Izinkan",
-      "revoke": "Cabut"
+      "default": "Default",
+      "grant": "Grant",
+      "revoke": "Revoke"
+    },
+    "filter": {
+      "all": "Semua",
+      "granted": "Diberikan",
+      "denied": "Dicabut",
+      "overrideOnly": "Override Saja"
     },
     "table": {
       "permission": "Izin",

@@ -126,14 +126,6 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
-        label: 'memberOverrides',
-        href: '/settings/authorization/overrides',
-        icon: 'user-cog',
-        permission: PERMISSIONS.MANAGE_ROLES,
-        hideForRoles: ['SUPER_ADMIN']
-    },
-
-    {
         label: 'changePassword',
         href: '/change-password',
         icon: 'key-round',
