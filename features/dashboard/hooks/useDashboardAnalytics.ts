@@ -4,7 +4,6 @@
 import {
   useCallback,
   useEffect,
-  useRef,
   useState
 } from 'react'
 
@@ -71,7 +70,6 @@ export function useDashboardAnalytics() {
     setFinancialInsight
   ] = useState<any>(null)
 
-  const [role,              setRole             ] = useState<string | null>(null)
   const [residentAnalytics, setResidentAnalytics] = useState<any[]>([])
   const [monthlyFee,        setMonthlyFee       ] = useState(0)
 
@@ -142,7 +140,6 @@ export function useDashboardAnalytics() {
           arrears: data.insight.totalArrears
         })
 
-        setRole(data.role ?? null)
         setResidentAnalytics(data.residentAnalytics || [])
         setMonthlyFee(data.rt?.monthly_fee || 0)
 
@@ -165,7 +162,6 @@ export function useDashboardAnalytics() {
 
     loadData()
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [year, refreshKey, authLoading, rtId])
 
   /*
@@ -182,7 +178,6 @@ export function useDashboardAnalytics() {
     analytics,
     paymentHealth,
     financialInsight,
-    role,
     residentAnalytics,
     monthlyFee,
     refresh,

@@ -1,6 +1,8 @@
 ﻿'use client'
 
 import { useTranslations } from 'next-intl'
+import Can                 from '@/components/ui/Can'
+import { PERMISSION }      from '@/lib/auth/types'
 import InsightCard
   from '../cards/InsightCard'
 
@@ -46,7 +48,6 @@ interface DashboardViewProps {
   paymentHealth:    any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   financialInsight: any
-  role?:            string | null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   residentAnalytics?: any[]
   monthlyFee?:        number
@@ -69,7 +70,6 @@ export default function DashboardView({
 
   financialInsight,
 
-  role,
   residentAnalytics = [],
   monthlyFee        = 0,
   refresh,
@@ -178,17 +178,19 @@ export default function DashboardView({
             title={t('sections.paymentStatus')}
             subtitle={t('sections.paymentStatusSubtitle')}
           />
-          {role === 'TREASURER' && onExportLedger && (
-            <button
-              onClick={onExportLedger}
-              disabled={exportLoading}
-              title={t('exportLedger.title')}
-              className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground disabled:opacity-60 flex-shrink-0"
-            >
-              <Icon name="table-2" size={15} />
-              {exportLoading ? t('exportLedger.loading') : t('exportLedger.button')}
-            </button>
-          )}
+          <Can permission={PERMISSION.LEDGER_EXPORT}>
+            {onExportLedger && (
+              <button
+                onClick={onExportLedger}
+                disabled={exportLoading}
+                title={t('exportLedger.title')}
+                className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground disabled:opacity-60 flex-shrink-0"
+              >
+                <Icon name="table-2" size={15} />
+                {exportLoading ? t('exportLedger.loading') : t('exportLedger.button')}
+              </button>
+            )}
+          </Can>
         </div>
 
         <div
@@ -233,17 +235,16 @@ export default function DashboardView({
 
       </div>
 
-      {/* ARREARS TABLE — TREASURER ONLY */}
+      {/* ARREARS TABLE — ledger.export permission required */}
 
-      {role === 'TREASURER' && (
+      <Can permission={PERMISSION.LEDGER_EXPORT}>
         <ResidentArrearsSummary
           residentAnalytics={residentAnalytics}
           monthlyFee={monthlyFee}
           year={year}
-          role={role}
           onRefresh={refresh}
         />
-      )}
+      </Can>
 
       {/* KEUANGAN RT */}
 

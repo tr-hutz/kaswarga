@@ -19,7 +19,6 @@ interface PaymentDetailDrawerProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onReject:  (payment?: any) => void
     loading:     boolean
-    role:        string | null | undefined
     headerNote?: string
 }
 
@@ -30,7 +29,6 @@ export default function PaymentDetailDrawer({
     onApprove,
     onReject,
     loading,
-    role,
     headerNote,
 }: PaymentDetailDrawerProps) {
 
@@ -115,7 +113,6 @@ export default function PaymentDetailDrawer({
                             onApprove={onApprove}
                             onReject={onReject}
                             loading={loading}
-                            role={role}
                         />
                     </div>
                 </div>

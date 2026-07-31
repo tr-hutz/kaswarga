@@ -1,7 +1,6 @@
 'use client'
 
 import { useAuth } from '@/lib/auth/useAuth'
-import { hasPermission } from '@/lib/permissions/permissions'
 import ForbiddenState from './ForbiddenState'
 
 interface Props {
@@ -10,13 +9,13 @@ interface Props {
 }
 
 export default function PermissionGate({ permission, children }: Props) {
-    // AuthContext is created with null default; cast to access typed fields
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const auth = useAuth() as any
+    const auth = useAuth()
 
     if (!auth || auth.loading) return null
 
-    if (!hasPermission(auth.role as string | null, permission)) {
+    const perms: ReadonlySet<string> = auth?.permissions ?? new Set()
+
+    if (!perms.has(permission)) {
         return <ForbiddenState />
     }
 

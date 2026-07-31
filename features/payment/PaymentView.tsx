@@ -1,6 +1,9 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { usePermission }        from '@/lib/auth/usePermission'
+import { PERMISSION }           from '@/lib/auth/types'
+import Can                      from '@/components/ui/Can'
 import { DataTable }            from '@/components/common/data-table'
 import PaymentDetailDrawer      from './components/details/PaymentDetailDrawer'
 import PaymentImportModal       from './components/import/PaymentImportModal'
@@ -23,7 +26,6 @@ interface Props {
     setSort:         (by: string, dir: 'asc' | 'desc') => void
     setFilter:       (key: string, value: unknown) => void
     columns:         Column<ConfirmationRow>[]
-    data:            ConfirmationRow[]
     t:               (key: string, opts?: any) => string
     tc:              (key: string) => string
     drawerOpen:      boolean
@@ -35,7 +37,6 @@ interface Props {
     approvalLoading: boolean
     onExportCSV:     () => void
     onExportExcel:   () => void
-    role:            string | null | undefined
     // import
     importOpen:      boolean
     openImport:      () => void
@@ -68,10 +69,10 @@ interface Props {
 export default function PaymentView({
     result, loading, error, reload,
     query, setPage, setPageSize, setSearch, setSort, setFilter,
-    columns, data, t, tc,
+    columns, t, tc,
     drawerOpen, selectedPayment, onRowClick, onCloseDetail,
     onApprove, onReject, approvalLoading,
-    onExportCSV, onExportExcel, role,
+    onExportCSV, onExportExcel,
     importOpen, openImport, closeImport,
     importRows, importFileName, importFileRef,
     importing, importError, handleFile, handleImport, downloadTemplate, resetImport,
@@ -81,7 +82,7 @@ export default function PaymentView({
     confirmDeleteAll, cancelDeleteAll, deleteAllConfirmOpen,
     bulkActionLoading,
 }: Props) {
-    const canManage = role === 'TREASURER'
+    const canExport = usePermission(PERMISSION.REPORT_EXPORT)
 
     return (
         <div className="space-y-6">
@@ -90,25 +91,27 @@ export default function PaymentView({
                     <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
                 </div>
-                {canManage && importedPendingCount > 0 && (
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                        <DangerDropdown
-                            label={t('rejectAll.button')}
-                            disabled={bulkActionLoading || approveAllLoading}
-                            items={[
-                                { label: t('rejectAll.option'), iconName: 'x-circle', onClick: rejectAllImported },
-                                { label: t('deleteAll.option'), iconName: 'trash-2',  onClick: deleteAllImported },
-                            ]}
-                        />
-                        <button
-                            onClick={approveAllImported}
-                            disabled={approveAllLoading || bulkActionLoading}
-                            className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition disabled:opacity-60"
-                        >
-                            {t('approveAll', { count: importedPendingCount })}
-                        </button>
-                    </div>
-                )}
+                <Can permission={PERMISSION.PAYMENT_UPDATE}>
+                    {importedPendingCount > 0 && (
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                            <DangerDropdown
+                                label={t('rejectAll.button')}
+                                disabled={bulkActionLoading || approveAllLoading}
+                                items={[
+                                    { label: t('rejectAll.option'), iconName: 'x-circle', onClick: rejectAllImported },
+                                    { label: t('deleteAll.option'), iconName: 'trash-2',  onClick: deleteAllImported },
+                                ]}
+                            />
+                            <button
+                                onClick={approveAllImported}
+                                disabled={approveAllLoading || bulkActionLoading}
+                                className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition disabled:opacity-60"
+                            >
+                                {t('approveAll', { count: importedPendingCount })}
+                            </button>
+                        </div>
+                    )}
+                </Can>
             </div>
 
             <DataTable
@@ -137,13 +140,13 @@ export default function PaymentView({
                     </select>
                 }
                 renderActions={
-                    role !== 'RESIDENT' ? (
+                    canExport ? (
                         <div className="flex items-center gap-2">
                             <ExportDropdown
                                 onExportExcel={onExportExcel}
                                 onExportCSV={onExportCSV}
                             />
-                            {canManage && (
+                            <Can permission={PERMISSION.PAYMENT_UPDATE}>
                                 <button
                                     onClick={openImport}
                                     className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
@@ -151,7 +154,7 @@ export default function PaymentView({
                                     <Icon name="upload" size={15} />
                                     {tc('actions.import')}
                                 </button>
-                            )}
+                            </Can>
                         </div>
                     ) : undefined
                 }
@@ -164,7 +167,6 @@ export default function PaymentView({
                 onApprove={onApprove}
                 onReject={onReject}
                 loading={approvalLoading}
-                role={role}
             />
 
             <PaymentImportModal

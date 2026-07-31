@@ -4,21 +4,24 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import SidebarMenuItem from './SidebarMenuItem'
 import { NAVIGATION } from '../../lib/navigation/navigation-config'
-import { hasPermission } from '../../lib/permissions/permissions'
-import { useAuth } from '../../lib/auth/useAuth'
+import { PERMISSION }  from '../../lib/auth/types'
+import { useAuth }     from '../../lib/auth/useAuth'
 import { usePendingCounts } from './usePendingCounts'
 
 export default function SidebarMenu({ onClose }: { onClose?: () => void }) {
     const pathname = usePathname()
-    const { role, membership } = useAuth()
+    const { permissions, rtId, membership } = useAuth()
+    const perms: ReadonlySet<string> = permissions ?? new Set()
 
+    const canApproveResidents = perms.has(PERMISSION.RESIDENT_APPROVE)
     const { pendingRtCount, pendingResidentCount } =
-        usePendingCounts(role, membership?.rt?.id)
+        usePendingCounts(rtId, canApproveResidents)
 
     const filteredMenus = NAVIGATION.filter(item => {
-        if (item.hideForRoles?.includes(role)) return false
+        if (item.noRt && rtId) return false
+        if (item.requiresRt && !rtId) return false
         if (!item.permission) return true
-        return hasPermission(role, item.permission)
+        return perms.has(item.permission)
     })
 
     return (

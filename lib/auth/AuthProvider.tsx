@@ -16,7 +16,14 @@ import {
 
 } from './getCurrentMembership'
 
+import {
+
+    getEffectivePermissions
+
+} from './actions/getEffectivePermissions'
+
 import type { Membership } from '../../types'
+import type { Permission } from './types'
 
 import {
 
@@ -50,6 +57,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const [
 
+        permissions,
+        setPermissions
+
+    ] = useState<ReadonlySet<Permission>>(new Set())
+
+    const [
+
         loading,
         setLoading
 
@@ -69,12 +83,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         try {
 
-            const result =
-
-                await getCurrentMembership()
+            const result = await getCurrentMembership()
 
             activeUserIdRef.current = result?.user?.id ?? null
             setMembership(result)
+
+            if (result?.status === 'active') {
+                const perms = await getEffectivePermissions()
+                setPermissions(new Set(perms))
+            } else {
+                setPermissions(new Set())
+            }
 
         } catch (err) {
 
@@ -113,20 +132,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     // while getCurrentMembership() is still in flight.
                     setLoading(true)
                     getCurrentMembership()
-                        .then(m => {
+                        .then(async m => {
                             activeUserIdRef.current = m?.user?.id ?? null
                             setMembership(m)
-                            if (m?.status === 'active' && m?.rt?.id) {
-                                logActivity({
-                                    rtId:        m.rt.id,
-                                    actorId:     m.user?.id,
-                                    actorName:   m.user?.name,
-                                    action:      'LOGIN',
-                                    entityType:  'auth',
-                                    entityId:    m.user?.id,
-                                    description: `${m.user?.name} logged in`,
-                                    metadata:    { role: m.role }
-                                })
+                            if (m?.status === 'active') {
+                                const perms = await getEffectivePermissions()
+                                setPermissions(new Set(perms))
+                                if (m.rt?.id) {
+                                    logActivity({
+                                        rtId:        m.rt.id,
+                                        actorId:     m.user?.id,
+                                        actorName:   m.user?.name,
+                                        action:      'LOGIN',
+                                        entityType:  'auth',
+                                        entityId:    m.user?.id,
+                                        description: `${m.user?.name} logged in`,
+                                        metadata:    { role: m.role }
+                                    })
+                                }
+                            } else {
+                                setPermissions(new Set())
                             }
                         })
                         .catch(() => {})
@@ -136,6 +161,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 if (event === 'SIGNED_OUT') {
                     activeUserIdRef.current = null
                     setMembership(null)
+                    setPermissions(new Set())
                 }
             })
 
@@ -157,6 +183,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         role:
         membership?.role,
+
+        permissions,
 
         rtId:
         membership?.rt?.id,

@@ -7,13 +7,14 @@ import {
     countPendingResidentRegistrations,
 } from '../../lib/repositories/registration.repository'
 
-export function usePendingCounts(role: string, rtId?: string) {
+export function usePendingCounts(rtId: string | undefined, canApproveResidents: boolean) {
 
     const [pendingRtCount,       setPendingRtCount]       = useState(0)
     const [pendingResidentCount, setPendingResidentCount] = useState(0)
 
     useEffect(() => {
-        if (role !== 'SUPER_ADMIN') return
+        // RT registration badge is only for SUPER_ADMIN (no RT membership)
+        if (rtId) return
 
         async function fetchCount() {
             try {
@@ -35,10 +36,10 @@ export function usePendingCounts(role: string, rtId?: string) {
             .subscribe()
 
         return () => { supabase.removeChannel(channel) }
-    }, [role])
+    }, [rtId])
 
     useEffect(() => {
-        if (!rtId || !['CHAIR', 'ADMIN'].includes(role)) return
+        if (!rtId || !canApproveResidents) return
 
         async function fetchCount() {
             try {
@@ -60,7 +61,7 @@ export function usePendingCounts(role: string, rtId?: string) {
             .subscribe()
 
         return () => { supabase.removeChannel(channel) }
-    }, [role, rtId])
+    }, [rtId, canApproveResidents])
 
     return { pendingRtCount, pendingResidentCount }
 }

@@ -16,7 +16,6 @@ interface Props {
     residentAnalytics: any[]
     monthlyFee:        number
     year:              number
-    role:              string | null | undefined
     onRefresh?:        () => void
 }
 
@@ -24,7 +23,6 @@ export default function ResidentArrearsSummary({
     residentAnalytics,
     monthlyFee,
     year,
-    role,
     onRefresh,
 }: Props) {
 
@@ -270,7 +268,6 @@ export default function ResidentArrearsSummary({
                 onApprove={handleApprove}
                 onReject={handleReject}
                 loading={approvalLoading}
-                role={role}
                 headerNote={headerNote}
             />
 

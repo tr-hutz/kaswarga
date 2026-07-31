@@ -42,9 +42,9 @@ export default function AppShell({
   useEffect(() => {
     if (loading) return
 
-    // Redirect authenticated users away from /login based on role
+    // Redirect authenticated users away from /login based on RT membership
     if (membership && pathname === '/login') {
-      router.replace(membership.role === 'SUPER_ADMIN' ? '/rt' : '/')
+      router.replace(!membership.rt?.id ? '/rt' : '/')
       return
     }
 

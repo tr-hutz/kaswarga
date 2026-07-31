@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect }  from 'react'
@@ -9,17 +9,18 @@ import { useHome }    from './hooks/useHome'
 
 export default function HomeContainer() {
 
-  const { role, loading } = useAuth()
+  const { rtId, loading } = useAuth()
   const router            = useRouter()
   const home              = useHome()
 
+  // SUPER_ADMIN has no RT — redirect to the RT management page
   useEffect(() => {
-    if (!loading && role === 'SUPER_ADMIN') {
+    if (!loading && !rtId) {
       router.replace('/rt')
     }
-  }, [loading, role])
+  }, [loading, rtId, router])
 
-  if (role === 'SUPER_ADMIN') return null
+  if (!rtId) return null
 
   return (
     <HomeView

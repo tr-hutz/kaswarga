@@ -13,12 +13,13 @@ import { useToast }           from '@/components/ui/ToastProvider'
 import { exportToCSV, exportToExcel } from '@/lib/export/export-utils'
 import { buildPaymentColumns } from './components/PaymentColumns'
 import PaymentView            from './PaymentView'
-import { useAuth }            from '@/lib/auth/useAuth'
+import { usePermission }      from '@/lib/auth/usePermission'
+import { PERMISSION }         from '@/lib/auth/types'
 
 export default function PaymentContainer() {
     const t  = useTranslations('payments')
     const tc = useTranslations('common')
-    const { role } = useAuth()
+    const canManage = usePermission(PERMISSION.PAYMENT_UPDATE)
     const { toast } = (useToast() as any)
 
     const { query, setPage, setPageSize, setSearch, setSort, setFilter } =
@@ -133,7 +134,6 @@ export default function PaymentContainer() {
 
     const data = result?.data ?? []
 
-    const canManage = role === 'TREASURER' || role === 'ADMIN'
     const importedPendingCount = canManage
         ? data.filter(r => r.status === 'pending' && r.proofUrl?.includes('-import-confirm-payment.xlsx')).length
         : 0
@@ -157,7 +157,6 @@ export default function PaymentContainer() {
             setSort={setSort}
             setFilter={setFilter}
             columns={columns}
-            data={data}
             t={t}
             tc={tc}
             drawerOpen={open}
@@ -169,7 +168,6 @@ export default function PaymentContainer() {
             approvalLoading={approvalLoading}
             onExportCSV={() => exportToCSV({ data, fileName: 'payments.csv' })}
             onExportExcel={() => exportToExcel({ data, fileName: 'payments.xlsx' })}
-            role={role}
             // import
             importOpen={importOpen}
             openImport={openImport}

@@ -6,12 +6,8 @@ import { useExpenseData }       from './hooks/useExpenseData'
 import { useExpenseRealtime }   from './hooks/useExpenseRealtime'
 import { useExpenseActions }    from './hooks/useExpenseActions'
 import { useExpenseCategories } from './hooks/useExpenseCategory'
-import { useAuth }              from '@/lib/auth/useAuth'
 
 export default function ExpenseContainer() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { role } = (useAuth() as any) ?? {}
-
     const { query, setPage, setPageSize, setSearch, setSort, setFilter } =
         useDataTable({}, 'expenses')
 
@@ -35,7 +31,6 @@ export default function ExpenseContainer() {
             loading={loading}
             fetchError={fetchError}
             onRetry={reload}
-            role={role}
             categories={categories}
             query={query}
             setPage={setPage}
