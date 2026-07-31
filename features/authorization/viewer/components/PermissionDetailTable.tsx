@@ -29,6 +29,7 @@ const MODULE_LABELS: Record<string, string> = {
     user:       'Pengguna',
     role:       'Role',
     permission: 'Izin',
+    rbac:       'Otorisasi',
     audit:      'Audit',
     other:      'Lainnya',
 }
