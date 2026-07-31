@@ -1,10 +1,9 @@
-INSERT INTO permissions (id, code, name, description, module)
+INSERT INTO permissions (code, name, description, is_system)
 VALUES (
-    gen_random_uuid(),
     'rbac.debug.view',
     'View Authorization Debug',
     'Access the authorization debug panel',
-    'rbac'
+    true
 )
 ON CONFLICT (code) DO NOTHING;
 
