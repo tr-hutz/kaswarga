@@ -91,9 +91,6 @@ export const PERMISSION = {
   // Audit
   AUDIT_VIEW: 'audit.view',
 
-  // RBAC Debug
-  DEBUG_VIEW: 'rbac.debug.view',
-
   // RBAC Inspector
   INSPECTOR_VIEW: 'rbac.inspector.view',
 
