@@ -222,17 +222,74 @@ export class PermissionService {
    * Finds the user's active RT membership automatically.
    *
    * Throws MembershipNotFoundError when the user has no active RT membership.
+   *
+   * Optimized to 4 DB calls:
+   *   1. resolveUserMembership (single memberships query)
+   *   2. resolveRoleId
+   *   3+4. fetchRolePermissions + fetchPermissionOverrides (parallel)
    */
   async buildContext(userId: string): Promise<AuthorizationContext> {
-    const neighborhoodId = await this.loadUserNeighborhood(userId)
-    const permissionSet  = await this.loadPermissions(userId, neighborhoodId)
+    const mem = await this.resolveUserMembership(userId)
 
-    return new AuthorizationContext({ permissionSet })
+    if (mem.isSuperAdmin) {
+      return new AuthorizationContext({
+        permissionSet: new SuperAdminPermissionSet(userId, mem.id, ''),
+      })
+    }
+
+    const roleCode = toRoleCode(mem.role)
+    const roleId   = await this.resolveRoleId(roleCode)
+
+    const [granted, overrides] = await Promise.all([
+      this.fetchRolePermissions(roleId),
+      this.fetchPermissionOverrides(mem.neighborhoodId, roleId),
+    ])
+
+    return new AuthorizationContext({
+      permissionSet: new StandardPermissionSet(
+        userId, mem.id, mem.neighborhoodId, roleId, roleCode, this.merge(granted, overrides)
+      ),
+    })
   }
 
   /** No-op hook for future cache invalidation (Task 2.4). */
   invalidateCache(_userId: string, _neighborhoodId: string): void {
     // TODO(Task 2.4): remove cached PermissionSet for this (userId, neighborhoodId)
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Private — unified membership resolution (used by buildContext)     */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * Single query that resolves everything buildContext needs from memberships:
+   * membership id, role enum, and rt_id. Detects SUPER_ADMIN in the result set
+   * so the caller never issues a second round-trip for the SA check.
+   */
+  private async resolveUserMembership(userId: string): Promise<{
+    id:             string
+    role:           string
+    neighborhoodId: string
+    isSuperAdmin:   boolean
+  }> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (this.db as any)
+      .from('memberships')
+      .select('id, role, rt_id')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+
+    if (error) throw error
+
+    const rows = (data ?? []) as Array<{ id: string; role: string; rt_id: string | null }>
+
+    const sa = rows.find(r => r.role === 'SUPER_ADMIN')
+    if (sa) return { id: sa.id, role: 'SUPER_ADMIN', neighborhoodId: '', isSuperAdmin: true }
+
+    const rt = rows.find(r => r.rt_id !== null)
+    if (!rt) throw new MembershipNotFoundError(userId, '')
+
+    return { id: rt.id, role: rt.role, neighborhoodId: rt.rt_id!, isSuperAdmin: false }
   }
 
   /* ------------------------------------------------------------------ */
