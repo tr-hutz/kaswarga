@@ -998,7 +998,8 @@
             "role": "Role",
             "permission": "Izin",
             "audit": "Audit",
-            "other": "Lainnya"
+            "other": "Lainnya",
+            "rbac": "Otorisasi"
         },
         "toast": {
             "saved": "Override izin berhasil disimpan",
