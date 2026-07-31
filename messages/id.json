@@ -854,7 +854,8 @@
             "role": "Role",
             "permission": "Izin",
             "audit": "Audit",
-            "other": "Lainnya"
+            "other": "Lainnya",
+            "rbac": "Otorisasi"
         },
         "grid": {
             "module": "Modul",
@@ -866,7 +867,8 @@
                 "approve": "Setujui",
                 "reject": "Tolak",
                 "export": "Ekspor",
-                "override": "Override"
+                "override": "Override",
+                "debug": "Debug"
             }
         }
     },
@@ -1074,53 +1076,53 @@
         "exportJson": "Export JSON",
         "generatedAt": "Dibuat pada",
         "sections": {
-            "currentUser":          "Pengguna Aktif",
+            "currentUser": "Pengguna Aktif",
             "authorizationContext": "AuthorizationContext",
-            "roleResolution":       "Role Resolution",
+            "roleResolution": "Role Resolution",
             "permissionResolution": "Permission Resolution",
-            "effectivePermission":  "Izin Efektif",
-            "requestInfo":          "Informasi Request",
-            "decisionTrace":        "Decision Trace"
+            "effectivePermission": "Izin Efektif",
+            "requestInfo": "Informasi Request",
+            "decisionTrace": "Decision Trace"
         },
         "fields": {
-            "userId":              "User ID",
-            "membershipId":        "Membership ID",
-            "neighborhoodId":      "RT ID",
-            "roleCode":            "Role Code",
-            "roleId":              "Role ID",
-            "requestId":           "Request ID",
-            "locale":              "Locale",
-            "timezone":            "Timezone",
-            "ipAddress":           "IP Address",
-            "userAgent":           "User Agent",
-            "currentPath":         "Path",
-            "method":              "HTTP Method",
-            "requiredPermission":  "Permission Dibutuhkan",
+            "userId": "User ID",
+            "membershipId": "Membership ID",
+            "neighborhoodId": "RT ID",
+            "roleCode": "Role Code",
+            "roleId": "Role ID",
+            "requestId": "Request ID",
+            "locale": "Locale",
+            "timezone": "Timezone",
+            "ipAddress": "IP Address",
+            "userAgent": "User Agent",
+            "currentPath": "Path",
+            "method": "HTTP Method",
+            "requiredPermission": "Permission Dibutuhkan",
             "authorizationResult": "Hasil Otorisasi"
         },
         "stats": {
             "rolePermissions": "Role Permissions",
-            "overrideGrants":  "Override Grant",
+            "overrideGrants": "Override Grant",
             "overrideRevokes": "Override Revoke",
-            "effectiveCount":  "Izin Efektif"
+            "effectiveCount": "Izin Efektif"
         },
         "source": {
-            "role":            "Role",
-            "override_grant":  "Override (+)",
+            "role": "Role",
+            "override_grant": "Override (+)",
             "override_revoke": "Override (−)",
-            "none":            "Tidak Ada"
+            "none": "Tidak Ada"
         },
         "trace": {
-            "request":             "Request",
-            "permissionRequired":  "Permission Dibutuhkan",
-            "rolePermission":      "Role Permission",
-            "override":            "Override",
+            "request": "Request",
+            "permissionRequired": "Permission Dibutuhkan",
+            "rolePermission": "Role Permission",
+            "override": "Override",
             "effectivePermission": "Izin Efektif",
-            "finalDecision":       "Keputusan Akhir"
+            "finalDecision": "Keputusan Akhir"
         },
         "result": {
             "granted": "GRANTED",
-            "denied":  "DENIED"
+            "denied": "DENIED"
         }
     }
 }
