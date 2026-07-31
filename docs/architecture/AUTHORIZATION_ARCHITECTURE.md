@@ -485,23 +485,29 @@ Repository
 
 # Permission Cache
 
-Permission resolution may be cached.
+## Per-request memoization (implemented)
 
-Recommended
+`getRequestContext()` is wrapped with `React.cache()`. This ensures PermissionService
+is invoked exactly once per Next.js request, regardless of how many server components
+or route handlers call `getRequestContext()` in the same request scope.
 
-- Per user
-- Per RT
-- TTL 5 minutes
+The memoized context is request-scoped and does not survive across requests.
 
-Invalidate when
+## Persistent cache (future — Task 2.4)
+
+A TTL-based persistent cache (e.g. per user + per RT, 5-minute TTL) is reserved for
+future implementation. The `invalidateCache()` hook on `PermissionService` is a no-op
+placeholder for that work.
+
+Invalidation triggers (once implemented):
 
 - Role changes
-- RT overrides change
+- RT override changes
 - User changes RT
 
-AuthorizationContext itself is never cached.
+AuthorizationContext itself must never be persistently cached.
 
-Only permission resolution may be cached.
+Only permission resolution results may be cached.
 
 ---
 
@@ -579,6 +585,20 @@ Authorization must be validated by:
 - RLS Validation
 
 Every layer must produce identical authorization decisions.
+
+## Unit test coverage
+
+| Component | Test file |
+|---|---|
+| PermissionService.loadPermissions | `lib/auth/__tests__/permission-service.test.ts` |
+| PermissionService.buildContext | `lib/auth/__tests__/permission-service.test.ts` |
+| AuthorizationContext | `lib/auth/__tests__/authorization-context.test.ts` |
+| RequestContext | `lib/auth/__tests__/request-context.test.ts` |
+| Authorization helpers | `lib/auth/__tests__/helpers.test.ts` |
+| Error classes | `lib/auth/__tests__/errors.test.ts` |
+| Override repository | `lib/repositories/__tests__/member-override.repository.test.ts` |
+
+Run with: `npm run test`
 
 ---
 

@@ -277,3 +277,200 @@ describe('PermissionService.loadPermissions', () => {
     })
   })
 })
+
+/* ========================================================================== */
+/* PermissionService.buildContext                                              */
+/*                                                                            */
+/* buildContext uses a different (optimized) DB call sequence than            */
+/* loadPermissions. Mock response order for non-SUPER_ADMIN:                  */
+/*   0 — resolveUserMembership  (memberships, direct await, returns array)    */
+/*   1 — resolveRoleId          (roles, maybeSingle)                          */
+/*   2 — fetchRolePermissions   (role_permissions, direct await)              */
+/*   3 — fetchPermissionOverrides(rt_permission_overrides, direct await)      */
+/* ========================================================================== */
+
+describe('PermissionService.buildContext', () => {
+
+  /* ---------------------------------------------------------------------- */
+  /* SUPER_ADMIN bypass                                                      */
+  /* ---------------------------------------------------------------------- */
+
+  describe('SUPER_ADMIN', () => {
+    it('grants every permission without inspecting role tables', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'sa-mem-1', role: 'SUPER_ADMIN', rt_id: null }], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('user-sa')
+      expect(ctx.hasPermission(PERMISSION.PAYMENT_APPROVE)).toBe(true)
+      expect(ctx.hasPermission(PERMISSION.RESIDENT_DELETE)).toBe(true)
+      expect(ctx.hasPermission(PERMISSION.AUDIT_VIEW)).toBe(true)
+    })
+
+    it('sets roleCode to SUPER_ADMIN', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'sa-mem-1', role: 'SUPER_ADMIN', rt_id: null }], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('user-sa')
+      expect(ctx.roleCode).toBe('SUPER_ADMIN')
+    })
+
+    it('stores the SUPER_ADMIN membership id', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'sa-mem-99', role: 'SUPER_ADMIN', rt_id: null }], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('user-sa')
+      expect(ctx.membershipId).toBe('sa-mem-99')
+    })
+  })
+
+  /* ---------------------------------------------------------------------- */
+  /* Regular users                                                           */
+  /* ---------------------------------------------------------------------- */
+
+  describe('Regular user', () => {
+    it('returns an AuthorizationContext with effective role permissions', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'mem-1', role: 'RESIDENT', rt_id: 'rt-1' }], error: null },
+        { data: { id: 'role-resident' }, error: null },
+        { data: [rp('resident.view'), rp('payment.view')], error: null },
+        { data: [], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('u-1')
+      expect(ctx.hasPermission(PERMISSION.RESIDENT_VIEW)).toBe(true)
+      expect(ctx.hasPermission(PERMISSION.PAYMENT_VIEW)).toBe(true)
+      expect(ctx.hasPermission(PERMISSION.PAYMENT_APPROVE)).toBe(false)
+    })
+
+    it('maps CHAIR enum to RT_CHAIR role code', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'mem-2', role: 'CHAIR', rt_id: 'rt-1' }], error: null },
+        { data: { id: 'role-chair' }, error: null },
+        { data: [rp('resident.view')], error: null },
+        { data: [], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('u-chair')
+      expect(ctx.roleCode).toBe('RT_CHAIR')
+    })
+
+    it('maps ADMIN enum to RT_ADMIN role code', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'mem-3', role: 'ADMIN', rt_id: 'rt-1' }], error: null },
+        { data: { id: 'role-admin' }, error: null },
+        { data: [], error: null },
+        { data: [], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('u-admin')
+      expect(ctx.roleCode).toBe('RT_ADMIN')
+    })
+
+    it('stores membership id from the memberships table', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'mem-xyz', role: 'RESIDENT', rt_id: 'rt-1' }], error: null },
+        { data: { id: 'role-resident' }, error: null },
+        { data: [], error: null },
+        { data: [], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('u-1')
+      expect(ctx.membershipId).toBe('mem-xyz')
+    })
+
+    it('stores neighborhoodId from the rt_id field', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'mem-1', role: 'RESIDENT', rt_id: 'rt-special' }], error: null },
+        { data: { id: 'role-resident' }, error: null },
+        { data: [], error: null },
+        { data: [], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('u-1')
+      expect(ctx.neighborhoodId).toBe('rt-special')
+    })
+
+    it('stores the resolved roleId', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'mem-1', role: 'RESIDENT', rt_id: 'rt-1' }], error: null },
+        { data: { id: 'role-id-99' }, error: null },
+        { data: [], error: null },
+        { data: [], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('u-1')
+      expect(ctx.roleId).toBe('role-id-99')
+    })
+  })
+
+  /* ---------------------------------------------------------------------- */
+  /* Permission overrides                                                    */
+  /* ---------------------------------------------------------------------- */
+
+  describe('Permission overrides', () => {
+    it('override GRANT adds a permission not in the role defaults', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'mem-1', role: 'RESIDENT', rt_id: 'rt-1' }], error: null },
+        { data: { id: 'role-resident' }, error: null },
+        { data: [rp('resident.view')], error: null },
+        { data: [ov('payment.approve', true)], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('u-1')
+      expect(ctx.hasPermission(PERMISSION.PAYMENT_APPROVE)).toBe(true)
+      expect(ctx.hasPermission(PERMISSION.RESIDENT_VIEW)).toBe(true)
+    })
+
+    it('override REVOKE removes a permission from the role defaults', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'mem-1', role: 'CHAIR', rt_id: 'rt-1' }], error: null },
+        { data: { id: 'role-chair' }, error: null },
+        { data: [rp('payment.approve'), rp('resident.view')], error: null },
+        { data: [ov('payment.approve', false)], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('u-1')
+      expect(ctx.hasPermission(PERMISSION.PAYMENT_APPROVE)).toBe(false)
+      expect(ctx.hasPermission(PERMISSION.RESIDENT_VIEW)).toBe(true)
+    })
+
+    it('applies multiple overrides simultaneously', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'mem-1', role: 'RESIDENT', rt_id: 'rt-1' }], error: null },
+        { data: { id: 'role-resident' }, error: null },
+        { data: [rp('resident.view'), rp('payment.view')], error: null },
+        { data: [ov('payment.approve', true), ov('resident.view', false)], error: null },
+      ])
+      const ctx = await new PermissionService(client).buildContext('u-1')
+      expect(ctx.hasPermission(PERMISSION.PAYMENT_APPROVE)).toBe(true)
+      expect(ctx.hasPermission(PERMISSION.RESIDENT_VIEW)).toBe(false)
+      expect(ctx.hasPermission(PERMISSION.PAYMENT_VIEW)).toBe(true)
+    })
+  })
+
+  /* ---------------------------------------------------------------------- */
+  /* Error cases                                                             */
+  /* ---------------------------------------------------------------------- */
+
+  describe('Error cases', () => {
+    it('throws MembershipNotFoundError when no active RT membership exists', async () => {
+      const client = makeSupabaseClient([
+        { data: [], error: null },
+      ])
+      await expect(
+        new PermissionService(client).buildContext('u-none')
+      ).rejects.toThrow(MembershipNotFoundError)
+    })
+
+    it('throws RoleNotFoundError when the role code has no matching roles row', async () => {
+      const client = makeSupabaseClient([
+        { data: [{ id: 'mem-1', role: 'UNKNOWN_ROLE', rt_id: 'rt-1' }], error: null },
+        { data: null, error: null },
+      ])
+      await expect(
+        new PermissionService(client).buildContext('u-1')
+      ).rejects.toThrow(RoleNotFoundError)
+    })
+
+    it('propagates database errors from membership resolution', async () => {
+      const client = makeSupabaseClient([
+        { data: null, error: new Error('Connection refused') },
+      ])
+      await expect(
+        new PermissionService(client).buildContext('u-1')
+      ).rejects.toThrow('Connection refused')
+    })
+  })
+})

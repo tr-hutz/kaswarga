@@ -76,12 +76,18 @@ PermissionService participates only during AuthorizationContext construction.
 
 # AuthorizationContext Builder
 
-PermissionService exposes a single public entry point.
+PermissionService exposes two public methods.
+
+`buildContext` is the preferred entry point for all server-side request handling. It automatically resolves the user's active RT membership and is optimized to 4 database calls.
+
+`loadPermissions` is retained for cases where the caller already knows the `neighborhoodId` (e.g. utility scripts, background jobs).
 
 ```ts
-buildContext(
-    userId: string
-): Promise<AuthorizationContext>
+// Preferred — auto-resolves RT, 4 DB calls
+buildContext(userId: string): Promise<AuthorizationContext>
+
+// Legacy — caller supplies neighborhoodId, 5 DB calls
+loadPermissions(userId: string, neighborhoodId: string): Promise<PermissionSet>
 ```
 
 Business Services must never call PermissionService again after AuthorizationContext has been created.
@@ -120,47 +126,44 @@ Create AuthorizationContext
 
 # Public API
 
-Only the following method is public.
+The following methods are public.
 
 ```ts
 class PermissionService {
 
-    buildContext(
-        userId: string
-    ): Promise<AuthorizationContext>;
+    // Preferred: auto-resolves RT membership, 4 DB calls
+    buildContext(userId: string): Promise<AuthorizationContext>
+
+    // Legacy: caller provides neighborhoodId, 5 DB calls
+    loadPermissions(userId: string, neighborhoodId: string): Promise<PermissionSet>
+
+    // No-op hook reserved for future cache invalidation
+    invalidateCache(userId: string, neighborhoodId: string): void
 
 }
 ```
-
-No other permission methods should be publicly exposed.
 
 ---
 
 # Internal API
 
-The following methods should remain private.
+The following methods are private implementation details.
 
 ```ts
-resolveRole()
+// Used by buildContext — single memberships query that detects SUPER_ADMIN
+resolveUserMembership(userId)
 
-loadRolePermissions()
+// Used by both buildContext and loadPermissions
+resolveRoleId(roleCode)
+fetchRolePermissions(roleId)
+fetchPermissionOverrides(neighborhoodId, roleId)
+merge(granted, overrides)
 
-loadPermissionOverrides()
-
-mergePermissions()
-
-createAuthorizationContext()
-
-loadUserNeighborhood()
-
-loadUserLocale()
-
-loadUserTimezone()
-
-invalidateCache()
+// Used only by loadPermissions (legacy path)
+checkSuperAdmin(userId)
+resolveMembership(userId, neighborhoodId)
+loadUserNeighborhood(userId)
 ```
-
-These methods are implementation details.
 
 ---
 
@@ -378,7 +381,19 @@ Business Services should mock AuthorizationContext instead of mocking Permission
 
 # Performance
 
-Permission resolution should occur only once per request.
+`getRequestContext()` in `lib/auth/server.ts` is memoized with `React.cache()`. This ensures that PermissionService is invoked exactly once per request regardless of how many server components or handlers call `getRequestContext()`.
+
+`buildContext` database call count (non-SUPER_ADMIN):
+
+| Step | Query | Notes |
+|---|---|---|
+| 1 | `memberships` | Single query; detects SUPER_ADMIN |
+| 2 | `roles` | Lookup by role code |
+| 3+4 | `role_permissions` + `rt_permission_overrides` | Parallel |
+
+SUPER_ADMIN short-circuits after step 1 — no role table queries.
+
+`loadPermissions` uses 5 sequential + parallel calls (checkSuperAdmin, resolveMembership, resolveRoleId, then fetchRolePermissions + fetchPermissionOverrides in parallel).
 
 Business Services must reuse AuthorizationContext.
 

@@ -417,6 +417,26 @@ Scope restrictions (`own data only`) are enforced by RLS, not by the application
 
 ---
 
+## BR-128
+
+SUPER_ADMIN bypasses all role and permission resolution unconditionally.
+
+A user with a SUPER_ADMIN membership holds every permission in the system.
+
+This bypass is detected in a single database query — no role table lookups are performed.
+
+---
+
+## BR-129
+
+RT permission overrides apply at the RT + role level, not per individual member.
+
+An override for role RESIDENT in RT-A affects all RESIDENT members in RT-A equally.
+
+There are no individual-member permission overrides.
+
+---
+
 # 13. Role Management
 
 ## BR-130

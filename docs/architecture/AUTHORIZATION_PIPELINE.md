@@ -125,31 +125,42 @@ Failure
 
 ---
 
+## Step 3b — Request Context Memoization
+
+`getRequestContext()` in `lib/auth/server.ts` is wrapped with `React.cache()`.
+
+This guarantees that `PermissionService` is invoked exactly once per request,
+regardless of how many Server Components, Server Actions, or Route Handlers
+call `getRequestContext()` within the same request scope.
+
+```ts
+export const getRequestContext = cache(async () => {
+  // ...validates session, then calls createRequestContext(user.id)
+})
+```
+
+---
+
 ## Step 4 — Permission Resolution
 
-PermissionService resolves:
+`PermissionService.buildContext(userId)` resolves permissions in 4 database calls:
 
 ```
-User
+1. resolveUserMembership
+   └── Single query against memberships for all active rows
+       (detects SUPER_ADMIN in the result set)
 
-↓
+2. resolveRoleId
+   └── Lookup roles table by role code
 
-Role
-
-↓
-
-Role Permissions
-
-↓
-
-RT Overrides
-
-↓
-
-Effective Permissions
+3+4. (parallel)
+   ├── fetchRolePermissions    → role_permissions table
+   └── fetchPermissionOverrides → rt_permission_overrides table
 ```
 
-Permission resolution happens only once.
+SUPER_ADMIN path short-circuits after step 1 (no role table queries needed).
+
+Permission resolution happens only once per request.
 
 ---
 
@@ -482,6 +493,18 @@ Every protected feature must be validated using:
 - PostgreSQL RLS
 
 All layers must return identical authorization decisions.
+
+Unit test coverage for the pipeline:
+
+| Component | Test file |
+|---|---|
+| PermissionService.loadPermissions | `lib/auth/__tests__/permission-service.test.ts` |
+| PermissionService.buildContext | `lib/auth/__tests__/permission-service.test.ts` |
+| AuthorizationContext | `lib/auth/__tests__/authorization-context.test.ts` |
+| RequestContext | `lib/auth/__tests__/request-context.test.ts` |
+| Authorization helpers | `lib/auth/__tests__/helpers.test.ts` |
+| Error classes | `lib/auth/__tests__/errors.test.ts` |
+| Override repository | `lib/repositories/__tests__/member-override.repository.test.ts` |
 
 ---
 

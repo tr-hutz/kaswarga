@@ -289,25 +289,40 @@ Forbidden
 
 # Creation
 
-RequestContext should be created by a dedicated factory.
+RequestContext is created by `getRequestContext()` in `lib/auth/server.ts`.
 
-```
-Authentication
-
-↓
-
-PermissionService
-
-↓
-
-RequestContextFactory
-
-↓
-
-RequestContext
+```ts
+// lib/auth/server.ts
+export const getRequestContext = cache(async () => {
+  // 1. Validate session via supabase.auth.getUser()
+  // 2. Call createRequestContext(user.id, { headers })
+  //    which calls PermissionService.buildContext(userId)
+  // 3. Returns RequestContext
+})
 ```
 
-Business Services never construct RequestContext.
+`getRequestContext()` is memoized with `React.cache()`. Within the same
+request scope, the first call resolves permissions and builds the context.
+Every subsequent call in the same request returns the cached instance —
+PermissionService is never invoked more than once per request.
+
+```
+Authentication (getUser)
+
+↓
+
+PermissionService.buildContext
+
+↓
+
+createRequestContext
+
+↓
+
+RequestContext (cached via React.cache)
+```
+
+Business Services never construct RequestContext directly.
 
 ---
 
