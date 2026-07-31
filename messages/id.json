@@ -92,7 +92,7 @@
         "permissionMatrix": "Matriks Perijinan",
         "memberOverrides": "Override Izin Anggota",
         "effectivePermissions": "Lihat Izin Efektif",
-        "authorizationDebug": "Debug Otorisasi"
+        "permissionInspector": "Inspektur Izin"
     },
     "topbar": {
         "brand": "Kas Warga",
@@ -1124,6 +1124,51 @@
         "result": {
             "granted": "GRANTED",
             "denied": "DENIED"
+        }
+    },
+    "inspector": {
+        "title": "Inspektur Izin",
+        "subtitle": "Periksa siapa yang memiliki izin tertentu dan mengapa",
+        "tabs": {
+            "permission": "Berdasarkan Izin",
+            "member": "Berdasarkan Anggota"
+        },
+        "filter": {
+            "allModules": "Semua Modul",
+            "allRoles": "Semua Role"
+        },
+        "permission": {
+            "searchPlaceholder": "Cari nama atau kode izin...",
+            "selectPrompt": "Pilih izin untuk melihat siapa yang memilikinya"
+        },
+        "member": {
+            "searchPlaceholder": "Cari nama atau email anggota...",
+            "selectPrompt": "Pilih anggota untuk melihat izin efektifnya",
+            "name": "Anggota",
+            "role": "Role",
+            "status": "Status"
+        },
+        "stats": {
+            "roles": "Role",
+            "members": "Anggota",
+            "grantOverrides": "Override (+)",
+            "revokeOverrides": "Override (−)",
+            "granted": "Diberikan",
+            "denied": "Ditolak",
+            "overrides": "Override"
+        },
+        "sections": {
+            "grantedByRole": "Diberikan oleh Role",
+            "overrideGrant": "Override Tambahan (+)",
+            "overrideRevoke": "Override Dicabut (−)",
+            "effectiveMembers": "Total Anggota Efektif",
+            "noRoles": "Tidak ada role yang memiliki izin ini"
+        },
+        "reason": {
+            "role": "Diberikan oleh Role",
+            "override_grant": "Diberikan oleh Override",
+            "override_revoke": "Dicabut oleh Override",
+            "none": "Izin tidak ditetapkan"
         }
     }
 }

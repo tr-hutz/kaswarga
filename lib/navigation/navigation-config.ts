@@ -142,9 +142,9 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
-        label: 'authorizationDebug',
-        href: '/settings/authorization/debug',
-        icon: 'monitor',
+        label: 'permissionInspector',
+        href: '/settings/authorization/inspector',
+        icon: 'search',
         permission: PERMISSIONS.MANAGE_ROLES,
         hideForRoles: ['SUPER_ADMIN']
     },

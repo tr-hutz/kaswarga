@@ -94,6 +94,9 @@ export const PERMISSION = {
   // RBAC Debug
   DEBUG_VIEW: 'rbac.debug.view',
 
+  // RBAC Inspector
+  INSPECTOR_VIEW: 'rbac.inspector.view',
+
 } as const
 
 export type Permission = typeof PERMISSION[keyof typeof PERMISSION]
