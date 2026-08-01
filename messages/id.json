@@ -868,8 +868,9 @@
                 "reject": "Tolak",
                 "export": "Ekspor",
                 "override": "Override",
-                "debug": "Debug",
-                "inspector": "Inspector"
+                "inspector": {
+                    "view": "Inspector"
+                }
             }
         }
     },

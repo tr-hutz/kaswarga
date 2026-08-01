@@ -21,7 +21,7 @@ export default function PermissionGrid({ groups, localSet, canEdit, onToggle, on
     if (groups.length === 0) return null
 
     const allActions = new Set(
-        groups.flatMap(g => g.permissions.map(p => p.code.split('.')[1] ?? ''))
+        groups.flatMap(g => g.permissions.map(p => p.code.split('.').slice(1).join('.')))
     )
     const columns = [
         ...CANONICAL_ACTIONS.filter(a => allActions.has(a)),
