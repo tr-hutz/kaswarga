@@ -71,10 +71,18 @@ export function usePermissionInspector() {
                     fetch('/api/permissions'),
                     fetch('/api/members'),
                 ])
-                if (!permRes.ok) throw new Error('Failed to load permissions')
-                if (!memRes.ok)  throw new Error('Failed to load members')
-                setPermissions(await permRes.json())
-                setMembers(await memRes.json())
+                const errors: string[] = []
+                if (permRes.ok) {
+                    setPermissions(await permRes.json())
+                } else {
+                    errors.push('Failed to load permissions')
+                }
+                if (memRes.ok) {
+                    setMembers(await memRes.json())
+                } else {
+                    errors.push('Failed to load members')
+                }
+                if (errors.length > 0) setError(errors.join('; '))
             } catch (err) {
                 setError((err as Error).message)
             } finally {

@@ -160,7 +160,7 @@ export default function PermissionInspectorView({
                                 onChange={e => onModuleFilter(e.target.value)}
                                 options={moduleOptions}
                             />
-                            <div className="rounded-xl border border-divider bg-surface divide-y divide-divider max-h-[calc(100vh-420px)] overflow-y-auto">
+                            <div className="rounded-xl border border-divider bg-surface divide-y divide-divider max-h-[max(200px,calc(100vh-420px))] overflow-y-auto">
                                 {filteredPermissions.length === 0 ? (
                                     <p className="px-4 py-6 text-center text-sm text-muted">{tc('status.empty')}</p>
                                 ) : filteredPermissions.map(p => (
@@ -191,7 +191,7 @@ export default function PermissionInspectorView({
                                 onChange={e => onRoleFilter(e.target.value)}
                                 options={roleOptions}
                             />
-                            <div className="rounded-xl border border-divider bg-surface divide-y divide-divider max-h-[calc(100vh-420px)] overflow-y-auto">
+                            <div className="rounded-xl border border-divider bg-surface divide-y divide-divider max-h-[max(200px,calc(100vh-420px))] overflow-y-auto">
                                 {filteredMembers.length === 0 ? (
                                     <p className="px-4 py-6 text-center text-sm text-muted">{tc('status.empty')}</p>
                                 ) : filteredMembers.map(m => (
