@@ -161,11 +161,13 @@ export default function ExpenseView({
                 }
                 renderActions={
                     <div className="flex items-center gap-2 flex-wrap">
-                        <ExportDropdown
-                            onExportExcel={() => exportExcel(data)}
-                            onExportCSV={() => exportCSV(data)}
-                        />
-                        <Can permission={PERMISSION.EXPENSE_CREATE}>
+                        <Can permission={PERMISSION.EXPENSE_EXPORT}>
+                            <ExportDropdown
+                                onExportExcel={() => exportExcel(data)}
+                                onExportCSV={() => exportCSV(data)}
+                            />
+                        </Can>
+                        <Can permission={PERMISSION.EXPENSE_IMPORT}>
                             <button
                                 onClick={openImport}
                                 className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"

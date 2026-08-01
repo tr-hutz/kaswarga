@@ -11,6 +11,8 @@ import ResidentImportModal  from './components/import/ResidentImportModal'
 import { buildResidentColumns, type ResidentRow } from './components/ResidentColumns'
 import ExportDropdown from '@/components/ui/ExportDropdown'
 import Icon from '@/components/ui/Icon'
+import Can from '@/components/ui/Can'
+import { PERMISSION } from '@/lib/auth/types'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 interface Props {
@@ -137,26 +139,28 @@ export default function ResidentView({
                 }
                 renderActions={
                     <div className="flex items-center gap-2">
-                        <ExportDropdown
-                            onExportExcel={() => exportExcel(data)}
-                            onExportCSV={() => exportCSV(data)}
-                        />
+                        <Can permission={PERMISSION.RESIDENT_EXPORT}>
+                            <ExportDropdown
+                                onExportExcel={() => exportExcel(data)}
+                                onExportCSV={() => exportCSV(data)}
+                            />
+                        </Can>
+                        <Can permission={PERMISSION.RESIDENT_IMPORT}>
+                            <button
+                                onClick={openImport}
+                                className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
+                            >
+                                <Icon name="upload" size={15} />
+                                {tc('actions.import')}
+                            </button>
+                        </Can>
                         {canManage && (
-                            <>
-                                <button
-                                    onClick={openImport}
-                                    className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
-                                >
-                                    <Icon name="upload" size={15} />
-                                    {tc('actions.import')}
-                                </button>
-                                <button
-                                    onClick={openCreateForm}
-                                    className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary-dark"
-                                >
-                                    + {tc('actions.add')}
-                                </button>
-                            </>
+                            <button
+                                onClick={openCreateForm}
+                                className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary-dark"
+                            >
+                                + {tc('actions.add')}
+                            </button>
                         )}
                     </div>
                 }
