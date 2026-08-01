@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 
 import { PermissionService }         from '../permission-service'
 import { MembershipNotFoundError, RoleNotFoundError } from '../errors'
@@ -471,6 +471,57 @@ describe('PermissionService.buildContext', () => {
       await expect(
         new PermissionService(client).buildContext('u-1')
       ).rejects.toThrow('Connection refused')
+    })
+  })
+
+  /* ---------------------------------------------------------------------- */
+  /* Request-scoped cache                                                    */
+  /* ---------------------------------------------------------------------- */
+
+  describe('Request-scoped cache', () => {
+    it('returns the same AuthorizationContext reference on a second call (HIT)', async () => {
+      // Mock provides exactly one set of responses — if the DB were queried twice
+      // the second call would read stale/empty responses and likely throw.
+      const client = makeSupabaseClient([
+        { data: [{ id: 'mem-1', role: 'RESIDENT', rt_id: 'rt-1' }], error: null },
+        { data: { id: 'role-resident' }, error: null },
+        { data: [rp('resident.view')], error: null },
+        { data: [], error: null },
+      ])
+      const service = new PermissionService(client)
+
+      // React.cache() has no dispatcher in Vitest (no React async context), so
+      // it calls the factory fresh on every invocation. Simulate per-request
+      // isolation by replacing _getContextStore with a stable persistent Map.
+      const persistentStore = new Map()
+      ;(service as any)._getContextStore = () => persistentStore
+
+      const ctx1 = await service.buildContext('u-1')
+      const ctx2 = await service.buildContext('u-1')
+
+      expect(ctx1).toBe(ctx2)
+    })
+
+    it('does not share cache across different userIds', async () => {
+      const clientA = makeSupabaseClient([
+        { data: [{ id: 'mem-a', role: 'RESIDENT', rt_id: 'rt-1' }], error: null },
+        { data: { id: 'role-resident' }, error: null },
+        { data: [rp('resident.view')], error: null },
+        { data: [], error: null },
+      ])
+      const clientB = makeSupabaseClient([
+        { data: [{ id: 'mem-b', role: 'CHAIR', rt_id: 'rt-1' }], error: null },
+        { data: { id: 'role-chair' }, error: null },
+        { data: [rp('payment.approve')], error: null },
+        { data: [], error: null },
+      ])
+
+      const ctxA = await new PermissionService(clientA).buildContext('u-a')
+      const ctxB = await new PermissionService(clientB).buildContext('u-b')
+
+      expect(ctxA.roleCode).toBe('RESIDENT')
+      expect(ctxB.roleCode).toBe('RT_CHAIR')
+      expect(ctxA).not.toBe(ctxB)
     })
   })
 })
