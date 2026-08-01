@@ -9,7 +9,7 @@ import { PERMISSION }  from '../../lib/auth/types'
 import { useAuth }     from '../../lib/auth/useAuth'
 import { usePendingCounts } from './usePendingCounts'
 
-const EMPTY_PERMISSIONS: ReadonlySet<string> = Object.freeze(new Set())
+const EMPTY_PERMISSIONS: ReadonlySet<string> = Object.freeze(new Set<string>())
 
 export default function SidebarMenu({ onClose }: { onClose?: () => void }) {
     const pathname = usePathname()

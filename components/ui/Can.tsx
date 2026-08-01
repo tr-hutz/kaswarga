@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { useAuth }        from '@/lib/auth/useAuth'
 import type { Permission } from '@/lib/auth/types'
 
-const EMPTY_PERMISSIONS: ReadonlySet<string> = Object.freeze(new Set())
+const EMPTY_PERMISSIONS: ReadonlySet<string> = Object.freeze(new Set<string>())
 
 interface CanProps {
     /** Single permission code. */
