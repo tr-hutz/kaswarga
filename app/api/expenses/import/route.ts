@@ -1,53 +1,26 @@
-﻿import { NextResponse }      from 'next/server'
-import { cookies }            from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { NextResponse }       from 'next/server'
 import { supabaseAdmin }      from '@/lib/supabase-admin'
-
-const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || ''
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+import { getRequestContext }  from '@/lib/auth/server'
+import { requirePermission }  from '@/lib/auth/helpers'
+import { PERMISSION }         from '@/lib/auth/types'
+import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 
 /*
 |--------------------------------------------------------------------------
 | POST /api/expenses/import
 |
 | Bulk-inserts expense rows for the caller's RT.
-| Restricted to chair, admin, and treasurer.
+| Requires expense.create permission.
 |--------------------------------------------------------------------------
 */
 
 export async function POST(req: Request) {
     try {
-        const cookieStore = await cookies()
-        const serverClient = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            cookies: {
-                getAll: () => cookieStore.getAll(),
-                setAll: () => {}
-            }
-        })
+        const ctx  = await getRequestContext()
+        requirePermission(ctx.authorization, PERMISSION.EXPENSE_CREATE)
 
-        const { data: authData, error: authError } = await serverClient.auth.getUser()
-        if (authError || !authData?.user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        }
-
-        const { data: membership, error: membershipError } = await supabaseAdmin
-            .from('memberships')
-            .select('role, rt_id, user:users(name)')
-            .eq('user_id', authData.user.id)
-            .eq('status', 'active')
-            .maybeSingle()
-
-        if (membershipError || !membership) {
-            return NextResponse.json({ error: 'Membership not found' }, { status: 403 })
-        }
-
-        if (!['CHAIR', 'ADMIN', 'TREASURER'].includes(membership.role)) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-        }
-
-        if (!membership.rt_id) {
-            return NextResponse.json({ error: 'RT not found' }, { status: 400 })
-        }
+        const rtId  = ctx.authorization.neighborhoodId
+        const userId = ctx.authorization.userId
 
         const body = await req.json()
         const { rows } = body
@@ -59,7 +32,7 @@ export async function POST(req: Request) {
         const toInsert = rows
             .filter(r => r.date?.trim() && r.amount?.trim())
             .map(r => ({
-                rt_id:       membership.rt_id!,
+                rt_id:       rtId,
                 date:        r.date.trim(),
                 category:    r.category?.trim()     || null,
                 amount:      parseInt(r.amount.replace(/[^0-9]/g, ''), 10) || 0,
@@ -67,7 +40,7 @@ export async function POST(req: Request) {
                 description: r.description?.trim()  || null,
                 active:      true,
                 status:      'pending',
-                created_by:  authData.user.id,
+                created_by:  userId,
             }))
 
         if (toInsert.length === 0) {
@@ -81,34 +54,36 @@ export async function POST(req: Request) {
 
         if (error) throw error
 
+        const { data: actor } = await supabaseAdmin.from('users').select('name').eq('id', userId).single()
+
         await supabaseAdmin.from('activity_logs').insert({
-            rt_id:       membership.rt_id,
-            actor_id:    authData.user.id,
-            actor_name:  membership.user?.name || authData.user.email,
+            rt_id:       rtId,
+            actor_id:    userId,
+            actor_name:  actor?.name ?? null,
             action:      'IMPORT_EXPENSES',
             entity_type: 'expenses',
-            entity_id:   membership.rt_id,
+            entity_id:   rtId,
             description: `Import ${data.length} data expenses`,
             metadata:    { count: data.length }
         })
 
-        // Notify all CHAIR users with ONE grouped notification
+        // Notify all members with expense.update permission via role lookup
         const { data: chairMembers } = await supabaseAdmin
             .from('memberships')
             .select('user_id')
-            .eq('rt_id', membership.rt_id)
+            .eq('rt_id', rtId)
             .eq('role', 'CHAIR')
             .eq('status', 'active')
 
         if (chairMembers?.length && data.length > 0) {
             await supabaseAdmin.from('notifications').insert(
                 chairMembers.map(m => ({
-                    rt_id:          membership.rt_id!,
+                    rt_id:          rtId,
                     type:           'expense_pending',
                     title:          'New Expenses Pending Approval',
                     message:        `${data.length} new expense(s) imported and require approval.`,
                     entity_type:    'expenses',
-                    entity_id:      membership.rt_id,
+                    entity_id:      rtId,
                     target_user_id: m.user_id,
                 }))
             )
@@ -117,6 +92,8 @@ export async function POST(req: Request) {
         return NextResponse.json({ inserted: data.length })
 
     } catch (err) {
+        if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },    { status: 403 })
         console.error('[expenses/import]', err)
         return NextResponse.json({ error: (err as Error).message || 'Import failed' }, { status: 500 })
     }
