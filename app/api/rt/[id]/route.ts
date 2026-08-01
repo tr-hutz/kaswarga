@@ -1,22 +1,22 @@
-import { NextResponse }      from 'next/server'
-import { cookies }            from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { NextResponse }       from 'next/server'
 import { supabaseAdmin }      from '@/lib/supabase-admin'
+import { getRequestContext }  from '@/lib/auth/server'
+import { requirePermission }  from '@/lib/auth/helpers'
+import { PERMISSION }         from '@/lib/auth/types'
+import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 
-const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || ''
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-const SYSTEM_RT_ID      = '00000000-0000-0000-0000-000000000001'
+const SYSTEM_RT_ID = '00000000-0000-0000-0000-000000000001'
 
 /*
 |--------------------------------------------------------------------------
 | DELETE /api/rt/[id]
 |
 | Soft-deletes an RT and deactivates all its members.
-| Restricted to super_admin.
+| Requires rt.delete permission (SUPER_ADMIN only via BR-128).
 |--------------------------------------------------------------------------
 */
 
-export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params
 
@@ -24,30 +24,10 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
             return NextResponse.json({ error: 'Missing RT id' }, { status: 400 })
         }
 
-        // Verify caller is super_admin
-        const cookieStore = await cookies()
-        const serverClient = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            cookies: {
-                getAll: () => cookieStore.getAll(),
-                setAll: (newCookies) => newCookies.forEach(c => cookieStore.set(c))
-            }
-        })
+        const ctx  = await getRequestContext()
+        requirePermission(ctx.authorization, PERMISSION.RT_DELETE)
 
-        const { data: authData, error: authError } = await serverClient.auth.getUser()
-        if (authError || !authData?.user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        }
-
-        const { data: membership, error: membershipError } = await supabaseAdmin
-            .from('memberships')
-            .select('role, user:users(name)')
-            .eq('user_id', authData.user.id)
-            .eq('status', 'active')
-            .maybeSingle()
-
-        if (membershipError || membership?.role !== 'SUPER_ADMIN') {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-        }
+        const userId = ctx.authorization.userId
 
         // Fetch RT name for the activity log
         const { data: rt, error: rtError } = await supabaseAdmin
@@ -77,23 +57,24 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
 
         if (membershipUpdateError) throw membershipUpdateError
 
-        // Log activity
-        await supabaseAdmin
-            .from('activity_logs')
-            .insert({
-                rt_id:       SYSTEM_RT_ID,
-                actor_id:    authData.user.id,
-                actor_name:  membership.user?.name || authData.user.email,
-                action:      'DELETE_RT',
-                entity_type: 'rt',
-                entity_id:   id,
-                description: `Deleted RT: ${rt.name}`,
-                metadata:    { name: rt.name, code: rt.code }
-            })
+        const { data: actor } = await supabaseAdmin.from('users').select('name').eq('id', userId).single()
+
+        await supabaseAdmin.from('activity_logs').insert({
+            rt_id:       SYSTEM_RT_ID,
+            actor_id:    userId,
+            actor_name:  actor?.name ?? null,
+            action:      'DELETE_RT',
+            entity_type: 'rt',
+            entity_id:   id,
+            description: `Deleted RT: ${rt.name}`,
+            metadata:    { name: rt.name, code: rt.code }
+        })
 
         return NextResponse.json({ success: true })
 
     } catch (err) {
+        if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },    { status: 403 })
         console.error('[DELETE /api/rt/[id]]', err)
         return NextResponse.json({ error: (err as Error).message || 'Internal server error' }, { status: 500 })
     }

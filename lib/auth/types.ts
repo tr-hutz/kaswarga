@@ -72,6 +72,9 @@ export const PERMISSION = {
   SETTINGS_VIEW:   'settings.view',
   SETTINGS_UPDATE: 'settings.update',
 
+  // RT Management
+  RT_DELETE: 'rt.delete',
+
   // User Management
   USER_VIEW:   'user.view',
   USER_CREATE: 'user.create',

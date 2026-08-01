@@ -187,6 +187,14 @@ PostgreSQL RLS
 
 ---
 
+# RT Module
+
+| Permission | Description | Status | Notes |
+|------------|-------------|--------|-------|
+| rt.delete | Delete (soft-delete) an RT and deactivate its members | Active | SUPER_ADMIN only via BR-128 |
+
+---
+
 # User Management Module
 
 | Permission | Description | Status | Notes |
