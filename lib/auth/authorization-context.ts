@@ -21,6 +21,19 @@ import type { PermissionSet } from './permission-service'
 import type { Permission }    from './types'
 
 /* -------------------------------------------------------------------------- */
+/* Dev-mode evaluation counter                                                 */
+/*                                                                             */
+/* Counts hasPermission / hasAny / hasAll calls per AuthorizationContext       */
+/* instance. Helps identify hot spots during local development.                */
+/* The WeakMap does not prevent GC — contexts are collected normally.          */
+/* -------------------------------------------------------------------------- */
+
+type EvalStats = { lookups: number }
+// WeakMap<object> so the key type is available before the class declaration.
+const _evalStats: WeakMap<object, EvalStats> | null =
+  process.env.NODE_ENV === 'development' ? new WeakMap() : null
+
+/* -------------------------------------------------------------------------- */
 /* Constructor input                                                           */
 /* -------------------------------------------------------------------------- */
 
@@ -62,6 +75,11 @@ export class AuthorizationContext {
 
     this._permissionSet = ps
     Object.freeze(this)
+
+    if (_evalStats) {
+      _evalStats.set(this, { lookups: 0 })
+      console.debug('[AuthCtx] created  userId=%s roleCode=%s', ps.userId.slice(0, 8), ps.roleCode)
+    }
   }
 
   /* ------------------------------------------------------------------ */
@@ -70,16 +88,28 @@ export class AuthorizationContext {
 
   /** Returns true when the user holds the given permission. */
   hasPermission(code: Permission): boolean {
+    if (_evalStats) {
+      const s = _evalStats.get(this)
+      if (s) s.lookups++
+    }
     return this._permissionSet.hasPermission(code)
   }
 
   /** Returns true when the user holds at least one of the given permissions. */
   hasAny(...permissions: Permission[]): boolean {
+    if (_evalStats) {
+      const s = _evalStats.get(this)
+      if (s) s.lookups++
+    }
     return this._permissionSet.hasAny(permissions)
   }
 
   /** Returns true only when the user holds every one of the given permissions. */
   hasAll(...permissions: Permission[]): boolean {
+    if (_evalStats) {
+      const s = _evalStats.get(this)
+      if (s) s.lookups++
+    }
     return this._permissionSet.hasAll(permissions)
   }
 
@@ -101,4 +131,17 @@ export class AuthorizationContext {
   isSameNeighborhood(neighborhoodId: string): boolean {
     return this.neighborhoodId === neighborhoodId
   }
+}
+
+/**
+ * Dev-only: returns the number of permission lookups performed against this
+ * context since construction. Returns undefined outside of development.
+ *
+ * Usage (in a server component or route handler, dev only):
+ *   const ctx = await getRequestContext()
+ *   // ... handler logic ...
+ *   console.debug(getEvalStats(ctx.authorization))
+ */
+export function getEvalStats(ctx: AuthorizationContext): EvalStats | undefined {
+  return _evalStats?.get(ctx)
 }

@@ -4,6 +4,8 @@ import type { ReactNode } from 'react'
 import { useAuth }        from '@/lib/auth/useAuth'
 import type { Permission } from '@/lib/auth/types'
 
+const EMPTY_PERMISSIONS: ReadonlySet<string> = Object.freeze(new Set())
+
 interface CanProps {
     /** Single permission code. */
     permission?:  Permission
@@ -23,7 +25,7 @@ interface CanProps {
  */
 export default function Can({ permission, permissions, mode = 'any', children, fallback = null }: CanProps) {
     const auth  = useAuth()
-    const perms: ReadonlySet<string> = auth?.permissions ?? new Set()
+    const perms: ReadonlySet<string> = auth?.permissions ?? EMPTY_PERMISSIONS
 
     const codes = permission ? [permission] : (permissions ?? [])
     if (codes.length === 0) return <>{children}</>

@@ -152,6 +152,12 @@ class StandardPermissionSet implements PermissionSet {
   }
 }
 
+/* Pre-built full permission set for SUPER_ADMIN — computed once at module load,
+ * never recreated. Avoids allocating a new Set on every getEffectivePermissions()
+ * call (which is invoked on each auth load to hydrate the client permission cache). */
+const SUPER_ADMIN_ALL_PERMISSIONS: ReadonlySet<Permission> =
+  Object.freeze(new Set(Object.values(PERMISSION))) as ReadonlySet<Permission>
+
 /* SUPER_ADMIN override — bypasses all permission checks. roleId is empty string
  * because SUPER_ADMIN is not constrained to a specific RT role row. */
 class SuperAdminPermissionSet implements PermissionSet {
@@ -173,7 +179,7 @@ class SuperAdminPermissionSet implements PermissionSet {
   hasAll(_codes: Permission[]): boolean { return true }
 
   getEffectivePermissions(): ReadonlySet<Permission> {
-    return new Set(Object.values(PERMISSION)) as ReadonlySet<Permission>
+    return SUPER_ADMIN_ALL_PERMISSIONS
   }
 }
 
