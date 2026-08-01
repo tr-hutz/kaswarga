@@ -48,7 +48,7 @@ const ROLE_ENUM_MAP: Record<string, string> = {
 // (e.g. SECRETARY) and would cause a Postgres enum cast error in the IN clause.
 const VALID_DB_ROLE_ENUMS = new Set(Object.keys(ROLE_ENUM_MAP))
 
-export async function listRoles(options: QueryOptions): Promise<PageResult<RoleRow>> {
+export async function listRoles(options: QueryOptions, neighborhoodId: string): Promise<PageResult<RoleRow>> {
     const { page, pageSize, search, sortBy = 'name', sortDirection = 'asc' } = options
     const from = (page - 1) * pageSize
     const to   = from + pageSize - 1
@@ -71,7 +71,7 @@ export async function listRoles(options: QueryOptions): Promise<PageResult<RoleR
 
     const rows = (data as RoleRow[]) ?? []
     const roleCodes = rows.map((r: RoleRow) => r.code)
-    const memberCountMap = await fetchMemberCounts(roleCodes)
+    const memberCountMap = await fetchMemberCounts(roleCodes, neighborhoodId)
 
     const enriched: RoleRow[] = rows.map((r: RoleRow) => ({
         ...r,
@@ -90,7 +90,7 @@ export async function listRoles(options: QueryOptions): Promise<PageResult<RoleR
     }
 }
 
-async function fetchMemberCounts(roleCodes: string[]): Promise<Record<string, number>> {
+async function fetchMemberCounts(roleCodes: string[], neighborhoodId: string): Promise<Record<string, number>> {
     if (!roleCodes.length) return {}
 
     const reverseMap: Record<string, string> = {}
@@ -108,6 +108,7 @@ async function fetchMemberCounts(roleCodes: string[]): Promise<Record<string, nu
         .from('memberships')
         .select('role')
         .in('role', enumValues)
+        .eq('neighborhood_id', neighborhoodId)
         .eq('status', 'active')
 
     if (error) {
@@ -123,7 +124,7 @@ async function fetchMemberCounts(roleCodes: string[]): Promise<Record<string, nu
     return counts
 }
 
-export async function findRoleById(id: string): Promise<RoleRow | null> {
+export async function findRoleById(id: string, neighborhoodId?: string): Promise<RoleRow | null> {
     const { data, error } = await db
         .from('roles')
         .select('id, code, name, description, is_system, is_active, created_at, updated_at')
@@ -133,8 +134,10 @@ export async function findRoleById(id: string): Promise<RoleRow | null> {
     if (error) throw error
     if (!data) return null
 
-    const memberCountMap = await fetchMemberCounts([(data as RoleRow).code])
     const row = data as RoleRow
+    const memberCountMap = neighborhoodId
+        ? await fetchMemberCounts([row.code], neighborhoodId)
+        : {}
     return {
         ...row,
         is_active:    row.is_active ?? true,
@@ -154,7 +157,7 @@ export async function insertRole(payload: RoleInsert): Promise<RoleRow> {
     return { ...row, is_active: row.is_active ?? true, member_count: 0 }
 }
 
-export async function updateRoleById(id: string, payload: RoleUpdate): Promise<RoleRow> {
+export async function updateRoleById(id: string, payload: RoleUpdate, neighborhoodId?: string): Promise<RoleRow> {
     const { data, error } = await db
         .from('roles')
         .update({ ...payload, updated_at: new Date().toISOString() })
@@ -164,7 +167,9 @@ export async function updateRoleById(id: string, payload: RoleUpdate): Promise<R
 
     if (error) throw error
     const row = data as RoleRow
-    const memberCountMap = await fetchMemberCounts([row.code])
+    const memberCountMap = neighborhoodId
+        ? await fetchMemberCounts([row.code], neighborhoodId)
+        : {}
     return {
         ...row,
         is_active:    row.is_active ?? true,

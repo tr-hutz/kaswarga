@@ -13,7 +13,7 @@ export async function getRoles(options: QueryOptions, auth: AuthorizationContext
     if (!auth.hasPermission(PERMISSION.ROLE_VIEW)) {
         throw new ForbiddenError(PERMISSION.ROLE_VIEW)
     }
-    return listRoles(options)
+    return listRoles(options, auth.neighborhoodId)
 }
 
 export async function createRole(
@@ -55,7 +55,7 @@ export async function updateRole(
     return updateRoleById(id, {
         name:        payload.name?.trim(),
         description: payload.description?.trim() ?? null,
-    })
+    }, auth.neighborhoodId)
 }
 
 export async function setRoleActive(
@@ -74,5 +74,5 @@ export async function setRoleActive(
         throw new Error('Cannot deactivate your own role')
     }
 
-    return updateRoleById(id, { is_active: isActive })
+    return updateRoleById(id, { is_active: isActive }, auth.neighborhoodId)
 }
