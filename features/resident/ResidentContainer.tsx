@@ -6,8 +6,8 @@ import { useDataTable }       from '@/lib/hooks/useDataTable'
 import { useResidentData }    from './hooks/useResidentData'
 import { useResidentActions } from './hooks/useResidentActions'
 import { useAuth }            from '@/lib/auth/useAuth'
-import { hasPermission }      from '@/lib/permissions/permissions'
-import { PERMISSIONS }        from '@/lib/permissions/permission-constants'
+import { usePermission }      from '@/lib/auth/usePermission'
+import { PERMISSION }         from '@/lib/auth/types'
 import { supabase }           from '@/lib/supabase'
 import { findPendingResidentRegistrations } from '@/lib/repositories/registration.repository'
 import { deleteResident }     from '@/lib/services/resident.service'
@@ -27,7 +27,7 @@ export default function ResidentContainer() {
     const { membership, role } = (useAuth() as any) ?? {}
     const rtId = membership?.rt?.id as string | undefined
     const currentResidentId = membership?.resident?.id as string | undefined
-    const canManage = hasPermission(role, PERMISSIONS.MANAGE_RESIDENTS)
+    const canManage = usePermission(PERMISSION.RESIDENT_CREATE)
     const t = useTranslations('residents')
     const tc = useTranslations('common')
 

@@ -1,18 +1,12 @@
 import { Suspense }          from 'react'
 import { getRequestContext } from '@/lib/auth/server'
-import { PERMISSION }        from '@/lib/auth/types'
 import { UnauthorizedError } from '@/lib/auth/errors'
 import ForbiddenState        from '@/components/ui/ForbiddenState'
 import ActivityContainer     from '../../features/activity/ActivityContainer'
 
 export default async function Page() {
     try {
-        const ctx  = await getRequestContext()
-        const auth = ctx.authorization
-
-        if (!auth.hasPermission(PERMISSION.AUDIT_VIEW)) {
-            return <ForbiddenState />
-        }
+        await getRequestContext()
 
         return (
             <Suspense>
