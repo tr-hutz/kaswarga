@@ -33,15 +33,20 @@ export interface RoleUpdate {
     updated_at?:  string
 }
 
-// Maps memberships.role enum values to roles.code values
+// Maps memberships.role enum values to roles.code values.
+// Only values present in the DB user_role enum are listed here.
+// SECRETARY has no enum value in the DB (no memberships rows will have it).
 const ROLE_ENUM_MAP: Record<string, string> = {
     CHAIR:       'RT_CHAIR',
     ADMIN:       'RT_ADMIN',
     SUPER_ADMIN: 'SUPER_ADMIN',
     TREASURER:   'TREASURER',
-    SECRETARY:   'SECRETARY',
     RESIDENT:    'RESIDENT',
 }
+
+// Valid DB enum values — used to filter out codes that have no enum counterpart
+// (e.g. SECRETARY) and would cause a Postgres enum cast error in the IN clause.
+const VALID_DB_ROLE_ENUMS = new Set(Object.keys(ROLE_ENUM_MAP))
 
 export async function listRoles(options: QueryOptions): Promise<PageResult<RoleRow>> {
     const { page, pageSize, search, sortBy = 'name', sortDirection = 'asc' } = options
@@ -95,7 +100,7 @@ async function fetchMemberCounts(roleCodes: string[]): Promise<Record<string, nu
 
     const enumValues = roleCodes
         .map((code: string) => reverseMap[code] ?? code)
-        .filter(Boolean)
+        .filter((e: string) => VALID_DB_ROLE_ENUMS.has(e))
 
     if (!enumValues.length) return {}
 

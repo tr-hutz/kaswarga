@@ -1,7 +1,36 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useRef, useEffect } from 'react'
+import { useTranslations }   from 'next-intl'
 import type { PermissionGroup } from '../hooks/usePermissionMatrix'
+
+function ModuleCheckbox({
+    allChecked,
+    noneChecked,
+    onSelectAll,
+    onClearAll,
+}: {
+    allChecked:  boolean
+    noneChecked: boolean
+    onSelectAll: () => void
+    onClearAll:  () => void
+}) {
+    const ref = useRef<HTMLInputElement>(null)
+    useEffect(() => {
+        if (ref.current) ref.current.indeterminate = !allChecked && !noneChecked
+    }, [allChecked, noneChecked])
+
+    return (
+        <input
+            ref={ref}
+            type="checkbox"
+            checked={allChecked}
+            onChange={() => allChecked ? onClearAll() : onSelectAll()}
+            className="h-4 w-4 rounded border-divider accent-primary cursor-pointer"
+            title={allChecked ? 'Hapus semua' : 'Pilih semua'}
+        />
+    )
+}
 
 // Actions rendered left-to-right in this fixed order; any extras are appended alphabetically
 const CANONICAL_ACTIONS = ['view', 'create', 'update', 'delete', 'approve', 'reject', 'export', 'override']
@@ -60,23 +89,12 @@ export default function PermissionGrid({ groups, localSet, canEdit, onToggle, on
                                             {t(`modules.${g.module}` as Parameters<typeof t>[0])}
                                         </span>
                                         {canEdit && (
-                                            <div className="flex items-center gap-1 shrink-0">
-                                                <button
-                                                    className="text-xs text-primary hover:underline disabled:opacity-40 disabled:no-underline"
-                                                    onClick={() => onSelectAll(g.module)}
-                                                    disabled={allChecked}
-                                                >
-                                                    {t('bulkSelectAll')}
-                                                </button>
-                                                <span className="text-divider">|</span>
-                                                <button
-                                                    className="text-xs text-muted hover:text-danger hover:underline disabled:opacity-40 disabled:no-underline"
-                                                    onClick={() => onClearAll(g.module)}
-                                                    disabled={noneChecked}
-                                                >
-                                                    {t('bulkClearAll')}
-                                                </button>
-                                            </div>
+                                            <ModuleCheckbox
+                                                allChecked={allChecked}
+                                                noneChecked={noneChecked}
+                                                onSelectAll={() => onSelectAll(g.module)}
+                                                onClearAll={() => onClearAll(g.module)}
+                                            />
                                         )}
                                     </div>
                                 </td>

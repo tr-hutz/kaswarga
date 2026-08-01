@@ -88,11 +88,11 @@
         "rt": "Kelola RT",
         "rtRegistration": "Pendaftaran RT",
         "users": "Kelola Users",
-        "roles": "Manajemen Role",
-        "permissionMatrix": "Matriks Perijinan",
-        "memberOverrides": "Override Izin Anggota",
+        "roles": "Manajemen Peran",
+        "permissionMatrix": "Matriks Perizinan",
+        "memberOverrides": "Atur Izin Administrasi",
         "effectivePermissions": "Lihat Izin Efektif",
-        "permissionInspector": "Inspektur Izin"
+        "permissionInspector": "Inspeksi Izin"
     },
     "topbar": {
         "brand": "Kas Warga",
@@ -846,6 +846,7 @@
             "expense": "Pengeluaran",
             "ledger": "Buku Kas",
             "report": "Laporan",
+            "dashboard": "Dasbor",
             "announcement": "Pengumuman",
             "event": "Acara",
             "document": "Dokumen",
@@ -867,7 +868,11 @@
                 "approve": "Setujui",
                 "reject": "Tolak",
                 "export": "Ekspor",
+                "import": "Impor",
                 "override": "Override",
+                "payment": {
+                    "export": "Ekspor Pembayaran"
+                },
                 "inspector": {
                     "view": "Inspector"
                 }
@@ -992,6 +997,7 @@
             "expense": "Pengeluaran",
             "ledger": "Buku Kas",
             "report": "Laporan",
+            "dashboard": "Dasbor",
             "announcement": "Pengumuman",
             "event": "Acara",
             "document": "Dokumen",
