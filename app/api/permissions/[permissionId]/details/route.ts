@@ -1,8 +1,8 @@
-import { NextResponse }      from 'next/server'
-import { getRequestContext }  from '@/lib/auth/server'
-import { PERMISSION }         from '@/lib/auth/types'
-import { UnauthorizedError }  from '@/lib/auth/errors'
-import { supabaseAdmin }      from '@/lib/supabase-admin'
+import { NextResponse }                    from 'next/server'
+import { getRequestContext }               from '@/lib/auth/server'
+import { PERMISSION }                      from '@/lib/auth/types'
+import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
+import { supabaseAdmin }                   from '@/lib/supabase-admin'
 
 interface RoleRow {
     id:   string
@@ -33,7 +33,7 @@ export async function GET(
         const auth = ctx.authorization
 
         if (!auth.hasPermission(PERMISSION.PERMISSION_VIEW)) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+            throw new ForbiddenError(PERMISSION.PERMISSION_VIEW)
         }
 
         const { neighborhoodId } = auth
@@ -110,9 +110,8 @@ export async function GET(
             },
         })
     } catch (err) {
-        if (err instanceof UnauthorizedError) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        }
+        if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },    { status: 403 })
         console.error('[GET /api/permissions/[permissionId]/details]', err)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
