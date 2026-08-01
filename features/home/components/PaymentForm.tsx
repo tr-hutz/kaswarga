@@ -6,6 +6,7 @@ import type { ChangeEvent, FormEvent, MouseEvent } from 'react'
 import Icon from '@/components/ui/Icon'
 import { MONTHS } from '@/lib/constants/months'
 import { useTranslations } from 'next-intl'
+import { useToast } from '@/components/ui/ToastProvider'
 
 /* -------------------------------------------------------------------------- */
 /* BuktiUpload — local-preview file picker, upload happens on form submit      */
@@ -116,6 +117,7 @@ export default function PaymentForm({
 }: PaymentFormProps) {
 
     const t = useTranslations('home')
+    const { toast } = useToast() as any
 
     const ALL_MONTHS    = MONTHS.map(m => m.id)
     const PAYABLE_MONTHS = ALL_MONTHS.filter(id => {
@@ -148,6 +150,10 @@ export default function PaymentForm({
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
+        if (!file) {
+            toast({ message: t('payment.noProofError'), type: 'error' })
+            return
+        }
         await onSubmit({ months: selectedMonths, year: paymentYear, file })
         setSelectedMonths([])
         setFile(null)
