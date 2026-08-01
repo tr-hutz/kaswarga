@@ -110,7 +110,7 @@ export default function ExpenseView({
                     <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
                 </div>
-                <Can permission={PERMISSION.EXPENSE_UPDATE}>
+                <Can permission={PERMISSION.EXPENSE_APPROVE}>
                     {pendingCount > 0 && (
                         <button
                             onClick={approveAllExpenses}

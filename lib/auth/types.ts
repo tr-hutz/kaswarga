@@ -37,10 +37,12 @@ export const PERMISSION = {
   PAYMENT_REJECT:  'payment.reject',
 
   // Expense
-  EXPENSE_VIEW:   'expense.view',
-  EXPENSE_CREATE: 'expense.create',
-  EXPENSE_UPDATE: 'expense.update',
-  EXPENSE_DELETE: 'expense.delete',
+  EXPENSE_VIEW:    'expense.view',
+  EXPENSE_CREATE:  'expense.create',
+  EXPENSE_UPDATE:  'expense.update',
+  EXPENSE_DELETE:  'expense.delete',
+  EXPENSE_APPROVE: 'expense.approve',
+  EXPENSE_REJECT:  'expense.reject',
 
   // Ledger
   LEDGER_VIEW:   'ledger.view',

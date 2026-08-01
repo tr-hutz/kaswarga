@@ -4,8 +4,8 @@
  *
  * Seeds the complete RBAC v2 default data in execution order:
  *   1. Roles           — 6 system roles
- *   2. Permissions     — 41 system permissions (module.action catalog)
- *   3. Role-Permission assignments — 94 default grants
+ *   2. Permissions     — 43 system permissions (module.action catalog)
+ *   3. Role-Permission assignments — 93 default grants
  *
  * SUPER_ADMIN intentionally has no role_permissions rows.
  * It bypasses the permission system unconditionally via has_permission().
@@ -33,7 +33,7 @@ ON CONFLICT (code) DO NOTHING;
 
 
 /* ----------------------------------------------------------------------------
- * 2. PERMISSIONS  (41 total — module.action catalog)
+ * 2. PERMISSIONS  (43 total — module.action catalog)
  *
  * Codes are immutable. Never rename after seeding.
  * To change a capability: deprecate the old code and add a new one.
@@ -69,6 +69,8 @@ VALUES
     ('expense.create',  'Create Expense',               'Create expense',                        true),
     ('expense.update',  'Edit Expense',                 'Edit expense',                          true),
     ('expense.delete',  'Delete Expense',               'Delete expense (soft delete only)',     true),
+    ('expense.approve', 'Approve Expense',              'Approve expense',                       true),
+    ('expense.reject',  'Reject Expense',               'Reject expense',                        true),
 
     -- Ledger
     ('ledger.view',   'View Ledger',                    'View ledger',                           true),
@@ -111,13 +113,13 @@ ON CONFLICT (code) DO NOTHING;
 
 
 /* ----------------------------------------------------------------------------
- * 3. ROLE-PERMISSION ASSIGNMENTS  (94 grants)
+ * 3. ROLE-PERMISSION ASSIGNMENTS  (93 grants)
  *
  * SUPER_ADMIN: intentionally excluded — bypasses the permission system
  *              unconditionally via the has_permission() SUPER_ADMIN guard.
  *
- *   RT_ADMIN   41 grants  (full access)
- *   RT_CHAIR   23 grants  (leadership; no financial write or user management)
+ *   RT_ADMIN   38 grants  (view-only for expenses)
+ *   RT_CHAIR   25 grants  (leadership; approves/rejects expenses; no financial write)
  *   TREASURER  16 grants  (financial operations only)
  *   SECRETARY   8 grants  (administration and documentation)
  *   RESIDENT    6 grants  (read access and self-service payments)
@@ -127,7 +129,7 @@ WITH assignments (role_code, permission_code) AS (
     VALUES
 
     -- -------------------------------------------------------------------------
-    -- RT_ADMIN — full access to all 41 permissions
+    -- RT_ADMIN — 38 grants (view-only for expenses; no expense write/approve/reject)
     -- -------------------------------------------------------------------------
     ('RT_ADMIN', 'resident.view'),
     ('RT_ADMIN', 'resident.create'),
@@ -146,9 +148,6 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_ADMIN', 'payment.approve'),
     ('RT_ADMIN', 'payment.reject'),
     ('RT_ADMIN', 'expense.view'),
-    ('RT_ADMIN', 'expense.create'),
-    ('RT_ADMIN', 'expense.update'),
-    ('RT_ADMIN', 'expense.delete'),
     ('RT_ADMIN', 'ledger.view'),
     ('RT_ADMIN', 'ledger.export'),
     ('RT_ADMIN', 'report.view'),
@@ -172,7 +171,7 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_ADMIN', 'audit.view'),
 
     -- -------------------------------------------------------------------------
-    -- RT_CHAIR (Ketua) — 23 grants
+    -- RT_CHAIR (Ketua) — 25 grants
     -- -------------------------------------------------------------------------
     ('RT_CHAIR', 'resident.view'),
     ('RT_CHAIR', 'resident.create'),
@@ -187,6 +186,8 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_CHAIR', 'payment.view'),
     ('RT_CHAIR', 'payment.create'),
     ('RT_CHAIR', 'expense.view'),
+    ('RT_CHAIR', 'expense.approve'),
+    ('RT_CHAIR', 'expense.reject'),
     ('RT_CHAIR', 'ledger.view'),
     ('RT_CHAIR', 'ledger.export'),
     ('RT_CHAIR', 'report.view'),

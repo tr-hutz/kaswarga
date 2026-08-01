@@ -131,7 +131,7 @@ export default function ExpenseDrawer({
                                 </div>
                             )}
 
-                            <Can permission={PERMISSION.EXPENSE_UPDATE}>
+                            <Can permission={PERMISSION.EXPENSE_APPROVE}>
                                 <ExpenseApprovalBar
                                     row={row}
                                     onApprove={onApprove}
