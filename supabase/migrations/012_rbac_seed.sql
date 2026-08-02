@@ -66,6 +66,7 @@ VALUES
     ('payment.approve', 'Approve Payment',              'Approve payment',                       true),
     ('payment.reject',  'Reject Payment',               'Reject payment',                        true),
     ('dashboard.payment.export',  'Export Payment',     'Export payment',                        true),
+    ('dashboard.payment.arrears',  'Dashboard Payment Arrears',     'Dashboard Payment Arrears', true),
 
     -- Expense
     ('expense.view',    'View Expenses',                'View expenses',                         true),
@@ -204,6 +205,7 @@ WITH assignments (role_code, permission_code) AS (
     ('TREASURER', 'payment.approve'),
     ('TREASURER', 'payment.reject'),
     ('TREASURER', 'dashboard.payment.export'),
+    ('TREASURER', 'dashboard.payment.arrears'),
     ('TREASURER', 'expense.view'),
     ('TREASURER', 'expense.create'),
     ('TREASURER', 'expense.update'),

@@ -38,6 +38,7 @@ export const PERMISSION = {
   PAYMENT_APPROVE: 'payment.approve',
   PAYMENT_REJECT:  'payment.reject',
   DASHBOARD_PAYMENT_EXPORT: 'dashboard.payment.export',
+  DASHBOARD_PAYMENT_ARREARS: 'dashboard.payment.arrears',
 
   // Expense
   EXPENSE_VIEW:    'expense.view',
