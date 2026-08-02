@@ -17,8 +17,6 @@ import {
     insertConfirmation,
     insertConfirmationDetails,
 } from '../repositories/payment.repository'
-import { findMembersByRole } from '../repositories/membership.repository'
-import { insertNotifications } from '../repositories/notification.repository'
 
 /*
 |--------------------------------------------------------------------------
@@ -389,22 +387,13 @@ export async function submitPaymentConfirmation(payload: {
         // Activity log errors must not block the main flow
     }
 
-    // Notify TREASURER so they can review the submission
+    // Notify TREASURER so they can review the submission (server-side to bypass memberships RLS)
     try {
-        const treasurers = await findMembersByRole(rtId, 'TREASURER')
-        if (treasurers.length) {
-            await insertNotifications(
-                treasurers.map(m => ({
-                    rt_id:          rtId,
-                    type:           'payment_pending',
-                    title:          'New Payment Submission',
-                    message:        `A resident submitted a payment confirmation for ${year} (${months.length} month${months.length > 1 ? 's' : ''})`,
-                    entity_type:    'payment_confirmations',
-                    entity_id:      confirmation.id,
-                    target_user_id: m.user_id,
-                }))
-            )
-        }
+        await fetch('/api/payments/notify', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ confirmationId: confirmation.id }),
+        })
     } catch {
         // Notification errors must not block the main flow
     }
