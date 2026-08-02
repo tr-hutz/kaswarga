@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 
         try {
             const [{ data: expense }, { data: actor }] = await Promise.all([
-                supabaseAdmin.from('expenses').select('description, amount, category, date').eq('id', id).single(),
+                supabaseAdmin.from('expenses').select('description, amount, category, date, created_by, rt_id, receipt_number').eq('id', id).single(),
                 supabaseAdmin.from('users').select('name').eq('id', userId).single(),
             ])
 
@@ -44,8 +44,21 @@ export async function POST(req: Request) {
                     date:        expense?.date,
                 }
             })
+
+            if (expense?.created_by) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                await (supabaseAdmin as any).from('notifications').insert({
+                    rt_id:          expense.rt_id,
+                    type:           'expense_approved',
+                    title:          'Pengeluaran Disetujui',
+                    message:        'Pengeluaran ' + (expense.receipt_number || '') + ' telah disetujui',
+                    entity_type:    'expenses',
+                    entity_id:      id,
+                    target_user_id: expense.created_by,
+                })
+            }
         } catch {
-            // Activity log errors must not block the main flow
+            // Activity log / notification errors must not block the main flow
         }
 
         return NextResponse.json({ ok: true })
