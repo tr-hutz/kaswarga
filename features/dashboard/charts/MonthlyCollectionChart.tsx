@@ -94,14 +94,20 @@ export default function MonthlyCollectionChart({
                     {t('monthlyCollectionSubtitle')}
                 </p>
             </div>
-            <Chart
-                key={resolvedTheme}
-                type="bar"
-                series={series}
-                options={options}
-                height={350}
-                width="100%"
-            />
+            {data.length === 0 ? (
+                <div className="h-[350px] flex items-center justify-center text-sm text-muted">
+                    {t('noData')}
+                </div>
+            ) : (
+                <Chart
+                    key={resolvedTheme}
+                    type="bar"
+                    series={series}
+                    options={options}
+                    height={350}
+                    width="100%"
+                />
+            )}
         </div>
     )
 }

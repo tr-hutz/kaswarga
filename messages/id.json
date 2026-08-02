@@ -164,7 +164,8 @@
             "expenseCategorySubtitle": "Komposisi pengeluaran berdasarkan kategori tahun {year}",
             "monthlyExpenseCategoryTitle": "Pengeluaran Bulanan",
             "monthlyExpenseCategorySubtitle": "Rincian pengeluaran per kategori per bulan",
-            "noExpenseData": "Belum ada data pengeluaran"
+            "noExpenseData": "Belum ada data pengeluaran",
+            "noData": "Belum ada data"
         },
         "arrearsSummary": {
             "title": "Daftar Tunggakan Warga",
