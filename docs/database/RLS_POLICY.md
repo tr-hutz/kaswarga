@@ -405,4 +405,4 @@ use supabaseAdmin (service_role) and are unaffected.
 ### storage.objects (026)
 
 Storage tenant isolation is deferred pending a path naming convention audit.
-See `supabase/migrations/026_storage_tenant_isolation.sql` for prerequisites.
+See `supabase/migrations/026_rbac_storage_tenant_isolation.sql` for prerequisites.

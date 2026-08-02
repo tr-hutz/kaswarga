@@ -304,7 +304,7 @@ before any writes. There is no DB-layer write protection for these tables.
 | `reject_expense` | `(uuid, text, uuid) → void` | PL/pgSQL | Yes | Expense rejection (no DB-level permission check — app layer only) | Not a policy |
 | `approve_all_pending_expenses` | `(uuid, uuid) → int` | PL/pgSQL | Yes | Bulk expense approval. No RBAC v2 permission check; still has notification INSERT (not updated by 018/019) | Not a policy |
 
-## 3.2 RBAC v2 Helpers (013_rbac_functions.sql, 017_fix_payment_approval_rbac.sql)
+## 3.2 RBAC v2 Helpers (013_rbac_functions.sql, 017_rbac_fix_payment_approval.sql)
 
 | Function | Signature | Type | SECURITY DEFINER | Purpose | Active in Policies |
 |---|---|---|---|---|---|
@@ -520,7 +520,7 @@ The existing `super_admin insert/update/delete` policies remain unchanged (addit
 
 **Risk:** Low. New permissive policies alongside existing ones. `is_super_admin()` bypass preserved.
 
-**Migration name:** `021_membership_write_policies.sql`
+**Migration name:** `021_rbac_membership_write_policies.sql`
 
 ---
 
@@ -544,7 +544,7 @@ using (has_permission(rt_id, 'audit.view') or is_super_admin())
 in the default role_permissions. Verify the permission matrix grants `audit.view` to RT_ADMIN
 before applying. Currently only RT_ADMIN holds this permission — this is the intended behavior.
 
-**Migration name:** `022_activity_logs_permission_policy.sql`
+**Migration name:** `022_rbac_activity_logs_permission_policy.sql`
 
 ---
 
@@ -567,7 +567,7 @@ using (has_permission(id, 'settings.update') or is_super_admin())
 RT_ADMIN and RT_CHAIR both hold `settings.update` by default. Behavior is unchanged for
 default role assignments.
 
-**Migration name:** `023_rt_update_permission_policy.sql`
+**Migration name:** `023_rbac_rt_update_permission_policy.sql`
 
 ---
 
@@ -585,7 +585,7 @@ Option B: Keep a minimal `has_permission(rt_id, 'ledger.view')` check (current b
 
 **Risk:** Low. `insert_ledger` bypasses this policy anyway. Opt A is cleaner.
 
-**Migration name:** `024_ledger_insert_policy.sql`
+**Migration name:** `024_rbac_ledger_insert_policy.sql`
 
 ---
 
@@ -607,7 +607,7 @@ client (not supabaseAdmin) will break. Audit `lib/repositories/notification.repo
 and all API routes before applying. Current post-Sprint-4 state: all notification inserts
 use supabaseAdmin. Verify no regression path exists before applying.
 
-**Migration name:** `025_notifications_insert_policy.sql`
+**Migration name:** `025_rbac_notifications_insert_policy.sql`
 
 ---
 
@@ -623,7 +623,7 @@ the RT ID from the object path.
 stored objects do not follow a consistent `{rt_id}/` prefix, the policy cannot correctly
 scope by RT. Requires a separate storage path audit before implementation.
 
-**Migration name:** `026_storage_tenant_isolation.sql` (requires path audit first)
+**Migration name:** `026_rbac_storage_tenant_isolation.sql` (requires path audit first)
 
 ---
 

@@ -46,7 +46,7 @@ No existing behavior changed — there were no prior RLS policies on these table
 
 ## 021 — Extend Membership Write Policies
 
-**File:** `supabase/migrations/021_membership_write_policies.sql`
+**File:** `supabase/migrations/021_rbac_membership_write_policies.sql`
 
 **Table:** `memberships`
 
@@ -71,7 +71,7 @@ PostgreSQL ORs all permissive policies for the same command.
 
 ## 022 — Add audit.view Permission to activity_logs SELECT
 
-**File:** `supabase/migrations/022_activity_logs_permission_policy.sql`
+**File:** `supabase/migrations/022_rbac_activity_logs_permission_policy.sql`
 
 **Table:** `activity_logs`
 
@@ -100,7 +100,7 @@ default seed (012_rbac_seed.sql). If either role needs audit access, add
 
 ## 023 — Add settings.update Permission to rt UPDATE
 
-**File:** `supabase/migrations/023_rt_update_permission_policy.sql`
+**File:** `supabase/migrations/023_rbac_rt_update_permission_policy.sql`
 
 **Table:** `rt`
 
@@ -126,7 +126,7 @@ access — this is the intended, more restrictive behavior.
 
 ## 024 — Remove Semantically Incorrect ledger INSERT Policy
 
-**File:** `supabase/migrations/024_ledger_insert_policy.sql`
+**File:** `supabase/migrations/024_rbac_ledger_insert_policy.sql`
 
 **Table:** `ledger`
 
@@ -151,7 +151,7 @@ Only SECURITY DEFINER functions (insert_ledger) and service_role
 
 ## 025 — Scope notifications INSERT Policy
 
-**File:** `supabase/migrations/025_notifications_insert_policy.sql`
+**File:** `supabase/migrations/025_rbac_notifications_insert_policy.sql`
 
 **Table:** `notifications`
 
@@ -176,7 +176,7 @@ use supabaseAdmin or SECURITY DEFINER functions. Verify before applying.
 
 ## 026 — Storage Tenant Isolation (DEFERRED)
 
-**File:** `supabase/migrations/026_storage_tenant_isolation.sql`
+**File:** `supabase/migrations/026_rbac_storage_tenant_isolation.sql`
 
 **Status:** No-op placeholder. Implementation deferred.
 
