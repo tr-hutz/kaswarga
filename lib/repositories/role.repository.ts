@@ -108,7 +108,7 @@ async function fetchMemberCounts(roleCodes: string[], neighborhoodId: string): P
         .from('memberships')
         .select('role')
         .in('role', enumValues)
-        .eq('neighborhood_id', neighborhoodId)
+        .eq('rt_id', neighborhoodId)
         .eq('status', 'active')
 
     if (error) {
