@@ -9,7 +9,7 @@
  * Checks performed
  *   1. Core RBAC tables exist
  *   2. Authorization functions exist with correct signatures
- *   3. Seed data — roles (6), permissions (44), role_permissions (91)
+ *   3. Seed data — roles (6), permissions (45), role_permissions (92)
  *   4. Key business rules — SUPER_ADMIN excluded, permission grants correct
  *   5. Updated RLS policies are present; deprecated role-name policies are gone
  *
@@ -91,16 +91,16 @@ BEGIN
     ASSERT v_count = 6,
         format('Expected 6 roles, found %s', v_count);
 
-    -- 44 system permissions
+    -- 45 system permissions
     SELECT COUNT(*) INTO v_count FROM permissions;
-    ASSERT v_count = 44,
-        format('Expected 44 permissions, found %s', v_count);
+    ASSERT v_count = 45,
+        format('Expected 45 permissions, found %s', v_count);
 
-    -- 91 role-permission assignments
-    --   RT_ADMIN=37, RT_CHAIR=21, TREASURER=18, SECRETARY=10, RESIDENT=5
+    -- 92 role-permission assignments
+    --   RT_ADMIN=37, RT_CHAIR=21, TREASURER=19, SECRETARY=10, RESIDENT=5
     SELECT COUNT(*) INTO v_count FROM role_permissions;
-    ASSERT v_count = 91,
-        format('Expected 91 role_permissions rows, found %s', v_count);
+    ASSERT v_count = 92,
+        format('Expected 92 role_permissions rows, found %s', v_count);
 
     -- Per-role counts
     SELECT COUNT(rp.id) INTO v_count
@@ -118,8 +118,8 @@ BEGIN
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
     WHERE r.code = 'TREASURER';
-    ASSERT v_count = 18,
-        format('TREASURER: expected 18 permissions, found %s', v_count);
+    ASSERT v_count = 19,
+        format('TREASURER: expected 19 permissions, found %s', v_count);
 
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
