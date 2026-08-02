@@ -237,7 +237,7 @@ export default function DashboardView({
 
       {/* ARREARS TABLE — ledger.export permission required */}
 
-      <Can permission={PERMISSION.LEDGER_EXPORT}>
+      <Can permission={PERMISSION.DASHBOARD_PAYMENT_ARREARS}>
         <ResidentArrearsSummary
           residentAnalytics={residentAnalytics}
           monthlyFee={monthlyFee}
@@ -308,11 +308,11 @@ export default function DashboardView({
       >
 
         <CashFlowChart
-          data={analytics.cashflow}
+          data={analytics.cashflow ?? []}
         />
 
         <MonthlyCollectionChart
-          data={analytics.collection}
+          data={analytics.collection ?? []}
           totalResidents={paymentHealth.totalResidents}
         />
 
