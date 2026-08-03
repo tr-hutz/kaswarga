@@ -66,7 +66,7 @@ VALUES
     ('payment.approve', 'Approve Payment',              'Approve payment',                       true),
     ('payment.reject',  'Reject Payment',               'Reject payment',                        true),
     ('dashboard.payment.export',  'Export Payment',     'Export payment',                        true),
-    ('dashboard.payment.arrears',  'Dashboard Payment Arrears',     'Dashboard Payment Arrears', true),
+    ('dashboard.payment.arrears',  'Dashboard Payment Arrears',     'Dashboard payment arrears', true),
 
     -- Expense
     ('expense.view',    'View Expenses',                'View expenses',                         true),

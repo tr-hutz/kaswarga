@@ -67,31 +67,35 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
-        label:      'residents',
-        href:       '/residents',
-        icon:       'users',
-        permission: PERMISSION.RESIDENT_VIEW,
+        label:       'residents',
+        href:        '/residents',
+        icon:        'users',
+        permission:  PERMISSION.RESIDENT_VIEW,
+        requiresRt:  true,
     },
 
     {
-        label:      'payments',
-        href:       '/payments',
-        icon:       'wallet',
-        permission: PERMISSION.PAYMENT_VIEW,
+        label:       'payments',
+        href:        '/payments',
+        icon:        'wallet',
+        permission:  PERMISSION.PAYMENT_VIEW,
+        requiresRt:  true,
     },
 
     {
-        label:      'expenses',
-        href:       '/expenses',
-        icon:       'receipt',
-        permission: PERMISSION.EXPENSE_VIEW,
+        label:       'expenses',
+        href:        '/expenses',
+        icon:        'receipt',
+        permission:  PERMISSION.EXPENSE_VIEW,
+        requiresRt:  true,
     },
 
     {
-        label:      'ledger',
-        href:       '/ledger',
-        icon:       'shelving-unit',
-        permission: PERMISSION.LEDGER_VIEW,
+        label:       'ledger',
+        href:        '/ledger',
+        icon:        'shelving-unit',
+        permission:  PERMISSION.LEDGER_VIEW,
+        requiresRt:  true,
     },
 
     {
@@ -109,10 +113,11 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
-        label:      'rtProfile',
-        href:       '/rt-profile',
-        icon:       'settings',
-        permission: PERMISSION.SETTINGS_VIEW,
+        label:       'rtProfile',
+        href:        '/rt-profile',
+        icon:        'settings',
+        permission:  PERMISSION.SETTINGS_VIEW,
+        requiresRt:  true,
     },
 
     /*

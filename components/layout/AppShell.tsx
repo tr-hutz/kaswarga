@@ -7,6 +7,7 @@ import {
 
 } from 'react'
 
+import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
@@ -23,6 +24,17 @@ const PUBLIC_PATHS = ['/login', '/register', '/activation', '/test', '/maintenan
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
+}
+
+const SUPER_ADMIN_HOME = '/rt/registration'
+
+// Paths that belong to RT members — SUPER_ADMIN must not access them.
+const RT_ONLY_PATHS = ['/', '/dashboard', '/residents', '/payments', '/expenses', '/ledger', '/rt-profile', '/settings/authorization']
+
+function isRtOnlyPath(pathname: string) {
+  return RT_ONLY_PATHS.some(p =>
+    p === '/' ? pathname === '/' : (pathname === p || pathname.startsWith(p + '/'))
+  )
 }
 
 export default function AppShell({
@@ -42,9 +54,9 @@ export default function AppShell({
   useEffect(() => {
     if (loading) return
 
-    // Redirect authenticated users away from /login based on RT membership
+    // Redirect authenticated users away from /login
     if (membership && pathname === '/login') {
-      router.replace(!membership.rt?.id ? '/rt' : '/')
+      router.replace(membership.role === 'SUPER_ADMIN' ? SUPER_ADMIN_HOME : '/')
       return
     }
 
@@ -137,6 +149,8 @@ export default function AppShell({
    |-------------------------------------------------------------
    */
 
+  const isForbidden = membership.role === 'SUPER_ADMIN' && isRtOnlyPath(pathname)
+
   return (
 
       <>
@@ -170,7 +184,19 @@ export default function AppShell({
 
           <div className="p-4 md:p-6">
 
-            {children}
+            {isForbidden ? (
+              <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+                <p className="text-6xl font-bold text-stroke mb-4">403</p>
+                <h1 className="text-xl font-semibold text-foreground mb-2">{t('forbidden.title')}</h1>
+                <p className="text-sm text-muted mb-6">{t('forbidden.description')}</p>
+                <Link
+                  href={SUPER_ADMIN_HOME}
+                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg transition-colors"
+                >
+                  {t('forbidden.back')}
+                </Link>
+              </div>
+            ) : children}
 
           </div>
 

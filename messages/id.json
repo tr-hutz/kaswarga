@@ -485,6 +485,11 @@
             "title": "Akun Belum Aktif",
             "description": "Akun Anda belum terhubung ke RT. Silakan cek email undangan Anda dan klik link aktivasi, atau kunjungi halaman aktivasi.",
             "goToActivation": "Ke Halaman Aktivasi"
+        },
+        "forbidden": {
+            "title": "Akses Ditolak",
+            "description": "Halaman ini tidak tersedia untuk akun Anda.",
+            "back": "Ke Halaman Utama"
         }
     },
     "fileUpload": {
@@ -873,7 +878,8 @@
                 "import": "Impor",
                 "override": "Kesampingkan",
                 "payment": {
-                    "export": "Ekspor Pembayaran"
+                    "export": "Ekspor Pembayaran",
+                    "arrears": "Tunggakan Pembayaran"
                 },
                 "inspector": {
                     "view": "Inspeksi"

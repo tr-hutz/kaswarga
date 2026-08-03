@@ -66,7 +66,7 @@ resident.update
 resident.delete
 resident.approve
 
-payment.submit
+payment.create
 payment.approve
 payment.reject
 
@@ -74,7 +74,6 @@ expense.create
 expense.delete
 
 ledger.view
-ledger.adjustment
 ledger.export
 ```
 
@@ -94,17 +93,24 @@ Permission codes must remain stable because they are referenced by:
 
 KasWarga defines the following system roles.
 
-| Role | Description |
-|------|-------------|
-| Super Administrator | Global system administrator |
-| RT Chair | Head of an RT |
-| RT Administrator | RT administrator |
-| Treasurer | RT treasurer |
-| Resident | Registered resident |
+| Role | Code | Description |
+|------|------|-------------|
+| Super Administrator | SUPER_ADMIN | Global platform administrator. Bypasses the permission system entirely. |
+| RT Chair | RT_CHAIR | Head of an RT |
+| RT Administrator | RT_ADMIN | RT administrator |
+| Treasurer | TREASURER | RT treasurer |
+| Secretary | SECRETARY | RT secretary |
+| Resident | RESIDENT | Registered resident |
 
 Roles are fixed.
 
-Permissions are configurable.
+Permissions are configurable per RT.
+
+> **Super Admin note:** SUPER_ADMIN does not have entries in `role_permissions`.
+> Access is enforced unconditionally by `SuperAdminPermissionSet` in the application layer
+> and by the `is_super_admin()` guard in database functions.
+> The ❌ shown for Super Admin below indicates that those features are
+> RT-scoped and not relevant to platform administration.
 
 ---
 
@@ -136,107 +142,165 @@ Legend
 
 ---
 
-## RT
-
-| Permission | Super | Chair | Admin | Treasurer | Resident |
-|------------|--------|--------|--------|------------|-----------|
-| rt.create | ✅ | ❌ | ❌ | ❌ | ❌ |
-| rt.approve | ✅ | ❌ | ❌ | ❌ | ❌ |
-| rt.archive | ✅ | ❌ | ❌ | ❌ | ❌ |
-| rt.update | 👁 | ✅ | ✅ | ❌ | ❌ |
-
----
-
 ## Resident
 
-| Permission | Super | Chair | Admin | Treasurer | Resident |
-|------------|--------|--------|--------|------------|-----------|
-| resident.view | ❌ | ✅ | ✅ | 👁 | ⚡ |
-| resident.create | ❌ | ✅ | ✅ | ❌ | ❌ |
-| resident.update | ❌ | ✅ | ✅ | ❌ | ❌ |
-| resident.delete | ❌ | ✅ | ✅ | ❌ | ❌ |
-| resident.approve | ❌ | ✅ | ✅ | ❌ | ❌ |
-| resident.reject | ❌ | ✅ | ✅ | ❌ | ❌ |
-| resident.export | ❌ | ❌ | ✅ | ❌ | ❌ |
-| resident.import | ❌ | ❌ | ✅ | ❌ | ❌ |
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| resident.view | ❌ | ✅ | ✅ | 👁 | 👁 | ⚡ |
+| resident.create | ❌ | ✅ | ✅ | ❌ | ✅ | ❌ |
+| resident.update | ❌ | ✅ | ✅ | ❌ | ✅ | ❌ |
+| resident.delete | ❌ | ✅ | ✅ | ❌ | ✅ | ❌ |
+| resident.approve | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| resident.reject | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| resident.export | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| resident.import | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
 
 ---
 
-## Resident Registration
+## Membership
 
-| Permission | Super | Chair | Admin | Treasurer | Resident |
-|------------|--------|--------|--------|------------|-----------|
-| registration.submit | ❌ | ❌ | ❌ | ❌ | ✅ |
-| registration.approve | ❌ | ✅ | ✅ | ❌ | ❌ |
-| registration.reject | ❌ | ✅ | ✅ | ❌ | ❌ |
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| membership.view | ❌ | ✅ | ✅ | ❌ | ✅ | ❌ |
+| membership.create | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| membership.update | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| membership.delete | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
 
 ---
 
 ## Payment
 
-| Permission | Super | Chair | Admin | Treasurer | Resident |
-|------------|--------|--------|--------|------------|-----------|
-| payment.view | ❌ | 👁 | 👁 | ✅ | ⚡ |
-| payment.create | ❌ | ✅ | ✅ | ✅ | ✅ |
-| payment.update | ❌ | ❌ | ✅ | ✅ | ❌ |
-| payment.delete | ❌ | ❌ | ✅ | ✅ | ❌ |
-| payment.approve | ❌ | ❌ | ✅ | ✅ | ❌ |
-| payment.reject | ❌ | ❌ | ✅ | ✅ | ❌ |
-| dashboard.payment.export | ❌ | ❌ | ✅ | ✅ | ❌ |
-
-> `dashboard.payment.export` is also granted to Secretary.
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| payment.view | ❌ | 👁 | 👁 | ✅ | 👁 | ⚡ |
+| payment.create | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| payment.update | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| payment.delete | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| payment.approve | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| payment.reject | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| dashboard.payment.export | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ |
+| dashboard.payment.arrears | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 
 ---
 
 ## Expense
 
-| Permission | Super | Chair | Admin | Treasurer | Resident |
-|------------|--------|--------|--------|------------|-----------|
-| expense.view | ❌ | 👁 | 👁 | ✅ | 👁 |
-| expense.create | ❌ | ❌ | ❌ | ✅ | ❌ |
-| expense.update | ❌ | ❌ | ❌ | ✅ | ❌ |
-| expense.delete | ❌ | ❌ | ❌ | ✅ | ❌ |
-| expense.approve | ❌ | ✅ | ❌ | ❌ | ❌ |
-| expense.reject | ❌ | ✅ | ❌ | ❌ | ❌ |
-| expense.export | ❌ | ❌ | ❌ | ✅ | ❌ |
-| expense.import | ❌ | ❌ | ❌ | ✅ | ❌ |
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| expense.view | ❌ | 👁 | 👁 | ✅ | 👁 | 👁 |
+| expense.create | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| expense.update | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| expense.delete | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| expense.approve | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| expense.reject | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| expense.export | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| expense.import | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 
 ---
 
 ## Ledger
 
-| Permission | Super | Chair | Admin | Treasurer | Resident |
-|------------|--------|--------|--------|------------|-----------|
-| ledger.view | ❌ | 👁 | 👁 | ✅ | 👁 |
-| ledger.adjustment | ❌ | ❌ | ❌ | ✅ | ❌ |
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| ledger.view | ❌ | 👁 | 👁 | ✅ | ❌ | 👁 |
+| ledger.export | ❌ | ✅ | ✅ | ✅ | ❌ | ❌ |
 
 ---
 
-## Dashboard
+## Report
 
-| Permission | Super | Chair | Admin | Treasurer | Resident |
-|------------|--------|--------|--------|------------|-----------|
-| dashboard.view | ✅ | ✅ | ✅ | ✅ | ✅ |
-
----
-
-## Notification
-
-| Permission | Super | Chair | Admin | Treasurer | Resident |
-|------------|--------|--------|--------|------------|-----------|
-| notification.view | ✅ | ✅ | ✅ | ✅ | ✅ |
-| notification.mark-read | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| report.view | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| report.export | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
 
 ---
 
-## User
+## Settings
 
-| Permission | Super | Chair | Admin | Treasurer | Resident |
-|------------|--------|--------|--------|------------|-----------|
-| user.create | ✅ | ❌ | ✅ | ❌ | ❌ |
-| user.update | ✅ | ❌ | ✅ | ❌ | ⚡ |
-| user.disable | ✅ | ❌ | ✅ | ❌ | ❌ |
-| user.reset-password | ✅ | ❌ | ✅ | ❌ | ⚡ |
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| settings.view | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| settings.update | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+
+---
+
+## User Management
+
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| user.view | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| user.create | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| user.update | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| user.delete | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+
+---
+
+## Role Management
+
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| role.view | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| role.create | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| role.update | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+
+> Role management is RT-scoped. Super Admin manages roles at the platform level through direct database administration, not through the RT role management UI.
+
+---
+
+## Permission Management
+
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| permission.view | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| permission.update | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| permission.override | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+
+---
+
+## Audit
+
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| audit.view | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+
+---
+
+## RT Management
+
+> RT Management is a Super Admin platform-level feature, not controlled through `role_permissions`.
+
+| Feature | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|---------|-------|-------|-------|-----------|-----------|---------|
+| View RT list | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Approve RT registration | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Archive RT | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Update RT profile | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+
+---
+
+# Navigation Visibility by Role
+
+| Menu | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------|-------|-------|-------|-----------|-----------|---------|
+| Kelola RT | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Pendaftaran RT | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Kelola Pengguna | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Beranda | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Dasbor | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Warga | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Pembayaran | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Pengeluaran | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Buku Kas | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| Notifikasi | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Aktivitas | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Profil RT | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Manajemen Peran | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Matriks Akses | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Override Akses | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Lihat Izin Efektif | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Inspeksi Izin | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Ganti Kata Kunci | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 

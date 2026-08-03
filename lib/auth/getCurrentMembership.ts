@@ -95,14 +95,42 @@ export async function getCurrentMembership(): Promise<Membership> {
 
   /*
    |--------------------------------------------------------------------------
-   | NO MEMBERSHIP
+   | NO ACTIVE MEMBERSHIP — check for SUPER_ADMIN before giving up
+   |--------------------------------------------------------------------------
+   |
+   | SUPER_ADMIN accounts are created outside the normal invitation flow and
+   | may have a non-active status. Fall back to a status-agnostic query so
+   | they are never blocked by the no_membership screen.
    |--------------------------------------------------------------------------
    */
 
-  if (
-    !memberships ||
-    memberships.length === 0
-  ) {
+  if (!memberships || memberships.length === 0) {
+
+    const { data: superAdmin } = await supabase
+      .from('memberships')
+      .select(`
+        id,
+        role,
+        user:users (
+          id,
+          name,
+          email
+        )
+      `)
+      .eq('user_id', authUser.id)
+      .eq('role', 'SUPER_ADMIN')
+      .maybeSingle()
+
+    if (superAdmin) {
+      return {
+        id:       superAdmin.id,
+        role:     'SUPER_ADMIN',
+        user:     (superAdmin.user as Membership['user']) || null,
+        rt:       null,
+        resident: null,
+        status:   'active'
+      }
+    }
 
     return {
       id:       null,
