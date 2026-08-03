@@ -10,19 +10,20 @@ import type { QueryOptions, PageResult } from '@/lib/types/query'
 import type { MappedActivity, ActivityStats } from './hooks/useActivityData'
 
 interface Props {
-    result:    PageResult<MappedActivity> | null
-    stats:     ActivityStats
-    loading:   boolean
-    error:     boolean
-    onRetry:   () => void
-    query:     QueryOptions
-    setPage:       (p: number) => void
-    setPageSize:   (s: number) => void
+    result:       PageResult<MappedActivity> | null
+    stats:        ActivityStats
+    loading:      boolean
+    error:        boolean
+    onRetry:      () => void
+    query:        QueryOptions
+    setPage:      (p: number) => void
+    setPageSize:  (s: number) => void
+    isSuperAdmin: boolean
 }
 
 export default function ActivityView({
     result, stats, loading, error, onRetry,
-    query, setPage, setPageSize,
+    query, setPage, setPageSize, isSuperAdmin,
 }: Props) {
     const t = useTranslations('activity')
 
@@ -59,6 +60,7 @@ export default function ActivityView({
                 expenseApprovals={stats.expenseApprovals}
                 expenseRejections={stats.expenseRejections}
                 residentCount={stats.residentCount}
+                showDetails={!isSuperAdmin}
             />
 
             <DataTable

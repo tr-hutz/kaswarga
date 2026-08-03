@@ -9,6 +9,7 @@ interface Props {
     expenseApprovals:   number
     expenseRejections:  number
     residentCount:      number
+    showDetails?:       boolean
 }
 
 export default function ActivityAnalytics({
@@ -18,16 +19,21 @@ export default function ActivityAnalytics({
     expenseApprovals,
     expenseRejections,
     residentCount,
+    showDetails = true,
 }: Props) {
     const t = useTranslations('activity')
     return (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <Card title={t('analytics.total')}             value={total} />
-            <Card title={t('analytics.paymentApprovals')}  value={paymentApprovals} />
-            <Card title={t('analytics.paymentRejections')} value={paymentRejections} />
-            <Card title={t('analytics.expenseApprovals')}  value={expenseApprovals} />
-            <Card title={t('analytics.expenseRejections')} value={expenseRejections} />
-            <Card title={t('analytics.residentUpdates')}   value={residentCount} />
+            <Card title={t('analytics.total')} value={total} />
+            {showDetails && (
+                <>
+                    <Card title={t('analytics.paymentApprovals')}  value={paymentApprovals} />
+                    <Card title={t('analytics.paymentRejections')} value={paymentRejections} />
+                    <Card title={t('analytics.expenseApprovals')}  value={expenseApprovals} />
+                    <Card title={t('analytics.expenseRejections')} value={expenseRejections} />
+                    <Card title={t('analytics.residentUpdates')}   value={residentCount} />
+                </>
+            )}
         </div>
     )
 }
