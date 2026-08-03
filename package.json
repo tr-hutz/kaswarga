@@ -19,7 +19,11 @@
     "seed:auth": "node scripts/seed-auth.mjs",
     "seed:dev": "node scripts/seed-dev.mjs",
     "seed:e2e": "node scripts/seed-e2e.mjs",
-    "seed:financial": "node scripts/seed-financial.mjs"
+    "seed:financial": "node scripts/seed-financial.mjs",
+    "rbac:audit": "node scripts/rbac/analyze-coverage.mjs",
+    "rbac:roles": "node scripts/rbac/validate-roles.mjs",
+    "rbac:consistency": "node scripts/rbac/validate-consistency.mjs",
+    "rbac:release": "node scripts/rbac/validate-release.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
