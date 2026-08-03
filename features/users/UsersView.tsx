@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import DataTable           from '@/components/common/data-table/DataTable'
 import ConfirmDialog       from '@/components/ui/ConfirmDialog'
 import EditRoleForm        from './components/EditRoleForm'
-import type { Column }     from '@/lib/types/query'
+import type { Column, QueryOptions } from '@/lib/types/query'
 import type { UserRow }    from './components/UserColumns'
 
 interface UsersViewProps {
@@ -14,6 +14,9 @@ interface UsersViewProps {
     loading:                boolean
     error:                  boolean
     onRetry:                () => void
+    query:                  QueryOptions
+    setPage:                (p: number) => void
+    setPageSize:            (s: number) => void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     editTarget:             any
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,6 +36,9 @@ export default function UsersView({
     loading,
     error,
     onRetry,
+    query,
+    setPage,
+    setPageSize,
     editTarget,
     setEditTarget,
     delTarget,
@@ -61,6 +67,9 @@ export default function UsersView({
                 result={result}
                 loading={loading}
                 error={error}
+                query={query}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
                 onRetry={onRetry}
             />
 

@@ -1,50 +1,51 @@
-﻿'use client'
+'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import Icon from '@/components/ui/Icon'
-import RtTable         from './components/RtTable'
+import Icon            from '@/components/ui/Icon'
+import { DataTable }   from '@/components/common/data-table'
 import RtForm          from './components/RtForm'
 import RtDeleteConfirm from './components/RtDeleteConfirm'
 import { useTranslations } from 'next-intl'
-import ErrorState from '@/components/ui/ErrorState'
+import type { Column, QueryOptions, PageResult } from '@/lib/types/query'
 
 interface RtViewProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data:         any[]
+    result:       PageResult<any> | null
+    columns:      Column<any>[]
     loading:      boolean
     error:        boolean
     onRetry:      () => void
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    selected:     any
-    formOpen:     boolean
+    query:        QueryOptions
+    setPage:      (p: number) => void
+    setPageSize:  (s: number) => void
     openCreate:   () => void
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    openEdit:     (rt: any) => void
+    formOpen:     boolean
+    selected:     any
     closeForm:    () => void
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     handleSubmit: (form: any) => Promise<any>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     delTarget:    any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setDelTarget: (t: any) => void
     deleting:     boolean
     handleDelete: () => void
 }
 
 export default function RtView({
-    data,
+    result,
+    columns,
     loading,
     error,
     onRetry,
-    selected,
-    formOpen,
+    query,
+    setPage,
+    setPageSize,
     openCreate,
-    openEdit,
+    formOpen,
+    selected,
     closeForm,
     handleSubmit,
     delTarget,
     setDelTarget,
     deleting,
-    handleDelete
+    handleDelete,
 }: RtViewProps) {
 
     const t = useTranslations('rt')
@@ -71,15 +72,16 @@ export default function RtView({
             </div>
 
             {/* Table */}
-            {error
-                ? <ErrorState onRetry={onRetry} />
-                : <RtTable
-                    data={data}
-                    loading={loading}
-                    onEdit={openEdit}
-                    onDelete={setDelTarget}
-                />
-            }
+            <DataTable
+                columns={columns}
+                result={result}
+                loading={loading}
+                error={error}
+                query={query}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+                onRetry={onRetry}
+            />
 
             {/* Form Modal */}
             <RtForm
