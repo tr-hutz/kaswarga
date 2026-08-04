@@ -277,6 +277,22 @@ Expense automatically creates activity log.
 
 ---
 
+## BR-064
+
+Expense approval requires `expense.approve` permission.
+
+Only the RT Chair holds this permission by default.
+
+---
+
+## BR-065
+
+Expense rejection requires `expense.reject` permission.
+
+Only the RT Chair holds this permission by default.
+
+---
+
 # 9. Notification
 
 ## BR-070
