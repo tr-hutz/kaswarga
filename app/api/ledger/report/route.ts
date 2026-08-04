@@ -1,13 +1,12 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextResponse }      from 'next/server'
-import { cookies }            from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { NextResponse }       from 'next/server'
 import { supabaseAdmin }      from '../../../../lib/supabase-admin'
 import { monthList, formatMonths, formatAccounting } from '../../../../lib/utils'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-
-const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || ''
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+import { getRequestContext }  from '@/lib/auth/server'
+import { requirePermission }  from '@/lib/auth/helpers'
+import { PERMISSION }         from '@/lib/auth/types'
+import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 
 const maskAccountNumber = (num: string | number | null) => {
   if (!num) return '-'
@@ -16,7 +15,6 @@ const maskAccountNumber = (num: string | number | null) => {
   return 'x'.repeat(s.length - 4) + s.slice(-4)
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const groupByMonth = (rows: any[] = [], getDate = (r: any) => r.date as string): Record<number, any[]> => {
   const map: Record<number, any[]> = {}
   rows.forEach(r => {
@@ -28,30 +26,11 @@ const groupByMonth = (rows: any[] = [], getDate = (r: any) => r.date as string):
 }
 
 export async function GET(req: Request) {
-  const cookieStore  = await cookies()
-  const serverClient = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} }
-  })
+  try {
+  const ctx  = await getRequestContext()
+  requirePermission(ctx.authorization, PERMISSION.LEDGER_EXPORT)
 
-  const { data: authData, error: authError } = await serverClient.auth.getUser()
-  if (authError || !authData?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const { data: membership, error: membershipError } = await supabaseAdmin
-    .from('memberships')
-    .select('role, rt_id')
-    .eq('user_id', authData.user.id)
-    .eq('status', 'active')
-    .maybeSingle()
-
-  if (membershipError || !membership) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
-
-  if (!['CHAIR', 'TREASURER', 'ADMIN', 'RESIDENT'].includes(membership.role)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
+  const rtId = ctx.authorization.neighborhoodId
 
   const { searchParams } = new URL(req.url)
   const yearParam = searchParams.get('year') || String(new Date().getFullYear())
@@ -63,7 +42,7 @@ export async function GET(req: Request) {
   const { data: rt } = await supabaseAdmin
     .from('rt')
     .select('*')
-    .eq('id', (membership as any).rt_id)
+    .eq('id', rtId)
     .single()
 
   const { data: members } = await supabaseAdmin
@@ -230,7 +209,6 @@ export async function GET(req: Request) {
     page.drawText('PEMASUKAN', { x: leftX, y, size: 12, font: bold })
     y -= 18
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const byMonth = groupByMonth((incomeRows as any[]) || [], r => r.payments?.date)
 
     Object.keys(byMonth)
@@ -417,4 +395,11 @@ export async function GET(req: Request) {
       'Content-Disposition': `attachment; filename="${filename}"`
     }
   })
+
+  } catch (err) {
+    if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },    { status: 403 })
+    console.error('[ledger/report]', err)
+    return NextResponse.json({ error: (err as Error).message || 'Internal server error' }, { status: 500 })
+  }
 }

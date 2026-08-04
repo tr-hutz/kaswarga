@@ -25,6 +25,8 @@ export async function getMembers(auth: AuthorizationContext) {
     if (!auth.hasPermission(PERMISSION.PERMISSION_VIEW)) {
         throw new ForbiddenError(PERMISSION.PERMISSION_VIEW)
     }
+    // SUPER_ADMIN has no RT (neighborhoodId = ''); RT-scoped member list is empty.
+    if (!auth.neighborhoodId) return []
     return listRtMembers(auth.neighborhoodId)
 }
 
@@ -32,6 +34,7 @@ export async function getMemberOverrides(membershipId: string, auth: Authorizati
     if (!auth.hasPermission(PERMISSION.PERMISSION_VIEW)) {
         throw new ForbiddenError(PERMISSION.PERMISSION_VIEW)
     }
+    if (!auth.neighborhoodId) throw new ForbiddenError(PERMISSION.PERMISSION_VIEW)
 
     const member = await findMembershipById(membershipId)
     if (!member) throw new Error('Member not found')

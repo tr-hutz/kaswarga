@@ -1,7 +1,6 @@
 import { supabase } from '../supabase'
 import { getCurrentMembership } from '../auth/getCurrentMembership'
 import { logActivity } from './activity-logger'
-import { ROLES } from '../permissions/permission-constants'
 import { transformConfirmation, transformPayment } from '../../features/payment/services/payment-transform'
 import { MONTHS } from '@/lib/constants/months'
 import {
@@ -15,14 +14,9 @@ import {
     findPayments,
     findConfirmations,
     findPaymentConfirmations,
-    findConfirmationById,
-    callApproveConfirmation,
-    callRejectConfirmation,
     insertConfirmation,
     insertConfirmationDetails,
 } from '../repositories/payment.repository'
-import { findMembersByRole } from '../repositories/membership.repository'
-import { insertNotifications } from '../repositories/notification.repository'
 
 /*
 |--------------------------------------------------------------------------
@@ -299,86 +293,31 @@ async function getConfirmations(
 |--------------------------------------------------------------------------
 */
 
-export async function approvePayment(
-    confirmationId: string
-) {
-
-    const [
-        { data: { user } },
-        membership
-    ] = await Promise.all([
-        supabase.auth.getUser(),
-        getCurrentMembership()
-    ])
-
-    if (membership?.role !== ROLES.TREASURER) {
-        throw new Error('Unauthorized')
-    }
-
-    const confirmation = await findConfirmationById(confirmationId)
-
-    const data = await callApproveConfirmation(confirmationId, user?.id ?? '')
-
-    logActivity({
-        rtId:       membership?.rt?.id,
-        actorId:    membership?.user?.id,
-        actorName:  membership?.user?.name,
-        action:     'APPROVE_PAYMENT',
-        entityType: 'payment_confirmations',
-        entityId:   confirmationId,
-        description: `Approve payment confirmation`,
-        metadata:   {
-            confirmationId,
-            residentId:  confirmation?.resident_id,
-            year:        confirmation?.year,
-            totalAmount: confirmation?.total_amount,
-            months:      confirmation?.confirmation_details?.map(d => d.month) ?? []
-        }
+export async function approvePayment(confirmationId: string): Promise<void> {
+    const res = await fetch('/api/payments/approve', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ confirmationId }),
     })
-
-    return data
+    if (!res.ok) {
+        const { error } = await res.json().catch(() => ({ error: 'Failed to approve payment' }))
+        throw new Error(error || 'Failed to approve payment')
+    }
 }
 
 export async function rejectPayment(
     confirmationId: string,
     reason: string | null | undefined
-) {
-
-    const [
-        { data: { user } },
-        membership
-    ] = await Promise.all([
-        supabase.auth.getUser(),
-        getCurrentMembership()
-    ])
-
-    if (membership?.role !== ROLES.TREASURER) {
-        throw new Error('Unauthorized')
-    }
-
-    const confirmation = await findConfirmationById(confirmationId)
-
-    const data = await callRejectConfirmation(confirmationId, reason ?? '', user?.id ?? '')
-
-    logActivity({
-        rtId:       membership?.rt?.id,
-        actorId:    membership?.user?.id,
-        actorName:  membership?.user?.name,
-        action:     'REJECT_PAYMENT',
-        entityType: 'payment_confirmations',
-        entityId:   confirmationId,
-        description: `Reject payment confirmation${reason ? `: ${reason}` : ''}`,
-        metadata:   {
-            confirmationId,
-            residentId:  confirmation?.resident_id,
-            year:        confirmation?.year,
-            totalAmount: confirmation?.total_amount,
-            months:      confirmation?.confirmation_details?.map(d => d.month) ?? [],
-            reason:      reason ?? null
-        }
+): Promise<void> {
+    const res = await fetch('/api/payments/reject', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ confirmationId, reason }),
     })
-
-    return data
+    if (!res.ok) {
+        const { error } = await res.json().catch(() => ({ error: 'Failed to reject payment' }))
+        throw new Error(error || 'Failed to reject payment')
+    }
 }
 
 /*
@@ -448,22 +387,13 @@ export async function submitPaymentConfirmation(payload: {
         // Activity log errors must not block the main flow
     }
 
-    // Notify TREASURER so they can review the submission
+    // Notify TREASURER so they can review the submission (server-side to bypass memberships RLS)
     try {
-        const treasurers = await findMembersByRole(rtId, 'TREASURER')
-        if (treasurers.length) {
-            await insertNotifications(
-                treasurers.map(m => ({
-                    rt_id:          rtId,
-                    type:           'payment_pending',
-                    title:          'New Payment Submission',
-                    message:        `A resident submitted a payment confirmation for ${year} (${months.length} month${months.length > 1 ? 's' : ''})`,
-                    entity_type:    'payment_confirmations',
-                    entity_id:      confirmation.id,
-                    target_user_id: m.user_id,
-                }))
-            )
-        }
+        await fetch('/api/payments/notify', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ confirmationId: confirmation.id }),
+        })
     } catch {
         // Notification errors must not block the main flow
     }

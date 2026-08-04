@@ -42,9 +42,9 @@ export default function AppShell({
   useEffect(() => {
     if (loading) return
 
-    // Redirect authenticated users away from /login based on role
+    // Redirect authenticated users away from /login based on RT membership
     if (membership && pathname === '/login') {
-      router.replace(membership.role === 'SUPER_ADMIN' ? '/rt' : '/')
+      router.replace(!membership.rt?.id ? '/rt' : '/')
       return
     }
 
@@ -113,6 +113,22 @@ export default function AppShell({
   if (!membership) {
     if (isPublicPath(pathname)) return <>{children}</>
     return null
+  }
+
+  /*
+   |-------------------------------------------------------------
+   | AUTHENTICATED ON LOGIN — redirect is in flight, hold spinner
+   | Prevents the login page flashing inside the full shell while
+   | router.replace('/') is still completing after SIGNED_IN.
+   |-------------------------------------------------------------
+   */
+
+  if (pathname === '/login') {
+    return (
+      <div data-testid="shell-spinner" className="min-h-screen flex items-center justify-center bg-canvas">
+        <div className="w-6 h-6 border-2 border-divider border-t-foreground rounded-full animate-spin" />
+      </div>
+    )
   }
 
   /*

@@ -3,8 +3,8 @@
 import { formatRupiah }    from '../../../../lib/utils'
 import ExpenseApprovalBar  from '../approval/ExpenseApprovalBar'
 import { useTranslations } from 'next-intl'
-import { hasPermission }   from '../../../../lib/permissions/permissions'
-import { PERMISSIONS }     from '../../../../lib/permissions/permission-constants'
+import Can                 from '@/components/ui/Can'
+import { PERMISSION }      from '@/lib/auth/types'
 import Icon                from '@/components/ui/Icon'
 import Ribbadge            from '@/components/ui/Ribbadge'
 
@@ -13,7 +13,6 @@ interface ExpenseDrawerProps {
     onClose:         () => void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     row:             any
-    role:            string
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onApprove:       (r: any) => void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -25,7 +24,6 @@ export default function ExpenseDrawer({
     open,
     onClose,
     row,
-    role,
     onApprove,
     onReject,
     approvalLoading,
@@ -133,15 +131,14 @@ export default function ExpenseDrawer({
                                 </div>
                             )}
 
-                            {/* Approval bar — CHAIR only, pending only */}
-                            {hasPermission(role, PERMISSIONS.APPROVE_EXPENSES) && (
+                            <Can permission={PERMISSION.EXPENSE_APPROVE}>
                                 <ExpenseApprovalBar
                                     row={row}
                                     onApprove={onApprove}
                                     onReject={onReject}
                                     loading={approvalLoading}
                                 />
-                            )}
+                            </Can>
                         </div>
                     </div>
                 </div>

@@ -153,6 +153,45 @@ Hidden
 
 ---
 
+# RT-Scoped Navigation
+
+Some navigation items are only meaningful within the context of an RT (neighborhood).
+They use two additional flags in the navigation configuration:
+
+| Flag          | Behaviour                                                            |
+|---------------|----------------------------------------------------------------------|
+| `requiresRt`  | Visible only when the user has an active RT membership (`rtId` is set). Hidden from SUPER_ADMIN (no RT). |
+| `noRt`        | Visible only when the user has **no** RT (i.e. SUPER_ADMIN platform pages). Hidden from RT members. |
+
+## Examples
+
+**RT-only items** (hidden from SUPER_ADMIN)
+
+```
+Override Izin Anggota   →  requiresRt: true  →  permission.override
+Lihat Izin Efektif      →  requiresRt: true  →  permission.view
+Inspektur Izin          →  requiresRt: true  →  rbac.inspector.view
+Roles                   →  requiresRt: true  →  role.view
+```
+
+**SUPER_ADMIN-only items** (hidden from RT members)
+
+```
+RT Management           →  noRt: true  →  user.view
+RT Registration         →  noRt: true  →  user.view
+User Management         →  noRt: true  →  user.view
+```
+
+## Rationale
+
+SUPER_ADMIN is a platform-level role with no RT membership.
+RT management menus (RBAC overrides, effective permission viewer, inspector) are scoped to a specific RT.
+Showing them to SUPER_ADMIN would be misleading — the API enforces the RT scope and returns empty data.
+
+The `requiresRt` flag prevents navigation confusion before the API is reached.
+
+---
+
 # Nested Navigation
 
 Parent menus should be visible only when at least one child is accessible.

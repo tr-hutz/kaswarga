@@ -6,14 +6,14 @@ import ExpenseStatusBadge from './tables/ExpenseStatusBadge'
 import { formatRupiah } from '@/lib/utils'
 
 interface Options {
-    t:        (key: string) => string
-    tc:       (key: string) => string
-    role:     string
-    onEdit:   (row: MappedExpense) => void
-    onDelete: (row: MappedExpense) => void
+    t:         (key: string) => string
+    tc:        (key: string) => string
+    canManage: boolean
+    onEdit:    (row: MappedExpense) => void
+    onDelete:  (row: MappedExpense) => void
 }
 
-export function buildExpenseColumns({ t, tc, role, onEdit, onDelete }: Options): Column<MappedExpense>[] {
+export function buildExpenseColumns({ t, tc, canManage, onEdit, onDelete }: Options): Column<MappedExpense>[] {
     const cols: Column<MappedExpense>[] = [
         {
             key:   'receiptNumber',
@@ -49,7 +49,7 @@ export function buildExpenseColumns({ t, tc, role, onEdit, onDelete }: Options):
         },
     ]
 
-    if (role === 'TREASURER') {
+    if (canManage) {
         cols.push({
             key:   '_actions',
             title: t('table.actions'),

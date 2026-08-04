@@ -1,11 +1,9 @@
-﻿'use client'
+'use client'
 
-import { useTranslations } from 'next-intl'
-import {
-    isPending
-} from '../../services/payment-status'
-import { hasPermission } from '../../../../lib/permissions/permissions'
-import { PERMISSIONS }   from '../../../../lib/permissions/permission-constants'
+import { useTranslations }  from 'next-intl'
+import { isPending }        from '../../services/payment-status'
+import { usePermission }    from '@/lib/auth/usePermission'
+import { PERMISSION }       from '@/lib/auth/types'
 
 interface ApprovalActionBarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -15,7 +13,6 @@ interface ApprovalActionBarProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onReject:  (payment: any) => void
     loading:   boolean
-    role:      string | null | undefined
 }
 
 export default function ApprovalActionBar({
@@ -26,18 +23,17 @@ export default function ApprovalActionBar({
 
                                               onReject,
 
-                                              loading,
-
-                                              role
+                                              loading
 
                                           }: ApprovalActionBarProps) {
 
-    const t = useTranslations('payments')
+    const t              = useTranslations('payments')
+    const canApprove     = usePermission(PERMISSION.PAYMENT_APPROVE)
 
     if (
         !payment ||
         !isPending(payment.status) ||
-        !hasPermission(role, PERMISSIONS.APPROVE_PAYMENTS)
+        !canApprove
     ) {
 
         return null

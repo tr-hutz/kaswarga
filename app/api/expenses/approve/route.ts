@@ -1,67 +1,38 @@
-﻿import { NextResponse }      from 'next/server'
-import { cookies }            from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { NextResponse }       from 'next/server'
 import { supabaseAdmin }      from '@/lib/supabase-admin'
-
-const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || ''
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+import { getRequestContext }  from '@/lib/auth/server'
+import { requirePermission }  from '@/lib/auth/helpers'
+import { PERMISSION }         from '@/lib/auth/types'
+import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 
 export async function POST(req: Request) {
     try {
-        const cookieStore = await cookies()
-        const serverClient = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} }
-        })
+        const ctx  = await getRequestContext()
+        requirePermission(ctx.authorization, PERMISSION.EXPENSE_APPROVE)
 
-        const { data: authData, error: authError } = await serverClient.auth.getUser()
-        if (authError || !authData?.user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        }
-
-        const { data: membership, error: membershipError } = await supabaseAdmin
-            .from('memberships')
-            .select('role, rt_id, user:users(name)')
-            .eq('user_id', authData.user.id)
-            .eq('status', 'active')
-            .maybeSingle()
-
-        if (membershipError || !membership) {
-            return NextResponse.json({ error: 'Membership not found' }, { status: 403 })
-        }
-
-        if (membership.role !== 'CHAIR') {
-            return NextResponse.json({ error: 'Only the RT chair can approve expenses' }, { status: 403 })
-        }
-
-        if (!membership.rt_id) {
-            return NextResponse.json({ error: 'RT not found' }, { status: 403 })
-        }
+        const rtId  = ctx.authorization.neighborhoodId
+        const userId = ctx.authorization.userId
 
         const { id } = await req.json()
         if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
 
         const { error } = await supabaseAdmin.rpc('approve_expense', {
             p_id:      id,
-            p_user_id: authData.user.id,
+            p_user_id: userId,
         })
 
         if (error) throw error
 
-        // Activity log (fire-and-forget)
         try {
-            const { data: expense } = await supabaseAdmin
-                .from('expenses')
-                .select('description, amount, category, date')
-                .eq('id', id)
-                .single()
-
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const actorName = (membership as any).user?.name ?? null
+            const [{ data: expense }, { data: actor }] = await Promise.all([
+                supabaseAdmin.from('expenses').select('description, amount, category, date, created_by, rt_id, receipt_number').eq('id', id).single(),
+                supabaseAdmin.from('users').select('name').eq('id', userId).single(),
+            ])
 
             await supabaseAdmin.from('activity_logs').insert({
-                rt_id:       membership.rt_id,
-                actor_id:    authData.user.id,
-                actor_name:  actorName,
+                rt_id:       rtId,
+                actor_id:    userId,
+                actor_name:  actor?.name ?? null,
                 action:      'APPROVE_EXPENSE',
                 entity_type: 'expenses',
                 entity_id:   id,
@@ -73,13 +44,28 @@ export async function POST(req: Request) {
                     date:        expense?.date,
                 }
             })
+
+            if (expense?.created_by) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                await (supabaseAdmin as any).from('notifications').insert({
+                    rt_id:          expense.rt_id,
+                    type:           'expense_approved',
+                    title:          'Pengeluaran Disetujui',
+                    message:        'Pengeluaran ' + (expense.receipt_number || '') + ' telah disetujui',
+                    entity_type:    'expenses',
+                    entity_id:      id,
+                    target_user_id: expense.created_by,
+                })
+            }
         } catch {
-            // Activity log errors must not block the main flow
+            // Activity log / notification errors must not block the main flow
         }
 
         return NextResponse.json({ ok: true })
 
     } catch (err) {
+        if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },    { status: 403 })
         console.error('[expenses/approve]', err)
         return NextResponse.json({ error: (err as Error).message || 'Failed to approve' }, { status: 500 })
     }

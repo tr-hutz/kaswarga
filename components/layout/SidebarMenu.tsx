@@ -1,25 +1,37 @@
 'use client'
 
 import Link from 'next/link'
+import { useMemo }     from 'react'
 import { usePathname } from 'next/navigation'
 import SidebarMenuItem from './SidebarMenuItem'
 import { NAVIGATION } from '../../lib/navigation/navigation-config'
-import { hasPermission } from '../../lib/permissions/permissions'
-import { useAuth } from '../../lib/auth/useAuth'
+import { PERMISSION }  from '../../lib/auth/types'
+import { useAuth }     from '../../lib/auth/useAuth'
 import { usePendingCounts } from './usePendingCounts'
+
+const EMPTY_PERMISSIONS: ReadonlySet<string> = Object.freeze(new Set<string>())
 
 export default function SidebarMenu({ onClose }: { onClose?: () => void }) {
     const pathname = usePathname()
-    const { role, membership } = useAuth()
+    const { permissions, rtId, membership } = useAuth()
+    const perms: ReadonlySet<string> = permissions ?? EMPTY_PERMISSIONS
+
+    // Memoize to avoid re-filtering NAVIGATION on every render (usePathname()
+    // triggers re-renders on route changes; permissions/rtId rarely change).
+    const canApproveResidents = useMemo(
+        () => perms.has(PERMISSION.RESIDENT_APPROVE),
+        [perms]
+    )
 
     const { pendingRtCount, pendingResidentCount } =
-        usePendingCounts(role, membership?.rt?.id)
+        usePendingCounts(rtId, canApproveResidents)
 
-    const filteredMenus = NAVIGATION.filter(item => {
-        if (item.hideForRoles?.includes(role)) return false
+    const filteredMenus = useMemo(() => NAVIGATION.filter(item => {
+        if (item.noRt && rtId) return false
+        if (item.requiresRt && !rtId) return false
         if (!item.permission) return true
-        return hasPermission(role, item.permission)
-    })
+        return perms.has(item.permission)
+    }), [perms, rtId])
 
     return (
         <div className="flex flex-col h-full">

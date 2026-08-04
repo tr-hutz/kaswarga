@@ -6,9 +6,13 @@
  * into an effective permission set, and returns a PermissionSet for the caller.
  *
  * Design
- *   - Stateless: no mutable instance state between calls
  *   - Dependency-injected: the Supabase client is supplied via the constructor
- *   - Cache-ready: caching hooks are no-ops now; Task 2.4 adds the real layer
+ *   - Request-scoped cache: each instance holds a React.cache()-backed Map that
+ *     is tied to the current React async context (= one HTTP request). The Map
+ *     is created fresh per request and discarded automatically when the request
+ *     ends — no explicit invalidation is needed.
+ *   - Effective permissions are stored as ReadonlySet<Permission> so every
+ *     hasPermission() call is O(1) regardless of the number of permissions.
  *
  * Resolution order (mirrors 019_update_rls_policies.sql)
  *   1. SUPER_ADMIN bypass — any SUPER_ADMIN membership grants everything
@@ -24,12 +28,13 @@
  *            docs/architecture/AUTHORIZATION_PIPELINE.md
  */
 
-import type { SupabaseClient } from '@supabase/supabase-js'
+import { cache }                        from 'react'
+import type { SupabaseClient }          from '@supabase/supabase-js'
 
-import { supabaseAdmin }             from '../supabase-admin'
-import { AuthorizationContext }      from './authorization-context'
+import { supabaseAdmin }                from '../supabase-admin'
+import { AuthorizationContext }         from './authorization-context'
 import { MembershipNotFoundError, RoleNotFoundError } from './errors'
-import { PERMISSION, type Permission }                from './types'
+import { PERMISSION, type Permission }  from './types'
 
 /* -------------------------------------------------------------------------- */
 /* Local row types for RBAC v2 tables (not yet in generated Database type)    */
@@ -91,7 +96,7 @@ export interface PermissionSet {
   readonly roleId:         string
   readonly roleCode:       string
 
-  /** Returns true when the user holds this permission. */
+  /** Returns true when the user holds this permission. O(1) via Set.has(). */
   hasPermission(code: Permission): boolean
 
   /** Returns true when the user holds at least one of the supplied permissions. */
@@ -147,6 +152,12 @@ class StandardPermissionSet implements PermissionSet {
   }
 }
 
+/* Pre-built full permission set for SUPER_ADMIN — computed once at module load,
+ * never recreated. Avoids allocating a new Set on every getEffectivePermissions()
+ * call (which is invoked on each auth load to hydrate the client permission cache). */
+const SUPER_ADMIN_ALL_PERMISSIONS: ReadonlySet<Permission> =
+  Object.freeze(new Set(Object.values(PERMISSION))) as ReadonlySet<Permission>
+
 /* SUPER_ADMIN override — bypasses all permission checks. roleId is empty string
  * because SUPER_ADMIN is not constrained to a specific RT role row. */
 class SuperAdminPermissionSet implements PermissionSet {
@@ -168,7 +179,7 @@ class SuperAdminPermissionSet implements PermissionSet {
   hasAll(_codes: Permission[]): boolean { return true }
 
   getEffectivePermissions(): ReadonlySet<Permission> {
-    return new Set(Object.values(PERMISSION)) as ReadonlySet<Permission>
+    return SUPER_ADMIN_ALL_PERMISSIONS
   }
 }
 
@@ -181,17 +192,128 @@ export class PermissionService {
   constructor(private readonly db: SupabaseClient) {}
 
   /* ------------------------------------------------------------------ */
+  /* Request-scoped cache stores                                          */
+  /*                                                                     */
+  /* React.cache() ties the Map lifetime to the React async storage      */
+  /* context, which is unique per incoming HTTP request. The Map is      */
+  /* created on first access within a request and discarded when the     */
+  /* request ends — no explicit invalidation is required.                */
+  /*                                                                     */
+  /* Each PermissionService instance gets its own cache() function       */
+  /* reference so test instances never share state with each other or    */
+  /* with the production singleton.                                      */
+  /* ------------------------------------------------------------------ */
+
+  private readonly _getContextStore = cache(
+    (): Map<string, Promise<AuthorizationContext>> => new Map()
+  )
+
+  private readonly _getPermSetStore = cache(
+    (): Map<string, Promise<PermissionSet>> => new Map()
+  )
+
+  /* ------------------------------------------------------------------ */
   /* Public API                                                           */
   /* ------------------------------------------------------------------ */
 
   /**
+   * Builds a fully resolved AuthorizationContext for a user.
+   * Finds the user's active RT membership automatically.
+   *
+   * Results are cached for the lifetime of the current request.
+   * Subsequent calls with the same userId return the cached context
+   * without re-querying the database.
+   *
+   * Throws MembershipNotFoundError when the user has no active RT membership.
+   *
+   * Optimized to 4 DB calls on cache MISS (non-SUPER_ADMIN):
+   *   1. resolveUserMembership (single memberships query)
+   *   2. resolveRoleId
+   *   3+4. fetchRolePermissions + fetchPermissionOverrides (parallel)
+   */
+  async buildContext(userId: string): Promise<AuthorizationContext> {
+    const store = this._getContextStore()
+
+    if (!store.has(userId)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[PermissionCache] MISS  userId=%s', userId.slice(0, 8))
+      }
+      store.set(userId, this._buildContextCore(userId))
+    } else if (process.env.NODE_ENV === 'development') {
+      console.debug('[PermissionCache] HIT   userId=%s', userId.slice(0, 8))
+    }
+
+    return store.get(userId)!
+  }
+
+  /**
    * Loads the effective permissions for a user in a specific RT.
+   *
+   * Results are cached for the lifetime of the current request.
+   * Subsequent calls with the same (userId, neighborhoodId) pair return
+   * the cached PermissionSet without re-querying the database.
    *
    * Throws MembershipNotFoundError when no active membership exists.
    * Throws RoleNotFoundError when the role from memberships has no matching
    * row in the roles table (indicates a data configuration issue).
    */
   async loadPermissions(
+    userId:         string,
+    neighborhoodId: string
+  ): Promise<PermissionSet> {
+    const key   = `${userId}:${neighborhoodId}`
+    const store = this._getPermSetStore()
+
+    if (!store.has(key)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[PermissionCache] MISS  userId=%s neighborhoodId=%s', userId.slice(0, 8), neighborhoodId.slice(0, 8))
+      }
+      store.set(key, this._loadPermissionsCore(userId, neighborhoodId))
+    } else if (process.env.NODE_ENV === 'development') {
+      console.debug('[PermissionCache] HIT   userId=%s neighborhoodId=%s', userId.slice(0, 8), neighborhoodId.slice(0, 8))
+    }
+
+    return store.get(key)!
+  }
+
+  /**
+   * No-op: request-scoped cache expires automatically at request end.
+   * Retained for API compatibility and future cross-request invalidation.
+   */
+  invalidateCache(_userId: string, _neighborhoodId: string): void {
+    // Request-scoped cache needs no invalidation — the Map is discarded
+    // when the React async context (request) completes.
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Private — core implementations (called by the cache wrappers)       */
+  /* ------------------------------------------------------------------ */
+
+  private async _buildContextCore(userId: string): Promise<AuthorizationContext> {
+    const mem = await this.resolveUserMembership(userId)
+
+    if (mem.isSuperAdmin) {
+      return new AuthorizationContext({
+        permissionSet: new SuperAdminPermissionSet(userId, mem.id, ''),
+      })
+    }
+
+    const roleCode = toRoleCode(mem.role)
+    const roleId   = await this.resolveRoleId(roleCode)
+
+    const [granted, overrides] = await Promise.all([
+      this.fetchRolePermissions(roleId),
+      this.fetchPermissionOverrides(mem.neighborhoodId, roleId),
+    ])
+
+    return new AuthorizationContext({
+      permissionSet: new StandardPermissionSet(
+        userId, mem.id, mem.neighborhoodId, roleId, roleCode, this.merge(granted, overrides)
+      ),
+    })
+  }
+
+  private async _loadPermissionsCore(
     userId:         string,
     neighborhoodId: string
   ): Promise<PermissionSet> {
@@ -217,52 +339,12 @@ export class PermissionService {
     )
   }
 
-  /**
-   * Builds a fully resolved AuthorizationContext for a user.
-   * Finds the user's active RT membership automatically.
-   *
-   * Throws MembershipNotFoundError when the user has no active RT membership.
-   *
-   * Optimized to 4 DB calls:
-   *   1. resolveUserMembership (single memberships query)
-   *   2. resolveRoleId
-   *   3+4. fetchRolePermissions + fetchPermissionOverrides (parallel)
-   */
-  async buildContext(userId: string): Promise<AuthorizationContext> {
-    const mem = await this.resolveUserMembership(userId)
-
-    if (mem.isSuperAdmin) {
-      return new AuthorizationContext({
-        permissionSet: new SuperAdminPermissionSet(userId, mem.id, ''),
-      })
-    }
-
-    const roleCode = toRoleCode(mem.role)
-    const roleId   = await this.resolveRoleId(roleCode)
-
-    const [granted, overrides] = await Promise.all([
-      this.fetchRolePermissions(roleId),
-      this.fetchPermissionOverrides(mem.neighborhoodId, roleId),
-    ])
-
-    return new AuthorizationContext({
-      permissionSet: new StandardPermissionSet(
-        userId, mem.id, mem.neighborhoodId, roleId, roleCode, this.merge(granted, overrides)
-      ),
-    })
-  }
-
-  /** No-op hook for future cache invalidation (Task 2.4). */
-  invalidateCache(_userId: string, _neighborhoodId: string): void {
-    // TODO(Task 2.4): remove cached PermissionSet for this (userId, neighborhoodId)
-  }
-
   /* ------------------------------------------------------------------ */
-  /* Private — unified membership resolution (used by buildContext)     */
+  /* Private — unified membership resolution (used by _buildContextCore) */
   /* ------------------------------------------------------------------ */
 
   /**
-   * Single query that resolves everything buildContext needs from memberships:
+   * Single query that resolves everything _buildContextCore needs from memberships:
    * membership id, role enum, and rt_id. Detects SUPER_ADMIN in the result set
    * so the caller never issues a second round-trip for the SA check.
    */

@@ -2,6 +2,9 @@
 
 import { useMemo }            from 'react'
 import { useTranslations }    from 'next-intl'
+import { usePermission }      from '@/lib/auth/usePermission'
+import { PERMISSION }         from '@/lib/auth/types'
+import Can                    from '@/components/ui/Can'
 import { DataTable }          from '@/components/common/data-table'
 import ExpenseDrawer          from './components/drawer/ExpenseDrawer'
 import ExpenseForm            from './components/forms/ExpenseForm'
@@ -18,7 +21,6 @@ interface Props {
     loading:     boolean
     fetchError:  boolean
     onRetry:     () => void
-    role:        string
     categories:  { name: string }[]
     query:       QueryOptions
     setPage:         (p: number) => void
@@ -67,7 +69,7 @@ interface Props {
 
 export default function ExpenseView({
     result, loading, fetchError, onRetry,
-    role, categories,
+    categories,
     query, setPage, setPageSize, setSearch, setSort, setFilter,
     importError,
     selectedRow, drawerOpen, formOpen,
@@ -84,19 +86,21 @@ export default function ExpenseView({
     const t  = useTranslations('expenses')
     const tc = useTranslations('common')
 
+    const canManageExpenses = usePermission(PERMISSION.EXPENSE_CREATE)
+
     const data = result?.data ?? []
     const pendingCount = data.filter((r) => r.status === 'pending').length
 
     const columns = useMemo(
         () => buildExpenseColumns({
-            t:        (k) => t(k as Parameters<typeof t>[0]),
-            tc:       (k) => tc(k as Parameters<typeof tc>[0]),
-            role,
-            onEdit:   openEditForm,
-            onDelete: removeRow,
+            t:         (k) => t(k as Parameters<typeof t>[0]),
+            tc:        (k) => tc(k as Parameters<typeof tc>[0]),
+            canManage: canManageExpenses,
+            onEdit:    openEditForm,
+            onDelete:  removeRow,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [role, openEditForm, removeRow],
+        [canManageExpenses, openEditForm, removeRow],
     )
 
     return (
@@ -106,14 +110,16 @@ export default function ExpenseView({
                     <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
                 </div>
-                {role === 'CHAIR' && pendingCount > 0 && (
-                    <button
-                        onClick={approveAllExpenses}
-                        className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
-                    >
-                        {t('approveAll', { count: pendingCount })}
-                    </button>
-                )}
+                <Can permission={PERMISSION.EXPENSE_APPROVE}>
+                    {pendingCount > 0 && (
+                        <button
+                            onClick={approveAllExpenses}
+                            className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
+                        >
+                            {t('approveAll', { count: pendingCount })}
+                        </button>
+                    )}
+                </Can>
             </div>
 
             <DataTable
@@ -155,11 +161,13 @@ export default function ExpenseView({
                 }
                 renderActions={
                     <div className="flex items-center gap-2 flex-wrap">
-                        <ExportDropdown
-                            onExportExcel={() => exportExcel(data)}
-                            onExportCSV={() => exportCSV(data)}
-                        />
-                        {role === 'TREASURER' && (
+                        <Can permission={PERMISSION.EXPENSE_EXPORT}>
+                            <ExportDropdown
+                                onExportExcel={() => exportExcel(data)}
+                                onExportCSV={() => exportCSV(data)}
+                            />
+                        </Can>
+                        <Can permission={PERMISSION.EXPENSE_IMPORT}>
                             <button
                                 onClick={openImport}
                                 className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
@@ -167,15 +175,15 @@ export default function ExpenseView({
                                 <Icon name="upload" size={15} />
                                 {tc('actions.import')}
                             </button>
-                        )}
-                        {role === 'TREASURER' && (
+                        </Can>
+                        <Can permission={PERMISSION.EXPENSE_CREATE}>
                             <button
                                 onClick={openCreateForm}
                                 className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary-dark"
                             >
                                 + {tc('actions.add')}
                             </button>
-                        )}
+                        </Can>
                     </div>
                 }
             />
@@ -183,7 +191,6 @@ export default function ExpenseView({
             <ExpenseDrawer
                 open={drawerOpen}
                 row={selectedRow}
-                role={role}
                 onClose={closeDrawer}
                 onApprove={approveExpense}
                 onReject={rejectExpense}

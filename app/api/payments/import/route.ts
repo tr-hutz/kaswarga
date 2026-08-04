@@ -1,11 +1,10 @@
-import { NextResponse }      from 'next/server'
-import { cookies }            from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { NextResponse }       from 'next/server'
 import { supabaseAdmin }      from '@/lib/supabase-admin'
 import ExcelJS                from 'exceljs'
-
-const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      || ''
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+import { getRequestContext }  from '@/lib/auth/server'
+import { requirePermission }  from '@/lib/auth/helpers'
+import { PERMISSION }         from '@/lib/auth/types'
+import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 
 /*
 |--------------------------------------------------------------------------
@@ -38,35 +37,17 @@ function buildFileName(rtName: string): string {
 
 export async function POST(req: Request) {
     try {
-        const cookieStore = await cookies()
-        const serverClient = createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} }
-        })
+        const ctx  = await getRequestContext()
+        requirePermission(ctx.authorization, PERMISSION.PAYMENT_UPDATE)
 
-        const { data: authData, error: authError } = await serverClient.auth.getUser()
-        if (authError || !authData?.user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        }
+        const rtId  = ctx.authorization.neighborhoodId
+        const userId = ctx.authorization.userId
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: membership, error: membershipError } = await (supabaseAdmin as any)
-            .from('memberships')
-            .select('role, rt_id, user:users(name), rt:rt(name)')
-            .eq('user_id', authData.user.id)
-            .eq('status', 'active')
-            .maybeSingle()
-
-        if (membershipError || !membership) {
-            return NextResponse.json({ error: 'Membership not found' }, { status: 403 })
-        }
-
-        if (!['TREASURER', 'ADMIN'].includes(membership.role)) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-        }
-
-        const rtId   = membership.rt_id as string
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const rtName = (membership as any).rt?.name ?? 'RT'
+        const [{ data: actor }, { data: rtRow }] = await Promise.all([
+            supabaseAdmin.from('users').select('name').eq('id', userId).single(),
+            supabaseAdmin.from('rt').select('name').eq('id', rtId).single(),
+        ])
+        const rtName = rtRow?.name ?? 'RT'
 
         const body = await req.json()
         const { rows } = body as { rows: Record<string, string>[] }
@@ -263,9 +244,8 @@ export async function POST(req: Request) {
         // Activity log
         await supabaseAdmin.from('activity_logs').insert({
             rt_id:       rtId,
-            actor_id:    authData.user.id,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            actor_name:  (membership as any).user?.name || authData.user.email,
+            actor_id:    userId,
+            actor_name:  actor?.name ?? null,
             action:      'IMPORT_PAYMENTS',
             entity_type: 'payment_confirmations',
             entity_id:   rtId,
@@ -300,6 +280,8 @@ export async function POST(req: Request) {
         return NextResponse.json({ inserted, skipped })
 
     } catch (err) {
+        if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },    { status: 403 })
         console.error('[payments/import]', err)
         return NextResponse.json({ error: (err as Error).message || 'Import failed' }, { status: 500 })
     }

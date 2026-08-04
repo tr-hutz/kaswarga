@@ -1,14 +1,28 @@
-import { Suspense } from 'react'
-import ResidentContainer from '../../features/resident/ResidentContainer'
-import PermissionGate from '@/components/ui/PermissionGate'
-import { PERMISSIONS } from '@/lib/permissions/permission-constants'
+import { Suspense }          from 'react'
+import { getRequestContext } from '@/lib/auth/server'
+import { PERMISSION }        from '@/lib/auth/types'
+import { UnauthorizedError } from '@/lib/auth/errors'
+import ForbiddenState        from '@/components/ui/ForbiddenState'
+import ResidentContainer     from '../../features/resident/ResidentContainer'
 
-export default function Page() {
-    return (
-        <PermissionGate permission={PERMISSIONS.VIEW_RESIDENTS}>
+export default async function Page() {
+    try {
+        const ctx  = await getRequestContext()
+        const auth = ctx.authorization
+
+        if (!auth.hasPermission(PERMISSION.RESIDENT_VIEW)) {
+            return <ForbiddenState />
+        }
+
+        return (
             <Suspense>
                 <ResidentContainer />
             </Suspense>
-        </PermissionGate>
-    )
+        )
+    } catch (err) {
+        if (err instanceof UnauthorizedError) {
+            return <ForbiddenState />
+        }
+        throw err
+    }
 }

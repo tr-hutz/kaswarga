@@ -152,11 +152,13 @@ Legend
 | Permission | Super | Chair | Admin | Treasurer | Resident |
 |------------|--------|--------|--------|------------|-----------|
 | resident.view | ❌ | ✅ | ✅ | 👁 | ⚡ |
-| resident.payment-history | ❌ | ✅ | ✅ | ✅ | ⚡ |
 | resident.create | ❌ | ✅ | ✅ | ❌ | ❌ |
 | resident.update | ❌ | ✅ | ✅ | ❌ | ❌ |
 | resident.delete | ❌ | ✅ | ✅ | ❌ | ❌ |
-| resident.import | ❌ | ✅ | ✅ | ❌ | ❌ |
+| resident.approve | ❌ | ✅ | ✅ | ❌ | ❌ |
+| resident.reject | ❌ | ✅ | ✅ | ❌ | ❌ |
+| resident.export | ❌ | ❌ | ✅ | ❌ | ❌ |
+| resident.import | ❌ | ❌ | ✅ | ❌ | ❌ |
 
 ---
 
@@ -174,13 +176,15 @@ Legend
 
 | Permission | Super | Chair | Admin | Treasurer | Resident |
 |------------|--------|--------|--------|------------|-----------|
-| payment.submit | ❌ | ✅ | ✅ | ✅ | ✅ |
 | payment.view | ❌ | 👁 | 👁 | ✅ | ⚡ |
-| payment.approve | ❌ | ❌ | ❌ | ✅ | ❌ |
-| payment.reject | ❌ | ❌ | ❌ | ✅ | ❌ |
-| payment.export | ❌ | 👁 | 👁 | ✅ | ❌ |
-| payment.import | ❌ | ❌ | ✅ | ✅ | ❌ |
-| payment.bulk-approve | ❌ | ❌ | ✅ | ✅ | ❌ |
+| payment.create | ❌ | ✅ | ✅ | ✅ | ✅ |
+| payment.update | ❌ | ❌ | ✅ | ✅ | ❌ |
+| payment.delete | ❌ | ❌ | ✅ | ✅ | ❌ |
+| payment.approve | ❌ | ❌ | ✅ | ✅ | ❌ |
+| payment.reject | ❌ | ❌ | ✅ | ✅ | ❌ |
+| dashboard.payment.export | ❌ | ❌ | ✅ | ✅ | ❌ |
+
+> `dashboard.payment.export` is also granted to Secretary.
 
 ---
 
@@ -194,6 +198,8 @@ Legend
 | expense.delete | ❌ | ❌ | ❌ | ✅ | ❌ |
 | expense.approve | ❌ | ✅ | ❌ | ❌ | ❌ |
 | expense.reject | ❌ | ✅ | ❌ | ❌ | ❌ |
+| expense.export | ❌ | ❌ | ❌ | ✅ | ❌ |
+| expense.import | ❌ | ❌ | ❌ | ✅ | ❌ |
 
 ---
 

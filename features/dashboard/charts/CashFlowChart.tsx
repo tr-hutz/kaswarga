@@ -15,7 +15,7 @@ const Chart = dynamic(() => import('react-apexcharts'), {
 })
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function CashflowChart({ data = [] }: { data?: any[] }) {
+export default function CashFlowChart({ data = [] }: { data?: any[] }) {
 
     const t      = useTranslations('dashboard.sections')
     const { resolvedTheme } = useTheme()
@@ -70,14 +70,20 @@ export default function CashflowChart({ data = [] }: { data?: any[] }) {
                     {t('cashflowSubtitle')}
                 </p>
             </div>
-            <Chart
-                key={resolvedTheme}
-                type="line"
-                series={series}
-                options={options}
-                height={350}
-                width="100%"
-            />
+            {data.length === 0 ? (
+                <div className="h-[350px] flex items-center justify-center text-sm text-muted">
+                    {t('noData')}
+                </div>
+            ) : (
+                <Chart
+                    key={resolvedTheme}
+                    type="line"
+                    series={series}
+                    options={options}
+                    height={350}
+                    width="100%"
+                />
+            )}
         </div>
     )
 }
