@@ -214,6 +214,40 @@ Many-to-Many: users ↔ rt
 
 ---
 
+---
+
+# RBAC Core Tables
+
+KasWarga implements a Role-Based Access Control (RBAC) model with RT-level customization.
+
+The authorization model is composed of the following core tables:
+
+```
+roles
+    │
+    ▼
+role_permissions
+    │
+    ▼
+permissions
+
+            ▲
+            │
+permission_overrides
+```
+
+The Role assigned to a Membership does **not** directly determine what a user can do.
+
+The effective authorization is calculated at runtime using:
+
+1. Assigned Role
+2. Default Role Permissions
+3. RT-specific Permission Overrides
+4. AuthorizationContext
+
+This design allows every RT to customize permissions independently while preserving the default system roles.
+
+
 # residents
 
 Purpose
@@ -705,20 +739,415 @@ activity_logs (actor_id → users)
 
 ---
 
-# Future Tables
+# Authorization (RBAC v2)
 
-visitor_logs
+KasWarga implements Role-Based Access Control (RBAC v2).
 
-tool_loans
+Authorization is based on:
 
-assets
+```
+User
+    ↓
+Role
+    ↓
+Role Permissions
+    ↓
+RT Permission Overrides
+    ↓
+Effective Permission
+```
 
-vehicles
+Permissions are assigned to Roles.
 
-gate_access
-
-parking
+Permissions are never assigned directly to Users.
 
 ---
+
+# Existing Table Changes
+
+## roles
+
+### New Columns
+
+| Column | Type | Nullable | Description |
+|---------|------|----------|-------------|
+| code | varchar(50) | No | Immutable role identifier |
+
+### Constraints
+
+```sql
+UNIQUE (code)
+```
+
+### Example Values
+
+| code |
+|------|
+| SUPER_ADMIN |
+| RT_CHAIR |
+| RT_ADMIN |
+| TREASURER |
+| RESIDENT |
+
+---
+
+# New Tables
+
+## permissions
+
+Stores every permission supported by the application.
+
+### Design Notes
+
+Permissions represent executable capabilities within the application.
+
+Examples:
+
+- resident.view
+- resident.create
+- resident.update
+- resident.delete
+- payment.view
+- payment.approve
+- payment.reject
+- expense.create
+- ledger.view
+- report.export
+
+Permission codes are immutable identifiers and should never depend on role names.
+
+Business Rules reference authorization conceptually, while permission codes are maintained by the Permission Catalog.
+
+### Columns
+
+| Column | Type | Nullable | Description |
+|---------|------|----------|-------------|
+| id | uuid | No | Primary Key |
+| code | varchar(100) | No | Permission identifier |
+| name | varchar(150) | No | Display name |
+| description | text | Yes | Optional description |
+| is_system | boolean | No | Reserved system permission |
+| created_at | timestamptz | No | Creation timestamp |
+| updated_at | timestamptz | No | Last update timestamp |
+
+### Constraints
+
+```sql
+PRIMARY KEY (id)
+
+UNIQUE (code)
+```
+
+### Naming Convention
+
+```
+module.action
+```
+
+Examples
+
+```
+resident.view
+
+resident.create
+
+resident.update
+
+resident.delete
+
+registration.approve
+
+payment.submit
+
+payment.approve
+
+payment.reject
+
+expense.create
+
+expense.delete
+
+ledger.export
+```
+
+### Recommended Indexes
+
+```sql
+CREATE UNIQUE INDEX idx_permissions_code
+ON permissions(code);
+```
+
+---
+
+## role_permissions
+
+Stores the default permission set for every Role.
+
+### Design Notes
+
+Role Permissions define the default authorization model of KasWarga.
+
+They represent the permissions granted to a Role before any RT-specific customization is applied.
+
+Role Permissions are global and shared across all RTs.
+
+### Columns
+
+| Column | Type | Nullable | Description |
+|---------|------|----------|-------------|
+| id | uuid | No | Primary Key |
+| role_id | uuid | No | FK → roles.id |
+| permission_id | uuid | No | FK → permissions.id |
+| allow | boolean | No | Default permission value |
+| created_at | timestamptz | No | Creation timestamp |
+| updated_at | timestamptz | No | Last update timestamp |
+
+### Constraints
+
+```sql
+PRIMARY KEY (id)
+
+UNIQUE (role_id, permission_id)
+```
+
+### Foreign Keys
+
+```sql
+role_id
+    REFERENCES roles(id)
+
+permission_id
+    REFERENCES permissions(id)
+```
+
+### role_id
+
+Foreign Key → roles.id
+
+Represents the default role assigned to the member within a neighborhood.
+
+The assigned Role alone does not determine the final authorization result.
+
+Effective authorization is calculated dynamically using:
+
+- Role
+- Role Permissions
+- RT Permission Overrides
+- AuthorizationContext
+
+This allows different RTs to customize permissions without changing the assigned role.
+
+### Recommended Indexes
+
+```sql
+CREATE INDEX idx_role_permissions_role
+ON role_permissions(role_id);
+
+CREATE INDEX idx_role_permissions_permission
+ON role_permissions(permission_id);
+```
+
+---
+
+## rt_permission_overrides
+
+Stores permission overrides for each RT.
+
+Only exceptions from the default Role Permission are stored.
+
+### Design Notes
+
+Permission Overrides modify the default authorization behavior for a single RT.
+
+Overrides are evaluated after Role Permissions.
+
+An override may:
+
+- Grant a permission
+- Revoke a permission
+
+without modifying the global Role definition.
+
+Permission Overrides affect only the specified RT.
+
+### Columns
+
+| Column | Type | Nullable | Description |
+|---------|------|----------|-------------|
+| id | uuid | No | Primary Key |
+| rt_id | uuid | No | FK → neighborhoods.id |
+| role_id | uuid | No | FK → roles.id |
+| permission_id | uuid | No | FK → permissions.id |
+| allow | boolean | No | Override value |
+| created_at | timestamptz | No | Creation timestamp |
+| updated_at | timestamptz | No | Last update timestamp |
+
+### Constraints
+
+```sql
+PRIMARY KEY (id)
+
+UNIQUE (
+    rt_id,
+    role_id,
+    permission_id
+)
+```
+
+### Foreign Keys
+
+```sql
+rt_id
+    REFERENCES neighborhoods(id)
+
+role_id
+    REFERENCES roles(id)
+
+permission_id
+    REFERENCES permissions(id)
+```
+
+### Recommended Indexes
+
+```sql
+CREATE INDEX idx_rt_permission_rt
+ON rt_permission_overrides(rt_id);
+
+CREATE INDEX idx_rt_permission_role
+ON rt_permission_overrides(role_id);
+
+CREATE INDEX idx_rt_permission_permission
+ON rt_permission_overrides(permission_id);
+```
+
+---
+
+# Authorization Flow
+
+```
+User
+    ↓
+Role
+    ↓
+role_permissions
+    ↓
+rt_permission_overrides
+    ↓
+Effective Permission
+```
+
+---
+
+# Permission Resolution
+
+Resolution order:
+
+1. Resolve User Role
+2. Load Role Permissions
+3. Apply RT Permission Overrides
+4. Produce Effective Permission
+
+RT overrides always take precedence over default Role Permissions.
+
+---
+
+# Constraints
+
+The following rules must always be preserved.
+
+- Permission codes are immutable.
+- Role codes are immutable.
+- Users never own permissions directly.
+- Authorization must remain Role-based.
+- Every permission must exist before being assigned to a Role.
+- Every RT override must reference an existing Role and Permission.
+
+---
+
+# Notes
+
+Permission grouping is intentionally not modeled as a database table.
+
+Permission categories are derived from the permission code (for example, `resident.*`, `payment.*`) and are intended for UI organization and documentation only.
+
+This keeps the authorization schema simple while allowing unlimited logical grouping in the application layer.
+
+---
+
+# Runtime Authorization
+
+The following objects participate in authorization during request execution.
+
+These objects are **runtime constructs** and are intentionally **not stored** in the database.
+
+## AuthorizationContext
+
+AuthorizationContext contains:
+
+- authenticated user
+- neighborhood
+- assigned role
+- effective permissions
+
+AuthorizationContext is created exactly once for every request by PermissionService.
+
+It is immutable during the lifetime of the request.
+
+---
+
+## RequestContext
+
+RequestContext is the root runtime object for request processing.
+
+It contains:
+
+- request metadata
+- localization
+- AuthorizationContext
+
+RequestContext exists only during request execution and is never persisted.
+
+---
+
+# Audit Logging
+
+Operations affecting authorization-sensitive resources should generate Audit Log entries.
+
+Typical audited operations include:
+
+- Resident Approval
+- Resident Rejection
+- Payment Approval
+- Payment Rejection
+- Expense Creation
+- Expense Update
+- Expense Deletion
+- Permission Override Changes
+
+Audit Logs should contain:
+
+- actor
+- resource
+- operation
+- timestamp
+- result
+
+Audit records are immutable.
+
+---
+
+# Naming Convention
+
+KasWarga follows the following database naming conventions.
+
+| Object | Convention |
+|----------|------------|
+| Primary Key | id |
+| Foreign Key | `<entity>_id` |
+| Boolean | is_* |
+| Timestamp | *_at |
+| User Reference | *_by |
+
+These conventions should be followed by all future database migrations.
 
 End of Document

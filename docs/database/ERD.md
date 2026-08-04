@@ -2,62 +2,135 @@
 
 > Project: KasWarga
 >
-> Version: 1.0
->
-> Last Updated: July 2026
+> Version: 2.0 (RBAC v2)
 
 ---
 
 # Purpose
 
-This document describes the Entity Relationship Diagram (ERD) of KasWarga.
+This document describes the conceptual Entity Relationship Diagram (ERD) for KasWarga.
 
-The diagram focuses on logical relationships between entities.
+The ERD focuses on persistent data stored in PostgreSQL.
 
-Physical implementation details are documented in DATABASE_SCHEMA.md.
+Runtime objects such as `RequestContext` and `AuthorizationContext` are intentionally excluded from the database model and are documented separately.
 
 ---
 
-# Logical ER Diagram
+# Entity Relationship Diagram
 
-```mermaid
-erDiagram
-
-    USERS ||--o{ MEMBERSHIPS : has
-    RTS ||--o{ MEMBERSHIPS : contains
-    ROLES ||--o{ MEMBERSHIPS : assigns
-
-    USERS ||--|| RESIDENTS : owns
-    RTS ||--o{ RESIDENTS : contains
-
-    RESIDENTS ||--o{ PAYMENTS : submits
-    PAYMENTS ||--o{ PAYMENT_DETAILS : contains
-
-    PAYMENTS ||--|| LEDGER_ENTRIES : creates
-    EXPENSES ||--|| LEDGER_ENTRIES : creates
-
-    RTS ||--o{ EXPENSES : owns
-
-    USERS ||--o{ NOTIFICATIONS : receives
-
-    USERS ||--o{ ACTIVITY_LOGS : performs
-
-    RTS ||--o{ ACTIVITY_LOGS : belongs_to
-
-    USERS ||--o{ ACTIVATION_TOKENS : owns
-
-    RT_REGISTRATION_REQUESTS ||--o| RTS : creates
-
-    RESIDENT_REGISTRATION_REQUESTS ||--o| RESIDENTS : creates
+```text
+                               +----------------+
+                               | neighborhoods  |
+                               +----------------+
+                               | id             |
+                               | name           |
+                               | ...            |
+                               +-------+--------+
+                                       |
+                                       |
+                                       | 1
+                                       |
+                                       | N
+                               +-------v--------+
+                               | memberships    |
+                               +----------------+
+                               | id             |
+                               | user_id        |
+                               | neighborhood_id|
+                               | role_id        |
+                               | status         |
+                               +----+-------+---+
+                                    |       |
+                     N              |       | N
+                     |              |       |
+                     |              |       |
+              +------v-----+        |       +-------------+
+              | users      |        |                     |
+              +------------+        |                     |
+              | id         |        |                     |
+              | email      |        |                     |
+              | ...        |        |                     |
+              +------------+        |                     |
+                                    |                     |
+                                    |1                    |1
+                                    |                     |
+                              +-----v------+       +------v------+
+                              | roles      |       | residents   |
+                              +------------+       +-------------+
+                              | id         |       | id          |
+                              | code       |       | ...         |
+                              | name       |       +-------------+
+                              +------+-----+
+                                     |
+                                     |1
+                                     |
+                                     |N
+                          +----------v-----------+
+                          | role_permissions     |
+                          +----------------------+
+                          | role_id             |
+                          | permission_id       |
+                          +----------+----------+
+                                     |
+                                     |N
+                                     |
+                                     |1
+                          +----------v-----------+
+                          | permissions          |
+                          +----------------------+
+                          | id                  |
+                          | code               |
+                          | module             |
+                          | description        |
+                          +----------+----------+
+                                     ^
+                                     |
+                                     |
+                                     |
+                          +----------+-----------+
+                          | permission_overrides |
+                          +-----------------------+
+                          | id                   |
+                          | neighborhood_id      |
+                          | role_id             |
+                          | permission_id       |
+                          | allow              |
+                          +---------------------+
 ```
 
 ---
 
-# Domain Overview
+# Authorization Relationship
 
+The authorization model is built using four persistent entities.
+
+```text
+Role
+
+↓
+
+Role Permission
+
+↓
+
+Permission
+
+↓
+
+Permission Override (optional)
 ```
-Authentication
 
+Effective authorization is calculated dynamically at runtime.
+
+---
+
+# Membership Relationship
+
+A User may belong to multiple Neighborhoods.
+
+Each Membership has exactly one assigned Role.
+
+```text
 User
 
 ↓
@@ -66,198 +139,149 @@ Membership
 
 ↓
 
+Neighborhood
+
+↓
+
 Role
+```
+
+Membership represents organizational participation.
+
+It does not directly determine authorization.
+
+---
+
+# Permission Model
+
+Permissions are reusable capabilities.
+
+Examples:
+
+- resident.view
+- resident.create
+- resident.update
+- resident.delete
+- payment.view
+- payment.approve
+- payment.reject
+- expense.create
+- ledger.view
+- report.export
+
+Permissions never reference users directly.
+
+---
+
+# Role Permission Model
+
+Roles define the default permission set.
+
+```text
+Role
+
+↓
+
+Role Permission
 
 ↓
 
 Permission
 ```
 
----
-
-```
-Organization
-
-RT
-
-↓
-
-Resident
-
-↓
-
-Payment
-
-↓
-
-Ledger
-```
+Every RT initially inherits these permissions.
 
 ---
 
-```
-Audit
+# Permission Override Model
 
-Business Event
+RTs may customize permissions independently.
+
+```text
+Role Permission
 
 ↓
 
-Activity Log
+Permission Override
+
+↓
+
+Effective Permission
 ```
 
+Overrides never modify the global Role.
+
+They only affect the specified Neighborhood.
+
 ---
 
+# Runtime Authorization (Conceptual)
+
+The following objects are runtime-only.
+
+They are **NOT** stored in PostgreSQL.
+
+```text
+Authenticated User
+
+↓
+
+PermissionService
+
+↓
+
+AuthorizationContext
+
+↓
+
+RequestContext
+
+↓
+
+Business Services
 ```
-Notification
 
-Business Event
+AuthorizationContext calculates the effective permissions for the active request.
 
-↓
-
-Notification
-
-↓
-
-User
-```
-
----
-
-# Relationship Summary
-
-## User
-
-One User
-
-↓
-
-Many Memberships
-
-↓
-
-Many Notifications
-
-↓
-
-Many Activity Logs
-
----
-
-## RT
-
-One RT
-
-↓
-
-Many Residents
-
-↓
-
-Many Memberships
-
-↓
-
-Many Payments
-
-↓
-
-Many Expenses
-
----
-
-## Resident
-
-One Resident
-
-↓
-
-Many Payments
-
----
-
-## Payment
-
-One Payment
-
-↓
-
-Many Payment Details
-
-↓
-
-One Ledger Entry
-
----
-
-## Expense
-
-One Expense
-
-↓
-
-One Ledger Entry
-
----
-
-## Registration
-
-RT Registration
-
-↓
-
-RT
-
-↓
-
-Users
-
-↓
-
-Memberships
-
-Resident Registration
-
-↓
-
-Resident
-
-↓
-
-Membership
-
----
-
-# Cardinality
-
-| Relationship | Cardinality |
-|--------------|-------------|
-| User → Membership | 1 : N |
-| RT → Membership | 1 : N |
-| RT → Resident | 1 : N |
-| Resident → Payment | 1 : N |
-| Payment → Payment Detail | 1 : N |
-| Payment → Ledger Entry | 1 : 1 |
-| Expense → Ledger Entry | 1 : 1 |
-| User → Notification | 1 : N |
-| User → Activity Log | 1 : N |
-
----
-
-These modules should follow the same multi-tenant design by referencing `rt_id`.
+RequestContext becomes the root object consumed by Business Services.
 
 ---
 
 # Design Principles
 
-1. Every business entity belongs to an RT.
-2. Financial records are immutable.
-3. Membership controls authorization.
-4. Notifications are asynchronous.
-5. Activity Logs are append-only.
-6. Dashboard aggregates data only.
-7. Business rules live in Services.
-8. Database stores state, not business logic.
+The KasWarga authorization model follows these principles.
+
+- Users never receive permissions directly.
+- Permissions are granted through Roles.
+- Roles may be customized per Neighborhood.
+- Business Services consume AuthorizationContext.
+- PostgreSQL RLS remains the final authorization layer.
+- Runtime objects are intentionally separated from persistent entities.
 
 ---
 
-End of Document
+# Legend
+
+| Symbol | Meaning |
+|---------|----------|
+| 1 | One |
+| N | Many |
+
+---
+
+# Notes
+
+This ERD documents only persistent entities.
+
+Runtime components such as:
+
+- RequestContext
+- AuthorizationContext
+- PermissionService
+
+belong to the application architecture and are documented separately in:
+
+- AUTHORIZATION_ARCHITECTURE.md
+- REQUEST_CONTEXT.md
+- PERMISSION_SERVICE.md
+- AUTHORIZATION_PIPELINE.md

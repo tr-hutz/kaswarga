@@ -2,17 +2,128 @@
 
 > Project: KasWarga
 
-Version: 1.0
+Version: 2.0 (RBAC v2)
 
 ---
 
 # Purpose
 
-This document defines permissions for every role in KasWarga.
+This document defines the authorization model used throughout KasWarga.
 
-Permission changes must update this document before implementation.
+KasWarga implements Role-Based Access Control (RBAC) with configurable RT-level permission overrides.
+
+This document is the single source of truth for authorization.
+
+Any permission changes must be reflected here before implementation.
 
 ---
+
+# Authorization Model
+
+KasWarga uses the following authorization flow.
+
+```
+User
+    │
+    ▼
+Role
+    │
+    ▼
+Default Role Permissions
+    │
+    ▼
+RT Permission Overrides
+    │
+    ▼
+Effective Permissions
+    │
+    ▼
+Business Rules
+```
+
+Roles determine the default permissions.
+
+Each RT may override selected permissions without creating new roles.
+
+Permissions are never assigned directly to individual users.
+
+---
+
+# Permission Naming Convention
+
+Permission codes follow the format:
+
+```
+module.action
+```
+
+Examples:
+
+```
+resident.view
+resident.create
+resident.update
+resident.delete
+resident.approve
+
+payment.submit
+payment.approve
+payment.reject
+
+expense.create
+expense.delete
+
+ledger.view
+ledger.adjustment
+ledger.export
+```
+
+Permission codes must remain stable because they are referenced by:
+
+- Backend
+- Middleware
+- PermissionService
+- Navigation
+- API
+- Playwright
+- RLS Policies
+
+---
+
+# System Roles
+
+KasWarga defines the following system roles.
+
+| Role | Description |
+|------|-------------|
+| Super Administrator | Global system administrator |
+| RT Chair | Head of an RT |
+| RT Administrator | RT administrator |
+| Treasurer | RT treasurer |
+| Resident | Registered resident |
+
+Roles are fixed.
+
+Permissions are configurable.
+
+---
+
+# Permission Resolution
+
+Permissions are resolved in the following order.
+
+1. System Role
+2. Default Role Permissions
+3. RT Permission Overrides
+4. Effective Permissions
+
+If an RT override exists, it replaces the default permission.
+
+Otherwise, the default permission is used.
+
+---
+
+# Default Permission Matrix
 
 Legend
 
@@ -25,141 +136,183 @@ Legend
 
 ---
 
-# Roles
+## RT
 
-- Super Administrator
-- RT Chair
-- RT Administrator
-- Treasurer
-- Resident
-
----
-
-# RT
-
-| Action | Super | Chair | Admin | Treasurer | Resident |
-|---------|--------|--------|---------|------------|------------|
-| Create RT | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Approve RT | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Archive RT | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Update RT Profile | 👁 | ✅ | ✅ | ❌ | ❌ |
+| Permission | Super | Chair | Admin | Treasurer | Resident |
+|------------|--------|--------|--------|------------|-----------|
+| rt.create | ✅ | ❌ | ❌ | ❌ | ❌ |
+| rt.approve | ✅ | ❌ | ❌ | ❌ | ❌ |
+| rt.archive | ✅ | ❌ | ❌ | ❌ | ❌ |
+| rt.update | 👁 | ✅ | ✅ | ❌ | ❌ |
 
 ---
 
-# Residents
+## Resident
 
-| Action | Super | Chair | Admin | Treasurer | Resident |
-|---------|--------|--------|---------|------------|------------|
-| View Residents | ❌ | ✅ | ✅ | 👁 | 👁 |
-| View Payment History | ❌ | ✅ | ✅ | ✅ | ⚡ |
-| Create Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
-| Update Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
-| Delete Resident | ❌ | ✅ | ✅ | ❌ | ❌ |
-| Import | ❌ | ✅ | ✅ | ❌ | ❌ |
-
----
-
-# Resident Registration
-
-| Action | Super | Chair | Admin | Treasurer | Resident |
-|---------|--------|--------|---------|------------|------------|
-| Submit | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Approve | ❌ | ✅ | ✅ | ❌ | ❌ |
-| Reject | ❌ | ✅ | ✅ | ❌ | ❌ |
+| Permission | Super | Chair | Admin | Treasurer | Resident |
+|------------|--------|--------|--------|------------|-----------|
+| resident.view | ❌ | ✅ | ✅ | 👁 | ⚡ |
+| resident.payment-history | ❌ | ✅ | ✅ | ✅ | ⚡ |
+| resident.create | ❌ | ✅ | ✅ | ❌ | ❌ |
+| resident.update | ❌ | ✅ | ✅ | ❌ | ❌ |
+| resident.delete | ❌ | ✅ | ✅ | ❌ | ❌ |
+| resident.import | ❌ | ✅ | ✅ | ❌ | ❌ |
 
 ---
 
-# Payments
+## Resident Registration
 
-| Action | Super | Chair | Admin | Treasurer | Resident |
-|---------|--------|--------|---------|------------|------------|
-| Submit Payment | ❌ | ✅ | ✅ | ✅ | ✅ |
-| View Payments | ❌ | 👁 | 👁 | ✅ | ⚡ |
-| Approve | ❌ | ❌ | ❌ | ✅ | ❌ |
-| Reject | ❌ | ❌ | ❌ | ✅ | ❌ |
-| Export | ❌ | 👁 | 👁 | ✅ | ❌ |
-| Import | ❌ | ❌ | ✅ | ✅ | ❌ |
-| Bulk Approve Imported | ❌ | ❌ | ✅ | ✅ | ❌ |
+| Permission | Super | Chair | Admin | Treasurer | Resident |
+|------------|--------|--------|--------|------------|-----------|
+| registration.submit | ❌ | ❌ | ❌ | ❌ | ✅ |
+| registration.approve | ❌ | ✅ | ✅ | ❌ | ❌ |
+| registration.reject | ❌ | ✅ | ✅ | ❌ | ❌ |
 
 ---
 
-# Expenses
+## Payment
 
-| Action | Super | Chair | Admin | Treasurer | Resident |
-|---------|--------|--------|---------|------------|------------|
-| View | ❌ | 👁 | 👁 | ✅ | 👁 |
-| Create | ❌ | ❌ | ❌ | ✅ | ❌ |
-| Update | ❌ | ❌ | ❌ | ✅ | ❌ |
-| Delete | ❌ | ❌ | ❌ | ✅ | ❌ |
-| Approve | ❌ | ✅ | ❌ | ❌ | ❌ |
-| Reject | ❌ | ✅ | ❌ | ❌ | ❌ |
-
----
-
-# Ledger
-
-| Action | Super | Chair | Admin | Treasurer | Resident |
-|---------|--------|--------|---------|------------|------------|
-| View | ❌ | 👁 | 👁 | ✅ | 👁 |
-| Adjustment | ❌ | ❌ | ❌ | ✅ | ❌ |
+| Permission | Super | Chair | Admin | Treasurer | Resident |
+|------------|--------|--------|--------|------------|-----------|
+| payment.submit | ❌ | ✅ | ✅ | ✅ | ✅ |
+| payment.view | ❌ | 👁 | 👁 | ✅ | ⚡ |
+| payment.approve | ❌ | ❌ | ❌ | ✅ | ❌ |
+| payment.reject | ❌ | ❌ | ❌ | ✅ | ❌ |
+| payment.export | ❌ | 👁 | 👁 | ✅ | ❌ |
+| payment.import | ❌ | ❌ | ✅ | ✅ | ❌ |
+| payment.bulk-approve | ❌ | ❌ | ✅ | ✅ | ❌ |
 
 ---
 
-# Dashboard
+## Expense
 
-| Action | Super | 👁 | 👁 | 👁 | 👁 |
-|---------|--------|--------|---------|------------|------------|
-| View Dashboard | ✅ | ✅ | ✅ | ✅ | ✅ |
-
-Super Administrator sees only global statistics.
-
-RT roles see RT-specific data.
-
-Residents see only personal dashboard.
-
----
-
-# Notifications
-
-| Action | Super | Chair | Admin | Treasurer | Resident |
-|---------|--------|--------|---------|------------|------------|
-| View | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Mark Read | ✅ | ✅ | ✅ | ✅ | ✅ |
-
-Only owner may modify notification state.
+| Permission | Super | Chair | Admin | Treasurer | Resident |
+|------------|--------|--------|--------|------------|-----------|
+| expense.view | ❌ | 👁 | 👁 | ✅ | 👁 |
+| expense.create | ❌ | ❌ | ❌ | ✅ | ❌ |
+| expense.update | ❌ | ❌ | ❌ | ✅ | ❌ |
+| expense.delete | ❌ | ❌ | ❌ | ✅ | ❌ |
+| expense.approve | ❌ | ✅ | ❌ | ❌ | ❌ |
+| expense.reject | ❌ | ✅ | ❌ | ❌ | ❌ |
 
 ---
 
-# Activity Log
+## Ledger
 
-| Action | Super | Chair | Admin | Treasurer | Resident |
-|---------|--------|--------|---------|------------|------------|
-| View | ✅ | 👁 | 👁 | 👁 | 👁 |
-
-Only Super Administrator can view global logs.
-
-RT roles may view logs for their RT.
+| Permission | Super | Chair | Admin | Treasurer | Resident |
+|------------|--------|--------|--------|------------|-----------|
+| ledger.view | ❌ | 👁 | 👁 | ✅ | 👁 |
+| ledger.adjustment | ❌ | ❌ | ❌ | ✅ | ❌ |
 
 ---
 
-# User Management
+## Dashboard
 
-| Action | Super | Chair | Admin | Treasurer | Resident |
-|---------|--------|--------|---------|------------|------------|
-| Create User | ✅ | ❌ | ✅ | ❌ | ❌ |
-| Update User | ✅ | ❌ | ✅ | ❌ | ⚡ |
-| Disable User | ✅ | ❌ | ✅ | ❌ | ❌ |
-| Reset Password | ✅ | ❌ | ✅ | ❌ | ⚡ |
+| Permission | Super | Chair | Admin | Treasurer | Resident |
+|------------|--------|--------|--------|------------|-----------|
+| dashboard.view | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
-# Permission Principles
+## Notification
+
+| Permission | Super | Chair | Admin | Treasurer | Resident |
+|------------|--------|--------|--------|------------|-----------|
+| notification.view | ✅ | ✅ | ✅ | ✅ | ✅ |
+| notification.mark-read | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+---
+
+## User
+
+| Permission | Super | Chair | Admin | Treasurer | Resident |
+|------------|--------|--------|--------|------------|-----------|
+| user.create | ✅ | ❌ | ✅ | ❌ | ❌ |
+| user.update | ✅ | ❌ | ✅ | ❌ | ⚡ |
+| user.disable | ✅ | ❌ | ✅ | ❌ | ❌ |
+| user.reset-password | ✅ | ❌ | ✅ | ❌ | ⚡ |
+
+---
+
+# RT Permission Override
+
+Each RT may override selected permissions.
+
+Example:
+
+Default:
+
+```
+Treasurer
+
+resident.create = false
+```
+
+RT 05 Override:
+
+```
+Treasurer
+
+resident.create = true
+```
+
+Effective Permission:
+
+```
+Treasurer in RT 05
+
+resident.create = true
+```
+
+No new role is created.
+
+Only the permission changes.
+
+---
+
+# Authorization Rules
+
+Business modules must never compare role names directly.
+
+Forbidden
+
+```ts
+if (role === "TREASURER");
+```
+
+Required
+
+```ts
+permissionService.hasPermission(
+    userId,
+    "payment.approve"
+)
+```
+
+---
+
+# Security Principles
 
 1. Least Privilege Principle.
-2. Permissions are granted through Membership.
-3. UI visibility does not imply backend authorization.
-4. Authorization is always enforced server-side.
-5. Every permission change must be audited.
+2. Permissions are inherited from Roles.
+3. RT may override default permissions.
+4. UI visibility never replaces backend authorization.
+5. Authorization is enforced server-side.
+6. RLS remains the final data protection layer.
+7. Every permission change must be auditable.
+
+---
+
+# Future Extensions
+
+RBAC v2 is designed to support:
+
+- Permission Profiles
+- Organization Templates
+- Apartment / Housing Profiles
+- Multi-Organization Deployment
+
+without changing the authorization architecture.
 
 ---
 

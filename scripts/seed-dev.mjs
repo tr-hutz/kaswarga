@@ -6,7 +6,7 @@
  *
  *   npm run seed:dev
  *
- * Inserts: RT (10), public.users (13), residents (24), memberships (13)
+ * Inserts: RT (10), public.users (19), residents (24), memberships (19)
  * Creates auth users for all 14 accounts (SUPER_ADMIN + 13 sample users).
  *
  * Safe to re-run — all inserts use ON CONFLICT DO NOTHING.
@@ -81,7 +81,13 @@ const SAMPLE_AUTH_USERS = [
   { id: 'cccccccc-cccc-cccc-cccc-cccccccccc10', email: 'nina@example.com'   },
   { id: 'cccccccc-cccc-cccc-cccc-cccccccccc11', email: 'hendra@example.com' },
   { id: 'cccccccc-cccc-cccc-cccc-cccccccccc12', email: 'dewi@example.com'   },
-  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc13', email: 'teguh@example.com'  },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc13', email: 'teguh@example.com'   },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc14', email: 'agus@example.com'    },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc15', email: 'fitri@example.com'   },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc16', email: 'bambang@example.com' },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc17', email: 'sri@example.com'     },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc18', email: 'wahyu@example.com'   },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc19', email: 'eka@example.com'     },
 ]
 
 // ---------------------------------------------------------------------------
@@ -193,7 +199,13 @@ const PUBLIC_USERS = [
   { id: 'cccccccc-cccc-cccc-cccc-cccccccccc10', name: 'Nina Oktavia',    email: 'nina@example.com',   created_at: '2026-01-03T08:00:00Z' },
   { id: 'cccccccc-cccc-cccc-cccc-cccccccccc11', name: 'Hendra Wijaya',   email: 'hendra@example.com', created_at: '2026-01-03T08:00:00Z' },
   { id: 'cccccccc-cccc-cccc-cccc-cccccccccc12', name: 'Dewi Rahayu',     email: 'dewi@example.com',   created_at: '2026-01-03T08:00:00Z' },
-  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc13', name: 'Teguh Santoso',   email: 'teguh@example.com',  created_at: '2026-01-03T08:00:00Z' },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc13', name: 'Teguh Santoso',        email: 'teguh@example.com',   created_at: '2026-01-03T08:00:00Z' },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc14', name: 'Agus Setiawan',        email: 'agus@example.com',    created_at: '2026-01-03T08:00:00Z' },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc15', name: 'Fitri Handayani',      email: 'fitri@example.com',   created_at: '2026-01-03T08:00:00Z' },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc16', name: 'Bambang Supriyanto',   email: 'bambang@example.com', created_at: '2026-01-03T08:00:00Z' },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc17', name: 'Sri Wahyuni',          email: 'sri@example.com',     created_at: '2026-01-03T08:00:00Z' },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc18', name: 'Wahyu Pratama',        email: 'wahyu@example.com',   created_at: '2026-01-03T08:00:00Z' },
+  { id: 'cccccccc-cccc-cccc-cccc-cccccccccc19', name: 'Eka Susanti',          email: 'eka@example.com',     created_at: '2026-01-03T08:00:00Z' },
 ]
 
 const RESIDENTS = [
@@ -241,7 +253,13 @@ const MEMBERSHIPS = [
   { id: 'dddddddd-dddd-dddd-dddd-dddddddddd10', user_id: 'cccccccc-cccc-cccc-cccc-cccccccccc10', rt_id: '55555555-5555-5555-5555-555555555555', resident_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb10', role: 'RESIDENT',  created_at: '2026-01-04T08:00:00Z' },
   { id: 'dddddddd-dddd-dddd-dddd-dddddddddd11', user_id: 'cccccccc-cccc-cccc-cccc-cccccccccc11', rt_id: '11111111-1111-1111-1111-111111111111', resident_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb11', role: 'CHAIR',     created_at: '2026-01-04T08:00:00Z' },
   { id: 'dddddddd-dddd-dddd-dddd-dddddddddd12', user_id: 'cccccccc-cccc-cccc-cccc-cccccccccc12', rt_id: '11111111-1111-1111-1111-111111111111', resident_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb12', role: 'TREASURER', created_at: '2026-01-04T08:00:00Z' },
-  { id: 'dddddddd-dddd-dddd-dddd-dddddddddd13', user_id: 'cccccccc-cccc-cccc-cccc-cccccccccc13', rt_id: '22222222-2222-2222-2222-222222222222', resident_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb19', role: 'CHAIR',     created_at: '2026-01-04T08:00:00Z' },
+  { id: 'dddddddd-dddd-dddd-dddd-dddddddddd13', user_id: 'cccccccc-cccc-cccc-cccc-cccccccccc13', rt_id: '22222222-2222-2222-2222-222222222222', resident_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb19', role: 'CHAIR',    created_at: '2026-01-04T08:00:00Z' },
+  { id: 'dddddddd-dddd-dddd-dddd-dddddddddd14', user_id: 'cccccccc-cccc-cccc-cccc-cccccccccc14', rt_id: '11111111-1111-1111-1111-111111111111', resident_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb13', role: 'RESIDENT', created_at: '2026-01-04T08:00:00Z' },
+  { id: 'dddddddd-dddd-dddd-dddd-dddddddddd15', user_id: 'cccccccc-cccc-cccc-cccc-cccccccccc15', rt_id: '11111111-1111-1111-1111-111111111111', resident_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb14', role: 'RESIDENT', created_at: '2026-01-04T08:00:00Z' },
+  { id: 'dddddddd-dddd-dddd-dddd-dddddddddd16', user_id: 'cccccccc-cccc-cccc-cccc-cccccccccc16', rt_id: '11111111-1111-1111-1111-111111111111', resident_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb15', role: 'RESIDENT', created_at: '2026-01-04T08:00:00Z' },
+  { id: 'dddddddd-dddd-dddd-dddd-dddddddddd17', user_id: 'cccccccc-cccc-cccc-cccc-cccccccccc17', rt_id: '11111111-1111-1111-1111-111111111111', resident_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb16', role: 'RESIDENT', created_at: '2026-01-04T08:00:00Z' },
+  { id: 'dddddddd-dddd-dddd-dddd-dddddddddd18', user_id: 'cccccccc-cccc-cccc-cccc-cccccccccc18', rt_id: '11111111-1111-1111-1111-111111111111', resident_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb17', role: 'RESIDENT', created_at: '2026-01-04T08:00:00Z' },
+  { id: 'dddddddd-dddd-dddd-dddd-dddddddddd19', user_id: 'cccccccc-cccc-cccc-cccc-cccccccccc19', rt_id: '11111111-1111-1111-1111-111111111111', resident_id: 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb18', role: 'RESIDENT', created_at: '2026-01-04T08:00:00Z' },
 ]
 
 // ---------------------------------------------------------------------------

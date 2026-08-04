@@ -110,7 +110,16 @@ export const PERMISSIONS = {
      */
 
     VIEW_NOTIFICATIONS:
-        'view_notifications'
+        'view_notifications',
+
+    /*
+     |-------------------------------------------------------------
+     | ROLE MANAGEMENT
+     |-------------------------------------------------------------
+     */
+
+    MANAGE_ROLES:
+        'manage_roles'
 } as const
 
 export type Permission = typeof PERMISSIONS[keyof typeof PERMISSIONS]

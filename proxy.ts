@@ -14,34 +14,38 @@ const ALWAYS_ALLOW = [
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
 
-    if (!MAINTENANCE_MODE) return NextResponse.next()
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const anonKey     = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+
+    // Create a response that will carry any refreshed session cookies back to
+    // the browser. This must be done on every request — even in normal mode —
+    // so that the auth token in the cookie stays valid for server-side reads
+    // (e.g. getRequestContext() in Server Actions and Route Handlers).
+    const response = NextResponse.next({ request })
+
+    const userClient = createServerClient(supabaseUrl, anonKey, {
+        cookies: {
+            getAll:  () => request.cookies.getAll(),
+            setAll:  (cs) => cs.forEach(({ name, value, options }) =>
+                response.cookies.set(name, value, options)
+            ),
+        },
+    })
+
+    // getUser() refreshes the access token when it is about to expire and
+    // stores the new token in the response cookies above.
+    const { data: { user } } = await userClient.auth.getUser()
+
+    if (!MAINTENANCE_MODE) return response
 
     if (ALWAYS_ALLOW.some(p => pathname === p || pathname.startsWith(p + '/'))) {
-        return NextResponse.next()
+        return response
     }
 
     // Check if the requesting user is a SUPER_ADMIN — if so, bypass maintenance
     try {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-        const anonKey     = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY!
-
-        const response = NextResponse.next()
-
-        // Resolve the user from the session cookie
-        const userClient = createServerClient(supabaseUrl, anonKey, {
-            cookies: {
-                getAll:  () => request.cookies.getAll(),
-                setAll:  (cs) => cs.forEach(({ name, value, options }) =>
-                    response.cookies.set(name, value, options)
-                ),
-            },
-        })
-
-        const { data: { user } } = await userClient.auth.getUser()
-
         if (user) {
-            // Use service role to bypass RLS when checking the role
+            const serviceKey  = process.env.SUPABASE_SERVICE_ROLE_KEY!
             const adminClient = createServerClient(supabaseUrl, serviceKey, {
                 cookies: { getAll: () => [], setAll: () => {} },
             })
