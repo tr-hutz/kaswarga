@@ -88,11 +88,11 @@
         "rt": "Kelola RT",
         "rtRegistration": "Pendaftaran RT",
         "users": "Kelola Users",
-        "roles": "Manajemen Peran",
-        "permissionMatrix": "Matriks Akses",
-        "memberOverrides": "Override Akses",
+        "roles": "Manajemen Role",
+        "permissionMatrix": "Matriks Perijinan",
+        "memberOverrides": "Override Izin Anggota",
         "effectivePermissions": "Lihat Izin Efektif",
-        "permissionInspector": "Inspeksi Izin"
+        "permissionInspector": "Inspektur Izin"
     },
     "topbar": {
         "brand": "Kas Warga",
@@ -164,8 +164,7 @@
             "expenseCategorySubtitle": "Komposisi pengeluaran berdasarkan kategori tahun {year}",
             "monthlyExpenseCategoryTitle": "Pengeluaran Bulanan",
             "monthlyExpenseCategorySubtitle": "Rincian pengeluaran per kategori per bulan",
-            "noExpenseData": "Belum ada data pengeluaran",
-            "noData": "Belum ada data"
+            "noExpenseData": "Belum ada data pengeluaran"
         },
         "arrearsSummary": {
             "title": "Daftar Tunggakan Warga",
@@ -223,8 +222,7 @@
             "totalFee": "Total Iuran",
             "monthsUnit": "bulan",
             "submit": "Ajukan Pembayaran",
-            "submitting": "Mengirim...",
-            "noProofError": "Unggah bukti bayar terlebih dahulu"
+            "submitting": "Mengirim..."
         },
         "receipt": {
             "label": "Bukti Pembayaran",
@@ -314,7 +312,7 @@
     },
     "users": {
         "title": "Kelola Pengguna",
-        "subtitle": "Manajemen role dan administrasi pengguna",
+        "subtitle": "Manajemen role dan keanggotaan pengguna",
         "table": {
             "name": "Nama",
             "email": "Email",
@@ -827,8 +825,8 @@
         "rowsPerPage": "Baris per halaman"
     },
     "permissions": {
-        "title": "Matriks Hak Akses",
-        "subtitle": "Konfigurasikan hak akses untuk setiap peran",
+        "title": "Matriks Perijinan",
+        "subtitle": "Konfigurasikan hak akses untuk setiap role",
         "roleLabel": "Role",
         "searchLabel": "Cari",
         "searchPlaceholder": "Nama izin, kode, atau modul...",
@@ -848,13 +846,12 @@
             "expense": "Pengeluaran",
             "ledger": "Buku Kas",
             "report": "Laporan",
-            "dashboard": "Dasbor",
             "announcement": "Pengumuman",
             "event": "Acara",
             "document": "Dokumen",
             "settings": "Pengaturan",
             "user": "Pengguna",
-            "role": "Peran",
+            "role": "Role",
             "permission": "Izin",
             "audit": "Audit",
             "other": "Lainnya",
@@ -870,23 +867,19 @@
                 "approve": "Setujui",
                 "reject": "Tolak",
                 "export": "Ekspor",
-                "import": "Impor",
-                "override": "Kesampingkan",
-                "payment": {
-                    "export": "Ekspor Pembayaran"
-                },
+                "override": "Override",
                 "inspector": {
-                    "view": "Inspeksi"
+                    "view": "Inspector"
                 }
             }
         }
     },
     "roles": {
-        "title": "Manajemen Peran",
-        "subtitle": "Kelola peran dan hak akses pengguna dalam sistem",
-        "searchPlaceholder": "Cari peran...",
+        "title": "Manajemen Role",
+        "subtitle": "Kelola role dan hak akses pengguna dalam sistem",
+        "searchPlaceholder": "Cari role...",
         "columns": {
-            "name": "Nama Peran",
+            "name": "Nama Role",
             "description": "Deskripsi",
             "members": "Anggota",
             "status": "Status"
@@ -896,71 +889,71 @@
             "inactive": "Nonaktif"
         },
         "actions": {
-            "create": "Tambah Peran",
+            "create": "Tambah Role",
             "edit": "Edit",
             "activate": "Aktifkan",
             "deactivate": "Nonaktifkan",
-            "cannotDeactivateSelf": "Tidak dapat menonaktifkan peran Anda sendiri",
+            "cannotDeactivateSelf": "Tidak dapat menonaktifkan role Anda sendiri",
             "viewOverrides": "Lihat Override"
         },
         "form": {
-            "createTitle": "Tambah Peran",
-            "editTitle": "Edit Peran",
-            "name": "Nama Peran",
+            "createTitle": "Tambah Role",
+            "editTitle": "Edit Role",
+            "name": "Nama Role",
             "namePlaceholder": "Contoh: Koordinator Lingkungan",
-            "code": "Kode Peran",
+            "code": "Kode Role",
             "codePlaceholder": "Contoh: COORDINATOR",
             "codeHint": "Kode unik, huruf kapital dan underscore saja",
             "codeReadonly": "Kode tidak dapat diubah setelah dibuat",
             "description": "Deskripsi",
-            "descriptionPlaceholder": "Deskripsi singkat tentang peran ini...",
-            "systemProtected": "Peran sistem tidak dapat diubah namanya."
+            "descriptionPlaceholder": "Deskripsi singkat tentang role ini...",
+            "systemProtected": "Role sistem tidak dapat diubah namanya."
         },
         "confirm": {
-            "activateTitle": "Aktifkan Peran",
-            "deactivateTitle": "Nonaktifkan Peran",
-            "activateMessage": "Aktifkan peran \"{name}\"?",
-            "deactivateMessage": "Nonaktifkan peran \"{name}\"? Pengguna dengan peran ini tidak akan dapat mengakses fitur terkait.",
-            "deactivateSystemMessage": "Peran sistem \"{name}\" akan dinonaktifkan. Pengguna dengan peran ini tidak akan dapat mengakses fitur terkait."
+            "activateTitle": "Aktifkan Role",
+            "deactivateTitle": "Nonaktifkan Role",
+            "activateMessage": "Aktifkan role \"{name}\"?",
+            "deactivateMessage": "Nonaktifkan role \"{name}\"? Pengguna dengan role ini tidak akan dapat mengakses fitur terkait.",
+            "deactivateSystemMessage": "Role sistem \"{name}\" akan dinonaktifkan. Pengguna dengan role ini tidak akan dapat mengakses fitur terkait."
         },
         "toast": {
-            "created": "Peran berhasil dibuat",
-            "updated": "Peran berhasil diperbarui",
-            "activated": "Peran berhasil diaktifkan",
-            "deactivated": "Peran berhasil dinonaktifkan",
-            "saveFailed": "Gagal menyimpan peran"
+            "created": "Role berhasil dibuat",
+            "updated": "Role berhasil diperbarui",
+            "activated": "Role berhasil diaktifkan",
+            "deactivated": "Role berhasil dinonaktifkan",
+            "saveFailed": "Gagal menyimpan role"
         },
         "detail": {
-            "back": "Kembali ke Manajemen Peran",
+            "back": "Kembali ke Manajemen Role",
             "tabs": {
                 "members": "Anggota",
-                "matrix": "Matriks Hak Akses",
+                "matrix": "Matriks Perijinan",
                 "audit": "Audit"
             },
-            "matrixRedirect": "Buka matriks hak akses untuk mengelola izin peran ini.",
-            "openMatrix": "Buka Matriks Hak Akses",
+            "matrixRedirect": "Buka matriks perijinan untuk mengelola izin role ini.",
+            "openMatrix": "Buka Matriks Perijinan",
             "auditComingSoon": "Riwayat audit akan tersedia di versi mendatang."
         },
         "members": {
-            "overrideBanner": "{count} override aktif untuk peran ini di RT Anda.",
+            "overrideBanner": "{count} override aktif untuk role ini di RT Anda.",
             "overrideCount": "Override: {count}",
             "configure": "Konfigurasi",
-            "drawerTitle": "Override Akses"
+            "drawerTitle": "Override Izin Anggota"
         }
     },
     "overrides": {
-        "title": "Override Akses",
-        "subtitle": "Konfigurasi pengecualian izin untuk anggota RT berdasarkan peran-nya",
+        "title": "Override Izin Anggota",
+        "subtitle": "Konfigurasi pengecualian izin untuk anggota RT berdasarkan role-nya",
         "memberSearch": "Cari Anggota",
         "memberSearchPlaceholder": "Nama, email, atau ID keanggotaan...",
         "selectMemberPrompt": "Pilih anggota dari daftar kiri",
         "searchPlaceholder": "Cari izin, kode, atau modul...",
         "saved": "Tersimpan",
         "unsavedChanges": "Ada perubahan yang belum disimpan",
-        "overrideNote": "Perubahan pada halaman ini hanya berlaku untuk {memberName}. Peran asli tidak berubah.",
+        "overrideNote": "Perubahan pada halaman ini hanya berlaku untuk {memberName}. Role asli tidak berubah.",
         "info": {
             "name": "Nama Anggota",
-            "role": "Peran",
+            "role": "Role",
             "status": "Status",
             "overrideCount": "Override"
         },
@@ -970,7 +963,7 @@
             "overrides": "Override"
         },
         "source": {
-            "role": "Peran",
+            "role": "Role",
             "overrideGrant": "Override (+)",
             "overrideRevoke": "Override (−)",
             "none": "Tidak Ada"
@@ -999,13 +992,12 @@
             "expense": "Pengeluaran",
             "ledger": "Buku Kas",
             "report": "Laporan",
-            "dashboard": "Dasbor",
             "announcement": "Pengumuman",
             "event": "Acara",
             "document": "Dokumen",
             "settings": "Pengaturan",
             "user": "Pengguna",
-            "role": "Peran",
+            "role": "Role",
             "permission": "Izin",
             "audit": "Audit",
             "other": "Lainnya",
@@ -1015,7 +1007,7 @@
             "saved": "Override izin berhasil disimpan",
             "saveFailed": "Gagal menyimpan override izin"
         },
-        "selectRolePrompt": "Pilih Peran",
+        "selectRolePrompt": "Pilih Role",
         "memberCount": "{count} anggota"
     },
     "viewer": {
@@ -1028,13 +1020,13 @@
         "exportCsv": "Export CSV",
         "sortBy": "Urutkan",
         "source": {
-            "role": "Peran",
+            "role": "Role",
             "override_grant": "Override (+)",
             "override_revoke": "Override (-)",
             "none": "Tidak Ada"
         },
         "reason": {
-            "role": "Diberikan oleh Peran",
+            "role": "Diberikan oleh Role",
             "override_grant": "Diberikan oleh Override",
             "override_revoke": "Dicabut oleh Override",
             "none": "Izin tidak ditetapkan"
@@ -1044,8 +1036,8 @@
             "granted": "Diberikan",
             "denied": "Dicabut",
             "overrideOnly": "Override Saja",
-            "roleOnly": "Peran Saja",
-            "allRoles": "Semua Peran"
+            "roleOnly": "Role Saja",
+            "allRoles": "Semua Role"
         },
         "sort": {
             "module": "Modul",
@@ -1061,7 +1053,7 @@
         },
         "summary": {
             "member": "Anggota",
-            "role": "Peran",
+            "role": "Role",
             "status": "Status",
             "total": "Total",
             "granted": "Diberikan",
@@ -1069,7 +1061,7 @@
             "overrides": "Override"
         },
         "detail": {
-            "role": "Peran",
+            "role": "Role",
             "override": "Override",
             "finalDecision": "Keputusan Akhir",
             "granted": "Diberikan",
@@ -1089,7 +1081,7 @@
         "sections": {
             "currentUser": "Pengguna Aktif",
             "authorizationContext": "AuthorizationContext",
-            "roleResolution": "Peran Resolution",
+            "roleResolution": "Role Resolution",
             "permissionResolution": "Permission Resolution",
             "effectivePermission": "Izin Efektif",
             "requestInfo": "Informasi Request",
@@ -1099,8 +1091,8 @@
             "userId": "User ID",
             "membershipId": "Membership ID",
             "neighborhoodId": "RT ID",
-            "roleCode": "Peran Code",
-            "roleId": "Peran ID",
+            "roleCode": "Role Code",
+            "roleId": "Role ID",
             "requestId": "Request ID",
             "locale": "Locale",
             "timezone": "Timezone",
@@ -1112,13 +1104,13 @@
             "authorizationResult": "Hasil Otorisasi"
         },
         "stats": {
-            "rolePermissions": "Hak Akses Peran",
+            "rolePermissions": "Role Permissions",
             "overrideGrants": "Override Grant",
             "overrideRevokes": "Override Revoke",
             "effectiveCount": "Izin Efektif"
         },
         "source": {
-            "role": "Peran",
+            "role": "Role",
             "override_grant": "Override (+)",
             "override_revoke": "Override (−)",
             "none": "Tidak Ada"
@@ -1126,7 +1118,7 @@
         "trace": {
             "request": "Request",
             "permissionRequired": "Permission Dibutuhkan",
-            "rolePermission": "Hak Akses Peran",
+            "rolePermission": "Role Permission",
             "override": "Override",
             "effectivePermission": "Izin Efektif",
             "finalDecision": "Keputusan Akhir"
@@ -1145,7 +1137,7 @@
         },
         "filter": {
             "allModules": "Semua Modul",
-            "allRoles": "Semua Peran"
+            "allRoles": "Semua Role"
         },
         "permission": {
             "searchPlaceholder": "Cari nama atau kode izin...",
@@ -1155,11 +1147,11 @@
             "searchPlaceholder": "Cari nama atau email anggota...",
             "selectPrompt": "Pilih anggota untuk melihat izin efektifnya",
             "name": "Anggota",
-            "role": "Peran",
+            "role": "Role",
             "status": "Status"
         },
         "stats": {
-            "roles": "Peran",
+            "roles": "Role",
             "members": "Anggota",
             "grantOverrides": "Override (+)",
             "revokeOverrides": "Override (−)",
@@ -1168,14 +1160,14 @@
             "overrides": "Override"
         },
         "sections": {
-            "grantedByRole": "Diberikan oleh Peran",
+            "grantedByRole": "Diberikan oleh Role",
             "overrideGrant": "Override Tambahan (+)",
             "overrideRevoke": "Override Dicabut (−)",
             "effectiveMembers": "Total Anggota Efektif",
-            "noRoles": "Tidak ada peran yang memiliki izin ini"
+            "noRoles": "Tidak ada role yang memiliki izin ini"
         },
         "reason": {
-            "role": "Diberikan oleh Peran",
+            "role": "Diberikan oleh Role",
             "override_grant": "Diberikan oleh Override",
             "override_revoke": "Dicabut oleh Override",
             "none": "Izin tidak ditetapkan"

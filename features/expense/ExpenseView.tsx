@@ -110,7 +110,7 @@ export default function ExpenseView({
                     <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
                 </div>
-                <Can permission={PERMISSION.EXPENSE_APPROVE}>
+                <Can permission={PERMISSION.EXPENSE_UPDATE}>
                     {pendingCount > 0 && (
                         <button
                             onClick={approveAllExpenses}
@@ -161,13 +161,11 @@ export default function ExpenseView({
                 }
                 renderActions={
                     <div className="flex items-center gap-2 flex-wrap">
-                        <Can permission={PERMISSION.EXPENSE_EXPORT}>
-                            <ExportDropdown
-                                onExportExcel={() => exportExcel(data)}
-                                onExportCSV={() => exportCSV(data)}
-                            />
-                        </Can>
-                        <Can permission={PERMISSION.EXPENSE_IMPORT}>
+                        <ExportDropdown
+                            onExportExcel={() => exportExcel(data)}
+                            onExportCSV={() => exportCSV(data)}
+                        />
+                        <Can permission={PERMISSION.EXPENSE_CREATE}>
                             <button
                                 onClick={openImport}
                                 className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"

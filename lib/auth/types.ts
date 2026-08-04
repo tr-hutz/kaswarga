@@ -21,8 +21,6 @@ export const PERMISSION = {
   RESIDENT_DELETE:  'resident.delete',
   RESIDENT_APPROVE: 'resident.approve',
   RESIDENT_REJECT:  'resident.reject',
-  RESIDENT_EXPORT:  'resident.export',
-  RESIDENT_IMPORT:  'resident.import',
 
   // Membership
   MEMBERSHIP_VIEW:   'membership.view',
@@ -37,17 +35,12 @@ export const PERMISSION = {
   PAYMENT_DELETE:  'payment.delete',
   PAYMENT_APPROVE: 'payment.approve',
   PAYMENT_REJECT:  'payment.reject',
-  DASHBOARD_PAYMENT_EXPORT: 'dashboard.payment.export',
 
   // Expense
-  EXPENSE_VIEW:    'expense.view',
-  EXPENSE_CREATE:  'expense.create',
-  EXPENSE_UPDATE:  'expense.update',
-  EXPENSE_DELETE:  'expense.delete',
-  EXPENSE_APPROVE: 'expense.approve',
-  EXPENSE_REJECT:  'expense.reject',
-  EXPENSE_EXPORT:  'expense.export',
-  EXPENSE_IMPORT:  'expense.import',
+  EXPENSE_VIEW:   'expense.view',
+  EXPENSE_CREATE: 'expense.create',
+  EXPENSE_UPDATE: 'expense.update',
+  EXPENSE_DELETE: 'expense.delete',
 
   // Ledger
   LEDGER_VIEW:   'ledger.view',
@@ -68,6 +61,12 @@ export const PERMISSION = {
   EVENT_CREATE: 'event.create',
   EVENT_UPDATE: 'event.update',
   EVENT_DELETE: 'event.delete',
+
+  // Document
+  DOCUMENT_VIEW:   'document.view',
+  DOCUMENT_CREATE: 'document.create',
+  DOCUMENT_UPDATE: 'document.update',
+  DOCUMENT_DELETE: 'document.delete',
 
   // Settings
   SETTINGS_VIEW:   'settings.view',

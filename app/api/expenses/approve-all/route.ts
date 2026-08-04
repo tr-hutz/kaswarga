@@ -9,7 +9,7 @@ import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 export async function POST() {
     try {
         const ctx  = await getRequestContext()
-        requirePermission(ctx.authorization, PERMISSION.EXPENSE_APPROVE)
+        requirePermission(ctx.authorization, PERMISSION.EXPENSE_UPDATE)
 
         const rtId  = ctx.authorization.neighborhoodId
         const userId = ctx.authorization.userId
