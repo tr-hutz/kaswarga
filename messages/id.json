@@ -80,6 +80,7 @@
         "residents": "Warga",
         "payments": "Pembayaran",
         "expenses": "Pengeluaran",
+        "income": "Pemasukan",
         "ledger": "Buku Kas",
         "notification": "Notifikasi",
         "activity": "Aktivitas",
@@ -636,6 +637,95 @@
             "reject": "Tolak",
             "approveSuccess": "Pembayaran berhasil disetujui.",
             "rejectSuccess": "Pembayaran berhasil ditolak."
+        }
+    },
+    "income": {
+        "title": "Pemasukan",
+        "subtitle": "Kelola pemasukan non-iuran RT",
+        "addButton": "Tambah Pemasukan",
+        "searchPlaceholder": "Cari pemasukan...",
+        "deleteTitle": "Hapus Pemasukan",
+        "deleteConfirm": "Apakah kamu yakin ingin menghapus pemasukan \"{name}\"?",
+        "table": {
+            "incomeName": "Nama Pemasukan",
+            "category": "Kategori",
+            "sourceType": "Sumber",
+            "payer": "Pemberi",
+            "amount": "Nominal",
+            "receivedAt": "Tanggal Terima",
+            "status": "Status",
+            "actions": "Aksi",
+            "empty": "Belum ada data pemasukan.",
+            "loading": "Memuat data..."
+        },
+        "categories": {
+            "DONATION": "Donasi",
+            "GOVERNMENT": "Pemerintah",
+            "EVENT": "Acara",
+            "BAZAAR": "Bazaar",
+            "RENTAL": "Sewa",
+            "SALES": "Penjualan",
+            "INTEREST": "Bunga",
+            "OTHER": "Lainnya"
+        },
+        "sourceTypes": {
+            "RESIDENT": "Warga",
+            "NON_RESIDENT": "Non-Warga",
+            "ORGANIZATION": "Organisasi",
+            "GOVERNMENT": "Pemerintah",
+            "ANONYMOUS": "Anonim"
+        },
+        "status": {
+            "pending": "Menunggu",
+            "approved": "Disetujui",
+            "rejected": "Ditolak"
+        },
+        "form": {
+            "addTitle": "Tambah Pemasukan",
+            "editTitle": "Edit Pemasukan",
+            "incomeName": "Nama Pemasukan",
+            "incomeNamePlaceholder": "Contoh: Donasi HUT RT, Sewa Pos Ronda",
+            "category": "Kategori",
+            "selectCategory": "Pilih kategori",
+            "sourceType": "Sumber Dana",
+            "selectSourceType": "Pilih sumber",
+            "resident": "Warga",
+            "selectResident": "Pilih warga",
+            "payerName": "Nama Pemberi",
+            "payerNamePlaceholder": "Nama individu atau organisasi",
+            "amount": "Nominal (Rp)",
+            "receivedAt": "Tanggal Diterima",
+            "paymentMethod": "Metode Pembayaran",
+            "paymentMethodPlaceholder": "Tunai, Transfer, QRIS",
+            "referenceNumber": "No. Referensi",
+            "referenceNumberPlaceholder": "Nomor bukti transfer atau referensi",
+            "notes": "Catatan",
+            "notesPlaceholder": "Keterangan tambahan (opsional)",
+            "attachment": "Lampiran",
+            "submit": "Simpan",
+            "cancel": "Batal"
+        },
+        "drawer": {
+            "title": "Detail Pemasukan",
+            "subtitle": "Informasi detail pemasukan RT",
+            "incomeName": "Nama Pemasukan",
+            "category": "Kategori",
+            "sourceType": "Sumber Dana",
+            "payer": "Pemberi",
+            "amount": "Nominal",
+            "receivedAt": "Tanggal Diterima",
+            "paymentMethod": "Metode Pembayaran",
+            "referenceNumber": "No. Referensi",
+            "notes": "Catatan",
+            "attachment": "Lampiran",
+            "approvedAt": "Disetujui pada {date}",
+            "rejectedAt": "Ditolak",
+            "rejectionNote": "Alasan Ditolak"
+        },
+        "approvalBar": {
+            "rejectReason": "Alasan penolakan",
+            "rejectReasonPlaceholder": "Tuliskan alasan penolakan (opsional)...",
+            "confirmReject": "Konfirmasi Tolak"
         }
     },
     "expenses": {

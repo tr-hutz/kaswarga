@@ -91,6 +91,14 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
+        label:       'income',
+        href:        '/income',
+        icon:        'trending-up',
+        permission:  PERMISSION.INCOME_VIEW,
+        requiresRt:  true,
+    },
+
+    {
         label:       'ledger',
         href:        '/ledger',
         icon:        'shelving-unit',
