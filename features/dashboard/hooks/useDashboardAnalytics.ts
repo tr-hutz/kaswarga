@@ -72,6 +72,7 @@ export function useDashboardAnalytics() {
 
   const [residentAnalytics, setResidentAnalytics] = useState<any[]>([])
   const [monthlyFee,        setMonthlyFee       ] = useState(0)
+  const [incomeInsight,     setIncomeInsight    ] = useState<any>(null)
 
   // incrementing key used to force a reload without changing year
   const [refreshKey, setRefreshKey] = useState(0)
@@ -142,6 +143,7 @@ export function useDashboardAnalytics() {
 
         setResidentAnalytics(data.residentAnalytics || [])
         setMonthlyFee(data.rt?.monthly_fee || 0)
+        setIncomeInsight(data.incomeInsight ?? null)
 
       } catch (err) {
 
@@ -180,6 +182,7 @@ export function useDashboardAnalytics() {
     financialInsight,
     residentAnalytics,
     monthlyFee,
+    incomeInsight,
     refresh,
   }
 }

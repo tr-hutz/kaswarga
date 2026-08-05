@@ -10,6 +10,10 @@ import {
   MONTHS
 } from '@/lib/constants/months'
 
+import {
+  findApprovedIncomesByYear
+} from '../repositories/income-analytics.repository'
+
 
 /*
 |--------------------------------------------------------------------------
@@ -630,6 +634,43 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
+   | INCOME ANALYTICS
+   |--------------------------------------------------------------------------
+   */
+
+  let incomeData: Array<{ amount: number; income_category: string; received_at: string }> = []
+
+  try {
+    if (rtId) {
+      incomeData = await findApprovedIncomesByYear(rtId, year)
+    }
+  } catch {
+    // non-critical — dashboard still renders without income analytics
+  }
+
+  const currentMonth = new Date().getMonth() + 1
+  const currentYear  = new Date().getFullYear()
+
+  const incomeThisMonth = year === currentYear
+    ? incomeData
+        .filter(i => new Date(i.received_at).getMonth() + 1 === currentMonth)
+        .reduce((s, i) => s + Number(i.amount ?? 0), 0)
+    : 0
+
+  const incomeThisYear = incomeData.reduce((s, i) => s + Number(i.amount ?? 0), 0)
+
+  const incomeCategoryTotals: Record<string, number> = {}
+  for (const i of incomeData) {
+    const cat = i.income_category || 'OTHER'
+    incomeCategoryTotals[cat] = (incomeCategoryTotals[cat] ?? 0) + Number(i.amount ?? 0)
+  }
+
+  const incomeByCategory = Object.entries(incomeCategoryTotals)
+    .map(([category, total]) => ({ category, total }))
+    .sort((a, b) => b.total - a.total)
+
+  /*
+   |--------------------------------------------------------------------------
    | RETURN
    |--------------------------------------------------------------------------
    */
@@ -680,7 +721,13 @@ export async function getDashboardData(
 
     paymentData,
 
-    confirmationData
+    confirmationData,
+
+    incomeInsight: {
+      incomeThisMonth,
+      incomeThisYear,
+      incomeByCategory,
+    },
 
   }
 }

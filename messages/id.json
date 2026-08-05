@@ -166,7 +166,9 @@
             "monthlyExpenseCategoryTitle": "Pengeluaran Bulanan",
             "monthlyExpenseCategorySubtitle": "Rincian pengeluaran per kategori per bulan",
             "noExpenseData": "Belum ada data pengeluaran",
-            "noData": "Belum ada data"
+            "noData": "Belum ada data",
+            "incomeTitle": "Pemasukan Non-Iuran",
+            "incomeSubtitle": "Ringkasan pemasukan lainnya tahun {year}"
         },
         "arrearsSummary": {
             "title": "Daftar Tunggakan Warga",
@@ -203,7 +205,22 @@
             "expense": "Pengeluaran",
             "expenseSubtitle": "tahun ini",
             "arrears": "Tunggakan",
-            "arrearsSubtitle": "perlu ditagih"
+            "arrearsSubtitle": "perlu ditagih",
+            "incomeThisMonth": "Pemasukan Bulan Ini",
+            "incomeThisMonthSubtitle": "total pemasukan non-iuran bulan berjalan",
+            "incomeThisYear": "Pemasukan Tahun {year}",
+            "incomeThisYearSubtitle": "total pemasukan non-iuran tahun ini",
+            "incomeCategorySubtitle": "kategori terbesar"
+        },
+        "incomeCategories": {
+            "DONATION": "Donasi",
+            "GOVERNMENT": "Pemerintah",
+            "EVENT": "Kegiatan",
+            "BAZAAR": "Bazar",
+            "RENTAL": "Sewa",
+            "SALES": "Penjualan",
+            "INTEREST": "Bunga",
+            "OTHER": "Lainnya"
         }
     },
     "home": {
