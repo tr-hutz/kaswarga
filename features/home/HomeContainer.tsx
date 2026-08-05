@@ -16,7 +16,7 @@ export default function HomeContainer() {
   // SUPER_ADMIN has no RT — redirect to the RT management page
   useEffect(() => {
     if (!loading && !rtId) {
-      router.replace('/rt')
+      router.replace('/rt/registration')
     }
   }, [loading, rtId, router])
 

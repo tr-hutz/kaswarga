@@ -82,7 +82,7 @@ export default function PaymentView({
     confirmDeleteAll, cancelDeleteAll, deleteAllConfirmOpen,
     bulkActionLoading,
 }: Props) {
-    const canExport = usePermission(PERMISSION.REPORT_EXPORT)
+    const canExport = usePermission(PERMISSION.DASHBOARD_PAYMENT_EXPORT)
 
     return (
         <div className="space-y-6">
@@ -91,7 +91,7 @@ export default function PaymentView({
                     <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
                 </div>
-                <Can permission={PERMISSION.PAYMENT_UPDATE}>
+                <Can permission={PERMISSION.PAYMENT_APPROVE}>
                     {importedPendingCount > 0 && (
                         <div className="flex items-center gap-2 flex-shrink-0">
                             <DangerDropdown
@@ -146,7 +146,7 @@ export default function PaymentView({
                                 onExportExcel={onExportExcel}
                                 onExportCSV={onExportCSV}
                             />
-                            <Can permission={PERMISSION.PAYMENT_UPDATE}>
+                            <Can permission={PERMISSION.PAYMENT_CREATE}>
                                 <button
                                     onClick={openImport}
                                     className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"

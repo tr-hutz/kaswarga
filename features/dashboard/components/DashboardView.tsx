@@ -6,8 +6,8 @@ import { PERMISSION }      from '@/lib/auth/types'
 import InsightCard
   from '../cards/InsightCard'
 
-import CashflowChart
-  from '../charts/CashflowChart'
+import CashFlowChart
+  from '../charts/CashFlowChart'
 
 import MonthlyCollectionChart
   from '../charts/MonthlyCollectionChart'
@@ -24,7 +24,7 @@ import ResidentArrearsSummary
 import Icon       from '@/components/ui/Icon'
 import {
   formatRupiah
-} from '../../../lib/utils'
+} from '@/lib/utils'
 
 function SectionLabel({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
@@ -178,7 +178,7 @@ export default function DashboardView({
             title={t('sections.paymentStatus')}
             subtitle={t('sections.paymentStatusSubtitle')}
           />
-          <Can permission={PERMISSION.LEDGER_EXPORT}>
+          <Can permission={PERMISSION.DASHBOARD_PAYMENT_EXPORT}>
             {onExportLedger && (
               <button
                 onClick={onExportLedger}
@@ -237,7 +237,7 @@ export default function DashboardView({
 
       {/* ARREARS TABLE — ledger.export permission required */}
 
-      <Can permission={PERMISSION.LEDGER_EXPORT}>
+      <Can permission={PERMISSION.DASHBOARD_PAYMENT_ARREARS}>
         <ResidentArrearsSummary
           residentAnalytics={residentAnalytics}
           monthlyFee={monthlyFee}
@@ -307,12 +307,12 @@ export default function DashboardView({
         "
       >
 
-        <CashflowChart
-          data={analytics.cashflow}
+        <CashFlowChart
+          data={analytics.cashflow ?? []}
         />
 
         <MonthlyCollectionChart
-          data={analytics.collection}
+          data={analytics.collection ?? []}
           totalResidents={paymentHealth.totalResidents}
         />
 

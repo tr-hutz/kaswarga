@@ -15,23 +15,28 @@ export default function SidebarMenu({ onClose }: { onClose?: () => void }) {
     const pathname = usePathname()
     const { permissions, rtId, membership } = useAuth()
     const perms: ReadonlySet<string> = permissions ?? EMPTY_PERMISSIONS
+    const isSuperAdmin = membership?.role === 'SUPER_ADMIN'
 
     // Memoize to avoid re-filtering NAVIGATION on every render (usePathname()
     // triggers re-renders on route changes; permissions/rtId rarely change).
     const canApproveResidents = useMemo(
-        () => perms.has(PERMISSION.RESIDENT_APPROVE),
-        [perms]
+        () => isSuperAdmin || perms.has(PERMISSION.RESIDENT_APPROVE),
+        [isSuperAdmin, perms]
     )
 
     const { pendingRtCount, pendingResidentCount } =
         usePendingCounts(rtId, canApproveResidents)
 
     const filteredMenus = useMemo(() => NAVIGATION.filter(item => {
-        if (item.noRt && rtId) return false
-        if (item.requiresRt && !rtId) return false
+        // noRt items belong to SUPER_ADMIN; RT members never see them
+        if (item.noRt && !isSuperAdmin) return false
+        // requiresRt items belong to RT members; SUPER_ADMIN never sees them
+        if (item.requiresRt && isSuperAdmin) return false
         if (!item.permission) return true
+        // SUPER_ADMIN bypasses permission checks — mirrors SuperAdminPermissionSet
+        if (isSuperAdmin) return true
         return perms.has(item.permission)
-    }), [perms, rtId])
+    }), [isSuperAdmin, perms])
 
     return (
         <div className="flex flex-col h-full">

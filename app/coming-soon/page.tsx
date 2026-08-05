@@ -10,7 +10,7 @@ export default async function ComingSoonPage() {
             <h1 className="text-xl font-semibold text-foreground mb-2">{t('title')}</h1>
             <p className="text-sm text-muted mb-6">{t('description')}</p>
             <Link
-                href="/dashboard"
+                href="/"
                 className="px-4 py-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg transition-colors"
             >
                 {t('back')}

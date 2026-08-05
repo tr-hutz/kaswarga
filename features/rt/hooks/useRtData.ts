@@ -1,12 +1,13 @@
-﻿'use client'
+'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getAllRt }                          from '@/lib/services/rt.service'
+import type { PageResult, QueryOptions }    from '@/lib/types/query'
 
-export function useRtData() {
+export function useRtData(query: QueryOptions) {
 
-    const [data,    setData]    = useState<any[]>([])
+    const [allData, setAllData] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [error,   setError]   = useState(false)
 
@@ -15,7 +16,7 @@ export function useRtData() {
         setError(false)
         try {
             const rows = await getAllRt()
-            setData(rows)
+            setAllData(rows)
         } catch (err) {
             console.error('[useRtData]', err)
             setError(true)
@@ -27,7 +28,21 @@ export function useRtData() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { load() }, [load])
 
-    function refresh() { load() }
+    const result = useMemo<PageResult<any> | null>(() => {
+        if (loading || error) return null
+        const { page, pageSize } = query
+        const total      = allData.length
+        const totalPages = Math.max(1, Math.ceil(total / pageSize))
+        const safePage   = Math.min(Math.max(1, page), totalPages)
+        const start      = (safePage - 1) * pageSize
+        return {
+            data: allData.slice(start, start + pageSize),
+            total,
+            page:       safePage,
+            pageSize,
+            totalPages,
+        }
+    }, [allData, query, loading, error])
 
-    return { data, loading, error, refresh }
+    return { result, loading, error, refresh: load }
 }

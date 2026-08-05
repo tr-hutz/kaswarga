@@ -29,6 +29,8 @@ export default function CashFlowChart({ data = [] }: { data?: any[] }) {
         { name: 'Saldo',       data: data.map(d => d.balance) },
     ]
 
+    const hasData = series.some(s => s.data.some(v => v > 0))
+
     const options: ApexOptions = {
         chart: {
             type:       'line',
@@ -70,7 +72,7 @@ export default function CashFlowChart({ data = [] }: { data?: any[] }) {
                     {t('cashflowSubtitle')}
                 </p>
             </div>
-            {data.length === 0 ? (
+            {!hasData ? (
                 <div className="h-[350px] flex items-center justify-center text-sm text-muted">
                     {t('noData')}
                 </div>

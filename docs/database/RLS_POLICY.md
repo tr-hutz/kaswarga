@@ -322,3 +322,87 @@ Business Rules may evolve.
 Permission assignments may evolve.
 
 RLS remains the final protection ensuring that unauthorized data access is impossible.
+
+---
+
+# Sprint 5.2 — RBAC v2 Integration Changes
+
+Applied in migrations 020–025 (026 deferred). All changes are incremental and
+backward compatible. No existing policy was dropped without an approved replacement.
+
+## Tables Updated
+
+### roles, permissions, role_permissions (020)
+
+RLS enabled. Open SELECT for `authenticated`. No write policies for
+`authenticated` — writes are service_role-only (supabaseAdmin). Tables contain
+RBAC v2 catalog data that the permission management UI reads directly.
+
+### rt_permission_overrides (020)
+
+RLS enabled. All four commands (SELECT, INSERT, UPDATE, DELETE) scoped to
+`has_permission(rt_id, 'permission.override')`. This is the highest-sensitivity
+RBAC table: contains per-RT permission customizations. `has_permission()` is
+SECURITY DEFINER and bypasses RLS on this table internally — no circular
+dependency.
+
+### memberships (021)
+
+Three new permissive policies added alongside existing `super_admin` policies:
+
+| Policy | Command | Guard |
+|---|---|---|
+| `memberships: rt admin insert` | INSERT | `has_permission(rt_id, 'membership.create')` |
+| `memberships: rt admin update` | UPDATE | `has_permission(rt_id, 'membership.update')` |
+| `memberships: rt admin delete` | DELETE | `has_permission(rt_id, 'membership.delete')` |
+
+RT_ADMIN and RT_CHAIR can now manage memberships via the authenticated client
+in addition to the existing supabaseAdmin path.
+
+### activity_logs (022)
+
+SELECT policy `activity_logs: read own rt` altered:
+
+| | Before | After |
+|---|---|---|
+| Guard | `rt_id IN (get_user_rt_ids()) OR is_super_admin()` | `has_permission(rt_id, 'audit.view')` |
+
+Effect: activity log reads are now restricted to RT_ADMIN (the only role with
+`audit.view` in the default seed) and SUPER_ADMIN. The INSERT policy is unchanged.
+
+### rt (023)
+
+UPDATE policy `rt: members can update own rt` altered:
+
+| | Before | After |
+|---|---|---|
+| Guard | `id IN (get_user_rt_ids()) OR is_super_admin()` | `has_permission(id, 'settings.update')` |
+
+Effect: RT profile updates now require `settings.update` permission. RT_ADMIN
+and RT_CHAIR retain access; TREASURER, SECRETARY, and RESIDENT lose direct
+update access.
+
+### ledger (024)
+
+INSERT policy `ledger: create` dropped. The policy used `ledger.view` as the
+INSERT guard (semantically incorrect). Since `insert_ledger()` is SECURITY
+DEFINER (bypasses RLS) and is the only legitimate INSERT path, no authenticated
+INSERT policy is needed or appropriate.
+
+### notifications (025)
+
+INSERT policy `notifications: authenticated can insert` altered:
+
+| | Before | After |
+|---|---|---|
+| WITH CHECK | `true` | `target_user_id = auth.uid() OR is_super_admin()` |
+
+Prevents cross-user notification spam. All server-side notification inserts
+use supabaseAdmin (service_role) and are unaffected.
+
+## Deferred
+
+### storage.objects (026)
+
+Storage tenant isolation is deferred pending a path naming convention audit.
+See `supabase/migrations/026_rbac_storage_tenant_isolation.sql` for prerequisites.

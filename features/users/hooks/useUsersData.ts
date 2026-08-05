@@ -1,14 +1,14 @@
-﻿'use client'
+'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getAllUsers } from '@/lib/services/users.service'
-import type { PageResult } from '@/lib/types/query'
+import type { PageResult, QueryOptions } from '@/lib/types/query'
 import type { UserRow } from '../components/UserColumns'
 
-export function useUsersData() {
+export function useUsersData(query: QueryOptions) {
 
-    const [result,  setResult]  = useState<PageResult<UserRow> | null>(null)
+    const [allRows, setAllRows] = useState<UserRow[]>([])
     const [loading, setLoading] = useState(true)
     const [error,   setError]   = useState(false)
 
@@ -48,13 +48,7 @@ export function useUsersData() {
                 }))
             })
 
-            setResult({
-                data:       rows,
-                total:      rows.length,
-                page:       1,
-                pageSize:   rows.length || 1,
-                totalPages: 1,
-            })
+            setAllRows(rows)
 
         } catch (err) {
             console.error('[useUsersData]', err)
@@ -67,6 +61,22 @@ export function useUsersData() {
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { load() }, [load])
+
+    const result = useMemo<PageResult<UserRow> | null>(() => {
+        if (loading || error) return null
+        const { page, pageSize } = query
+        const total      = allRows.length
+        const totalPages = Math.max(1, Math.ceil(total / pageSize))
+        const safePage   = Math.min(Math.max(1, page), totalPages)
+        const start      = (safePage - 1) * pageSize
+        return {
+            data: allRows.slice(start, start + pageSize),
+            total,
+            page:       safePage,
+            pageSize,
+            totalPages,
+        }
+    }, [allRows, query, loading, error])
 
     return { result, loading, error, refresh: load }
 }
