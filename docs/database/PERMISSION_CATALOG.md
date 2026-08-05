@@ -127,6 +127,19 @@ PostgreSQL RLS
 
 ---
 
+# Income Module
+
+| Permission | Description | Status | Notes |
+|------------|-------------|--------|-------|
+| income.view | View income transactions | Active | |
+| income.create | Create income transaction | Active | |
+| income.update | Edit income transaction | Active | Pending only |
+| income.delete | Delete income transaction | Active | Soft Delete only |
+| income.approve | Approve income transaction | Active | Triggers ledger entry |
+| income.reject | Reject income transaction | Active | |
+
+---
+
 # Ledger Module
 
 | Permission | Description | Status | Notes |

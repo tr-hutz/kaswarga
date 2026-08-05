@@ -198,6 +198,19 @@ Legend
 
 ---
 
+## Income
+
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| income.view | ❌ | 👁 | ✅ | ✅ | 👁 | ❌ |
+| income.create | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| income.update | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| income.delete | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| income.approve | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| income.reject | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+
+---
+
 ## Ledger
 
 | Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |

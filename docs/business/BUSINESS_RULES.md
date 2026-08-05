@@ -535,7 +535,61 @@ Its permissions cannot be configured because it unconditionally bypasses the per
 
 ---
 
-# 15. Security
+# 15. Income Management
+
+## BR-150
+
+Income Management (Pemasukan) handles non-iuran cash inflows to the RT.
+
+Examples include: donations, government transfers, event proceeds, bazaar sales, rental income, bank interest.
+
+Income is distinct from Payments (iuran warga). The payment workflow remains unchanged.
+
+---
+
+## BR-151
+
+An income transaction is created with status=pending.
+
+Only users with income.create permission may create income transactions.
+
+---
+
+## BR-152
+
+An income transaction may only be approved or rejected while its status is pending.
+
+Approval changes status to approved and calls insert_ledger() with type='pemasukan' and source='income'.
+
+Rejection changes status to rejected and records the rejection reason.
+
+---
+
+## BR-153
+
+Only users with income.approve or income.reject permission may perform those actions.
+
+---
+
+## BR-154
+
+Approved income automatically creates a ledger entry.
+
+The ledger entry uses: type=pemasukan, source=income, reference_id=income.id.
+
+The cashflow chart on the dashboard reflects approved income.
+
+---
+
+## BR-155
+
+Income categories are managed through database migrations only.
+
+There is no CRUD UI for income categories.
+
+---
+
+# 16. Security
 
 ## BR-100
 
