@@ -92,6 +92,7 @@ export default function IncomeDrawer({
             onClick={onClose}
         >
             <div
+                data-testid="income-drawer"
                 className="bg-surface w-full max-w-lg h-full overflow-y-auto shadow-default"
                 onClick={e => e.stopPropagation()}
             >
@@ -101,7 +102,7 @@ export default function IncomeDrawer({
                         <h2 className="text-xl font-semibold text-foreground">{t('drawer.title')}</h2>
                         <p className="text-sm text-muted mt-0.5">{t('drawer.subtitle')}</p>
                     </div>
-                    <button onClick={onClose} className="text-subtle hover:text-foreground mt-0.5" aria-label="Tutup">
+                    <button data-testid="close-drawer" onClick={onClose} className="text-subtle hover:text-foreground mt-0.5" aria-label="Tutup">
                         <Icon name="x" className="w-5 h-5" />
                     </button>
                 </div>
