@@ -50,6 +50,14 @@ export const PERMISSION = {
   EXPENSE_EXPORT:  'expense.export',
   EXPENSE_IMPORT:  'expense.import',
 
+  // Income
+  INCOME_VIEW:    'income.view',
+  INCOME_CREATE:  'income.create',
+  INCOME_UPDATE:  'income.update',
+  INCOME_DELETE:  'income.delete',
+  INCOME_APPROVE: 'income.approve',
+  INCOME_REJECT:  'income.reject',
+
   // Ledger
   LEDGER_VIEW:   'ledger.view',
   LEDGER_EXPORT: 'ledger.export',
