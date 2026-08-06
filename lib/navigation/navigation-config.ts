@@ -117,7 +117,8 @@ export const NAVIGATION: NavItem[] = [
         label:      'activity',
         href:       '/activity',
         icon:       'activity',
-        permission: null,
+        permission: PERMISSION.AUDIT_VIEW,
+        requiresRt: true,
     },
 
     {
