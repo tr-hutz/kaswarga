@@ -1,11 +1,12 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useState }        from 'react'
-import type { FormEvent }  from 'react'
-import { useTranslations } from 'next-intl'
-import { useAuth }         from '@/lib/auth/useAuth'
-import Icon                from '@/components/ui/Icon'
+import { useState, useEffect } from 'react'
+import type { FormEvent }      from 'react'
+import { useTranslations }     from 'next-intl'
+import { useAuth }             from '@/lib/auth/useAuth'
+import { findResidents }       from '@/lib/repositories/resident.repository'
+import Icon                    from '@/components/ui/Icon'
 
 const CATEGORIES = [
     'DONATION', 'GOVERNMENT', 'EVENT', 'BAZAAR',
@@ -45,11 +46,18 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     const tc = useTranslations('common')
 
     const { membership } = useAuth()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const residents: any[] = (membership as any)?.rt?.residents ?? []
+    const rtId = (membership as any)?.rt?.id as string | undefined
 
-    const [form,     setForm]     = useState(() => initialData ? { ...emptyForm(), ...initialData } : emptyForm())
-    const [saving,   setSaving]   = useState(false)
+    const [residents, setResidents] = useState<Array<{ id: string; name: string }>>([])
+    const [form,      setForm]      = useState(() => initialData ? { ...emptyForm(), ...initialData } : emptyForm())
+    const [saving,    setSaving]    = useState(false)
+
+    useEffect(() => {
+        if (!rtId) return
+        findResidents({ rtId, status: 'active' })
+            .then(rows => setResidents(rows.map(r => ({ id: r.id, name: r.name }))))
+            .catch(() => {})
+    }, [rtId])
 
     if (!open) return null
 
