@@ -19,6 +19,20 @@ const SOURCE_TYPES = [
 
 const PAYMENT_METHODS = ['CASH', 'TRANSFER', 'QRIS'] as const
 
+// Normalize legacy free-text values saved before the dropdown was introduced
+const PAYMENT_METHOD_LEGACY: Record<string, string> = {
+    tunai:    'CASH',
+    cash:     'CASH',
+    transfer: 'TRANSFER',
+    qris:     'QRIS',
+}
+
+function normalizePaymentMethod(value: string | null | undefined): string {
+    if (!value) return ''
+    if (['CASH', 'TRANSFER', 'QRIS'].includes(value)) return value
+    return PAYMENT_METHOD_LEGACY[value.toLowerCase()] ?? ''
+}
+
 interface IncomeFormProps {
     open:         boolean
     onClose:      () => void
@@ -57,7 +71,9 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     // Reset form to initialData each time the form opens
     useEffect(() => {
         if (open) {
-            setForm(initialData ? { ...emptyForm(), ...initialData } : emptyForm())
+            const base = initialData ? { ...emptyForm(), ...initialData } : emptyForm()
+            base.payment_method = normalizePaymentMethod(base.payment_method)
+            setForm(base)
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])
