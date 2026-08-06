@@ -321,7 +321,7 @@ export default function DashboardView({
               />
 
               <InsightCard
-                title={t('cards.incomeThisYear')}
+                title={t('cards.incomeThisYear', { year })}
                 value={formatRupiah(incomeInsight.incomeThisYear)}
                 subtitle={t('cards.incomeThisYearSubtitle', { year })}
                 valueColor="text-success"
