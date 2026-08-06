@@ -17,6 +17,8 @@ const SOURCE_TYPES = [
     'RESIDENT', 'NON_RESIDENT', 'ORGANIZATION', 'GOVERNMENT', 'ANONYMOUS',
 ] as const
 
+const PAYMENT_METHODS = ['CASH', 'TRANSFER', 'QRIS'] as const
+
 interface IncomeFormProps {
     open:         boolean
     onClose:      () => void
@@ -49,8 +51,16 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     const rtId = (membership as any)?.rt?.id as string | undefined
 
     const [residents, setResidents] = useState<Array<{ id: string; name: string }>>([])
-    const [form,      setForm]      = useState(() => initialData ? { ...emptyForm(), ...initialData } : emptyForm())
+    const [form,      setForm]      = useState(emptyForm)
     const [saving,    setSaving]    = useState(false)
+
+    // Reset form to initialData each time the form opens
+    useEffect(() => {
+        if (open) {
+            setForm(initialData ? { ...emptyForm(), ...initialData } : emptyForm())
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open])
 
     useEffect(() => {
         if (!rtId) return
@@ -102,6 +112,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     const isResident  = form.source_type === 'RESIDENT'
     const isAnonymous = form.source_type === 'ANONYMOUS'
 
+    const inputCls = 'w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30'
+
     return (
         <div
             className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4"
@@ -134,7 +146,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             onChange={e => set('income_name', e.target.value)}
                             placeholder={t('form.incomeNamePlaceholder')}
                             required
-                            className="w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                            className={inputCls}
                         />
                     </div>
 
@@ -147,7 +159,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             value={form.income_category}
                             onChange={e => set('income_category', e.target.value)}
                             required
-                            className="w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                            className={inputCls}
                         >
                             <option value="">{t('form.selectCategory')}</option>
                             {CATEGORIES.map(c => (
@@ -167,7 +179,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             value={form.source_type}
                             onChange={e => set('source_type', e.target.value)}
                             required
-                            className="w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                            className={inputCls}
                         >
                             {SOURCE_TYPES.map(s => (
                                 <option key={s} value={s}>
@@ -187,7 +199,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                                 value={form.resident_id}
                                 onChange={e => set('resident_id', e.target.value)}
                                 required={isResident}
-                                className="w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                                className={inputCls}
                             >
                                 <option value="">{t('form.selectResident')}</option>
                                 {residents.map((r: any) => (
@@ -205,7 +217,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                                 value={form.payer_name}
                                 onChange={e => set('payer_name', e.target.value)}
                                 placeholder={t('form.payerNamePlaceholder')}
-                                className="w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                                className={inputCls}
                             />
                         </div>
                     ) : null}
@@ -221,7 +233,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             value={form.amount}
                             onChange={e => set('amount', e.target.value)}
                             required
-                            className="w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                            className={inputCls}
                         />
                     </div>
 
@@ -235,7 +247,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             value={form.received_at}
                             onChange={e => set('received_at', e.target.value)}
                             required
-                            className="w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                            className={inputCls}
                         />
                     </div>
 
@@ -244,13 +256,18 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                         <label className="block text-sm font-medium text-foreground mb-1">
                             {t('form.paymentMethod')}
                         </label>
-                        <input
-                            type="text"
+                        <select
                             value={form.payment_method}
                             onChange={e => set('payment_method', e.target.value)}
-                            placeholder={t('form.paymentMethodPlaceholder')}
-                            className="w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
-                        />
+                            className={inputCls}
+                        >
+                            <option value="">{t('form.selectPaymentMethod')}</option>
+                            {PAYMENT_METHODS.map(m => (
+                                <option key={m} value={m}>
+                                    {t(`paymentMethods.${m}` as Parameters<typeof t>[0])}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Reference Number */}
@@ -263,7 +280,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             value={form.reference_number}
                             onChange={e => set('reference_number', e.target.value)}
                             placeholder={t('form.referenceNumberPlaceholder')}
-                            className="w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                            className={inputCls}
                         />
                     </div>
 
@@ -277,7 +294,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             onChange={e => set('notes', e.target.value)}
                             placeholder={t('form.notesPlaceholder')}
                             rows={3}
-                            className="w-full border border-divider rounded-lg px-3 py-2 text-sm resize-none bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                            className={`${inputCls} resize-none`}
                         />
                     </div>
 

@@ -127,7 +127,10 @@ export default function IncomeDrawer({
                                 <Field label={t('drawer.amount')}
                                     value={<span className="font-semibold text-primary">{formatRupiah(row.amount)}</span>} />
                                 <Field label={t('drawer.receivedAt')}    value={row.formattedDate} />
-                                <Field label={t('drawer.paymentMethod')} value={row.payment_method} />
+                                <Field label={t('drawer.paymentMethod')}
+                                    value={row.payment_method
+                                        ? t(`paymentMethods.${row.payment_method}` as Parameters<typeof t>[0])
+                                        : '—'} />
                                 <Field label={t('drawer.referenceNumber')} value={row.reference_number} />
                                 {row.notes && (
                                     <div className="col-span-2">

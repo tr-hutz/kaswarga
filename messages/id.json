@@ -189,7 +189,7 @@
         },
         "exportLedger": {
             "title": "Ekspor laporan kas iuran warga",
-            "button": "Catatan Pemasukan",
+            "button": "Catatan Iuran",
             "loading": "Mengekspor..."
         },
         "cards": {
@@ -692,6 +692,11 @@
             "GOVERNMENT": "Pemerintah",
             "ANONYMOUS": "Anonim"
         },
+        "paymentMethods": {
+            "CASH": "Tunai",
+            "TRANSFER": "Transfer",
+            "QRIS": "QRIS"
+        },
         "status": {
             "pending": "Menunggu",
             "approved": "Disetujui",
@@ -714,6 +719,7 @@
             "receivedAt": "Tanggal Diterima",
             "paymentMethod": "Metode Pembayaran",
             "paymentMethodPlaceholder": "Tunai, Transfer, QRIS",
+            "selectPaymentMethod": "Pilih metode pembayaran",
             "referenceNumber": "No. Referensi",
             "referenceNumberPlaceholder": "Nomor bukti transfer atau referensi",
             "notes": "Catatan",
