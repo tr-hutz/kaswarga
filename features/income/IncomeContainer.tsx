@@ -20,10 +20,11 @@ export default function IncomeContainer() {
     const { result, loading, error, reload } = useIncomeData(query)
     useIncomeRealtime({ onReload: reload })
 
-    const actions = useIncomeActions({
+    const { error: importError, ...actions } = useIncomeActions({
         onReload:          reload,
         onApprovalSuccess: reload,
-    })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }) as any
 
     const pendingIds = (result?.data ?? [])
         .filter((r: any) => r.status === 'pending')
@@ -53,6 +54,7 @@ export default function IncomeContainer() {
             setPageSize={setPageSize}
             setSearch={setSearch}
             setFilter={setFilter}
+            importError={importError ?? ''}
             approveAllIncome={() => actions.approveAll(pendingIds)}
             {...actions}
         />

@@ -57,6 +57,8 @@ export const PERMISSION = {
   INCOME_DELETE:  'income.delete',
   INCOME_APPROVE: 'income.approve',
   INCOME_REJECT:  'income.reject',
+  INCOME_EXPORT:  'income.export',
+  INCOME_IMPORT:  'income.import',
 
   // Ledger
   LEDGER_VIEW:   'ledger.view',

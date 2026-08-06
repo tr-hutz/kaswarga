@@ -4,6 +4,8 @@
 import { useState }          from 'react'
 import { createIncome, updateIncomeById, deleteIncomeById } from '@/lib/services/income.service'
 import { useIncomeApproval } from './useIncomeApproval'
+import { useIncomeImport }   from './useIncomeImport'
+import { exportIncomeToCSV, exportIncomeToExcel } from '../services/income-export-transform'
 
 export function useIncomeActions({
     onReload,
@@ -100,6 +102,28 @@ export function useIncomeActions({
     /* Approval                                                             */
     /* ------------------------------------------------------------------ */
 
+    /* ------------------------------------------------------------------ */
+    /* Export                                                               */
+    /* ------------------------------------------------------------------ */
+
+    async function exportCSV(rows: any[]) {
+        await exportIncomeToCSV(rows)
+    }
+
+    async function exportExcel(rows: any[]) {
+        await exportIncomeToExcel(rows)
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Import                                                               */
+    /* ------------------------------------------------------------------ */
+
+    const { rows: importRows, ...restImport } = useIncomeImport()
+
+    /* ------------------------------------------------------------------ */
+    /* Approval                                                             */
+    /* ------------------------------------------------------------------ */
+
     const { loading: approvalLoading, approve: approveIncome, reject: rejectIncome, approveAll } =
         useIncomeApproval({
             onSuccess: () => {
@@ -129,6 +153,10 @@ export function useIncomeActions({
         removeRow,
         confirmDelete,
         cancelDelete,
+        exportCSV,
+        exportExcel,
+        importRows,
+        ...restImport,
         approvalLoading,
         approveIncome,
         rejectIncome,

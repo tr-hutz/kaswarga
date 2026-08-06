@@ -662,6 +662,11 @@
         "addButton": "Tambah Pemasukan",
         "approveAll": "Setujui Semua ({count})",
         "searchPlaceholder": "Cari pemasukan...",
+        "import": {
+            "title": "Import Data Pemasukan",
+            "required": "wajib",
+            "buttonLabel": "Import Pemasukan"
+        },
         "deleteTitle": "Hapus Pemasukan",
         "deleteConfirm": "Apakah kamu yakin ingin menghapus pemasukan \"{name}\"?",
         "table": {

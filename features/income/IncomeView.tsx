@@ -1,14 +1,17 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useTranslations }  from 'next-intl'
-import Can                  from '@/components/ui/Can'
-import { PERMISSION }       from '@/lib/auth/types'
-import Icon                 from '@/components/ui/Icon'
-import { DataTable }        from '@/components/common/data-table'
-import ConfirmDialog        from '@/components/ui/ConfirmDialog'
-import IncomeDrawer         from './components/drawer/IncomeDrawer'
-import IncomeForm           from './components/forms/IncomeForm'
+import type { RefObject }    from 'react'
+import { useTranslations }   from 'next-intl'
+import Can                   from '@/components/ui/Can'
+import { PERMISSION }        from '@/lib/auth/types'
+import Icon                  from '@/components/ui/Icon'
+import ExportDropdown        from '@/components/ui/ExportDropdown'
+import { DataTable }         from '@/components/common/data-table'
+import ConfirmDialog         from '@/components/ui/ConfirmDialog'
+import IncomeDrawer          from './components/drawer/IncomeDrawer'
+import IncomeForm            from './components/forms/IncomeForm'
+import IncomeImportModal     from './components/import/IncomeImportModal'
 import type { QueryOptions, PageResult, Column } from '@/lib/types/query'
 
 interface Props {
@@ -22,6 +25,7 @@ interface Props {
     setPageSize:     (s: number) => void
     setSearch:       (s: string) => void
     setFilter:       (key: string, value: unknown) => void
+    importError:     string
     // from useIncomeActions
     selectedRow:     any
     drawerOpen:      boolean
@@ -42,16 +46,40 @@ interface Props {
     approveIncome:   (id: string) => void
     rejectIncome:    (id: string, reason: string) => void
     approveAllIncome: () => void
+    // export
+    exportCSV:       (rows: any[]) => void
+    exportExcel:     (rows: any[]) => void
+    // import
+    importOpen:      boolean
+    openImport:      () => void
+    closeImport:     () => void
+    importRows:      unknown[]
+    fileName:        string | null
+    fileRef:         RefObject<HTMLInputElement>
+    importing:       boolean
+    handleFile:      (file: File | undefined) => void
+    handleImport:    () => void
+    downloadTemplate: () => void
+    resetImport:     () => void
+    progress?:       number
+    processedRows?:  number
+    totalRows?:      number
 }
 
 export default function IncomeView({
     result, columns, loading, error, onRetry,
     query, setPage, setPageSize, setSearch, setFilter,
+    importError,
     selectedRow, drawerOpen, formOpen, submitting, deleteTarget, deleting,
     openDrawer, closeDrawer,
     openCreateForm, openEditForm, closeForm, submitForm,
     removeRow, confirmDelete, cancelDelete,
     approvalLoading, approveIncome, rejectIncome, approveAllIncome,
+    exportCSV, exportExcel,
+    importOpen, openImport, closeImport,
+    importRows, fileName: importFileName, fileRef: importFileRef,
+    importing, handleFile, handleImport, downloadTemplate, resetImport,
+    progress, processedRows, totalRows,
 }: Props) {
     const t  = useTranslations('income')
     const tc = useTranslations('common')
@@ -105,6 +133,25 @@ export default function IncomeView({
                 searchable
                 searchPlaceholder={t('searchPlaceholder')}
                 onSearch={setSearch}
+                renderActions={
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <Can permission={PERMISSION.INCOME_EXPORT}>
+                            <ExportDropdown
+                                onExportExcel={() => exportExcel(data)}
+                                onExportCSV={() => exportCSV(data)}
+                            />
+                        </Can>
+                        <Can permission={PERMISSION.INCOME_IMPORT}>
+                            <button
+                                onClick={openImport}
+                                className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
+                            >
+                                <Icon name="upload" size={15} />
+                                {tc('actions.import')}
+                            </button>
+                        </Can>
+                    </div>
+                }
             />
 
             {/* Drawer */}
@@ -123,6 +170,24 @@ export default function IncomeView({
                 onClose={closeForm}
                 onSubmit={submitForm}
                 initialData={formOpen && selectedRow ? selectedRow : null}
+            />
+
+            {/* Import modal */}
+            <IncomeImportModal
+                open={importOpen}
+                onClose={closeImport}
+                rows={importRows}
+                fileName={importFileName}
+                fileRef={importFileRef}
+                importing={importing}
+                error={importError}
+                onFile={handleFile}
+                onImport={handleImport}
+                onDownloadTemplate={downloadTemplate}
+                onReset={resetImport}
+                progress={progress}
+                processedRows={processedRows}
+                totalRows={totalRows}
             />
 
             {/* Delete confirm */}
