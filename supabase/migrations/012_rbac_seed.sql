@@ -5,7 +5,7 @@
  * Seeds the complete RBAC v2 default data in execution order:
  *   1. Roles           — 6 system roles
  *   2. Permissions     — 44 system permissions (module.action catalog)
- *   3. Role-Permission assignments — 94 default grants
+ *   3. Role-Permission assignments — 93 default grants
  *
  * SUPER_ADMIN intentionally has no role_permissions rows.
  * It bypasses the permission system unconditionally via has_permission().
@@ -113,13 +113,13 @@ ON CONFLICT (code) DO NOTHING;
 
 
 /* ----------------------------------------------------------------------------
- * 3. ROLE-PERMISSION ASSIGNMENTS  (94 grants)
+ * 3. ROLE-PERMISSION ASSIGNMENTS  (93 grants)
  *
  * SUPER_ADMIN: intentionally excluded — bypasses the permission system
  *              unconditionally via the has_permission() SUPER_ADMIN guard.
  *
  *   RT_ADMIN   36 grants  (view-only for expenses; no payment.create)
- *   RT_CHAIR   22 grants  (leadership; approves/rejects expenses; no financial write)
+ *   RT_CHAIR   21 grants  (leadership; approves/rejects expenses; no financial write)
  *   TREASURER  20 grants  (financial operations only)
  *   SECRETARY  10 grants  (administration and documentation)
  *   RESIDENT    6 grants  (read access and self-service payments)
