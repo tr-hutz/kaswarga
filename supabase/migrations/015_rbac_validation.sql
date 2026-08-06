@@ -9,7 +9,7 @@
  * Checks performed
  *   1. Core RBAC tables exist
  *   2. Authorization functions exist with correct signatures
- *   3. Seed data — roles (6), permissions (45), role_permissions (92)
+ *   3. Seed data — roles (6), permissions (45), role_permissions (95)
  *   4. Key business rules — SUPER_ADMIN excluded, permission grants correct
  *   5. Updated RLS policies are present; deprecated role-name policies are gone
  *
@@ -96,11 +96,11 @@ BEGIN
     ASSERT v_count = 45,
         format('Expected 45 permissions, found %s', v_count);
 
-    -- 92 role-permission assignments
-    --   RT_ADMIN=37, RT_CHAIR=21, TREASURER=19, SECRETARY=10, RESIDENT=5
+    -- 95 role-permission assignments
+    --   RT_ADMIN=37, RT_CHAIR=22, TREASURER=20, SECRETARY=10, RESIDENT=6
     SELECT COUNT(*) INTO v_count FROM role_permissions;
-    ASSERT v_count = 92,
-        format('Expected 92 role_permissions rows, found %s', v_count);
+    ASSERT v_count = 95,
+        format('Expected 95 role_permissions rows, found %s', v_count);
 
     -- Per-role counts
     SELECT COUNT(rp.id) INTO v_count
@@ -112,14 +112,14 @@ BEGIN
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
     WHERE r.code = 'RT_CHAIR';
-    ASSERT v_count = 21,
-        format('RT_CHAIR: expected 21 permissions, found %s', v_count);
+    ASSERT v_count = 22,
+        format('RT_CHAIR: expected 22 permissions, found %s', v_count);
 
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
     WHERE r.code = 'TREASURER';
-    ASSERT v_count = 19,
-        format('TREASURER: expected 19 permissions, found %s', v_count);
+    ASSERT v_count = 20,
+        format('TREASURER: expected 20 permissions, found %s', v_count);
 
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
@@ -130,8 +130,8 @@ BEGIN
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
     WHERE r.code = 'RESIDENT';
-    ASSERT v_count = 5,
-        format('RESIDENT: expected 5 permissions, found %s', v_count);
+    ASSERT v_count = 6,
+        format('RESIDENT: expected 6 permissions, found %s', v_count);
 
 
     /* ---------------------------------------------------------------------- */
