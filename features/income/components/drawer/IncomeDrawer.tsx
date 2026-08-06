@@ -129,7 +129,9 @@ export default function IncomeDrawer({
                                 <Field label={t('drawer.receivedAt')}    value={row.formattedDate} />
                                 <Field label={t('drawer.paymentMethod')}
                                     value={row.payment_method
-                                        ? t(`paymentMethods.${row.payment_method}` as Parameters<typeof t>[0])
+                                        ? (['CASH', 'TRANSFER', 'QRIS'].includes(row.payment_method)
+                                            ? t(`paymentMethods.${row.payment_method}` as Parameters<typeof t>[0])
+                                            : row.payment_method)
                                         : '—'} />
                                 <Field label={t('drawer.referenceNumber')} value={row.reference_number} />
                                 {row.notes && (
