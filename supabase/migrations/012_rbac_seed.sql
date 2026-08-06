@@ -119,10 +119,10 @@ ON CONFLICT (code) DO NOTHING;
  *              unconditionally via the has_permission() SUPER_ADMIN guard.
  *
  *   RT_ADMIN   37 grants  (view-only for expenses)
- *   RT_CHAIR   21 grants  (leadership; approves/rejects expenses; no financial write)
- *   TREASURER  18 grants  (financial operations only)
+ *   RT_CHAIR   22 grants  (leadership; approves/rejects expenses; no financial write)
+ *   TREASURER  19 grants  (financial operations only)
  *   SECRETARY  10 grants  (administration and documentation)
- *   RESIDENT    5 grants  (read access and self-service payments)
+ *   RESIDENT    6 grants  (read access and self-service payments)
  * --------------------------------------------------------------------------- */
 
 WITH assignments (role_code, permission_code) AS (
@@ -193,9 +193,10 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_CHAIR', 'report.export'),
     ('RT_CHAIR', 'settings.view'),
     ('RT_CHAIR', 'settings.update'),
+    ('RT_CHAIR', 'audit.view'),
 
     -- -------------------------------------------------------------------------
-    -- TREASURER (Bendahara) — 18 grants
+    -- TREASURER (Bendahara) — 19 grants
     -- -------------------------------------------------------------------------
     ('TREASURER', 'resident.view'),
     ('TREASURER', 'payment.view'),
@@ -216,6 +217,7 @@ WITH assignments (role_code, permission_code) AS (
     ('TREASURER', 'ledger.export'),
     ('TREASURER', 'report.view'),
     ('TREASURER', 'report.export'),
+    ('TREASURER', 'audit.view'),
 
     -- -------------------------------------------------------------------------
     -- SECRETARY (Sekretaris) — 10 grants
@@ -232,13 +234,14 @@ WITH assignments (role_code, permission_code) AS (
     ('SECRETARY', 'report.export'),
 
     -- -------------------------------------------------------------------------
-    -- RESIDENT (Warga) — 5 grants
+    -- RESIDENT (Warga) — 6 grants
     -- -------------------------------------------------------------------------
     ('RESIDENT', 'resident.view'),
     ('RESIDENT', 'payment.view'),
     ('RESIDENT', 'payment.create'),
     ('RESIDENT', 'expense.view'),
-    ('RESIDENT', 'ledger.view')
+    ('RESIDENT', 'ledger.view'),
+    ('RESIDENT', 'audit.view')
 )
 INSERT INTO role_permissions (role_id, permission_id, allow)
 SELECT r.id, p.id, true
