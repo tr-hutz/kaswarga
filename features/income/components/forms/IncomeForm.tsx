@@ -243,7 +243,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             </label>
                             <input
                                 type="text"
-                                value={form.payer_name}
+                                value={form.payer_name ?? ''}
                                 onChange={e => set('payer_name', e.target.value)}
                                 placeholder={t('form.payerNamePlaceholder')}
                                 className={inputCls}
@@ -306,7 +306,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                         </label>
                         <input
                             type="text"
-                            value={form.reference_number}
+                            value={form.reference_number ?? ''}
                             onChange={e => set('reference_number', e.target.value)}
                             placeholder={t('form.referenceNumberPlaceholder')}
                             className={inputCls}
