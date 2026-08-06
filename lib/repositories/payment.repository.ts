@@ -347,10 +347,10 @@ export async function findConfirmationsPaginated(
             created_at,
             rt_id,
             resident_id,
-            residents:residents!inner (
+            residents (
                 id, name, block, house_number
             ),
-            confirmation_details:confirmation_details (
+            confirmation_details (
                 id, month, amount
             )
         `, { count: 'exact' })

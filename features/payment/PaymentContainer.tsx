@@ -45,6 +45,15 @@ export default function PaymentContainer() {
         reload()
         const skipMsg = skipped ? `, ${skipped} ${t('import.skippedSuffix')}` : ''
         toast({ message: t('import.successMessage', { inserted }) + skipMsg, type: 'success' })
+        // One notification for the full import — batches each hit the import API, which no
+        // longer sends per-batch notifications, so we fire once here after everything completes.
+        if (inserted > 0) {
+            fetch('/api/payments/import-notify', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ inserted }),
+            }).catch(console.error)
+        }
     })
 
     // Approve all imported
