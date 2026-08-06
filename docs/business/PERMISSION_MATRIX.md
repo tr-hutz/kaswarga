@@ -173,7 +173,7 @@ Legend
 | Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
 |------------|-------|-------|-------|-----------|-----------|---------|
 | payment.view | ❌ | 👁 | 👁 | ✅ | 👁 | ⚡ |
-| payment.create | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| payment.create | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | payment.update | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 | payment.delete | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 | payment.approve | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |

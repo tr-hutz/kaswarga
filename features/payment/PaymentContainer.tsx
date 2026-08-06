@@ -132,6 +132,33 @@ export default function PaymentContainer() {
         await reject(payment.id, reason)
     }
 
+    // Create payment form
+    const [createFormOpen, setCreateFormOpen] = useState(false)
+
+    async function handleCreatePayment(payload: {
+        residentId: string
+        year:       number
+        months:     number[]
+        method:     string | null
+        notes:      string | null
+        date:       string
+    }) {
+        try {
+            const res  = await fetch('/api/payments/create', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify(payload),
+            })
+            const body = await res.json()
+            if (!res.ok) throw new Error(body.error || 'Failed')
+            toast({ message: t('form.createSuccess'), type: 'success' })
+            setCreateFormOpen(false)
+            reload()
+        } catch (err) {
+            toast({ message: (err as Error).message, type: 'error' })
+        }
+    }
+
     const data = result?.data ?? []
 
     const importedPendingCount = canManage
@@ -184,6 +211,11 @@ export default function PaymentContainer() {
             handleImport={handleImport}
             downloadTemplate={downloadTemplate}
             resetImport={resetImport}
+            // create form
+            createFormOpen={createFormOpen}
+            openCreateForm={() => setCreateFormOpen(true)}
+            closeCreateForm={() => setCreateFormOpen(false)}
+            onCreatePayment={handleCreatePayment}
             // approve all imported
             importedPendingCount={importedPendingCount}
             approveAllImported={handleApproveAllImported}

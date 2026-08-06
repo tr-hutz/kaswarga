@@ -7,6 +7,7 @@ import Can                      from '@/components/ui/Can'
 import { DataTable }            from '@/components/common/data-table'
 import PaymentDetailDrawer      from './components/details/PaymentDetailDrawer'
 import PaymentImportModal       from './components/import/PaymentImportModal'
+import PaymentForm              from './components/forms/PaymentForm'
 import ExportDropdown           from '@/components/ui/ExportDropdown'
 import DangerDropdown           from '@/components/ui/DangerDropdown'
 import ConfirmDialog            from '@/components/ui/ConfirmDialog'
@@ -53,6 +54,18 @@ interface Props {
     handleImport:    () => void
     downloadTemplate: () => void
     resetImport:     () => void
+    // create form
+    createFormOpen:   boolean
+    openCreateForm:   () => void
+    closeCreateForm:  () => void
+    onCreatePayment:  (payload: {
+        residentId: string
+        year:       number
+        months:     number[]
+        method:     string | null
+        notes:      string | null
+        date:       string
+    }) => Promise<void>
     // approve all imported
     importedPendingCount: number
     approveAllImported:   () => void
@@ -77,6 +90,7 @@ export default function PaymentView({
     importRows, importFileName, importFileRef,
     importing, importError, handleFile, handleImport, downloadTemplate, resetImport,
     progress, processedRows, totalRows,
+    createFormOpen, openCreateForm, closeCreateForm, onCreatePayment,
     importedPendingCount, approveAllImported, approveAllLoading,
     rejectAllImported, deleteAllImported,
     confirmDeleteAll, cancelDeleteAll, deleteAllConfirmOpen,
@@ -91,27 +105,38 @@ export default function PaymentView({
                     <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
                 </div>
-                <Can permission={PERMISSION.PAYMENT_APPROVE}>
-                    {importedPendingCount > 0 && (
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                            <DangerDropdown
-                                label={t('rejectAll.button')}
-                                disabled={bulkActionLoading || approveAllLoading}
-                                items={[
-                                    { label: t('rejectAll.option'), iconName: 'x-circle', onClick: rejectAllImported },
-                                    { label: t('deleteAll.option'), iconName: 'trash-2',  onClick: deleteAllImported },
-                                ]}
-                            />
-                            <button
-                                onClick={approveAllImported}
-                                disabled={approveAllLoading || bulkActionLoading}
-                                className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition disabled:opacity-60"
-                            >
-                                {t('approveAll', { count: importedPendingCount })}
-                            </button>
-                        </div>
-                    )}
-                </Can>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                    <Can permission={PERMISSION.PAYMENT_APPROVE}>
+                        {importedPendingCount > 0 && (
+                            <>
+                                <DangerDropdown
+                                    label={t('rejectAll.button')}
+                                    disabled={bulkActionLoading || approveAllLoading}
+                                    items={[
+                                        { label: t('rejectAll.option'), iconName: 'x-circle', onClick: rejectAllImported },
+                                        { label: t('deleteAll.option'), iconName: 'trash-2',  onClick: deleteAllImported },
+                                    ]}
+                                />
+                                <button
+                                    onClick={approveAllImported}
+                                    disabled={approveAllLoading || bulkActionLoading}
+                                    className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition disabled:opacity-60"
+                                >
+                                    {t('approveAll', { count: importedPendingCount })}
+                                </button>
+                            </>
+                        )}
+                    </Can>
+                    <Can permission={PERMISSION.PAYMENT_CREATE}>
+                        <button
+                            onClick={openCreateForm}
+                            className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg px-4 py-2.5 transition-colors"
+                        >
+                            <Icon name="plus" size={16} />
+                            {t('addButton')}
+                        </button>
+                    </Can>
+                </div>
             </div>
 
             <DataTable
@@ -194,6 +219,12 @@ export default function PaymentView({
                 cancelLabel={tc('actions.cancel')}
                 onConfirm={confirmDeleteAll}
                 onCancel={cancelDeleteAll}
+            />
+
+            <PaymentForm
+                open={createFormOpen}
+                onClose={closeCreateForm}
+                onSubmit={onCreatePayment}
             />
         </div>
     )

@@ -5,7 +5,7 @@
  * Seeds the complete RBAC v2 default data in execution order:
  *   1. Roles           — 6 system roles
  *   2. Permissions     — 44 system permissions (module.action catalog)
- *   3. Role-Permission assignments — 95 default grants
+ *   3. Role-Permission assignments — 94 default grants
  *
  * SUPER_ADMIN intentionally has no role_permissions rows.
  * It bypasses the permission system unconditionally via has_permission().
@@ -113,12 +113,12 @@ ON CONFLICT (code) DO NOTHING;
 
 
 /* ----------------------------------------------------------------------------
- * 3. ROLE-PERMISSION ASSIGNMENTS  (95 grants)
+ * 3. ROLE-PERMISSION ASSIGNMENTS  (94 grants)
  *
  * SUPER_ADMIN: intentionally excluded — bypasses the permission system
  *              unconditionally via the has_permission() SUPER_ADMIN guard.
  *
- *   RT_ADMIN   37 grants  (view-only for expenses)
+ *   RT_ADMIN   36 grants  (view-only for expenses; no payment.create)
  *   RT_CHAIR   22 grants  (leadership; approves/rejects expenses; no financial write)
  *   TREASURER  20 grants  (financial operations only)
  *   SECRETARY  10 grants  (administration and documentation)
@@ -144,7 +144,6 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_ADMIN', 'membership.update'),
     ('RT_ADMIN', 'membership.delete'),
     ('RT_ADMIN', 'payment.view'),
-    ('RT_ADMIN', 'payment.create'),
     ('RT_ADMIN', 'payment.update'),
     ('RT_ADMIN', 'payment.delete'),
     ('RT_ADMIN', 'payment.approve'),
@@ -183,7 +182,6 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_CHAIR', 'membership.update'),
     ('RT_CHAIR', 'membership.delete'),
     ('RT_CHAIR', 'payment.view'),
-    ('RT_CHAIR', 'payment.create'),
     ('RT_CHAIR', 'expense.view'),
     ('RT_CHAIR', 'expense.approve'),
     ('RT_CHAIR', 'expense.reject'),
