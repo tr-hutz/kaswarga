@@ -50,7 +50,7 @@ export function buildIncomeColumns({ t, tc, onView, onEdit, onDelete }: Options)
             title: t('table.payer'),
             render: (row) => (
                 <span className="text-sm text-muted">
-                    {row.is_anonymous ? tc('anonymous') : (row.payer_name || '—')}
+                    {row.is_anonymous ? tc('anonymous') : (row.payerLabel || '—')}
                 </span>
             ),
         },

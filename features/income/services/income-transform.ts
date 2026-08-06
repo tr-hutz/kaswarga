@@ -8,6 +8,9 @@ export function mapIncome(rows: any[]) {
         formattedDate:   row.received_at
             ? new Date(row.received_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
             : '—',
+        payerLabel: row.is_anonymous
+            ? null
+            : (row.residents?.name ?? row.payer_name ?? null),
     }))
 }
 

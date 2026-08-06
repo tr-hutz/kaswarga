@@ -10,6 +10,7 @@ const SELECT_FIELDS = `
     income_category,
     income_name,
     resident_id,
+    residents:residents(id, name),
     source_type,
     payer_name,
     is_anonymous,

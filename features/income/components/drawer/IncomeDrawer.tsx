@@ -122,7 +122,7 @@ export default function IncomeDrawer({
                                     value={t(`sourceTypes.${row.source_type}` as Parameters<typeof t>[0])} />
                                 <div className="col-span-2">
                                     <Field label={t('drawer.payer')}
-                                        value={row.is_anonymous ? tc('anonymous') : (row.payer_name || '—')} />
+                                        value={row.is_anonymous ? tc('anonymous') : (row.payerLabel || '—')} />
                                 </div>
                                 <Field label={t('drawer.amount')}
                                     value={<span className="font-semibold text-primary">{formatRupiah(row.amount)}</span>} />
