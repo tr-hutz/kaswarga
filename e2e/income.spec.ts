@@ -78,6 +78,55 @@ test.describe('create income (treasurer)', () => {
 })
 
 // ---------------------------------------------------------------------------
+// RT Chair: view income, approve-all visible, no add/edit/delete
+// ---------------------------------------------------------------------------
+
+test.describe('income for RT chair', () => {
+    test.use({ storageState: path.join(__dirname, '.auth/chair.json') })
+
+    test('renders the income page', async ({ page }) => {
+        const income = new IncomePage(page)
+        await income.goto()
+        await expect(page.getByText(/Pemasukan/i).first()).toBeVisible()
+    })
+
+    test('"Tambah" button is NOT visible for chair', async ({ page }) => {
+        const income = new IncomePage(page)
+        await income.goto()
+        await expect(income.addButton()).not.toBeVisible()
+    })
+
+    test('edit and delete buttons are NOT visible for chair on pending rows', async ({ page }) => {
+        const income = new IncomePage(page)
+        await income.goto()
+
+        const rowCount = await income.tableRows().count()
+        if (rowCount === 0) { test.skip(); return }
+
+        await expect(page.getByRole('button', { name: /^Edit$/i }).first()).not.toBeVisible()
+        await expect(page.getByRole('button', { name: /^Hapus$/i }).first()).not.toBeVisible()
+    })
+})
+
+// ---------------------------------------------------------------------------
+// Resident: cannot access income module
+// ---------------------------------------------------------------------------
+
+test.describe('income access denied for resident', () => {
+    test.use({ storageState: path.join(__dirname, '.auth/resident.json') })
+
+    test('income navigation item is not visible for resident', async ({ page }) => {
+        await page.goto('/')
+        await expect(page.getByRole('link', { name: /^Pemasukan$/i })).not.toBeVisible()
+    })
+
+    test('navigating directly to /income redirects away', async ({ page }) => {
+        await page.goto('/income')
+        await expect(page).not.toHaveURL('/income')
+    })
+})
+
+// ---------------------------------------------------------------------------
 // Admin: view income page and drawer
 // ---------------------------------------------------------------------------
 
