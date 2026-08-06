@@ -306,7 +306,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             {t('form.notes')}
                         </label>
                         <textarea
-                            value={form.notes}
+                            value={form.notes ?? ''}
                             onChange={e => set('notes', e.target.value)}
                             placeholder={t('form.notesPlaceholder')}
                             rows={3}
