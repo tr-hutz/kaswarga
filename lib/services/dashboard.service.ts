@@ -648,8 +648,7 @@ export async function getDashboardData(
     // non-critical — dashboard still renders without income analytics
   }
 
-  const currentMonth = new Date().getMonth() + 1
-  const currentYear  = new Date().getFullYear()
+  const currentYear = new Date().getFullYear()
 
   const incomeThisMonth = year === currentYear
     ? incomeData
