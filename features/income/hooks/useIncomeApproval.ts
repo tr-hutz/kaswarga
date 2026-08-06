@@ -45,5 +45,23 @@ export function useIncomeApproval({ onSuccess }: { onSuccess?: () => void } = {}
         }
     }
 
-    return { loading, approve, reject }
+    async function approveAll(pendingIds: string[]) {
+        setLoading(true)
+        try {
+            await Promise.all(pendingIds.map(id =>
+                fetch(`/api/income/${id}/approve`, {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                })
+            ))
+            toast({ message: `${pendingIds.length} pemasukan disetujui.`, type: 'success' })
+            onSuccess?.()
+        } catch (err) {
+            toast({ message: (err as any).message, type: 'error' })
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    return { loading, approve, reject, approveAll }
 }

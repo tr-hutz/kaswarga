@@ -4,6 +4,8 @@
 import type { Column }        from '@/lib/types/query'
 import IncomeStatusBadge      from './IncomeStatusBadge'
 import { formatRupiah }       from '@/lib/utils'
+import Can                    from '@/components/ui/Can'
+import { PERMISSION }         from '@/lib/auth/types'
 
 interface Options {
     t:        (key: string) => string
@@ -79,18 +81,22 @@ export function buildIncomeColumns({ t, tc, onView, onEdit, onDelete }: Options)
                 if (row.status !== 'pending') return null
                 return (
                     <div className="flex justify-end gap-2">
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onEdit(row) }}
-                            className="text-sm border border-divider px-3 py-1 rounded-lg"
-                        >
-                            {tc('actions.edit')}
-                        </button>
-                        <button
-                            onClick={(e) => { e.stopPropagation(); onDelete(row) }}
-                            className="text-sm border border-divider px-3 py-1 rounded-lg text-danger"
-                        >
-                            {tc('actions.delete')}
-                        </button>
+                        <Can permission={PERMISSION.INCOME_UPDATE}>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onEdit(row) }}
+                                className="text-sm border border-divider px-3 py-1 rounded-lg"
+                            >
+                                {tc('actions.edit')}
+                            </button>
+                        </Can>
+                        <Can permission={PERMISSION.INCOME_DELETE}>
+                            <button
+                                onClick={(e) => { e.stopPropagation(); onDelete(row) }}
+                                className="text-sm border border-divider px-3 py-1 rounded-lg text-danger"
+                            >
+                                {tc('actions.delete')}
+                            </button>
+                        </Can>
                     </div>
                 )
             },

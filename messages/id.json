@@ -660,6 +660,7 @@
         "title": "Pemasukan",
         "subtitle": "Kelola pemasukan non-iuran RT",
         "addButton": "Tambah Pemasukan",
+        "approveAll": "Setujui Semua ({count})",
         "searchPlaceholder": "Cari pemasukan...",
         "deleteTitle": "Hapus Pemasukan",
         "deleteConfirm": "Apakah kamu yakin ingin menghapus pemasukan \"{name}\"?",

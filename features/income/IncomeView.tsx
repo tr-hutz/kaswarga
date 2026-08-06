@@ -41,6 +41,7 @@ interface Props {
     approvalLoading: boolean
     approveIncome:   (id: string) => void
     rejectIncome:    (id: string, reason: string) => void
+    approveAllIncome: () => void
 }
 
 export default function IncomeView({
@@ -50,29 +51,44 @@ export default function IncomeView({
     openDrawer, closeDrawer,
     openCreateForm, openEditForm, closeForm, submitForm,
     removeRow, confirmDelete, cancelDelete,
-    approvalLoading, approveIncome, rejectIncome,
+    approvalLoading, approveIncome, rejectIncome, approveAllIncome,
 }: Props) {
     const t  = useTranslations('income')
     const tc = useTranslations('common')
+
+    const data         = result?.data ?? []
+    const pendingCount = data.filter((r: any) => r.status === 'pending').length
 
     return (
         <div className="space-y-6">
 
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-0.5">{t('subtitle')}</p>
                 </div>
-                <Can permission={PERMISSION.INCOME_CREATE}>
-                    <button
-                        onClick={openCreateForm}
-                        className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg px-4 py-2.5 transition-colors"
-                    >
-                        <Icon name="plus" size={16} />
-                        {t('addButton')}
-                    </button>
-                </Can>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                    <Can permission={PERMISSION.INCOME_APPROVE}>
+                        {pendingCount > 0 && (
+                            <button
+                                onClick={approveAllIncome}
+                                className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-success/90 transition"
+                            >
+                                {t('approveAll', { count: pendingCount } as any)}
+                            </button>
+                        )}
+                    </Can>
+                    <Can permission={PERMISSION.INCOME_CREATE}>
+                        <button
+                            onClick={openCreateForm}
+                            className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg px-4 py-2.5 transition-colors"
+                        >
+                            <Icon name="plus" size={16} />
+                            {t('addButton')}
+                        </button>
+                    </Can>
+                </div>
             </div>
 
             {/* Table */}

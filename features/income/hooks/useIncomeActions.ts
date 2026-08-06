@@ -100,7 +100,7 @@ export function useIncomeActions({
     /* Approval                                                             */
     /* ------------------------------------------------------------------ */
 
-    const { loading: approvalLoading, approve: approveIncome, reject: rejectIncome } =
+    const { loading: approvalLoading, approve: approveIncome, reject: rejectIncome, approveAll } =
         useIncomeApproval({
             onSuccess: () => {
                 closeDrawer()
@@ -132,5 +132,6 @@ export function useIncomeActions({
         approvalLoading,
         approveIncome,
         rejectIncome,
+        approveAll,
     }
 }

@@ -1,14 +1,14 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useMemo }          from 'react'
-import { useTranslations }  from 'next-intl'
-import { useDataTable }     from '@/lib/hooks/useDataTable'
-import { useIncomeData }    from './hooks/useIncomeData'
+import { useMemo }           from 'react'
+import { useTranslations }   from 'next-intl'
+import { useDataTable }      from '@/lib/hooks/useDataTable'
+import { useIncomeData }     from './hooks/useIncomeData'
 import { useIncomeRealtime } from './hooks/useIncomeRealtime'
-import { useIncomeActions } from './hooks/useIncomeActions'
+import { useIncomeActions }  from './hooks/useIncomeActions'
 import { buildIncomeColumns } from './components/IncomeColumns'
-import IncomeView           from './IncomeView'
+import IncomeView            from './IncomeView'
 
 export default function IncomeContainer() {
     const t  = useTranslations('income')
@@ -24,6 +24,10 @@ export default function IncomeContainer() {
         onReload:          reload,
         onApprovalSuccess: reload,
     })
+
+    const pendingIds = (result?.data ?? [])
+        .filter((r: any) => r.status === 'pending')
+        .map((r: any) => r.id as string)
 
     const columns = useMemo(
         () => buildIncomeColumns({
@@ -49,6 +53,7 @@ export default function IncomeContainer() {
             setPageSize={setPageSize}
             setSearch={setSearch}
             setFilter={setFilter}
+            approveAllIncome={() => actions.approveAll(pendingIds)}
             {...actions}
         />
     )
