@@ -520,6 +520,7 @@
     "residents": {
         "title": "Warga",
         "subtitle": "Manajemen data warga",
+        "addButton": "+ Tambah Warga",
         "searchPlaceholder": "Cari nama warga...",
         "filterPlaceholder": "Semua Status",
         "table": {
@@ -764,6 +765,7 @@
     "expenses": {
         "title": "Pengeluaran",
         "subtitle": "Manajemen pengeluaran RT",
+        "addButton": "+ Tambah Pengeluaran",
         "deleteTitle": "Hapus Pengeluaran",
         "deleteConfirm": "Apakah kamu yakin ingin menghapus pengeluaran \"{description}\"?",
         "searchPlaceholder": "Cari pengeluaran...",

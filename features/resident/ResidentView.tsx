@@ -105,9 +105,20 @@ export default function ResidentView({
     return (
         <div className="space-y-6">
             {/* Page header */}
-            <div>
-                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
-                <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                    <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
+                </div>
+                {canManage && (
+                    <button
+                        onClick={openCreateForm}
+                        className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg px-4 py-2.5 transition-colors flex-shrink-0"
+                    >
+                        <Icon name="plus" size={16} />
+                        {t('addButton')}
+                    </button>
+                )}
             </div>
 
             {/* Pending join requests */}
@@ -154,14 +165,6 @@ export default function ResidentView({
                                 {tc('actions.import')}
                             </button>
                         </Can>
-                        {canManage && (
-                            <button
-                                onClick={openCreateForm}
-                                className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary-dark"
-                            >
-                                + {tc('actions.add')}
-                            </button>
-                        )}
                     </div>
                 }
             />
