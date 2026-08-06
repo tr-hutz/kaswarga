@@ -3,6 +3,12 @@
  *
  * RBAC permissions for the Income Management module.
  *
+ * Role matrix:
+ *   RT_ADMIN  — view + create + update + delete + export + import (no approve/reject)
+ *   RT_CHAIR  — view + approve + reject
+ *   TREASURER — view + create + update + delete + export + import
+ *   SECRETARY — view only
+ *
  * Dependencies: 012_rbac_seed (roles and permissions tables)
  */
 
@@ -17,12 +23,15 @@ INSERT INTO permissions (code, name, description, is_system) VALUES
     ('income.update',  'Update Income',  'Edit a pending income transaction',  true),
     ('income.delete',  'Delete Income',  'Remove an income transaction',       true),
     ('income.approve', 'Approve Income', 'Approve a pending income record',    true),
-    ('income.reject',  'Reject Income',  'Reject a pending income record',     true)
+    ('income.reject',  'Reject Income',  'Reject a pending income record',     true),
+    ('income.export',  'Export Income',  'Export income data to Excel/CSV',    true),
+    ('income.import',  'Import Income',  'Import income data from Excel',      true)
 ON CONFLICT (code) DO NOTHING;
 
 
 /* --------------------------------------------------------------------------
- * RT_ADMIN — full access
+ * RT_ADMIN — view + create + update + delete + export + import
+ * RT_ADMIN does NOT approve or reject income (RT_CHAIR responsibility).
  * -------------------------------------------------------------------------- */
 
 INSERT INTO role_permissions (role_id, permission_id, allow)
@@ -35,8 +44,8 @@ WHERE  r.code = 'RT_ADMIN'
       'income.create',
       'income.update',
       'income.delete',
-      'income.approve',
-      'income.reject'
+      'income.export',
+      'income.import'
   )
 ON CONFLICT (role_id, permission_id) DO NOTHING;
 
@@ -59,7 +68,7 @@ ON CONFLICT (role_id, permission_id) DO NOTHING;
 
 
 /* --------------------------------------------------------------------------
- * TREASURER — view + create + update + delete
+ * TREASURER — view + create + update + delete + export + import
  * -------------------------------------------------------------------------- */
 
 INSERT INTO role_permissions (role_id, permission_id, allow)
@@ -71,7 +80,9 @@ WHERE  r.code = 'TREASURER'
       'income.view',
       'income.create',
       'income.update',
-      'income.delete'
+      'income.delete',
+      'income.export',
+      'income.import'
   )
 ON CONFLICT (role_id, permission_id) DO NOTHING;
 
