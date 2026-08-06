@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import type { FormEvent }      from 'react'
 import { useTranslations }     from 'next-intl'
 import { useAuth }             from '@/lib/auth/useAuth'
+import { supabase }            from '@/lib/supabase'
 import { findResidents }       from '@/lib/repositories/resident.repository'
 import Icon                    from '@/components/ui/Icon'
 
@@ -64,16 +65,18 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     const { membership } = useAuth()
     const rtId = (membership as any)?.rt?.id as string | undefined
 
-    const [residents, setResidents] = useState<Array<{ id: string; name: string }>>([])
-    const [form,      setForm]      = useState(emptyForm)
-    const [saving,    setSaving]    = useState(false)
+    const [residents,       setResidents]       = useState<Array<{ id: string; name: string }>>([])
+    const [form,            setForm]            = useState(emptyForm)
+    const [saving,          setSaving]          = useState(false)
+    const [attachmentFile,  setAttachmentFile]  = useState<File | null>(null)
 
-    // Reset form to initialData each time the form opens
+    // Reset form and attachment each time the form opens
     useEffect(() => {
         if (open) {
             const base = initialData ? { ...emptyForm(), ...initialData } : emptyForm()
             base.payment_method = normalizePaymentMethod(base.payment_method)
             setForm(base)
+            setAttachmentFile(null)
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])
@@ -117,6 +120,16 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
             } else {
                 payload.payer_name  = null
                 payload.resident_id = null
+            }
+
+            if (attachmentFile && rtId) {
+                const ext  = attachmentFile.name.split('.').pop()
+                const path = `${rtId}/${Date.now()}.${ext}`
+                const { data: upload, error: uploadErr } = await supabase.storage
+                    .from('income-attachments')
+                    .upload(path, attachmentFile, { upsert: false })
+                if (uploadErr) throw uploadErr
+                payload.attachment_url = upload.path
             }
 
             await onSubmit(payload)
@@ -312,6 +325,30 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             rows={3}
                             className={`${inputCls} resize-none`}
                         />
+                    </div>
+
+                    {/* Attachment */}
+                    <div>
+                        <label className="block text-sm font-medium text-foreground mb-1">
+                            {t('form.attachment')}
+                            <span className="text-muted text-xs ml-1">({tc('optional')})</span>
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp,application/pdf"
+                            onChange={e => setAttachmentFile(e.target.files?.[0] ?? null)}
+                            className={inputCls}
+                        />
+                        {form.attachment_url && !attachmentFile && (
+                            <a
+                                href={form.attachment_url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-xs text-primary underline mt-1 inline-block"
+                            >
+                                {t('form.viewAttachment')}
+                            </a>
+                        )}
                     </div>
 
                     {/* Actions */}

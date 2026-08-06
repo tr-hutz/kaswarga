@@ -112,3 +112,19 @@ CREATE POLICY "income: update"
 CREATE POLICY "income: delete"
     ON income_transactions FOR DELETE TO authenticated
     USING (has_permission(rt_id, 'income.delete'));
+
+
+/* --------------------------------------------------------------------------
+ * STORAGE BUCKET: income-attachments
+ * Stores proof-of-payment files for income transactions.
+ * -------------------------------------------------------------------------- */
+
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+    'income-attachments',
+    'income-attachments',
+    false,
+    5242880,
+    ARRAY['image/jpeg','image/png','image/webp','application/pdf']
+)
+ON CONFLICT (id) DO NOTHING;

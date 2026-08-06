@@ -67,6 +67,8 @@
         "form": {
             "required": "wajib diisi"
         },
+        "optional": "opsional",
+        "anonymous": "Anonim",
         "errors": {
             "generic": "Terjadi kesalahan",
             "saveFailed": "Gagal menyimpan data",
@@ -730,6 +732,8 @@
             "referenceNumberPlaceholder": "Nomor bukti transfer atau referensi",
             "notes": "Catatan",
             "notesPlaceholder": "Keterangan tambahan (opsional)",
+            "attachment": "Bukti Transaksi",
+            "viewAttachment": "Lihat Lampiran",
             "attachment": "Lampiran",
             "submit": "Simpan",
             "cancel": "Batal"
