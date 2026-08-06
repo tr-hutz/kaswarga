@@ -6,15 +6,18 @@ import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 import { findIncomeById }    from '@/lib/repositories/income.repository'
 import { updateIncomeById, deleteIncomeById } from '@/lib/services/income.service'
 
+type Params = { params: Promise<{ id: string }> }
+
 export async function GET(
     _req: Request,
-    { params }: { params: { id: string } },
+    { params }: Params,
 ) {
     try {
-        const ctx = await getRequestContext()
+        const ctx      = await getRequestContext()
         requirePermission(ctx.authorization, PERMISSION.INCOME_VIEW)
 
-        const row = await findIncomeById(params.id)
+        const { id } = await params
+        const row    = await findIncomeById(id)
         if (!row) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
         return NextResponse.json(row)
@@ -28,14 +31,15 @@ export async function GET(
 
 export async function PUT(
     req: Request,
-    { params }: { params: { id: string } },
+    { params }: Params,
 ) {
     try {
-        const ctx = await getRequestContext()
+        const ctx      = await getRequestContext()
         requirePermission(ctx.authorization, PERMISSION.INCOME_UPDATE)
 
-        const body = await req.json()
-        const row  = await updateIncomeById(params.id, body)
+        const { id } = await params
+        const body   = await req.json()
+        const row    = await updateIncomeById(id, body)
 
         return NextResponse.json(row)
 
@@ -49,13 +53,14 @@ export async function PUT(
 
 export async function DELETE(
     _req: Request,
-    { params }: { params: { id: string } },
+    { params }: Params,
 ) {
     try {
-        const ctx = await getRequestContext()
+        const ctx      = await getRequestContext()
         requirePermission(ctx.authorization, PERMISSION.INCOME_DELETE)
 
-        await deleteIncomeById(params.id)
+        const { id } = await params
+        await deleteIncomeById(id)
 
         return NextResponse.json({ ok: true })
 

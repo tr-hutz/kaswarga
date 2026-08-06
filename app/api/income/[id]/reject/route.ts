@@ -5,18 +5,20 @@ import { requirePermission } from '@/lib/auth/helpers'
 import { PERMISSION }        from '@/lib/auth/types'
 import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 
+type Params = { params: Promise<{ id: string }> }
+
 export async function POST(
     req: Request,
-    { params }: { params: { id: string } },
+    { params }: Params,
 ) {
     try {
         const ctx    = await getRequestContext()
         requirePermission(ctx.authorization, PERMISSION.INCOME_REJECT)
 
-        const { id }          = params
-        const userId          = ctx.authorization.userId
-        const rtId            = ctx.authorization.neighborhoodId
-        const { reason }      = await req.json()
+        const { id }     = await params
+        const userId     = ctx.authorization.userId
+        const rtId       = ctx.authorization.neighborhoodId
+        const { reason } = await req.json()
 
         // 1. Fetch income record
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
