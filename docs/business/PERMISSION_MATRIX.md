@@ -202,12 +202,14 @@ Legend
 
 | Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
 |------------|-------|-------|-------|-----------|-----------|---------|
-| income.view | ❌ | 👁 | ✅ | ✅ | 👁 | ❌ |
-| income.create | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
-| income.update | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
-| income.delete | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
-| income.approve | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
-| income.reject | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| income.view    | ❌ | 👁 | ✅ | ✅ | 👁 | ❌ |
+| income.create  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| income.update  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| income.delete  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| income.approve | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| income.reject  | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| income.export  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| income.import  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 
 ---
 
