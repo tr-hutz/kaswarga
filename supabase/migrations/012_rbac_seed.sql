@@ -5,7 +5,7 @@
  * Seeds the complete RBAC v2 default data in execution order:
  *   1. Roles           — 6 system roles
  *   2. Permissions     — 44 system permissions (module.action catalog)
- *   3. Role-Permission assignments — 93 default grants
+ *   3. Role-Permission assignments — 95 default grants
  *
  * SUPER_ADMIN intentionally has no role_permissions rows.
  * It bypasses the permission system unconditionally via has_permission().
@@ -113,13 +113,13 @@ ON CONFLICT (code) DO NOTHING;
 
 
 /* ----------------------------------------------------------------------------
- * 3. ROLE-PERMISSION ASSIGNMENTS  (93 grants)
+ * 3. ROLE-PERMISSION ASSIGNMENTS  (95 grants)
  *
  * SUPER_ADMIN: intentionally excluded — bypasses the permission system
  *              unconditionally via the has_permission() SUPER_ADMIN guard.
  *
  *   RT_ADMIN   36 grants  (view-only for expenses; no payment.create)
- *   RT_CHAIR   21 grants  (leadership; approves/rejects expenses; no financial write)
+ *   RT_CHAIR   23 grants  (leadership; approves/rejects expenses; no financial write)
  *   TREASURER  20 grants  (financial operations only)
  *   SECRETARY  10 grants  (administration and documentation)
  *   RESIDENT    6 grants  (read access and self-service payments)
@@ -129,7 +129,7 @@ WITH assignments (role_code, permission_code) AS (
     VALUES
 
     -- -------------------------------------------------------------------------
-    -- RT_ADMIN — 37 grants (view-only for expenses; no expense write/approve/reject)
+    -- RT_ADMIN — 36 grants (view-only for expenses; no expense write/approve/reject)
     -- -------------------------------------------------------------------------
     ('RT_ADMIN', 'resident.view'),
     ('RT_ADMIN', 'resident.create'),
@@ -169,7 +169,7 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_ADMIN', 'audit.view'),
 
     -- -------------------------------------------------------------------------
-    -- RT_CHAIR (Ketua) — 21 grants
+    -- RT_CHAIR (Ketua) — 23 grants
     -- -------------------------------------------------------------------------
     ('RT_CHAIR', 'resident.view'),
     ('RT_CHAIR', 'resident.create'),

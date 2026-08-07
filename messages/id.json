@@ -534,7 +534,24 @@
             "houseNumber": "No. Rumah",
             "phone": "No HP",
             "status": "Status",
+            "role": "Peran",
             "actions": "Aksi"
+        },
+        "roles": {
+            "ADMIN":     "Admin RT",
+            "CHAIR":     "Ketua RT",
+            "TREASURER": "Bendahara",
+            "SECRETARY": "Sekretaris",
+            "RESIDENT":  "Warga"
+        },
+        "roleChange": {
+            "button":        "Ubah Peran",
+            "dialogTitle":   "Ubah Peran Warga",
+            "currentRole":   "Peran Saat Ini",
+            "newRole":       "Peran Baru",
+            "success":       "Peran berhasil diubah",
+            "error":         "Gagal mengubah peran",
+            "lastAdminError": "RT harus memiliki minimal satu Administrator aktif"
         },
         "form": {
             "addTitle": "Tambah Warga",

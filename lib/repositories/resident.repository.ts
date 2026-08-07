@@ -3,7 +3,6 @@ import type { Database } from '../../types/database'
 import type { QueryOptions, PageResult } from '../types/query'
 import { applyResidentFilters } from '../helpers/filter-resident'
 
-type ResidentRow    = Database['public']['Tables']['residents']['Row']
 type ResidentInsert = Database['public']['Tables']['residents']['Insert']
 type ResidentUpdate = Database['public']['Tables']['residents']['Update']
 
@@ -95,14 +94,18 @@ export async function insertResident(payload: ResidentInsert) {
 export async function findResidentsPaginated(
     rtId: string,
     query: QueryOptions,
-): Promise<PageResult<ResidentRow>> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<PageResult<any>> {
     const from = (query.page - 1) * query.pageSize
     const to   = from + query.pageSize - 1
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let q = (supabase as any)
         .from('residents')
-        .select('id, name, block, house_number, phone, active, rt_id, created_at', { count: 'exact' })
+        .select(
+            'id, name, block, house_number, phone, active, rt_id, created_at, memberships(id, role, status)',
+            { count: 'exact' },
+        )
         .eq('rt_id', rtId)
         .is('deleted_at', null)
 
@@ -127,7 +130,7 @@ export async function findResidentsPaginated(
 
     const total = count ?? 0
     return {
-        data:       (data ?? []) as ResidentRow[],
+        data:       data ?? [],
         total,
         page:       query.page,
         pageSize:   query.pageSize,

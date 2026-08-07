@@ -25,10 +25,11 @@ export const PERMISSION = {
   RESIDENT_IMPORT:  'resident.import',
 
   // Membership
-  MEMBERSHIP_VIEW:   'membership.view',
-  MEMBERSHIP_CREATE: 'membership.create',
-  MEMBERSHIP_UPDATE: 'membership.update',
-  MEMBERSHIP_DELETE: 'membership.delete',
+  MEMBERSHIP_VIEW:        'membership.view',
+  MEMBERSHIP_CREATE:      'membership.create',
+  MEMBERSHIP_UPDATE:      'membership.update',
+  MEMBERSHIP_DELETE:      'membership.delete',
+  MEMBERSHIP_ROLE_UPDATE: 'membership.role_update',
 
   // Payment
   PAYMENT_VIEW:    'payment.view',

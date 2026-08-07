@@ -159,6 +159,24 @@ Removing Membership immediately revokes all permissions of that Membership.
 
 ---
 
+## BR-034
+
+Only RT Admin may change the role of a member within their RT.
+
+Requires permission `membership.role_update`.
+
+---
+
+## BR-035
+
+An RT must always have at least one active Administrator.
+
+Role changes that would demote the last active Administrator are rejected.
+
+This is enforced at both the API layer (HTTP 422) and the database layer (trigger `trg_guard_min_rt_admin` on `memberships`).
+
+---
+
 # 6. Payment
 
 ## BR-040

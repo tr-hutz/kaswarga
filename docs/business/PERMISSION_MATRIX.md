@@ -165,6 +165,10 @@ Legend
 | membership.create | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
 | membership.update | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
 | membership.delete | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| membership.role_update | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+
+> **membership.role_update** grants the ability to change a resident's role within the RT.
+> Guarded by BR-035: the last active Admin cannot be demoted.
 
 ---
 

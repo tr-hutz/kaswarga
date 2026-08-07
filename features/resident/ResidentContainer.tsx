@@ -27,7 +27,8 @@ export default function ResidentContainer() {
     const { membership, role } = (useAuth() as any) ?? {}
     const rtId = membership?.rt?.id as string | undefined
     const currentResidentId = membership?.resident?.id as string | undefined
-    const canManage = usePermission(PERMISSION.RESIDENT_CREATE)
+    const canManage      = usePermission(PERMISSION.RESIDENT_CREATE)
+    const canChangeRole  = usePermission(PERMISSION.MEMBERSHIP_ROLE_UPDATE)
     const t = useTranslations('residents')
     const tc = useTranslations('common')
 
@@ -44,6 +45,11 @@ export default function ResidentContainer() {
     // Delete confirmation
     const [deleteTarget,  setDeleteTarget]  = useState<ResidentRow | null>(null)
     const [deleting,      setDeleting]      = useState(false)
+
+    // Change role dialog
+    const [changeRoleTarget, setChangeRoleTarget] = useState<{
+        membershipId: string; currentRole: string; residentName: string
+    } | null>(null)
 
     useEffect(() => {
         if (rtId) loadPending()
@@ -100,6 +106,10 @@ export default function ResidentContainer() {
         setDeleteTarget(row)
     }
 
+    function handleChangeRole(row: ResidentRow, membershipId: string, currentRoleEnum: string) {
+        setChangeRoleTarget({ membershipId, currentRole: currentRoleEnum, residentName: row.name ?? '' })
+    }
+
     async function confirmDelete() {
         if (!deleteTarget) return
         setDeleting(true)
@@ -125,6 +135,7 @@ export default function ResidentContainer() {
                 pendingRequests={pendingRequests}
                 pendingLoading={pendingLoading}
                 canManage={canManage}
+                canChangeRole={canChangeRole}
                 role={role ?? ''}
                 currentResidentId={currentResidentId}
                 query={query}
@@ -136,7 +147,10 @@ export default function ResidentContainer() {
                 onRowClick={handleRowClick}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                onChangeRole={handleChangeRole}
                 refresh={refresh}
+                changeRoleTarget={changeRoleTarget}
+                closeChangeRole={() => setChangeRoleTarget(null)}
                 importError={importError}
                 {...actions}
             />

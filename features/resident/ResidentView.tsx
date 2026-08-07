@@ -7,6 +7,7 @@ import ResidentFilters      from './components/filters/ResidentFilters'
 import ResidentPendingRequests from './components/ResidentPendingRequests'
 import ResidentDetailDrawer from './components/drawer/ResidentDetailDrawer'
 import ResidentForm         from './components/forms/ResidentForm'
+import ChangeRoleDialog     from './components/forms/ChangeRoleDialog'
 import ResidentImportModal  from './components/import/ResidentImportModal'
 import { buildResidentColumns, type ResidentRow } from './components/ResidentColumns'
 import ExportDropdown from '@/components/ui/ExportDropdown'
@@ -38,7 +39,12 @@ interface Props {
     onRowClick:       (row: ResidentRow) => void
     onEdit:           (row: ResidentRow) => void
     onDelete:         (row: ResidentRow) => void
+    onChangeRole:     (row: ResidentRow, membershipId: string, currentRoleEnum: string) => void
+    canChangeRole:    boolean
     refresh:          () => void
+    // role change dialog
+    changeRoleTarget: { membershipId: string; currentRole: string; residentName: string } | null
+    closeChangeRole:  () => void
     // drawer
     selectedResident: unknown
     drawerOpen:       boolean
@@ -73,9 +79,9 @@ interface Props {
 export default function ResidentView({
     result, loading, error, reload,
     pendingRequests, pendingLoading,
-    canManage, role, currentResidentId,
+    canManage, canChangeRole, role, currentResidentId,
     query, setPage, setPageSize, setSearch, setSort, setFilter,
-    onRowClick, onEdit, onDelete, refresh,
+    onRowClick, onEdit, onDelete, onChangeRole, refresh,
     selectedResident, drawerOpen, closeDrawer,
     formOpen, openCreateForm, closeForm,
     exportCSV, exportExcel,
@@ -84,20 +90,25 @@ export default function ResidentView({
     importing, importError,
     progress, processedRows, totalRows,
     handleFile, handleImport, downloadTemplate, resetImport,
+    changeRoleTarget, closeChangeRole,
 }: Props) {
     const t  = useTranslations('residents')
     const tc = useTranslations('common')
+    const tr = useTranslations('residents.roles')
 
     const columns = useMemo(
         () => buildResidentColumns({
-            tResidents: (k) => t(k as Parameters<typeof t>[0]),
-            tCommon:    (k) => tc(k as Parameters<typeof tc>[0]),
+            tResidents:   (k) => t(k as Parameters<typeof t>[0]),
+            tCommon:      (k) => tc(k as Parameters<typeof tc>[0]),
+            tRoles:       (k) => tr(k as Parameters<typeof tr>[0]),
             canManage,
+            canChangeRole,
             onEdit,
             onDelete,
+            onChangeRole,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [canManage, onEdit, onDelete],
+        [canManage, canChangeRole, onEdit, onDelete, onChangeRole],
     )
 
     const data = result?.data ?? []
@@ -184,6 +195,17 @@ export default function ResidentView({
                 resident={selectedResident}
                 onSuccess={() => { closeForm(); refresh() }}
             />
+
+            {changeRoleTarget && (
+                <ChangeRoleDialog
+                    open={!!changeRoleTarget}
+                    onClose={closeChangeRole}
+                    membershipId={changeRoleTarget.membershipId}
+                    currentRole={changeRoleTarget.currentRole}
+                    residentName={changeRoleTarget.residentName}
+                    onSuccess={refresh}
+                />
+            )}
 
             <ResidentImportModal
                 open={importOpen}
