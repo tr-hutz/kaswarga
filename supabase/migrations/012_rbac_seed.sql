@@ -177,6 +177,8 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_CHAIR', 'resident.delete'),
     ('RT_CHAIR', 'resident.approve'),
     ('RT_CHAIR', 'resident.reject'),
+    ('RT_CHAIR', 'resident.export'),
+    ('RT_CHAIR', 'resident.import'),
     ('RT_CHAIR', 'membership.view'),
     ('RT_CHAIR', 'membership.create'),
     ('RT_CHAIR', 'membership.update'),

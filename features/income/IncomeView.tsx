@@ -130,7 +130,6 @@ export default function IncomeView({
                 onPageSizeChange={setPageSize}
                 onRetry={onRetry}
                 onRowClick={openDrawer}
-                searchable
                 searchPlaceholder={t('searchPlaceholder')}
                 onSearch={setSearch}
                 renderActions={

@@ -96,11 +96,11 @@ BEGIN
     ASSERT v_count = 45,
         format('Expected 45 permissions, found %s', v_count);
 
-    -- 93 role-permission assignments
+    -- 95 role-permission assignments
     --   RT_ADMIN=36, RT_CHAIR=21, TREASURER=20, SECRETARY=10, RESIDENT=6
     SELECT COUNT(*) INTO v_count FROM role_permissions;
-    ASSERT v_count = 93,
-        format('Expected 93 role_permissions rows, found %s', v_count);
+    ASSERT v_count = 95,
+        format('Expected 95 role_permissions rows, found %s', v_count);
 
     -- Per-role counts
     SELECT COUNT(rp.id) INTO v_count
@@ -112,8 +112,8 @@ BEGIN
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
     WHERE r.code = 'RT_CHAIR';
-    ASSERT v_count = 21,
-        format('RT_CHAIR: expected 21 permissions, found %s', v_count);
+    ASSERT v_count = 23,
+        format('RT_CHAIR: expected 23 permissions, found %s', v_count);
 
     SELECT COUNT(rp.id) INTO v_count
     FROM role_permissions rp JOIN roles r ON r.id = rp.role_id
