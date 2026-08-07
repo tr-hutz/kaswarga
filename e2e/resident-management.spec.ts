@@ -101,10 +101,6 @@ test.describe('create resident (admin)', () => {
 test.describe('resident pending requests (admin)', () => {
   test.use({ storageState: path.join(__dirname, '.auth/admin.json') })
 
-  test.beforeAll(async ({ browser }: { browser: Browser }) => {
-    await refreshAdminSession(browser)
-  })
-
   test('pending requests section renders', async ({ page }) => {
     const residents = new ResidentsPage(page)
     await residents.goto()
@@ -150,10 +146,6 @@ test.describe('resident pending requests (admin)', () => {
 
 test.describe('resident import (admin)', () => {
   test.use({ storageState: path.join(__dirname, '.auth/admin.json') })
-
-  test.beforeAll(async ({ browser }: { browser: Browser }) => {
-    await refreshAdminSession(browser)
-  })
 
   test('import button is visible for admin', async ({ page }) => {
     const residents = new ResidentsPage(page)
