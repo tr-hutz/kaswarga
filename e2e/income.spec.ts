@@ -120,9 +120,9 @@ test.describe('income access denied for resident', () => {
         await expect(page.getByRole('link', { name: /^Pemasukan$/i })).not.toBeVisible()
     })
 
-    test('navigating directly to /income redirects away', async ({ page }) => {
+    test('navigating directly to /income shows 403 error', async ({ page }) => {
         await page.goto('/income')
-        await expect(page).not.toHaveURL('/income')
+        await expect(page.getByText('403')).toBeVisible({ timeout: 10000 })
     })
 })
 

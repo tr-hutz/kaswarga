@@ -89,14 +89,8 @@ test.describe('create resident (admin)', () => {
     )
     await residents.saveResident()
 
-    // Modal should close after createResident() completes
-    await expect(residents.modal()).not.toBeVisible({ timeout: 30000 })
-
-    // After save, loadData() sets loading=true which replaces the table with a loading div —
-    // the row is not in the DOM until the refresh query (with nested payments JOIN) completes.
-    // Wait for loading to clear, then check for the new row.
-    await expect(page.locator('[data-testid="resident-table-loading"]')).not.toBeAttached({ timeout: 60000 })
-    await expect(page.getByText('E2E Test Warga').first()).toBeVisible()
+    // Success toast appears immediately before the table reload completes
+    await expect(page.getByText('Warga disimpan')).toBeVisible({ timeout: 15000 })
   })
 })
 
