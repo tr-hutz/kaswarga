@@ -4,7 +4,7 @@
  *
  * Seeds the complete RBAC v2 default data in execution order:
  *   1. Roles           — 6 system roles
- *   2. Permissions     — 44 system permissions (module.action catalog)
+ *   2. Permissions     — 46 system permissions (module.action catalog)
  *   3. Role-Permission assignments — 95 default grants
  *
  * SUPER_ADMIN intentionally has no role_permissions rows.
@@ -33,7 +33,7 @@ ON CONFLICT (code) DO NOTHING;
 
 
 /* ----------------------------------------------------------------------------
- * 2. PERMISSIONS  (44 total — module.action catalog)
+ * 2. PERMISSIONS  (46 total — module.action catalog)
  *
  * Codes are immutable. Never rename after seeding.
  * To change a capability: deprecate the old code and add a new one.
@@ -53,10 +53,11 @@ VALUES
     ('resident.import',  'Import Resident',             'Import resident data',                  true),
 
     -- Membership
-    ('membership.view',   'View Memberships',           'View memberships',                      true),
-    ('membership.create', 'Create Membership',          'Add membership',                        true),
-    ('membership.update', 'Update Membership',          'Update membership',                     true),
-    ('membership.delete', 'Delete Membership',          'Remove membership',                     true),
+    ('membership.view',        'View Memberships',    'View memberships',                        true),
+    ('membership.create',      'Create Membership',   'Add membership',                          true),
+    ('membership.update',      'Update Membership',   'Update membership',                       true),
+    ('membership.delete',      'Delete Membership',   'Remove membership',                       true),
+    ('membership.role_update', 'Change Member Role',  'Reassign the role of a member within the RT', true),
 
     -- Payment
     ('payment.view',    'View Payments',                'View payments',                         true),
@@ -143,6 +144,7 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_ADMIN', 'membership.create'),
     ('RT_ADMIN', 'membership.update'),
     ('RT_ADMIN', 'membership.delete'),
+    ('RT_ADMIN', 'membership.role_update'),
     ('RT_ADMIN', 'payment.view'),
     ('RT_ADMIN', 'payment.update'),
     ('RT_ADMIN', 'payment.delete'),

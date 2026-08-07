@@ -4,8 +4,10 @@
  * Adds the ability for RT_ADMIN to change the role of any member within their RT.
  *
  * Changes:
- *   1. New permission  — membership.role_update (RT_ADMIN only)
- *   2. DB-level guard  — guard_min_rt_admin trigger on memberships
+ *   1. New permission  — membership.role_update (seeded in 012; re-inserted here
+ *      with ON CONFLICT DO NOTHING as a safety net for existing DBs)
+ *   2. Grant           — membership.role_update → RT_ADMIN only (same safety-net pattern)
+ *   3. DB-level guard  — guard_min_rt_admin trigger on memberships
  *      Prevents demoting the last active ADMIN in an RT.
  *
  * The API layer also performs an eager check and returns HTTP 422 before the

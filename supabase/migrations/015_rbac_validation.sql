@@ -91,10 +91,10 @@ BEGIN
     ASSERT v_count = 6,
         format('Expected 6 roles, found %s', v_count);
 
-    -- 45 system permissions
+    -- 46 system permissions
     SELECT COUNT(*) INTO v_count FROM permissions;
-    ASSERT v_count = 45,
-        format('Expected 45 permissions, found %s', v_count);
+    ASSERT v_count = 46,
+        format('Expected 46 permissions, found %s', v_count);
 
     -- 96 role-permission assignments
     --   RT_ADMIN=37, RT_CHAIR=23, TREASURER=20, SECRETARY=10, RESIDENT=6
