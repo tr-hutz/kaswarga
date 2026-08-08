@@ -50,30 +50,12 @@ export async function createIncome(payload: Record<string, unknown>) {
         // activity log failure must not block the main flow
     }
 
-    try {
-        const { data: chairs } = await supabase
-            .from('memberships')
-            .select('user_id')
-            .eq('rt_id', rtId)
-            .eq('role', 'CHAIR')
-            .eq('status', 'active')
-
-        if (chairs?.length) {
-            await supabase.from('notifications').insert(
-                (chairs as any[]).map(m => ({
-                    rt_id:          rtId,
-                    type:           'income_pending',
-                    title:          'Pemasukan Baru Menunggu Persetujuan',
-                    message:        `Pemasukan "${row.income_name}" telah dicatat dan menunggu persetujuan Anda.`,
-                    entity_type:    'income_transactions',
-                    entity_id:      row.id,
-                    target_user_id: m.user_id,
-                }))
-            )
-        }
-    } catch {
-        // notification failure must not block the main flow
-    }
+    // Notify all CHAIR in the RT via API route (uses supabaseAdmin to bypass RLS)
+    fetch('/api/income/notify', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ incomeId: row.id, rtId, incomeName: row.income_name ?? null }),
+    }).catch(err => console.error('[Income Notify]', err))
 
     return row
 }

@@ -863,6 +863,11 @@
             "rejectReasonPlaceholder": "Tuliskan alasan penolakan (opsional)...",
             "confirmReject": "Konfirmasi Tolak"
         },
+        "toast": {
+            "approved":    "Pengeluaran berhasil disetujui",
+            "rejected":    "Pengeluaran berhasil ditolak",
+            "approvedAll": "{count} pengeluaran berhasil disetujui"
+        },
         "analytics": {
             "totalExpense": "Total Pengeluaran",
             "totalTransactions": "Jumlah Transaksi",
