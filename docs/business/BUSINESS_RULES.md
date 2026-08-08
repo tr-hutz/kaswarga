@@ -131,6 +131,29 @@ Expired activation token cannot be used.
 
 ---
 
+## BR-026
+
+Bulk resident import creates `residents` rows without user accounts or memberships.
+
+Imported residents cannot log in or interact with the system until they complete registration and activation.
+
+---
+
+## BR-027
+
+When an imported resident registers and activates, the system attempts to claim an existing imported resident row instead of creating a duplicate.
+
+Claiming logic during activation:
+
+1. If a `residents` row in the same RT has the same email → reuse that row.
+2. Otherwise, if the role is RESIDENT and the registration request contains `block` and `house_number` → search for an unlinked `residents` row in the same RT matching both fields (case-insensitive).
+3. If a match is found and it has no existing membership → claim it: update the resident's `name`, `email`, and `phone` with data from the registration request, then link it to the new membership.
+4. If no match is found → create a new `residents` row.
+
+This ensures imported resident data is not duplicated when the resident later self-registers.
+
+---
+
 # 5. User Management
 
 ## BR-030
