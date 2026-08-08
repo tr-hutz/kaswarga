@@ -348,16 +348,23 @@ dependency.
 
 ### memberships (021)
 
-Three new permissive policies added alongside existing `super_admin` policies:
+Four permissive policies added alongside existing `super_admin` policies:
 
 | Policy | Command | Guard |
 |---|---|---|
+| `memberships: view` | SELECT | `rt_id IS NOT NULL AND is_member_of_rt(rt_id)` |
 | `memberships: rt admin insert` | INSERT | `has_permission(rt_id, 'membership.create')` |
 | `memberships: rt admin update` | UPDATE | `has_permission(rt_id, 'membership.update')` |
 | `memberships: rt admin delete` | DELETE | `has_permission(rt_id, 'membership.delete')` |
 
-RT_ADMIN and RT_CHAIR can now manage memberships via the authenticated client
-in addition to the existing supabaseAdmin path.
+The SELECT policy fixes a gap where `"membership: read own"` (007) scoped reads
+to `user_id = auth.uid()` only — causing empty `memberships` arrays when any
+member queried residents, making role badges invisible. Any active RT member
+(`is_member_of_rt()`) can now read all membership rows within their RT. Role
+visibility within an RT is not sensitive: knowing who the chair or treasurer is
+is expected public knowledge for neighbours. `rt_id IS NOT NULL` excludes the
+SUPER_ADMIN system membership row, which falls through to the existing read-all
+policy. `is_member_of_rt()` is SECURITY DEFINER to avoid recursive RLS.
 
 ### activity_logs (022)
 

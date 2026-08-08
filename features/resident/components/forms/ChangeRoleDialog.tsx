@@ -27,8 +27,7 @@ interface ChangeRoleDialogProps {
 export default function ChangeRoleDialog({
     open, onClose, membershipId, currentRole, residentName, onSuccess,
 }: ChangeRoleDialogProps) {
-    const t  = useTranslations('residents.roleChange')
-    const tr = useTranslations('residents.roles')
+    const t  = useTranslations('residents')
     const tc = useTranslations('common')
     const { toast } = useToast() as any
 
@@ -52,14 +51,14 @@ export default function ChangeRoleDialog({
                 const body = await res.json().catch(() => ({}))
                 throw new Error(body.error || res.statusText)
             }
-            toast({ message: t('success'), type: 'success' })
+            toast({ message: t('roleChange.success'), type: 'success' })
             onSuccess()
             onClose()
         } catch (err) {
             const msg = (err as Error).message
             const displayMsg = msg === 'RT harus memiliki minimal satu Administrator'
-                ? t('lastAdminError')
-                : t('error')
+                ? t('roleChange.lastAdminError')
+                : t('roleChange.error')
             toast({ message: displayMsg, type: 'error' })
         } finally {
             setSaving(false)
@@ -72,18 +71,18 @@ export default function ChangeRoleDialog({
                 onSubmit={handleSubmit}
                 className="bg-surface rounded-lg p-6 w-full max-w-sm space-y-4"
             >
-                <h2 className="text-lg font-semibold text-foreground">{t('dialogTitle')}</h2>
+                <h2 className="text-lg font-semibold text-foreground">{t('roleChange.dialogTitle')}</h2>
                 <p className="text-sm text-muted">{residentName}</p>
 
                 <div className="space-y-1">
-                    <label className="text-xs text-muted block">{t('currentRole')}</label>
+                    <label className="text-xs text-muted block">{t('roleChange.currentRole')}</label>
                     <p className="text-sm text-foreground font-medium">
-                        {tr(currentRole as Parameters<typeof tr>[0])}
+                        {t((`roles.${currentRole}`) as Parameters<typeof t>[0])}
                     </p>
                 </div>
 
                 <div className="space-y-1">
-                    <label className="text-xs text-muted block">{t('newRole')}</label>
+                    <label className="text-xs text-muted block">{t('roleChange.newRole')}</label>
                     <select
                         value={selectedRole}
                         onChange={e => setSelectedRole(e.target.value)}
@@ -91,7 +90,7 @@ export default function ChangeRoleDialog({
                     >
                         {ASSIGNABLE_ROLES.map(r => (
                             <option key={r.enum} value={r.enum}>
-                                {tr(r.labelKey.replace('roles.', '') as Parameters<typeof tr>[0])}
+                                {t(r.labelKey as Parameters<typeof t>[0])}
                             </option>
                         ))}
                     </select>

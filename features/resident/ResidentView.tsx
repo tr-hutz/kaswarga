@@ -94,21 +94,31 @@ export default function ResidentView({
 }: Props) {
     const t  = useTranslations('residents')
     const tc = useTranslations('common')
-    const tr = useTranslations('residents.roles')
+
+    const activeAdminMembershipIds: string[] = useMemo(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (result?.data ?? []).flatMap((row: any) =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (row.memberships ?? []).filter((m: any) => m.status === 'active' && m.role === 'ADMIN')
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .map((m: any) => m.id as string)
+        )
+    }, [result?.data])
 
     const columns = useMemo(
         () => buildResidentColumns({
-            tResidents:   (k) => t(k as Parameters<typeof t>[0]),
-            tCommon:      (k) => tc(k as Parameters<typeof tc>[0]),
-            tRoles:       (k) => tr(k as Parameters<typeof tr>[0]),
+            tResidents:              (k) => t(k as Parameters<typeof t>[0]),
+            tCommon:                 (k) => tc(k as Parameters<typeof tc>[0]),
+            tRoles:                  (k) => t((`roles.${k}`) as Parameters<typeof t>[0]),
             canManage,
             canChangeRole,
+            activeAdminMembershipIds,
             onEdit,
             onDelete,
             onChangeRole,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [canManage, canChangeRole, onEdit, onDelete, onChangeRole],
+        [canManage, canChangeRole, activeAdminMembershipIds, onEdit, onDelete, onChangeRole],
     )
 
     const data = result?.data ?? []

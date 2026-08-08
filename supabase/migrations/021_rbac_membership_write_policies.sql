@@ -1,9 +1,9 @@
 /*
  * =============================================================================
- * 021_MEMBERSHIP_WRITE_POLICIES
+ * 021_MEMBERSHIP_POLICIES
  *
- * Adds RT-admin-level INSERT / UPDATE / DELETE policies to the memberships
- * table so that users with the appropriate RBAC v2 permissions can manage
+ * Adds SELECT / INSERT / UPDATE / DELETE policies to the memberships table
+ * so that users with the appropriate RBAC v2 permissions can manage and read
  * memberships via the authenticated Supabase client — not only via
  * supabaseAdmin (service_role).
  *
@@ -15,28 +15,49 @@
  *   membership operations currently require supabaseAdmin bypass, which is
  *   a design gap.
  *
- * Strategy:
- *   Add three new permissive policies alongside the existing super_admin
- *   policies. PostgreSQL ORs all permissive policies for the same command,
- *   so the SUPER_ADMIN path is fully preserved.
+ *   The existing SELECT policy ("membership: read own") in 007_rls.sql scopes
+ *   to user_id = auth.uid() only. This means querying residents with a
+ *   memberships(...) join returns empty arrays for all other residents, making
+ *   role badges and the role-change UI invisible to RT Admins.
  *
- *   New policies use has_permission() which already includes the SUPER_ADMIN
+ * Strategy:
+ *   Add permissive policies alongside the existing super_admin policies.
+ *   PostgreSQL ORs all permissive policies for the same command, so the
+ *   SUPER_ADMIN path is fully preserved.
+ *
+ *   All policies use has_permission() which already includes the SUPER_ADMIN
  *   bypass, so there is no double-grant risk.
  *
  * Permissions used:
- *   membership.create  — Active in PERMISSION_CATALOG.md
- *   membership.update  — Active in PERMISSION_CATALOG.md
- *   membership.delete  — Active in PERMISSION_CATALOG.md
- *
- * Default role grants (from 012_rbac_seed.sql):
- *   RT_ADMIN  — membership.create, membership.update, membership.delete ✓
- *   RT_CHAIR  — membership.create, membership.update, membership.delete ✓
- *   TREASURER — none
- *   RESIDENT  — none
+ *   membership.view    — RT_ADMIN, RT_CHAIR, SECRETARY
+ *   membership.create  — RT_ADMIN, RT_CHAIR
+ *   membership.update  — RT_ADMIN, RT_CHAIR
+ *   membership.delete  — RT_ADMIN, RT_CHAIR
  *
  * Dependencies : 007_rls (existing super_admin policies), 013_rbac_functions
  * =============================================================================
  */
+
+
+/* ----------------------------------------------------------------------------
+ * memberships SELECT — any active RT member may read all memberships in their RT
+ *
+ * Knowing who holds which role within an RT is not sensitive; every member
+ * should be able to see role badges for their neighbours.
+ *
+ * is_member_of_rt() is SECURITY DEFINER so there is no recursive RLS issue.
+ * rt_id IS NOT NULL excludes the SUPER_ADMIN membership row (rt_id = NULL),
+ * which falls through to the existing "membership: super_admin read all".
+ * --------------------------------------------------------------------------- */
+
+DROP POLICY IF EXISTS "memberships: view" ON memberships;
+
+CREATE POLICY "memberships: view"
+    ON memberships FOR SELECT TO authenticated
+    USING (
+        rt_id IS NOT NULL
+        AND is_member_of_rt(rt_id)
+    );
 
 
 /* ----------------------------------------------------------------------------

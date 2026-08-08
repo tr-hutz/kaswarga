@@ -1,6 +1,7 @@
 import { NextResponse }      from 'next/server'
 import { getRequestContext } from '@/lib/auth/server'
 import { changeMemberRole }  from '@/lib/services/member-override.service'
+import { supabaseAdmin }     from '@/lib/supabase-admin'
 import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 
 type Params = { params: Promise<{ membershipId: string }> }
@@ -25,7 +26,34 @@ export async function PATCH(req: Request, { params }: Params) {
             return NextResponse.json({ error: 'role must be a non-empty string' }, { status: 400 })
         }
 
-        await changeMemberRole(membershipId, body.role.trim(), ctx.authorization)
+        const result = await changeMemberRole(membershipId, body.role.trim(), ctx.authorization)
+
+        if (result) {
+            const { oldRole, newRole, memberName } = result
+            const rtId   = ctx.authorization.neighborhoodId
+            const userId = ctx.authorization.userId
+
+            const { data: actor } = await supabaseAdmin
+                .from('users')
+                .select('name')
+                .eq('id', userId)
+                .single()
+
+            // fire-and-forget — do not await so a log failure never blocks the response
+            supabaseAdmin.from('activity_logs').insert({
+                rt_id:       rtId,
+                actor_id:    userId,
+                actor_name:  actor?.name ?? null,
+                action:      'CHANGE_MEMBER_ROLE',
+                entity_type: 'memberships',
+                entity_id:   membershipId,
+                description: `Changed role of ${memberName ?? membershipId} from ${oldRole} to ${newRole}`,
+                metadata:    { membershipId, memberName, oldRole, newRole },
+            }).then(({ error }) => {
+                if (error) console.error('[PATCH role] activity log failed', error)
+            })
+        }
+
         return NextResponse.json({ success: true })
     } catch (err) {
         if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

@@ -80,11 +80,17 @@ export async function getMemberOverrides(membershipId: string, auth: Authorizati
     }
 }
 
+export interface RoleChangeResult {
+    oldRole:    string
+    newRole:    string
+    memberName: string | null
+}
+
 export async function changeMemberRole(
     membershipId: string,
     newRoleEnum:  string,
     auth:         AuthorizationContext,
-): Promise<void> {
+): Promise<RoleChangeResult | null> {
     if (!auth.hasPermission(PERMISSION.MEMBERSHIP_ROLE_UPDATE)) {
         throw new ForbiddenError(PERMISSION.MEMBERSHIP_ROLE_UPDATE)
     }
@@ -97,10 +103,7 @@ export async function changeMemberRole(
     const member = await findMembershipById(membershipId)
     if (!member) throw new Error('Member not found')
 
-    // Confirm the membership belongs to this RT
-    // (findMembershipById already scopes to the member but we validate rt_id below)
-
-    if (member.roleEnum === newRoleEnum) return // no-op
+    if (member.roleEnum === newRoleEnum) return null // no-op
 
     // Eager guard: prevent demoting the last ADMIN before hitting the DB trigger
     if (member.roleEnum === 'ADMIN' && newRoleEnum !== 'ADMIN') {
@@ -111,6 +114,8 @@ export async function changeMemberRole(
     }
 
     await updateMembershipRole(membershipId, newRoleEnum)
+
+    return { oldRole: member.roleEnum, newRole: newRoleEnum, memberName: member.name }
 }
 
 export async function saveMemberOverrides(
