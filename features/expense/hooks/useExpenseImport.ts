@@ -22,7 +22,7 @@ const COLUMN_ALIASES = {
     ket:         'description',
 }
 
-export function useExpenseImport(onSuccess?: (inserted: number) => void) {
+export function useExpenseImport(onSuccess?: (inserted: number, skipped: number) => void) {
     return useImport({
         columnAliases:     COLUMN_ALIASES,
         isValidRow:        (r: Record<string, string>) => !!r.date?.trim() && !!r.amount?.trim(),
@@ -34,6 +34,6 @@ export function useExpenseImport(onSuccess?: (inserted: number) => void) {
         ],
         templateSheetName: 'Expenses',
         templateFileName:  'expense-import-template.xlsx',
-        onSuccess,
+        onSuccess: (inserted, skipped) => onSuccess?.(inserted, skipped ?? 0),
     })
 }
