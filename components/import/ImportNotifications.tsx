@@ -92,6 +92,11 @@ function ImportJobCard({ job, onDismiss }: { job: ImportJob; onDismiss: () => vo
                 <div className="flex items-center justify-between pt-0.5">
                     <span className="text-xs text-warning font-medium">
                         {job.success_rows} baris menunggu
+                        {(job.total_rows - job.success_rows - job.failed_rows) > 0 && (
+                            <span className="font-normal ml-1">
+                                ({job.total_rows - job.success_rows - job.failed_rows} dilewati)
+                            </span>
+                        )}
                     </span>
                     <Link
                         href={APPROVAL_PATH[job.import_type] ?? '/'}
@@ -105,6 +110,11 @@ function ImportJobCard({ job, onDismiss }: { job: ImportJob; onDismiss: () => vo
             {isCompleted && (
                 <p className="text-xs text-success">
                     {job.success_rows} baris berhasil diimpor
+                    {(job.total_rows - job.success_rows - job.failed_rows) > 0 && (
+                        <span className="text-warning ml-1">
+                            ({job.total_rows - job.success_rows - job.failed_rows} dilewati)
+                        </span>
+                    )}
                 </p>
             )}
 

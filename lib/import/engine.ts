@@ -458,7 +458,7 @@ async function notifyJobComplete(
                 rt_id:          rtId,
                 type:           'import_complete',
                 title:          `Import ${typeName} ${statusMsg.toLowerCase()}`,
-                message:        `${summary.total} baris diproses: ${summary.success} berhasil, ${summary.failed} gagal.`,
+                message:        `${summary.total} baris diproses: ${summary.success} berhasil, ${summary.failed} gagal${summary.skipped > 0 ? `, ${summary.skipped} dilewati` : ''}.`,
                 entity_type:    'import_jobs',
                 entity_id:      jobId,
                 target_user_id: userId,
