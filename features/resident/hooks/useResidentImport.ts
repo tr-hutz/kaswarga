@@ -26,7 +26,7 @@ const COLUMN_ALIASES = {
     phone:         'phone',
 }
 
-export function useResidentImport(onSuccess?: (inserted: number) => void) {
+export function useResidentImport(onSuccess?: (inserted: number, skipped: number) => void) {
     return useImport({
         columnAliases:     COLUMN_ALIASES,
         isValidRow:        (r: Record<string, string>) => !!r.name?.trim(),
@@ -38,6 +38,6 @@ export function useResidentImport(onSuccess?: (inserted: number) => void) {
         ],
         templateSheetName: 'Residents',
         templateFileName:  'resident-import-template.xlsx',
-        onSuccess,
+        onSuccess: (inserted, skipped) => onSuccess?.(inserted, skipped ?? 0),
     })
 }

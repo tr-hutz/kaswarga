@@ -253,29 +253,7 @@ export async function POST(req: Request) {
             metadata:    { inserted, skipped, fileName },
         })
 
-        // Notify treasurers
-        if (inserted > 0) {
-            const { data: treasurers } = await supabaseAdmin
-                .from('memberships')
-                .select('user_id')
-                .eq('rt_id', rtId)
-                .eq('role', 'TREASURER')
-                .eq('status', 'active')
-
-            if (treasurers?.length) {
-                await supabaseAdmin.from('notifications').insert(
-                    treasurers.map((m: { user_id: string }) => ({
-                        rt_id:          rtId,
-                        type:           'payment_pending',
-                        title:          'Pembayaran Impor Menunggu Persetujuan',
-                        message:        `${inserted} data pembayaran diimpor dan menunggu persetujuan.`,
-                        entity_type:    'payment_confirmations',
-                        entity_id:      rtId,
-                        target_user_id: m.user_id,
-                    }))
-                )
-            }
-        }
+        // Notification is sent ONCE after all batches complete — see /api/payments/import-notify
 
         return NextResponse.json({ inserted, skipped })
 

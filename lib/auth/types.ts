@@ -25,10 +25,11 @@ export const PERMISSION = {
   RESIDENT_IMPORT:  'resident.import',
 
   // Membership
-  MEMBERSHIP_VIEW:   'membership.view',
-  MEMBERSHIP_CREATE: 'membership.create',
-  MEMBERSHIP_UPDATE: 'membership.update',
-  MEMBERSHIP_DELETE: 'membership.delete',
+  MEMBERSHIP_VIEW:        'membership.view',
+  MEMBERSHIP_CREATE:      'membership.create',
+  MEMBERSHIP_UPDATE:      'membership.update',
+  MEMBERSHIP_DELETE:      'membership.delete',
+  MEMBERSHIP_ROLE_UPDATE: 'membership.role_update',
 
   // Payment
   PAYMENT_VIEW:    'payment.view',
@@ -49,6 +50,16 @@ export const PERMISSION = {
   EXPENSE_REJECT:  'expense.reject',
   EXPENSE_EXPORT:  'expense.export',
   EXPENSE_IMPORT:  'expense.import',
+
+  // Income
+  INCOME_VIEW:    'income.view',
+  INCOME_CREATE:  'income.create',
+  INCOME_UPDATE:  'income.update',
+  INCOME_DELETE:  'income.delete',
+  INCOME_APPROVE: 'income.approve',
+  INCOME_REJECT:  'income.reject',
+  INCOME_EXPORT:  'income.export',
+  INCOME_IMPORT:  'income.import',
 
   // Ledger
   LEDGER_VIEW:   'ledger.view',

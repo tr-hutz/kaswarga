@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { createResident, updateResident } from '@/lib/services/resident.service'
 import { useTranslations } from 'next-intl'
+import { useToast } from '@/components/ui/ToastProvider'
 
 const EMPTY = { name: '', block: '', houseNumber: '', phone: '' }
 
@@ -39,8 +40,10 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
         setForm(prev => ({ ...prev, [key]: val }))
     }
 
-    const t = useTranslations('residents')
+    const t  = useTranslations('residents')
     const tc = useTranslations('common')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { toast } = useToast() as any
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -52,6 +55,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
             } else {
                 await createResident(form)
             }
+            toast({ message: t('form.saveSuccess'), type: 'success' })
             onSuccess()
         } catch (err) {
             console.error(err)

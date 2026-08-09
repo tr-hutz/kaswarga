@@ -165,6 +165,10 @@ Legend
 | membership.create | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
 | membership.update | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
 | membership.delete | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| membership.role_update | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+
+> **membership.role_update** grants the ability to change a resident's role within the RT.
+> Guarded by BR-035: the last active Admin cannot be demoted.
 
 ---
 
@@ -173,7 +177,7 @@ Legend
 | Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
 |------------|-------|-------|-------|-----------|-----------|---------|
 | payment.view | ❌ | 👁 | 👁 | ✅ | 👁 | ⚡ |
-| payment.create | ❌ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| payment.create | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | payment.update | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 | payment.delete | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 | payment.approve | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
@@ -195,6 +199,21 @@ Legend
 | expense.reject | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | expense.export | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 | expense.import | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+
+---
+
+## Income
+
+| Permission | Super | Chair | Admin | Treasurer | Secretary | Resident |
+|------------|-------|-------|-------|-----------|-----------|---------|
+| income.view    | ❌ | 👁 | ✅ | ✅ | 👁 | ❌ |
+| income.create  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| income.update  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| income.delete  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| income.approve | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| income.reject  | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| income.export  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| income.import  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 
 ---
 

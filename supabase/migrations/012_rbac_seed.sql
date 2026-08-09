@@ -4,8 +4,8 @@
  *
  * Seeds the complete RBAC v2 default data in execution order:
  *   1. Roles           — 6 system roles
- *   2. Permissions     — 44 system permissions (module.action catalog)
- *   3. Role-Permission assignments — 91 default grants
+ *   2. Permissions     — 46 system permissions (module.action catalog)
+ *   3. Role-Permission assignments — 95 default grants
  *
  * SUPER_ADMIN intentionally has no role_permissions rows.
  * It bypasses the permission system unconditionally via has_permission().
@@ -33,7 +33,7 @@ ON CONFLICT (code) DO NOTHING;
 
 
 /* ----------------------------------------------------------------------------
- * 2. PERMISSIONS  (44 total — module.action catalog)
+ * 2. PERMISSIONS  (46 total — module.action catalog)
  *
  * Codes are immutable. Never rename after seeding.
  * To change a capability: deprecate the old code and add a new one.
@@ -53,10 +53,11 @@ VALUES
     ('resident.import',  'Import Resident',             'Import resident data',                  true),
 
     -- Membership
-    ('membership.view',   'View Memberships',           'View memberships',                      true),
-    ('membership.create', 'Create Membership',          'Add membership',                        true),
-    ('membership.update', 'Update Membership',          'Update membership',                     true),
-    ('membership.delete', 'Delete Membership',          'Remove membership',                     true),
+    ('membership.view',        'View Memberships',    'View memberships',                        true),
+    ('membership.create',      'Create Membership',   'Add membership',                          true),
+    ('membership.update',      'Update Membership',   'Update membership',                       true),
+    ('membership.delete',      'Delete Membership',   'Remove membership',                       true),
+    ('membership.role_update', 'Change Member Role',  'Reassign the role of a member within the RT', true),
 
     -- Payment
     ('payment.view',    'View Payments',                'View payments',                         true),
@@ -113,23 +114,23 @@ ON CONFLICT (code) DO NOTHING;
 
 
 /* ----------------------------------------------------------------------------
- * 3. ROLE-PERMISSION ASSIGNMENTS  (91 grants)
+ * 3. ROLE-PERMISSION ASSIGNMENTS  (95 grants)
  *
  * SUPER_ADMIN: intentionally excluded — bypasses the permission system
  *              unconditionally via the has_permission() SUPER_ADMIN guard.
  *
- *   RT_ADMIN   37 grants  (view-only for expenses)
- *   RT_CHAIR   21 grants  (leadership; approves/rejects expenses; no financial write)
- *   TREASURER  18 grants  (financial operations only)
+ *   RT_ADMIN   36 grants  (view-only for expenses; no payment.create)
+ *   RT_CHAIR   23 grants  (leadership; approves/rejects expenses; no financial write)
+ *   TREASURER  20 grants  (financial operations only)
  *   SECRETARY  10 grants  (administration and documentation)
- *   RESIDENT    5 grants  (read access and self-service payments)
+ *   RESIDENT    6 grants  (read access and self-service payments)
  * --------------------------------------------------------------------------- */
 
 WITH assignments (role_code, permission_code) AS (
     VALUES
 
     -- -------------------------------------------------------------------------
-    -- RT_ADMIN — 37 grants (view-only for expenses; no expense write/approve/reject)
+    -- RT_ADMIN — 36 grants (view-only for expenses; no expense write/approve/reject)
     -- -------------------------------------------------------------------------
     ('RT_ADMIN', 'resident.view'),
     ('RT_ADMIN', 'resident.create'),
@@ -143,8 +144,8 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_ADMIN', 'membership.create'),
     ('RT_ADMIN', 'membership.update'),
     ('RT_ADMIN', 'membership.delete'),
+    ('RT_ADMIN', 'membership.role_update'),
     ('RT_ADMIN', 'payment.view'),
-    ('RT_ADMIN', 'payment.create'),
     ('RT_ADMIN', 'payment.update'),
     ('RT_ADMIN', 'payment.delete'),
     ('RT_ADMIN', 'payment.approve'),
@@ -170,7 +171,7 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_ADMIN', 'audit.view'),
 
     -- -------------------------------------------------------------------------
-    -- RT_CHAIR (Ketua) — 21 grants
+    -- RT_CHAIR (Ketua) — 23 grants
     -- -------------------------------------------------------------------------
     ('RT_CHAIR', 'resident.view'),
     ('RT_CHAIR', 'resident.create'),
@@ -178,12 +179,13 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_CHAIR', 'resident.delete'),
     ('RT_CHAIR', 'resident.approve'),
     ('RT_CHAIR', 'resident.reject'),
+    ('RT_CHAIR', 'resident.export'),
+    ('RT_CHAIR', 'resident.import'),
     ('RT_CHAIR', 'membership.view'),
     ('RT_CHAIR', 'membership.create'),
     ('RT_CHAIR', 'membership.update'),
     ('RT_CHAIR', 'membership.delete'),
     ('RT_CHAIR', 'payment.view'),
-    ('RT_CHAIR', 'payment.create'),
     ('RT_CHAIR', 'expense.view'),
     ('RT_CHAIR', 'expense.approve'),
     ('RT_CHAIR', 'expense.reject'),
@@ -193,9 +195,10 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_CHAIR', 'report.export'),
     ('RT_CHAIR', 'settings.view'),
     ('RT_CHAIR', 'settings.update'),
+    ('RT_CHAIR', 'audit.view'),
 
     -- -------------------------------------------------------------------------
-    -- TREASURER (Bendahara) — 18 grants
+    -- TREASURER (Bendahara) — 19 grants
     -- -------------------------------------------------------------------------
     ('TREASURER', 'resident.view'),
     ('TREASURER', 'payment.view'),
@@ -216,6 +219,7 @@ WITH assignments (role_code, permission_code) AS (
     ('TREASURER', 'ledger.export'),
     ('TREASURER', 'report.view'),
     ('TREASURER', 'report.export'),
+    ('TREASURER', 'audit.view'),
 
     -- -------------------------------------------------------------------------
     -- SECRETARY (Sekretaris) — 10 grants
@@ -232,13 +236,14 @@ WITH assignments (role_code, permission_code) AS (
     ('SECRETARY', 'report.export'),
 
     -- -------------------------------------------------------------------------
-    -- RESIDENT (Warga) — 5 grants
+    -- RESIDENT (Warga) — 6 grants
     -- -------------------------------------------------------------------------
     ('RESIDENT', 'resident.view'),
     ('RESIDENT', 'payment.view'),
     ('RESIDENT', 'payment.create'),
     ('RESIDENT', 'expense.view'),
-    ('RESIDENT', 'ledger.view')
+    ('RESIDENT', 'ledger.view'),
+    ('RESIDENT', 'audit.view')
 )
 INSERT INTO role_permissions (role_id, permission_id, allow)
 SELECT r.id, p.id, true

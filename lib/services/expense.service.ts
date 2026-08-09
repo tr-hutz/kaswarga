@@ -8,8 +8,6 @@ import {
     insertExpense,
     updateExpenseById
 } from '../repositories/expense.repository'
-import { findMembersByRole } from '../repositories/membership.repository'
-import { insertNotifications } from '../repositories/notification.repository'
 
 /*
 |------------------------------------------------------------------
@@ -113,25 +111,16 @@ export async function createExpense(
         }
     })
 
-    // Notify all CHAIR in the RT
-    try {
-        const chairList = await findMembersByRole(rtId ?? '', 'CHAIR')
-
-        if (chairList.length) {
-            const notifRows = chairList.map(k => ({
-                rt_id:          rtId ?? '',
-                type:           'expense_pending',
-                title:          'New Expense',
-                message:        `Expense ${data.receipt_number || ''} requires your approval`,
-                entity_type:    'expenses',
-                entity_id:      data.id,
-                target_user_id: k.user_id,
-            }))
-            await insertNotifications(notifRows)
-        }
-    } catch {
-        // Notification errors must not block the main flow
-    }
+    // Notify all CHAIR in the RT via API route (uses supabaseAdmin to bypass RLS)
+    fetch('/api/expenses/notify', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({
+            expenseId:     data.id,
+            rtId:          rtId ?? '',
+            receiptNumber: data.receipt_number ?? null,
+        }),
+    }).catch(err => console.error('[Expense Notify]', err))
 
     return data
 }

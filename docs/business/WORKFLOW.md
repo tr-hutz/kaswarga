@@ -217,11 +217,23 @@ RT Chair / Administrator
 
 ↓
 
-Create User
+Send Activation Email
 
 ↓
 
-Create Resident
+Resident clicks activation link
+
+↓
+
+Claim imported resident row?
+
+├── Yes (matching block + house_number, no existing membership) → Update & reuse existing row
+
+└── No → Create new Resident row
+
+↓
+
+Create User
 
 ↓
 
@@ -229,11 +241,7 @@ Membership
 
 ↓
 
-Activation Token
-
-↓
-
-Activation Email
+Activation Token marked used
 
 ↓
 
@@ -241,9 +249,15 @@ Completed
 
 ```
 
+Notes
+
+- Claiming an imported resident row requires a `block` + `house_number` match (case-insensitive) within the same RT, and the existing row must not yet be linked to any membership.
+- If the existing row is matched, its `name`, `email`, and `phone` are updated from the registration request. No duplicate resident row is created.
+- See BR-026, BR-027.
+
 Generated Records
 
-- Resident
+- Resident (created or claimed from import)
 - User
 - Membership
 - Notification

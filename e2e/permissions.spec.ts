@@ -105,14 +105,14 @@ test.describe('payment data scoping — RESIDENT', () => {
 })
 
 // ---------------------------------------------------------------------------
-// Expense approval buttons — CHAIR must NOT see Setujui / Tolak
-// (RBAC v2: expense.update belongs to Admin and Treasurer only)
+// Expense approval buttons — CHAIR must see Setujui / Tolak
+// (RBAC v2: expense.approve and expense.reject are granted to RT_CHAIR)
 // ---------------------------------------------------------------------------
 
 test.describe('expense approval buttons — CHAIR', () => {
   test.use({ storageState: path.join(__dirname, '.auth/chair.json') })
 
-  test('CHAIR does not see Setujui / Tolak in expense drawer', async ({ page }) => {
+  test('CHAIR sees Setujui / Tolak in expense drawer', async ({ page }) => {
     await page.goto('/expenses')
     await waitForShell(page, /\/expenses/)
     await page.locator('[data-testid="dt-row"],[data-testid="dt-empty"]').first().waitFor({ timeout: 15000 })
@@ -126,8 +126,8 @@ test.describe('expense approval buttons — CHAIR', () => {
     await rows.first().click()
     await expect(page.locator('[data-testid="expense-drawer"]')).toBeVisible({ timeout: 10000 })
 
-    await expect(page.locator('[data-testid="expense-drawer"]').getByRole('button', { name: 'Setujui' })).not.toBeVisible()
-    await expect(page.locator('[data-testid="expense-drawer"]').getByRole('button', { name: /^Tolak$/ })).not.toBeVisible()
+    await expect(page.locator('[data-testid="expense-drawer"]').getByRole('button', { name: 'Setujui' })).toBeVisible()
+    await expect(page.locator('[data-testid="expense-drawer"]').getByRole('button', { name: /^Tolak$/ })).toBeVisible()
   })
 })
 

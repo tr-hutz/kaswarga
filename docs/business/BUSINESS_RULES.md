@@ -131,6 +131,29 @@ Expired activation token cannot be used.
 
 ---
 
+## BR-026
+
+Bulk resident import creates `residents` rows without user accounts or memberships.
+
+Imported residents cannot log in or interact with the system until they complete registration and activation.
+
+---
+
+## BR-027
+
+When an imported resident registers and activates, the system attempts to claim an existing imported resident row instead of creating a duplicate.
+
+Claiming logic during activation:
+
+1. If a `residents` row in the same RT has the same email → reuse that row.
+2. Otherwise, if the role is RESIDENT and the registration request contains `block` and `house_number` → search for an unlinked `residents` row in the same RT matching both fields (case-insensitive).
+3. If a match is found and it has no existing membership → claim it: update the resident's `name`, `email`, and `phone` with data from the registration request, then link it to the new membership.
+4. If no match is found → create a new `residents` row.
+
+This ensures imported resident data is not duplicated when the resident later self-registers.
+
+---
+
 # 5. User Management
 
 ## BR-030
@@ -156,6 +179,24 @@ Role assignment must always belong to a Membership.
 ## BR-033
 
 Removing Membership immediately revokes all permissions of that Membership.
+
+---
+
+## BR-034
+
+Only RT Admin may change the role of a member within their RT.
+
+Requires permission `membership.role_update`.
+
+---
+
+## BR-035
+
+An RT must always have at least one active Administrator.
+
+Role changes that would demote the last active Administrator are rejected.
+
+This is enforced at both the API layer (HTTP 422) and the database layer (trigger `trg_guard_min_rt_admin` on `memberships`).
 
 ---
 
@@ -535,7 +576,61 @@ Its permissions cannot be configured because it unconditionally bypasses the per
 
 ---
 
-# 15. Security
+# 15. Income Management
+
+## BR-150
+
+Income Management (Pemasukan) handles non-iuran cash inflows to the RT.
+
+Examples include: donations, government transfers, event proceeds, bazaar sales, rental income, bank interest.
+
+Income is distinct from Payments (iuran warga). The payment workflow remains unchanged.
+
+---
+
+## BR-151
+
+An income transaction is created with status=pending.
+
+Only users with income.create permission may create income transactions.
+
+---
+
+## BR-152
+
+An income transaction may only be approved or rejected while its status is pending.
+
+Approval changes status to approved and calls insert_ledger() with type='pemasukan' and source='income'.
+
+Rejection changes status to rejected and records the rejection reason.
+
+---
+
+## BR-153
+
+Only users with income.approve or income.reject permission may perform those actions.
+
+---
+
+## BR-154
+
+Approved income automatically creates a ledger entry.
+
+The ledger entry uses: type=pemasukan, source=income, reference_id=income.id.
+
+The cashflow chart on the dashboard reflects approved income.
+
+---
+
+## BR-155
+
+Income categories are managed through database migrations only.
+
+There is no CRUD UI for income categories.
+
+---
+
+# 16. Security
 
 ## BR-100
 

@@ -29,10 +29,14 @@ export async function refreshAdminSession(browser: Browser): Promise<void> {
 
     // Explicitly pass an empty storageState so the describe block's
     // test.use({ storageState: 'session.json' }) default is not inherited.
+    // browser.newContext() does NOT inherit playwright.config.ts `use` timeouts,
+    // so we must set them explicitly to avoid indefinite hangs.
     const context = await browser.newContext({
         baseURL: BASE_URL,
         storageState: { cookies: [], origins: [] },
     })
+    context.setDefaultTimeout(15000)
+    context.setDefaultNavigationTimeout(30000)
     const page = await context.newPage()
 
     await page.goto('/login')

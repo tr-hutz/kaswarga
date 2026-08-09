@@ -487,6 +487,62 @@ Expense → Ledger entry (pengeluaran) on approval via approve_expense()
 
 ---
 
+# income_transactions
+
+Purpose
+
+Non-iuran cash inflows (kas masuk non-iuran). Created by TREASURER, approved by CHAIR or RT_ADMIN.
+
+Primary Key
+
+id
+
+Columns
+
+| Column           | Type                | Nullable |
+|------------------|---------------------|----------|
+| id               | uuid                | No       |
+| rt_id            | uuid                | No       |
+| income_name      | text                | No       |
+| income_category  | income_category     | No       |
+| source_type      | income_source_type  | No       |
+| resident_id      | uuid                | Yes      |
+| payer_name       | text                | Yes      |
+| is_anonymous     | boolean             | No       |
+| amount           | bigint              | No       |
+| received_at      | date                | No       |
+| payment_method   | text                | Yes      |
+| reference_number | text                | Yes      |
+| notes            | text                | Yes      |
+| attachment_url   | text                | Yes      |
+| status           | text                | No       |
+| created_by       | uuid                | Yes      |
+| approved_by      | uuid                | Yes      |
+| approved_at      | timestamptz         | Yes      |
+| rejected_at      | timestamptz         | Yes      |
+| rejection_note   | text                | Yes      |
+| created_at       | timestamptz         | No       |
+| updated_at       | timestamptz         | Yes      |
+| updated_by       | uuid                | Yes      |
+| deleted_at       | timestamptz         | Yes      |
+| deleted_by       | uuid                | Yes      |
+
+Enums
+
+income_category: DONATION, GOVERNMENT, EVENT, BAZAAR, RENTAL, SALES, INTEREST, OTHER
+
+income_source_type: RESIDENT, NON_RESIDENT, ORGANIZATION, GOVERNMENT, ANONYMOUS
+
+Status values
+
+pending, approved, rejected
+
+Relationships
+
+Income → Ledger entry (pemasukan, source='income') on approval via insert_ledger()
+
+---
+
 # ledger
 
 Purpose

@@ -7,6 +7,7 @@ import ResidentFilters      from './components/filters/ResidentFilters'
 import ResidentPendingRequests from './components/ResidentPendingRequests'
 import ResidentDetailDrawer from './components/drawer/ResidentDetailDrawer'
 import ResidentForm         from './components/forms/ResidentForm'
+import ChangeRoleDialog     from './components/forms/ChangeRoleDialog'
 import ResidentImportModal  from './components/import/ResidentImportModal'
 import { buildResidentColumns, type ResidentRow } from './components/ResidentColumns'
 import ExportDropdown from '@/components/ui/ExportDropdown'
@@ -38,7 +39,12 @@ interface Props {
     onRowClick:       (row: ResidentRow) => void
     onEdit:           (row: ResidentRow) => void
     onDelete:         (row: ResidentRow) => void
+    onChangeRole:     (row: ResidentRow, membershipId: string, currentRoleEnum: string) => void
+    canChangeRole:    boolean
     refresh:          () => void
+    // role change dialog
+    changeRoleTarget: { membershipId: string; currentRole: string; residentName: string } | null
+    closeChangeRole:  () => void
     // drawer
     selectedResident: unknown
     drawerOpen:       boolean
@@ -73,9 +79,9 @@ interface Props {
 export default function ResidentView({
     result, loading, error, reload,
     pendingRequests, pendingLoading,
-    canManage, role, currentResidentId,
+    canManage, canChangeRole, role, currentResidentId,
     query, setPage, setPageSize, setSearch, setSort, setFilter,
-    onRowClick, onEdit, onDelete, refresh,
+    onRowClick, onEdit, onDelete, onChangeRole, refresh,
     selectedResident, drawerOpen, closeDrawer,
     formOpen, openCreateForm, closeForm,
     exportCSV, exportExcel,
@@ -84,20 +90,35 @@ export default function ResidentView({
     importing, importError,
     progress, processedRows, totalRows,
     handleFile, handleImport, downloadTemplate, resetImport,
+    changeRoleTarget, closeChangeRole,
 }: Props) {
     const t  = useTranslations('residents')
     const tc = useTranslations('common')
 
+    const activeAdminMembershipIds: string[] = useMemo(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (result?.data ?? []).flatMap((row: any) =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (row.memberships ?? []).filter((m: any) => m.status === 'active' && m.role === 'ADMIN')
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .map((m: any) => m.id as string)
+        )
+    }, [result?.data])
+
     const columns = useMemo(
         () => buildResidentColumns({
-            tResidents: (k) => t(k as Parameters<typeof t>[0]),
-            tCommon:    (k) => tc(k as Parameters<typeof tc>[0]),
+            tResidents:              (k) => t(k as Parameters<typeof t>[0]),
+            tCommon:                 (k) => tc(k as Parameters<typeof tc>[0]),
+            tRoles:                  (k) => t((`roles.${k}`) as Parameters<typeof t>[0]),
             canManage,
+            canChangeRole,
+            activeAdminMembershipIds,
             onEdit,
             onDelete,
+            onChangeRole,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        [canManage, onEdit, onDelete],
+        [canManage, canChangeRole, activeAdminMembershipIds, onEdit, onDelete, onChangeRole],
     )
 
     const data = result?.data ?? []
@@ -105,9 +126,20 @@ export default function ResidentView({
     return (
         <div className="space-y-6">
             {/* Page header */}
-            <div>
-                <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
-                <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
+                    <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
+                </div>
+                {canManage && (
+                    <button
+                        onClick={openCreateForm}
+                        className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg px-4 py-2.5 transition-colors flex-shrink-0"
+                    >
+                        <Icon name="plus" size={16} />
+                        {t('addButton')}
+                    </button>
+                )}
             </div>
 
             {/* Pending join requests */}
@@ -154,14 +186,6 @@ export default function ResidentView({
                                 {tc('actions.import')}
                             </button>
                         </Can>
-                        {canManage && (
-                            <button
-                                onClick={openCreateForm}
-                                className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary-dark"
-                            >
-                                + {tc('actions.add')}
-                            </button>
-                        )}
                     </div>
                 }
             />
@@ -181,6 +205,17 @@ export default function ResidentView({
                 resident={selectedResident}
                 onSuccess={() => { closeForm(); refresh() }}
             />
+
+            {changeRoleTarget && (
+                <ChangeRoleDialog
+                    open={!!changeRoleTarget}
+                    onClose={closeChangeRole}
+                    membershipId={changeRoleTarget.membershipId}
+                    currentRole={changeRoleTarget.currentRole}
+                    residentName={changeRoleTarget.residentName}
+                    onSuccess={refresh}
+                />
+            )}
 
             <ResidentImportModal
                 open={importOpen}

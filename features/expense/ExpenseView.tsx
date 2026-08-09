@@ -105,21 +105,32 @@ export default function ExpenseView({
 
     return (
         <div className="space-y-6">
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
                 </div>
-                <Can permission={PERMISSION.EXPENSE_APPROVE}>
-                    {pendingCount > 0 && (
+                <div className="flex items-center gap-2 flex-shrink-0">
+                    <Can permission={PERMISSION.EXPENSE_APPROVE}>
+                        {pendingCount > 0 && (
+                            <button
+                                onClick={approveAllExpenses}
+                                className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
+                            >
+                                {t('approveAll', { count: pendingCount })}
+                            </button>
+                        )}
+                    </Can>
+                    <Can permission={PERMISSION.EXPENSE_CREATE}>
                         <button
-                            onClick={approveAllExpenses}
-                            className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
+                            onClick={openCreateForm}
+                            className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg px-4 py-2.5 transition-colors"
                         >
-                            {t('approveAll', { count: pendingCount })}
+                            <Icon name="plus" size={16} />
+                            {t('addButton')}
                         </button>
-                    )}
-                </Can>
+                    </Can>
+                </div>
             </div>
 
             <DataTable
@@ -174,14 +185,6 @@ export default function ExpenseView({
                             >
                                 <Icon name="upload" size={15} />
                                 {tc('actions.import')}
-                            </button>
-                        </Can>
-                        <Can permission={PERMISSION.EXPENSE_CREATE}>
-                            <button
-                                onClick={openCreateForm}
-                                className="px-4 py-2 rounded-lg bg-primary text-white text-sm hover:bg-primary-dark"
-                            >
-                                + {tc('actions.add')}
                             </button>
                         </Can>
                     </div>

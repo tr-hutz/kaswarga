@@ -142,6 +142,32 @@ export async function upsertRtOverrides(
     }
 }
 
+export async function countAdminsByRt(rtId: string, excludeMembershipId?: string): Promise<number> {
+    let q = db
+        .from('memberships')
+        .select('id', { count: 'exact', head: true })
+        .eq('rt_id', rtId)
+        .eq('role', 'ADMIN')
+        .eq('status', 'active')
+
+    if (excludeMembershipId) {
+        q = q.neq('id', excludeMembershipId)
+    }
+
+    const { count, error } = await q
+    if (error) throw error
+    return count ?? 0
+}
+
+export async function updateMembershipRole(membershipId: string, newRole: string): Promise<void> {
+    const { error } = await db
+        .from('memberships')
+        .update({ role: newRole })
+        .eq('id', membershipId)
+
+    if (error) throw error
+}
+
 export async function getOverrideCountForRole(rtId: string, roleId: string): Promise<number> {
     const { count, error } = await db
         .from('rt_permission_overrides')

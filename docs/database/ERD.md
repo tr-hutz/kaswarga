@@ -166,6 +166,8 @@ Examples:
 - payment.approve
 - payment.reject
 - expense.create
+- income.view
+- income.approve
 - ledger.view
 - report.export
 

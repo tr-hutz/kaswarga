@@ -49,6 +49,8 @@ interface DashboardViewProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   financialInsight: any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  incomeInsight?:     any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   residentAnalytics?: any[]
   monthlyFee?:        number
   refresh?:           () => void
@@ -69,6 +71,8 @@ export default function DashboardView({
   paymentHealth,
 
   financialInsight,
+
+  incomeInsight,
 
   residentAnalytics = [],
   monthlyFee        = 0,
@@ -295,6 +299,48 @@ export default function DashboardView({
         </div>
 
       </div>
+
+      {/* PEMASUKAN RT */}
+
+      <Can permission={PERMISSION.INCOME_VIEW}>
+        {incomeInsight && (
+          <div className="space-y-3">
+
+            <SectionLabel
+              title={t('sections.incomeTitle')}
+              subtitle={t('sections.incomeSubtitle', { year })}
+            />
+
+            <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+
+              <InsightCard
+                title={t('cards.incomeThisMonth')}
+                value={formatRupiah(incomeInsight.incomeThisMonth)}
+                subtitle={t('cards.incomeThisMonthSubtitle')}
+                valueColor="text-success"
+              />
+
+              <InsightCard
+                title={t('cards.incomeThisYear', { year })}
+                value={formatRupiah(incomeInsight.incomeThisYear)}
+                subtitle={t('cards.incomeThisYearSubtitle', { year })}
+                valueColor="text-success"
+              />
+
+              {incomeInsight.incomeByCategory.slice(0, 2).map((item: { category: string; total: number }) => (
+                <InsightCard
+                  key={item.category}
+                  title={t(`incomeCategories.${item.category}` as Parameters<typeof t>[0])}
+                  value={formatRupiah(item.total)}
+                  subtitle={t('cards.incomeCategorySubtitle')}
+                />
+              ))}
+
+            </div>
+
+          </div>
+        )}
+      </Can>
 
       {/* CHARTS ROW 1 — Income */}
 

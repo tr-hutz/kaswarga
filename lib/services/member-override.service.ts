@@ -10,6 +10,8 @@ import {
     getRolePermissionMap,
     getRtOverrideMap,
     upsertRtOverrides,
+    countAdminsByRt,
+    updateMembershipRole,
     type OverrideInput,
 } from '@/lib/repositories/member-override.repository'
 
@@ -20,6 +22,9 @@ const ENUM_TO_ROLE_CODE: Record<string, string> = {
     SECRETARY: 'SECRETARY',
     RESIDENT:  'RESIDENT',
 }
+
+// Roles that can be assigned via the role-change UI (SUPER_ADMIN excluded)
+const ASSIGNABLE_ROLE_ENUMS = new Set(['CHAIR', 'ADMIN', 'TREASURER', 'SECRETARY', 'RESIDENT'])
 
 export async function getMembers(auth: AuthorizationContext) {
     if (!auth.hasPermission(PERMISSION.PERMISSION_VIEW)) {
@@ -73,6 +78,44 @@ export async function getMemberOverrides(membershipId: string, auth: Authorizati
         roleId,
         permissions,
     }
+}
+
+export interface RoleChangeResult {
+    oldRole:    string
+    newRole:    string
+    memberName: string | null
+}
+
+export async function changeMemberRole(
+    membershipId: string,
+    newRoleEnum:  string,
+    auth:         AuthorizationContext,
+): Promise<RoleChangeResult | null> {
+    if (!auth.hasPermission(PERMISSION.MEMBERSHIP_ROLE_UPDATE)) {
+        throw new ForbiddenError(PERMISSION.MEMBERSHIP_ROLE_UPDATE)
+    }
+    if (!auth.neighborhoodId) throw new ForbiddenError(PERMISSION.MEMBERSHIP_ROLE_UPDATE)
+
+    if (!ASSIGNABLE_ROLE_ENUMS.has(newRoleEnum)) {
+        throw new Error(`Invalid role: ${newRoleEnum}`)
+    }
+
+    const member = await findMembershipById(membershipId)
+    if (!member) throw new Error('Member not found')
+
+    if (member.roleEnum === newRoleEnum) return null // no-op
+
+    // Eager guard: prevent demoting the last ADMIN before hitting the DB trigger
+    if (member.roleEnum === 'ADMIN' && newRoleEnum !== 'ADMIN') {
+        const remaining = await countAdminsByRt(auth.neighborhoodId, membershipId)
+        if (remaining === 0) {
+            throw new Error('LAST_ADMIN_DEMOTION')
+        }
+    }
+
+    await updateMembershipRole(membershipId, newRoleEnum)
+
+    return { oldRole: member.roleEnum, newRole: newRoleEnum, memberName: member.name }
 }
 
 export async function saveMemberOverrides(

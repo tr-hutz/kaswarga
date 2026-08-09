@@ -9,7 +9,7 @@ import {
     KeyRound, LayoutDashboard, Link2, Loader2, LogIn, LogOut, Mail,
     Menu, Monitor, Moon, Paperclip, Pencil, Plus, Receipt, RefreshCw, Search,
     Settings, ShelvingUnit, Shield, Sun, ToggleLeft, ToggleRight,
-    Trash2, Upload, UserCog, UserPlus, Users,
+    Trash2, TrendingUp, Upload, UserCog, UserPlus, Users,
     Table2, Vibrate, Wallet, X, XCircle, TableProperties,
 } from 'lucide-react'
 import type { LucideProps } from 'lucide-react'
@@ -64,6 +64,7 @@ const ICONS = {
     'toggle-left':      ToggleLeft,
     'toggle-right':     ToggleRight,
     trash2:             Trash2,
+    'trending-up':      TrendingUp,
     upload:             Upload,
     'user-cog':         UserCog,
     'user-plus':        UserPlus,

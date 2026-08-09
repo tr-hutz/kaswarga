@@ -67,6 +67,13 @@
         "form": {
             "required": "wajib diisi"
         },
+        "optional": "opsional",
+        "anonymous": "Anonim",
+        "paymentMethods": {
+            "CASH": "Tunai",
+            "TRANSFER": "Transfer",
+            "QRIS": "QRIS"
+        },
         "errors": {
             "generic": "Terjadi kesalahan",
             "saveFailed": "Gagal menyimpan data",
@@ -80,6 +87,7 @@
         "residents": "Warga",
         "payments": "Pembayaran",
         "expenses": "Pengeluaran",
+        "income": "Pemasukan",
         "ledger": "Buku Kas",
         "notification": "Notifikasi",
         "activity": "Aktivitas",
@@ -165,7 +173,9 @@
             "monthlyExpenseCategoryTitle": "Pengeluaran Bulanan",
             "monthlyExpenseCategorySubtitle": "Rincian pengeluaran per kategori per bulan",
             "noExpenseData": "Belum ada data pengeluaran",
-            "noData": "Belum ada data"
+            "noData": "Belum ada data",
+            "incomeTitle": "Pemasukan Non-Iuran",
+            "incomeSubtitle": "Ringkasan pemasukan lainnya tahun {year}"
         },
         "arrearsSummary": {
             "title": "Daftar Tunggakan Warga",
@@ -186,7 +196,7 @@
         },
         "exportLedger": {
             "title": "Ekspor laporan kas iuran warga",
-            "button": "Catatan Pemasukan",
+            "button": "Catatan Iuran",
             "loading": "Mengekspor..."
         },
         "cards": {
@@ -202,7 +212,22 @@
             "expense": "Pengeluaran",
             "expenseSubtitle": "tahun ini",
             "arrears": "Tunggakan",
-            "arrearsSubtitle": "perlu ditagih"
+            "arrearsSubtitle": "perlu ditagih",
+            "incomeThisMonth": "Pemasukan Bulan Ini",
+            "incomeThisMonthSubtitle": "total pemasukan non-iuran bulan berjalan",
+            "incomeThisYear": "Pemasukan Tahun {year}",
+            "incomeThisYearSubtitle": "total pemasukan non-iuran tahun ini",
+            "incomeCategorySubtitle": "kategori terbesar"
+        },
+        "incomeCategories": {
+            "DONATION": "Donasi",
+            "GOVERNMENT": "Pemerintah",
+            "EVENT": "Kegiatan",
+            "BAZAAR": "Bazar",
+            "RENTAL": "Sewa",
+            "SALES": "Penjualan",
+            "INTEREST": "Bunga",
+            "OTHER": "Lainnya"
         }
     },
     "home": {
@@ -500,6 +525,7 @@
     "residents": {
         "title": "Warga",
         "subtitle": "Manajemen data warga",
+        "addButton": "Tambah Warga",
         "searchPlaceholder": "Cari nama warga...",
         "filterPlaceholder": "Semua Status",
         "table": {
@@ -508,7 +534,24 @@
             "houseNumber": "No. Rumah",
             "phone": "No HP",
             "status": "Status",
+            "role": "Peran",
             "actions": "Aksi"
+        },
+        "roles": {
+            "ADMIN":     "Admin RT",
+            "CHAIR":     "Ketua RT",
+            "TREASURER": "Bendahara",
+            "SECRETARY": "Sekretaris",
+            "RESIDENT":  "Warga"
+        },
+        "roleChange": {
+            "button":        "Ubah Peran",
+            "dialogTitle":   "Ubah Peran Warga",
+            "currentRole":   "Peran Saat Ini",
+            "newRole":       "Peran Baru",
+            "success":       "Peran berhasil diubah",
+            "error":         "Gagal mengubah peran",
+            "lastAdminError": "RT harus memiliki minimal satu Administrator aktif"
         },
         "form": {
             "addTitle": "Tambah Warga",
@@ -521,6 +564,7 @@
             "houseNumberPlaceholder": "12",
             "phone": "Nomor Telepon",
             "phonePlaceholder": "08123456789",
+            "saveSuccess": "Warga disimpan",
             "saveFailed": "Gagal menyimpan warga"
         },
         "drawer": {
@@ -636,11 +680,132 @@
             "reject": "Tolak",
             "approveSuccess": "Pembayaran berhasil disetujui.",
             "rejectSuccess": "Pembayaran berhasil ditolak."
+        },
+        "addButton": "Tambah Pembayaran",
+        "form": {
+            "addTitle": "Tambah Pembayaran",
+            "resident": "Warga",
+            "selectResident": "Pilih warga...",
+            "year": "Tahun",
+            "months": "Bulan yang Dibayar",
+            "monthsRequired": "Pilih minimal satu bulan",
+            "amountPerMonth": "Nominal per Bulan",
+            "totalLabel": "Total",
+            "date": "Tanggal Pembayaran",
+            "method": "Metode Pembayaran",
+            "selectMethod": "Pilih metode...",
+            "notes": "Catatan",
+            "notesPlaceholder": "Catatan tambahan (opsional)",
+            "submit": "Simpan Pembayaran",
+            "createSuccess": "Pembayaran berhasil dicatat."
+        }
+    },
+    "income": {
+        "title": "Pemasukan",
+        "subtitle": "Kelola pemasukan non-iuran RT",
+        "addButton": "Tambah Pemasukan",
+        "approveAll": "Setujui Semua ({count})",
+        "searchPlaceholder": "Cari pemasukan...",
+        "import": {
+            "title": "Import Data Pemasukan",
+            "required": "wajib",
+            "buttonLabel": "Import Pemasukan"
+        },
+        "deleteTitle": "Hapus Pemasukan",
+        "deleteConfirm": "Apakah kamu yakin ingin menghapus pemasukan \"{name}\"?",
+        "table": {
+            "incomeName": "Nama Pemasukan",
+            "category": "Kategori",
+            "sourceType": "Sumber",
+            "payer": "Pemberi",
+            "amount": "Nominal",
+            "receivedAt": "Tanggal Terima",
+            "status": "Status",
+            "actions": "Aksi",
+            "empty": "Belum ada data pemasukan.",
+            "loading": "Memuat data..."
+        },
+        "categories": {
+            "DONATION": "Donasi",
+            "GOVERNMENT": "Pemerintah",
+            "EVENT": "Acara",
+            "BAZAAR": "Bazaar",
+            "RENTAL": "Sewa",
+            "SALES": "Penjualan",
+            "INTEREST": "Bunga",
+            "OTHER": "Lainnya"
+        },
+        "sourceTypes": {
+            "RESIDENT": "Warga",
+            "NON_RESIDENT": "Non-Warga",
+            "ORGANIZATION": "Organisasi",
+            "GOVERNMENT": "Pemerintah",
+            "ANONYMOUS": "Anonim"
+        },
+        "paymentMethods": {
+            "CASH": "Tunai",
+            "TRANSFER": "Transfer",
+            "QRIS": "QRIS"
+        },
+        "status": {
+            "pending": "Menunggu",
+            "approved": "Disetujui",
+            "rejected": "Ditolak"
+        },
+        "form": {
+            "addTitle": "Tambah Pemasukan",
+            "editTitle": "Edit Pemasukan",
+            "incomeName": "Nama Pemasukan",
+            "incomeNamePlaceholder": "Contoh: Donasi HUT RT, Sewa Pos Ronda",
+            "category": "Kategori",
+            "selectCategory": "Pilih kategori",
+            "sourceType": "Sumber Dana",
+            "selectSourceType": "Pilih sumber",
+            "resident": "Warga",
+            "selectResident": "Pilih warga",
+            "payerName": "Nama Pemberi",
+            "payerNamePlaceholder": "Nama individu atau organisasi",
+            "amount": "Nominal (Rp)",
+            "receivedAt": "Tanggal Diterima",
+            "paymentMethod": "Metode Pembayaran",
+            "paymentMethodPlaceholder": "Tunai, Transfer, QRIS",
+            "selectPaymentMethod": "Pilih metode pembayaran",
+            "referenceNumber": "No. Referensi",
+            "referenceNumberPlaceholder": "Nomor bukti transfer atau referensi",
+            "notes": "Catatan",
+            "notesPlaceholder": "Keterangan tambahan (opsional)",
+            "attachment": "Bukti Transaksi",
+            "viewAttachment": "Lihat Lampiran",
+            "submit": "Simpan",
+            "cancel": "Batal"
+        },
+        "drawer": {
+            "title": "Detail Pemasukan",
+            "subtitle": "Informasi detail pemasukan RT",
+            "incomeName": "Nama Pemasukan",
+            "category": "Kategori",
+            "sourceType": "Sumber Dana",
+            "payer": "Pemberi",
+            "amount": "Nominal",
+            "receivedAt": "Tanggal Diterima",
+            "paymentMethod": "Metode Pembayaran",
+            "referenceNumber": "No. Referensi",
+            "notes": "Catatan",
+            "attachment": "Lampiran",
+            "approvedAt": "Disetujui pada {date}",
+            "rejectedAt": "Ditolak",
+            "rejectionNote": "Alasan Ditolak"
+        },
+        "approvalBar": {
+            "rejectReason": "Alasan penolakan",
+            "rejectReasonPlaceholder": "Tuliskan alasan penolakan (opsional)...",
+            "confirmReject": "Konfirmasi Tolak"
         }
     },
     "expenses": {
         "title": "Pengeluaran",
         "subtitle": "Manajemen pengeluaran RT",
+        "addButton": "Tambah Pengeluaran",
         "deleteTitle": "Hapus Pengeluaran",
         "deleteConfirm": "Apakah kamu yakin ingin menghapus pengeluaran \"{description}\"?",
         "searchPlaceholder": "Cari pengeluaran...",
@@ -697,6 +862,11 @@
             "rejectReason": "Alasan penolakan",
             "rejectReasonPlaceholder": "Tuliskan alasan penolakan (opsional)...",
             "confirmReject": "Konfirmasi Tolak"
+        },
+        "toast": {
+            "approved":    "Pengeluaran berhasil disetujui",
+            "rejected":    "Pengeluaran berhasil ditolak",
+            "approvedAll": "{count} pengeluaran berhasil disetujui"
         },
         "analytics": {
             "totalExpense": "Total Pengeluaran",
@@ -851,6 +1021,7 @@
             "membership": "Keanggotaan",
             "payment": "Pembayaran",
             "expense": "Pengeluaran",
+            "income": "Pemasukan",
             "ledger": "Buku Kas",
             "report": "Laporan",
             "dashboard": "Dasbor",
@@ -1003,6 +1174,7 @@
             "membership": "Keanggotaan",
             "payment": "Pembayaran",
             "expense": "Pengeluaran",
+            "income": "Pemasukan",
             "ledger": "Buku Kas",
             "report": "Laporan",
             "dashboard": "Dasbor",

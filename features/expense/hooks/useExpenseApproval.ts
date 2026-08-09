@@ -2,11 +2,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { useToast } from '@/components/ui/ToastProvider'
 
 export function useExpenseApproval({ onSuccess }: { onSuccess?: () => void } = {}) {
 
     const { toast } = (useToast() as any)
+    const t = useTranslations('expenses.toast')
     const [loading, setLoading] = useState(false)
 
     async function approve(id: string) {
@@ -19,7 +21,7 @@ export function useExpenseApproval({ onSuccess }: { onSuccess?: () => void } = {
             })
             const body = await res.json()
             if (!res.ok) throw new Error(body.error || 'Failed to approve')
-            toast({ message: 'Expense approved.', type: 'success' })
+            toast({ message: t('approved'), type: 'success' })
             onSuccess?.()
         } catch (err) {
             toast({ message: (err as any).message, type: 'error' })
@@ -38,7 +40,7 @@ export function useExpenseApproval({ onSuccess }: { onSuccess?: () => void } = {
             })
             const body = await res.json()
             if (!res.ok) throw new Error(body.error || 'Failed to reject')
-            toast({ message: 'Expense rejected.', type: 'success' })
+            toast({ message: t('rejected'), type: 'success' })
             onSuccess?.()
         } catch (err) {
             toast({ message: (err as any).message, type: 'error' })
@@ -56,7 +58,7 @@ export function useExpenseApproval({ onSuccess }: { onSuccess?: () => void } = {
             })
             const body = await res.json()
             if (!res.ok) throw new Error(body.error || 'Failed to approve all')
-            toast({ message: `${body.approved} expense(s) approved.`, type: 'success' })
+            toast({ message: t('approvedAll', { count: body.approved ?? 0 }), type: 'success' })
             onSuccess?.()
         } catch (err) {
             toast({ message: (err as any).message, type: 'error' })
