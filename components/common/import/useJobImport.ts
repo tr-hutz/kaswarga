@@ -170,8 +170,9 @@ export function useJobImport({
                     fileType: null,
                 }),
             })
-            const body = await res.json()
-            if (!res.ok) throw new Error(body.error || 'Gagal membuat import job')
+            const contentType = res.headers.get('content-type') ?? ''
+            const body = contentType.includes('application/json') ? await res.json() : {}
+            if (!res.ok) throw new Error(body.error || `Server error ${res.status}`)
 
             const jobId: string = body.jobId
             closeImport()
