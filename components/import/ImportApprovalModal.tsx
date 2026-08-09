@@ -90,6 +90,34 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
     const invalidRows = allRows.filter(r => r.status === 'INVALID')
     const skippedRows = allRows.filter(r => r.status === 'SKIPPED')
 
+    function downloadErrors() {
+        const rows = [...invalidRows, ...skippedRows]
+        if (rows.length === 0) return
+        const firstData = rows[0].raw_data as Record<string, string> | null
+        const cols = firstData ? ['row_number', 'status', 'error_code', 'error_message', ...Object.keys(firstData)] : ['row_number', 'status', 'error_code', 'error_message']
+        const csv = [
+            cols.join(','),
+            ...rows.map(r => {
+                const data = r.raw_data as Record<string, string> | null
+                return cols.map(c => {
+                    const val = c === 'row_number' ? String(r.row_number)
+                        : c === 'status' ? r.status
+                        : c === 'error_code' ? (r.error_code ?? '')
+                        : c === 'error_message' ? (r.error_message ?? '')
+                        : (data?.[c] ?? '')
+                    return `"${val.replace(/"/g, '""')}"`
+                }).join(',')
+            }),
+        ].join('\n')
+        const blob = new Blob([csv], { type: 'text/csv' })
+        const url  = URL.createObjectURL(blob)
+        const a    = document.createElement('a')
+        a.href     = url
+        a.download = `import-errors-${jobId.slice(0, 8)}.csv`
+        a.click()
+        URL.revokeObjectURL(url)
+    }
+
     const columns = validRows.length > 0 && validRows[0].raw_data
         ? Object.keys(validRows[0].raw_data as Record<string, string>)
         : []
@@ -206,9 +234,19 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
                             {/* Invalid rows */}
                             {invalidRows.length > 0 && (
                                 <div className="rounded-lg border border-danger/30 bg-danger/5 p-4 space-y-2">
-                                    <p className="text-xs font-semibold text-danger">
-                                        {invalidRows.length} baris tidak valid (tidak akan diimpor)
-                                    </p>
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-xs font-semibold text-danger">
+                                            {invalidRows.length} baris tidak valid (tidak akan diimpor)
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={downloadErrors}
+                                            className="flex items-center gap-1 text-xs text-danger hover:underline"
+                                        >
+                                            <Icon name="download" size={12} />
+                                            Unduh laporan error
+                                        </button>
+                                    </div>
                                     <ul className="text-xs text-danger/80 space-y-1">
                                         {invalidRows.slice(0, 5).map(row => (
                                             <li key={row.id}>
