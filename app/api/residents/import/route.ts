@@ -91,8 +91,8 @@ export async function POST(req: Request) {
             action:      'IMPORT_RESIDENTS',
             entity_type: 'residents',
             entity_id:   rtId,
-            description: `Import ${inserted} residents`,
-            metadata:    { count: inserted, skipped }
+            description: `Import ${inserted} residents (${skipped} dilewati sebagai duplikat)`,
+            metadata:    { inserted, skipped }
         })
 
         return NextResponse.json({ inserted, skipped })
