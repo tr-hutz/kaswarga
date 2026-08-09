@@ -1,6 +1,7 @@
-﻿'use client'
+'use client'
 
-import { useImport } from '@/components/common/import/useImport'
+import { useJobImport } from '@/components/common/import/useJobImport'
+import { IMPORT_TYPE }  from '@/lib/import/types'
 
 const COLUMN_ALIASES = {
     nama:          'name',
@@ -26,11 +27,11 @@ const COLUMN_ALIASES = {
     phone:         'phone',
 }
 
-export function useResidentImport(onSuccess?: (inserted: number, skipped: number) => void) {
-    return useImport({
+export function useResidentImport(onJobCreated?: (jobId: string) => void) {
+    return useJobImport({
+        importType:        IMPORT_TYPE.RESIDENT,
         columnAliases:     COLUMN_ALIASES,
         isValidRow:        (r: Record<string, string>) => !!r.name?.trim(),
-        apiEndpoint:       '/api/residents/import',
         templateData: [
             { name: 'Budi Santoso', block: 'A',  house_number: '1',  phone: '08123456789' },
             { name: 'Siti Rahma',   block: 'B',  house_number: '5',  phone: ''            },
@@ -38,6 +39,6 @@ export function useResidentImport(onSuccess?: (inserted: number, skipped: number
         ],
         templateSheetName: 'Residents',
         templateFileName:  'resident-import-template.xlsx',
-        onSuccess: (inserted, skipped) => onSuccess?.(inserted, skipped ?? 0),
+        onJobCreated,
     })
 }

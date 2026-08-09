@@ -596,7 +596,8 @@
             "buttonLabel": "Warga",
             "required": "wajib",
             "successMessage": "Berhasil mengimpor {inserted} warga",
-            "skippedSuffix": "warga dilewati (sudah ada)"
+            "skippedSuffix": "warga dilewati (sudah ada)",
+            "jobCreated": "Import dimulai — pantau progres di notifikasi"
         },
         "clusterSubtitle": "Data warga cluster",
         "analytics": {
@@ -673,7 +674,8 @@
             "buttonLabel": "Pembayaran",
             "required": "wajib",
             "successMessage": "Berhasil mengimpor {inserted} pembayaran",
-            "skippedSuffix": "data dilewati (sudah ada)"
+            "skippedSuffix": "data dilewati (sudah ada)",
+            "jobCreated": "Import dimulai — pantau progres di notifikasi"
         },
         "approval": {
             "approve": "Setujui",

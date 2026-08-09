@@ -1,6 +1,7 @@
 'use client'
 
-import { useImport } from '@/components/common/import/useImport'
+import { useJobImport } from '@/components/common/import/useJobImport'
+import { IMPORT_TYPE }  from '@/lib/import/types'
 
 const COLUMN_ALIASES: Record<string, string> = {
     blok:         'block',
@@ -27,11 +28,11 @@ function isValidRow(r: Record<string, string>) {
     )
 }
 
-export function usePaymentImport(onSuccess?: (inserted: number, skipped: number) => void) {
-    return useImport({
+export function usePaymentImport(onJobCreated?: (jobId: string) => void) {
+    return useJobImport({
+        importType:        IMPORT_TYPE.PAYMENT,
         columnAliases:     COLUMN_ALIASES,
         isValidRow,
-        apiEndpoint:       '/api/payments/import',
         templateData: [
             { blok: 'A', nomor_rumah: '1', tahun: '2026', bulan: '1', jumlah: '150000' },
             { blok: 'A', nomor_rumah: '1', tahun: '2026', bulan: '2', jumlah: '150000' },
@@ -40,6 +41,6 @@ export function usePaymentImport(onSuccess?: (inserted: number, skipped: number)
         ],
         templateSheetName: 'Pembayaran',
         templateFileName:  'payment-import-template.xlsx',
-        onSuccess: (inserted, skipped) => onSuccess?.(inserted, skipped ?? 0),
+        onJobCreated,
     })
 }

@@ -73,6 +73,7 @@ export function useJobImport({
     templateData,
     templateSheetName = 'Data',
     templateFileName,
+    onJobCreated,
 }: {
     importType:         ImportType
     columnAliases?:     Record<string, string>
@@ -80,6 +81,7 @@ export function useJobImport({
     templateData:       RawRow[]
     templateSheetName?: string
     templateFileName:   string
+    onJobCreated?:      (jobId: string) => void
 }) {
     const { toast }    = useToast()
     const { trackJob } = useImportNotifications()
@@ -174,6 +176,7 @@ export function useJobImport({
             const jobId: string = body.jobId
             closeImport()
             trackJob(jobId)
+            onJobCreated?.(jobId)
 
         } catch (err) {
             setImporting(false)
