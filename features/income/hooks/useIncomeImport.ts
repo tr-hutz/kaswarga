@@ -25,7 +25,7 @@ const COLUMN_ALIASES = {
     notes:            'notes',
 }
 
-export function useIncomeImport(onSuccess?: (inserted: number) => void) {
+export function useIncomeImport(onSuccess?: (inserted: number, skipped: number) => void) {
     return useImport({
         columnAliases:     COLUMN_ALIASES,
         isValidRow:        (r: Record<string, string>) =>
@@ -45,6 +45,6 @@ export function useIncomeImport(onSuccess?: (inserted: number) => void) {
         ],
         templateSheetName: 'Income',
         templateFileName:  'income-import-template.xlsx',
-        onSuccess,
+        onSuccess: (inserted, skipped) => onSuccess?.(inserted, skipped ?? 0),
     })
 }

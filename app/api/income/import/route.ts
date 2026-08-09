@@ -20,8 +20,31 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'No rows provided' }, { status: 400 })
         }
 
-        const toInsert = rows
-            .filter(r => r.received_at?.trim() && r.amount?.trim() && r.income_name?.trim())
+        const validRows = rows.filter(
+            r => r.received_at?.trim() && r.amount?.trim() && r.income_name?.trim()
+        )
+
+        if (validRows.length === 0) {
+            return NextResponse.json({ error: 'No valid rows to insert' }, { status: 400 })
+        }
+
+        // Fetch existing non-deleted income records for this RT to detect duplicates.
+        // Dedup key: income_name (case-insensitive) + received_at + amount.
+        const { data: existing } = await supabaseAdmin
+            .from('income_transactions')
+            .select('income_name, received_at, amount')
+            .eq('rt_id', rtId)
+            .is('deleted_at', null)
+
+        const existingSet = new Set(
+            (existing || []).map(e =>
+                `${String(e.income_name).toLowerCase().trim()}:${e.received_at}:${e.amount}`
+            )
+        )
+
+        let skipped = rows.length - validRows.length
+
+        const toInsert = validRows
             .map(r => ({
                 rt_id:            rtId,
                 income_name:      r.income_name.trim(),
@@ -39,9 +62,16 @@ export async function POST(req: Request) {
                 status:           'pending',
                 created_by:       userId,
             }))
+            .filter(r => {
+                const key = `${r.income_name.toLowerCase()}:${r.received_at}:${r.amount}`
+                if (existingSet.has(key)) { skipped++; return false }
+                // Add to set so within-batch duplicates are also caught
+                existingSet.add(key)
+                return true
+            })
 
         if (toInsert.length === 0) {
-            return NextResponse.json({ error: 'No valid rows to insert' }, { status: 400 })
+            return NextResponse.json({ inserted: 0, skipped })
         }
 
         const { data, error } = await supabaseAdmin
@@ -61,8 +91,8 @@ export async function POST(req: Request) {
             action:      'IMPORT_INCOME',
             entity_type: 'income_transactions',
             entity_id:   rtId,
-            description: `Import ${data.length} income records`,
-            metadata:    { count: data.length },
+            description: `Import ${data.length} income records (${skipped} skipped as duplicates)`,
+            metadata:    { inserted: data.length, skipped },
         })
 
         const { data: chairs } = await supabaseAdmin
@@ -87,7 +117,7 @@ export async function POST(req: Request) {
             )
         }
 
-        return NextResponse.json({ inserted: data.length })
+        return NextResponse.json({ inserted: data.length, skipped })
 
     } catch (err) {
         if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
