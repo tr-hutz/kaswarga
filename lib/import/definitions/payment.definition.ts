@@ -48,9 +48,11 @@ interface PaymentRowPayload {
 
 interface PaymentPreloaded {
     /** `${block.lower}:${house.lower}` → resident_id */
-    residentMap:  Map<string, string>
-    /** `${resident_id}:${year}:${month}` — already-confirmed months */
-    existingSet:  Set<string>
+    residentMap: Map<string, string>
+    /** `${resident_id}:${year}:${month}` — keys loaded from DB (PAYMENT_ALREADY_EXISTS) */
+    dbSet:       Set<string>
+    /** `${resident_id}:${year}:${month}` — accumulates during validation (DUPLICATE_PAYMENT_IN_FILE) */
+    fileSet:     Set<string>
     [key: string]: unknown
 }
 
@@ -103,22 +105,11 @@ export const paymentImportDefinition: ImportDefinition<PaymentRowPayload> = {
     template:          TEMPLATE,
 
     async preload(context: ImportContext): Promise<PaymentPreloaded> {
-        const [{ data: residents }, { data: existingDetails }] = await Promise.all([
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (supabaseAdmin as any)
-                .from('residents')
-                .select('id, block, house_number')
-                .eq('rt_id', context.rtId),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (supabaseAdmin as any)
-                .from('confirmation_details')
-                .select('resident_id, year, month')
-                .in('resident_id',
-                    // We'll filter by RT residents; fetch broadly first
-                    // (this is pre-filtered below after building the map)
-                    ['00000000-0000-0000-0000-000000000000']  // placeholder
-                ),
-        ])
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: residents } = await (supabaseAdmin as any)
+            .from('residents')
+            .select('id, block, house_number')
+            .eq('rt_id', context.rtId)
 
         const residentMap = new Map<string, string>()
         for (const r of (residents ?? []) as Array<{ id: string; block: string | null; house_number: string | null }>) {
@@ -130,7 +121,6 @@ export const paymentImportDefinition: ImportDefinition<PaymentRowPayload> = {
             }
         }
 
-        // Fetch existing confirmations for residents in this RT
         const residentIds = Array.from(residentMap.values())
         let existingRows: Array<{ resident_id: string; year: number; month: number }> = []
         if (residentIds.length > 0) {
@@ -142,15 +132,15 @@ export const paymentImportDefinition: ImportDefinition<PaymentRowPayload> = {
             existingRows = data ?? []
         }
 
-        const existingSet = new Set<string>(
+        const dbSet = new Set<string>(
             existingRows.map(d => `${d.resident_id}:${d.year}:${d.month}`)
         )
 
-        return { residentMap, existingSet }
+        return { residentMap, dbSet, fileSet: new Set<string>() }
     },
 
     validateRow(row: RawRow, context: ImportContext): RowValidationResult {
-        const { residentMap, existingSet } = context as unknown as PaymentPreloaded & ImportContext
+        const { residentMap, dbSet, fileSet } = context as unknown as PaymentPreloaded & ImportContext
 
         if (!row.block?.trim())        return { valid: false, errorCode: 'MISSING_BLOCK',        errorMessage: 'Blok wajib diisi' }
         if (!row.house_number?.trim()) return { valid: false, errorCode: 'MISSING_HOUSE_NUMBER', errorMessage: 'Nomor rumah wajib diisi' }
@@ -158,12 +148,16 @@ export const paymentImportDefinition: ImportDefinition<PaymentRowPayload> = {
         if (!row.month?.trim())        return { valid: false, errorCode: 'MISSING_MONTH',        errorMessage: 'Bulan wajib diisi' }
         if (!row.amount?.trim())       return { valid: false, errorCode: 'MISSING_AMOUNT',       errorMessage: 'Nominal wajib diisi' }
 
-        const year  = parseInt(row.year.trim(),  10)
-        const month = parseInt(row.month.trim(), 10)
+        const year   = parseInt(row.year.trim(),  10)
+        const month  = parseInt(row.month.trim(), 10)
+        const amount = parseInt(row.amount.replace(/[^0-9]/g, ''), 10)
 
-        if (isNaN(year))                   return { valid: false, errorCode: 'INVALID_YEAR',   errorMessage: 'Tahun tidak valid' }
+        if (isNaN(year))                         return { valid: false, errorCode: 'INVALID_YEAR',   errorMessage: 'Tahun tidak valid' }
         if (isNaN(month) || month < 1 || month > 12) {
             return { valid: false, errorCode: 'INVALID_MONTH', errorMessage: 'Bulan harus antara 1-12' }
+        }
+        if (isNaN(amount) || amount <= 0) {
+            return { valid: false, errorCode: 'INVALID_AMOUNT', errorMessage: 'Nominal harus berupa angka positif' }
         }
 
         const residentKey = `${row.block.toLowerCase().trim()}:${row.house_number.toLowerCase().trim()}`
@@ -172,13 +166,19 @@ export const paymentImportDefinition: ImportDefinition<PaymentRowPayload> = {
             return { valid: false, errorCode: 'RESIDENT_NOT_FOUND', errorMessage: `Warga blok ${row.block} no. ${row.house_number} tidak ditemukan` }
         }
 
-        // Dedup check
         const dedupKey = `${residentId}:${year}:${month}`
-        if (existingSet?.has(dedupKey)) {
-            return { valid: false, skipped: true, skipReason: 'DUPLICATE_PAYMENT', errorMessage: `Pembayaran ${year}/${month} sudah ada` }
-        }
-        existingSet?.add(dedupKey)
 
+        // Within-file duplicate (same row appears earlier in this file)
+        if (fileSet?.has(dedupKey)) {
+            return { valid: false, skipped: true, skipReason: 'DUPLICATE_PAYMENT_IN_FILE', errorMessage: `Pembayaran ${year}/${month} duplikat dalam file ini` }
+        }
+
+        // Existing DB conflict
+        if (dbSet?.has(dedupKey)) {
+            return { valid: false, skipped: true, skipReason: 'PAYMENT_ALREADY_EXISTS', errorMessage: `Pembayaran ${year}/${month} sudah ada` }
+        }
+
+        fileSet?.add(dedupKey)
         return { valid: true }
     },
 

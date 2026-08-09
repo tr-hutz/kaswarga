@@ -171,23 +171,23 @@ export default function PaymentView({
                     </select>
                 }
                 renderActions={
-                    canExport ? (
-                        <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                        {canExport && (
                             <ExportDropdown
                                 onExportExcel={onExportExcel}
                                 onExportCSV={onExportCSV}
                             />
-                            <Can permission={PERMISSION.PAYMENT_CREATE}>
-                                <button
-                                    onClick={openImport}
-                                    className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
-                                >
-                                    <Icon name="upload" size={15} />
-                                    {tc('actions.import')}
-                                </button>
-                            </Can>
-                        </div>
-                    ) : undefined
+                        )}
+                        <Can permission={PERMISSION.PAYMENT_IMPORT}>
+                            <button
+                                onClick={openImport}
+                                className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
+                            >
+                                <Icon name="upload" size={15} />
+                                {tc('actions.import')}
+                            </button>
+                        </Can>
+                    </div>
                 }
             />
 

@@ -90,6 +90,13 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
     const invalidRows = allRows.filter(r => r.status === 'INVALID')
     const skippedRows = allRows.filter(r => r.status === 'SKIPPED')
 
+    const totalAmount = job?.import_type === 'PAYMENT'
+        ? validRows.reduce((sum, row) => {
+            const raw = row.raw_data as Record<string, string> | null
+            return sum + (parseInt((raw?.amount ?? '').replace(/[^0-9]/g, ''), 10) || 0)
+        }, 0)
+        : null
+
     function downloadErrors() {
         const rows = [...invalidRows, ...skippedRows]
         if (rows.length === 0) return
@@ -178,8 +185,16 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
                                         <p className="font-semibold text-warning">{skippedRows.length}</p>
                                     </div>
                                 )}
+                                {totalAmount !== null && (
+                                    <div>
+                                        <p className="text-xs text-muted">Total nominal</p>
+                                        <p className="font-semibold text-foreground">
+                                            Rp{totalAmount.toLocaleString('id-ID')}
+                                        </p>
+                                    </div>
+                                )}
                                 <div>
-                                    <p className="text-xs text-muted">Diunggah oleh</p>
+                                    <p className="text-xs text-muted">Diunggah</p>
                                     <p className="font-semibold text-foreground">
                                         {new Date(job.created_at).toLocaleDateString('id-ID', { dateStyle: 'medium' })}
                                     </p>
