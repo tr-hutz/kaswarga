@@ -111,6 +111,16 @@ export async function processImportJob<T>(
 
             if (validation.valid) {
                 validRows.push(definition.transform(row, enrichedContext))
+                // Store valid raw rows so the approval route can reconstruct them
+                // without the client having to send them back.
+                errorRows.push({
+                    import_job_id: jobId,
+                    row_number:    rowNumber,
+                    status:        IMPORT_ROW_STATUS.VALID,
+                    raw_data:      row,
+                    error_code:    null,
+                    error_message: null,
+                })
             } else if (validation.skipped) {
                 errorRows.push({
                     import_job_id: jobId,
@@ -145,7 +155,7 @@ export async function processImportJob<T>(
             }
         }
 
-        // Persist row-level error results for download / display
+        // Persist all row results (valid + invalid + skipped)
         if (errorRows.length > 0) {
             await recordRowResults(errorRows)
         }

@@ -5,26 +5,25 @@ import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 import { supabaseAdmin }      from '@/lib/supabase-admin'
 import { getImportDefinition }   from '@/lib/import/registry'
 import { approveImportJobWithRows } from '@/lib/import/engine'
-import { IMPORT_STATUS, type ImportJob, type RawRow } from '@/lib/import/types'
+import { IMPORT_STATUS, IMPORT_ROW_STATUS, type ImportJob, type ImportJobRow, type RawRow } from '@/lib/import/types'
 
 /*
 |--------------------------------------------------------------------------
 | POST /api/import/[id]/approve
 |
 | Approves a PENDING_APPROVAL import batch.
-| Atomically transitions to APPROVED, then COMPLETED.
+| Valid rows are fetched from import_job_rows (status=VALID) — the client
+| does NOT need to send them back.
 |
-| Importer !== Approver: enforced by checking approved_by != created_by.
-| The approver must hold the definition's approvePermission.
-|
-| Body:
-|   validRows: RawRow[]   (the pre-validated rows from the original upload,
-|                          sent back for atomic commit)
+| Guards:
+|   - Job must be PENDING_APPROVAL
+|   - Caller must hold approvePermission
+|   - Importer !== Approver
 |--------------------------------------------------------------------------
 */
 
 export async function POST(
-    req: Request,
+    _req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
@@ -33,7 +32,6 @@ export async function POST(
         const approverId = ctx.authorization.userId
         const { id }     = await params
 
-        // Load job — RT isolation enforced
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: job, error: jobError } = await (supabaseAdmin as any)
             .from('import_jobs')
@@ -57,7 +55,6 @@ export async function POST(
 
         const definition = getImportDefinition(typedJob.import_type)
 
-        // RBAC: check approve permission
         if (definition.approvePermission) {
             requirePermission(ctx.authorization, definition.approvePermission)
         }
@@ -70,22 +67,33 @@ export async function POST(
             )
         }
 
-        // Reconstruct valid rows from request body
-        // The client sends back the rows it originally submitted (minus invalid ones)
-        const body = await req.json() as { validRows: RawRow[] }
-        if (!Array.isArray(body.validRows)) {
-            return NextResponse.json({ error: 'validRows array required' }, { status: 400 })
+        // Fetch valid rows from import_job_rows (stored during processImportJob)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: validRowRecords, error: rowsError } = await (supabaseAdmin as any)
+            .from('import_job_rows')
+            .select('*')
+            .eq('import_job_id', id)
+            .eq('status', IMPORT_ROW_STATUS.VALID)
+            .order('row_number', { ascending: true })
+
+        if (rowsError) {
+            return NextResponse.json({ error: 'Failed to fetch import rows' }, { status: 500 })
         }
 
-        // Re-run preload + transform to rebuild typed rows
-        const context = { jobId: id, rtId, userId: approverId }
-        const preloaded = definition.preload ? await definition.preload(context) : {}
-        const enrichedContext = { ...context, ...preloaded }
+        const rawRows: RawRow[] = ((validRowRecords ?? []) as ImportJobRow[])
+            .map(r => r.raw_data as RawRow)
+            .filter(Boolean)
 
-        const validTyped = body.validRows
+        // Re-run preload + transform to rebuild typed rows server-side
+        const context     = { jobId: id, rtId, userId: approverId }
+        const preloaded   = definition.preload ? await definition.preload(context) : {}
+        const enrichedCtx = { ...context, ...preloaded }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const validTyped: any[] = rawRows
             .map(row => {
-                const result = definition.validateRow(row, enrichedContext)
-                return result.valid ? definition.transform(row, enrichedContext) : null
+                const result = definition.validateRow(row, enrichedCtx)
+                return result.valid ? definition.transform(row, enrichedCtx) : null
             })
             .filter(Boolean)
 
