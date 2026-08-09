@@ -43,6 +43,7 @@ interface ResidentPayload {
 
 interface ResidentPreloaded {
     existingKeys: Set<string>  // `${block.lower}:${house.lower}`
+    [key: string]: unknown
 }
 
 /* -------------------------------------------------------------------------- */

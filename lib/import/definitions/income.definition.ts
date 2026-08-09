@@ -50,6 +50,7 @@ interface IncomePayload {
 
 interface IncomePreloaded {
     existingSet: Set<string>  // `${name.lower}:${received_at}:${amount}`
+    [key: string]: unknown
 }
 
 /* -------------------------------------------------------------------------- */

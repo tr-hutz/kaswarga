@@ -20,6 +20,9 @@ import UserThemeSync   from './UserThemeSync'
 import { useAuth }  from '../../lib/auth/useAuth'
 import { logout }   from '../../lib/services/auth.service'
 
+import { ImportNotificationProvider } from '../../components/import/ImportNotificationContext'
+import ImportNotifications            from '../../components/import/ImportNotifications'
+
 const PUBLIC_PATHS = ['/login', '/register', '/activation', '/test', '/maintenance']
 
 function isPublicPath(pathname: string) {
@@ -43,7 +46,7 @@ export default function AppShell({
 
                                  }: { children: ReactNode }) {
 
-  const { membership, loading } = useAuth()
+  const { membership, loading, rtId } = useAuth()
   const pathname                = usePathname()
   const router                  = useRouter()
   const t                       = useTranslations('appShell')
@@ -153,7 +156,7 @@ export default function AppShell({
 
   return (
 
-      <>
+      <ImportNotificationProvider rtId={rtId}>
 
         <UserThemeSync />
 
@@ -202,6 +205,8 @@ export default function AppShell({
 
         </main>
 
-      </>
+        <ImportNotifications />
+
+      </ImportNotificationProvider>
   )
 }

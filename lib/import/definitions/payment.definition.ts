@@ -51,6 +51,7 @@ interface PaymentPreloaded {
     residentMap:  Map<string, string>
     /** `${resident_id}:${year}:${month}` — already-confirmed months */
     existingSet:  Set<string>
+    [key: string]: unknown
 }
 
 /* -------------------------------------------------------------------------- */
