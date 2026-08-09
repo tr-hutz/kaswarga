@@ -8,6 +8,8 @@ import { DataTable }            from '@/components/common/data-table'
 import PaymentDetailDrawer      from './components/details/PaymentDetailDrawer'
 import PaymentImportModal       from './components/import/PaymentImportModal'
 import PaymentForm              from './components/forms/PaymentForm'
+import ImportApprovalBanner     from '@/components/import/ImportApprovalBanner'
+import { IMPORT_TYPE }          from '@/lib/import/types'
 import ExportDropdown           from '@/components/ui/ExportDropdown'
 import DangerDropdown           from '@/components/ui/DangerDropdown'
 import ConfirmDialog            from '@/components/ui/ConfirmDialog'
@@ -138,6 +140,10 @@ export default function PaymentView({
                     </Can>
                 </div>
             </div>
+
+            <Can permission={PERMISSION.PAYMENT_APPROVE}>
+                <ImportApprovalBanner importType={IMPORT_TYPE.PAYMENT} />
+            </Can>
 
             <DataTable
                 columns={columns}
