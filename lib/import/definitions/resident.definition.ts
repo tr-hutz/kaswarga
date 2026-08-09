@@ -42,7 +42,10 @@ interface ResidentPayload {
 /* -------------------------------------------------------------------------- */
 
 interface ResidentPreloaded {
-    existingKeys: Set<string>  // `${block.lower}:${house.lower}`
+    /** Keys loaded from DB — identifies RESIDENT_ALREADY_EXISTS conflicts */
+    dbKeys:   Set<string>
+    /** Accumulates during validation — identifies DUPLICATE_IN_FILE conflicts */
+    fileKeys: Set<string>
     [key: string]: unknown
 }
 
@@ -109,35 +112,55 @@ export const residentImportDefinition: ImportDefinition<ResidentPayload> = {
             .select('block, house_number')
             .eq('rt_id', context.rtId)
 
-        const existingKeys = new Set<string>(
+        const dbKeys = new Set<string>(
             ((data ?? []) as Array<{ block: string | null; house_number: string | null }>)
                 .filter(r => r.block && r.house_number)
                 .map(r => `${String(r.block).toLowerCase().trim()}:${String(r.house_number).toLowerCase().trim()}`)
         )
 
-        return { existingKeys }
+        return { dbKeys, fileKeys: new Set<string>() }
     },
 
     validateRow(row: RawRow, context: ImportContext): RowValidationResult {
-        const { existingKeys } = context as unknown as ResidentPreloaded & ImportContext
+        const { dbKeys, fileKeys } = context as unknown as ResidentPreloaded & ImportContext
 
         if (!row.name?.trim()) {
             return { valid: false, errorCode: 'MISSING_NAME', errorMessage: 'Nama warga wajib diisi' }
         }
 
+        // Phone validation (optional field — only validate when present)
+        if (row.phone?.trim()) {
+            const digits = row.phone.replace(/\D/g, '')
+            if (digits.length < 7 || digits.length > 15) {
+                return { valid: false, errorCode: 'INVALID_PHONE', errorMessage: 'Format nomor HP tidak valid (7–15 digit)' }
+            }
+        }
+
         // Dedup check (only when both block and house_number are present)
         if (row.block?.trim() && row.house_number?.trim()) {
             const key = `${row.block.toLowerCase().trim()}:${row.house_number.toLowerCase().trim()}`
-            if (existingKeys?.has(key)) {
+
+            // Within-file duplicate (appears earlier in this file)
+            if (fileKeys?.has(key)) {
                 return {
                     valid:        false,
                     skipped:      true,
-                    skipReason:   'DUPLICATE_ADDRESS',
+                    skipReason:   'DUPLICATE_IN_FILE',
+                    errorMessage: `Blok ${row.block} No. ${row.house_number} duplikat dalam file ini`,
+                }
+            }
+
+            // Existing resident in DB
+            if (dbKeys?.has(key)) {
+                return {
+                    valid:        false,
+                    skipped:      true,
+                    skipReason:   'RESIDENT_ALREADY_EXISTS',
                     errorMessage: `Blok ${row.block} No. ${row.house_number} sudah terdaftar`,
                 }
             }
-            // Add to set for within-batch dedup
-            existingKeys?.add(key)
+
+            fileKeys?.add(key)
         }
 
         return { valid: true }
