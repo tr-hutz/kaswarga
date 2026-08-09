@@ -182,6 +182,7 @@ Legend
 | payment.delete | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 | payment.approve | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 | payment.reject | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| payment.import | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 | dashboard.payment.export | ❌ | ❌ | ✅ | ✅ | ✅ | ❌ |
 | dashboard.payment.arrears | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
 
