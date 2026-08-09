@@ -678,6 +678,70 @@ Business rules take precedence over implementation.
 
 ---
 
+# 17. Shared Import Framework
+
+## BR-160
+
+All bulk imports (Resident, Payment, Income) are processed through the Shared Import Framework.
+
+Imports are submitted to `POST /api/import` and processed asynchronously in the background via Next.js `after()`.
+
+The dialog closes immediately after job creation; progress is delivered via Supabase Realtime.
+
+---
+
+## BR-161
+
+Import types define their approval policy:
+
+| Import Type | Approval Policy | Effect |
+|-------------|-----------------|--------|
+| RESIDENT    | NONE            | Rows committed immediately after validation |
+| PAYMENT     | BATCH           | Job enters PENDING_APPROVAL; approver must confirm |
+| INCOME      | BATCH           | Job enters PENDING_APPROVAL; approver must confirm |
+
+---
+
+## BR-162
+
+For BATCH approval policy, the user who submitted the import (importer) cannot approve their own import batch.
+
+Importer ≠ Approver is enforced at the API layer.
+
+---
+
+## BR-163
+
+Approval is atomic. A concurrent approval attempt on the same job is rejected if the job is no longer in PENDING_APPROVAL status.
+
+---
+
+## BR-164
+
+Import jobs and their row results are scoped to the submitter's RT.
+
+Users in other RTs cannot view or approve import jobs belonging to a different RT.
+
+---
+
+## BR-165
+
+All row results (VALID, INVALID, SKIPPED) are persisted in `import_job_rows` during processing.
+
+VALID rows are stored with their raw data so the approval route can reconstruct and commit them server-side without the client re-sending data.
+
+---
+
+## BR-166
+
+Import permissions follow the same RBAC model as other permissions.
+
+`resident.import`, `payment.update` (for payment import), and `income.import` govern who may initiate imports.
+
+`payment.approve` and `income.approve` govern who may approve BATCH import jobs.
+
+---
+
 ---
 
 # Part X — Authorization Rules (RBAC v2)

@@ -80,6 +80,11 @@ Finance (Ledger)
 
 - ledger
 
+Import Framework
+
+- import_jobs
+- import_job_rows
+
 Communication
 
 - notifications
@@ -585,6 +590,94 @@ Previously referred to as `ledger_entries` in older documentation. The actual ta
 
 ---
 
+# import_jobs
+
+Purpose
+
+Tracks the lifecycle of a bulk import operation (Resident, Payment, or Income).
+Created when a user submits a file for import; processed in the background via Next.js `after()`.
+
+Primary Key
+
+id
+
+Columns
+
+| Column           | Type          | Nullable |
+|------------------|---------------|----------|
+| id               | uuid          | No       |
+| rt_id            | uuid          | No       |
+| import_type      | import_type   | No       |
+| status           | import_status | No       |
+| filename         | text          | No       |
+| file_size        | bigint        | Yes      |
+| file_type        | text          | Yes      |
+| file_path        | text          | Yes      |
+| total_rows       | integer       | No       |
+| processed_rows   | integer       | No       |
+| success_rows     | integer       | No       |
+| failed_rows      | integer       | No       |
+| progress_percent | integer       | No       |
+| created_by       | uuid          | No       |
+| approved_by      | uuid          | Yes      |
+| rejected_by      | uuid          | Yes      |
+| rejection_reason | text          | Yes      |
+| started_at       | timestamptz   | Yes      |
+| completed_at     | timestamptz   | Yes      |
+| approved_at      | timestamptz   | Yes      |
+| created_at       | timestamptz   | No       |
+| updated_at       | timestamptz   | No       |
+
+Enums
+
+import_type: RESIDENT, PAYMENT, INCOME
+
+import_status: QUEUED, PROCESSING, VALIDATING, PENDING_APPROVAL, APPROVED, REJECTED, COMPLETED, FAILED
+
+Realtime
+
+REPLICA IDENTITY FULL — enabled for Supabase Realtime live progress updates.
+
+Relationships
+
+import_job → Many import_job_rows
+
+---
+
+# import_job_rows
+
+Purpose
+
+Row-level results for an import job. Stores all rows (VALID, INVALID, SKIPPED) with their raw data.
+Valid rows are stored so the approval route can reconstruct them server-side without a client round-trip.
+
+Primary Key
+
+id
+
+Columns
+
+| Column        | Type              | Nullable |
+|---------------|-------------------|----------|
+| id            | uuid              | No       |
+| import_job_id | uuid              | No       |
+| row_number    | integer           | No       |
+| status        | import_row_status | No       |
+| raw_data      | jsonb             | Yes      |
+| error_code    | text              | Yes      |
+| error_message | text              | Yes      |
+| created_at    | timestamptz       | No       |
+
+Enums
+
+import_row_status: VALID, INVALID, SKIPPED
+
+Relationships
+
+import_job_rows → import_jobs (on delete cascade)
+
+---
+
 # notifications
 
 Purpose
@@ -791,6 +884,9 @@ registration_requests (type: rt | resident)
 
 notifications (target_user_id → users)
 activity_logs (actor_id → users)
+
+import_jobs (rt_id → rt, created_by → users)
+  └─ import_job_rows (import_job_id)
 ```
 
 ---
