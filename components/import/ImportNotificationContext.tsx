@@ -11,11 +11,23 @@ import {
 import { supabase }                   from '@/lib/supabase'
 import { IMPORT_STATUS, type ImportJob, type ImportStatus } from '@/lib/import/types'
 
+// Statuses that are shown live via Realtime during the current session.
 const ACTIVE_STATUSES: ImportStatus[] = [
     IMPORT_STATUS.QUEUED,
     IMPORT_STATUS.PROCESSING,
     IMPORT_STATUS.VALIDATING,
     IMPORT_STATUS.PENDING_APPROVAL,
+]
+
+// Only truly in-flight jobs are restored on mount.
+// PENDING_APPROVAL is intentionally excluded: those jobs persist in the DB
+// indefinitely and would re-appear on every page load, which is annoying.
+// The ImportApprovalBanner on each module page provides the canonical
+// visibility for pending approval batches.
+const MOUNT_STATUSES: ImportStatus[] = [
+    IMPORT_STATUS.QUEUED,
+    IMPORT_STATUS.PROCESSING,
+    IMPORT_STATUS.VALIDATING,
 ]
 
 const TERMINAL_STATUSES: ImportStatus[] = [
@@ -59,7 +71,7 @@ export function ImportNotificationProvider({
         ;(supabase as any)
             .from('import_jobs')
             .select('*')
-            .in('status', ACTIVE_STATUSES)
+            .in('status', MOUNT_STATUSES)
             .order('created_at', { ascending: false })
             .limit(20)
             .then(({ data }: { data: ImportJob[] | null }) => {
