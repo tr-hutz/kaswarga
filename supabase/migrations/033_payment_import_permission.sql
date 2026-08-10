@@ -2,7 +2,7 @@
  * 033_payment_import_permission
  *
  * Adds payment.import and payment.import_approve permissions for the shared
- * import framework.
+ * import framework. (034 content merged here — both are idempotent.)
  *
  * payment.import — who can initiate a payment import:
  *   RT_ADMIN  — ✅
