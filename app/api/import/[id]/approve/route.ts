@@ -4,8 +4,8 @@ import { requirePermission }  from '@/lib/auth/helpers'
 import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 import { supabaseAdmin }      from '@/lib/supabase-admin'
 import { getImportDefinition }   from '@/lib/import/registry'
-import { approveImportJobWithRows } from '@/lib/import/engine'
-import { IMPORT_STATUS, IMPORT_ROW_STATUS, type ImportJob, type ImportJobRow, type RawRow } from '@/lib/import/types'
+import { approveImportJobWithRows, fetchAllJobRows } from '@/lib/import/engine'
+import { IMPORT_STATUS, type ImportJob, type ImportJobRow, type RawRow } from '@/lib/import/types'
 
 /*
 |--------------------------------------------------------------------------
@@ -28,23 +28,29 @@ export async function POST(
 ) {
     try {
         const ctx        = await getRequestContext()
-        const rtId       = ctx.authorization.neighborhoodId
+        const ctxRtId    = ctx.authorization.neighborhoodId  // '' for SUPER_ADMIN
         const approverId = ctx.authorization.userId
         const { id }     = await params
 
+        // SUPER_ADMIN has neighborhoodId='' — skip the rt_id filter so they can
+        // approve any RT's import. For regular users, restrict to their own RT.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: job, error: jobError } = await (supabaseAdmin as any)
+        let jobQuery = (supabaseAdmin as any)
             .from('import_jobs')
             .select('*')
             .eq('id', id)
-            .eq('rt_id', rtId)
-            .single()
+        if (ctxRtId) {
+            jobQuery = jobQuery.eq('rt_id', ctxRtId)
+        }
+        const { data: job, error: jobError } = await jobQuery.single()
 
         if (jobError || !job) {
             return NextResponse.json({ error: 'Import job not found' }, { status: 404 })
         }
 
         const typedJob = job as ImportJob
+        // Use the job's rt_id as the effective RT context (handles SUPER_ADMIN case)
+        const rtId = (typedJob as unknown as { rt_id: string }).rt_id
 
         if (typedJob.status !== IMPORT_STATUS.PENDING_APPROVAL) {
             return NextResponse.json(
@@ -67,23 +73,19 @@ export async function POST(
             )
         }
 
-        // Fetch valid rows — explicit limit bypasses Supabase's default 1000-row cap
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: validRowRecords, error: rowsError } = await (supabaseAdmin as any)
-            .from('import_job_rows')
-            .select('*')
-            .eq('import_job_id', id)
-            .eq('status', IMPORT_ROW_STATUS.VALID)
-            .order('row_number', { ascending: true })
-            .limit(10000)
-
-        if (rowsError) {
+        // Paginated fetch — PostgREST caps at max_rows=1000 even with .limit(); must paginate.
+        let validRowRecords: ImportJobRow[]
+        try {
+            validRowRecords = await fetchAllJobRows(id, 'VALID')
+        } catch {
             return NextResponse.json({ error: 'Failed to fetch import rows' }, { status: 500 })
         }
 
-        const rawRows: RawRow[] = ((validRowRecords ?? []) as ImportJobRow[])
+        const rawRows: RawRow[] = validRowRecords
             .map(r => r.raw_data as RawRow)
             .filter(Boolean)
+
+        console.log('[import/approve] rawRows fetched:', rawRows.length, '| rtId:', rtId)
 
         // Re-run preload + transform to rebuild typed rows server-side.
         // Override dbSet with an empty set: dedup was already enforced during
@@ -94,22 +96,47 @@ export async function POST(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const enrichedCtx = { ...context, ...preloaded, dbSet: new Set<string>(), fileSet: new Set<string>() }
 
+        // Log residentMap size so we can diagnose RESIDENT_NOT_FOUND failures
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const validTyped: any[] = rawRows
-            .map(row => {
-                const result = definition.validateRow(row, enrichedCtx)
-                return result.valid ? definition.transform(row, enrichedCtx) : null
-            })
-            .filter(Boolean)
+        const preloadedAny = preloaded as any
+        console.log('[import/approve] residentMap size:', preloadedAny?.residentMap?.size ?? 'N/A')
+        if (rawRows.length > 0) {
+            const sampleRow = rawRows[0]
+            console.log('[import/approve] sample raw row keys:', Object.keys(sampleRow))
+            console.log('[import/approve] sample raw row:', JSON.stringify(sampleRow))
+        }
 
-        await approveImportJobWithRows(id, approverId, validTyped, definition, rtId)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const validTyped: any[] = []
+        const rejectedReasons: Record<string, number> = {}
+        for (const row of rawRows) {
+            const result = definition.validateRow(row, enrichedCtx)
+            if (result.valid) {
+                validTyped.push(definition.transform(row, enrichedCtx))
+            } else {
+                const code = (result as any).errorCode ?? (result as any).skipReason ?? 'UNKNOWN'
+                rejectedReasons[code] = (rejectedReasons[code] ?? 0) + 1
+            }
+        }
 
-        return NextResponse.json({ ok: true, persisted: validTyped.length })
+        console.log('[import/approve] validTyped:', validTyped.length, '| rejected:', JSON.stringify(rejectedReasons))
+
+        const persistResult = await approveImportJobWithRows(id, approverId, validTyped, definition, rtId)
+
+        return NextResponse.json({
+            ok:       true,
+            persisted: persistResult.inserted,
+            rejected:  Object.keys(rejectedReasons).length > 0 ? rejectedReasons : undefined,
+        })
 
     } catch (err) {
         if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' },  { status: 401 })
         if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },      { status: 403 })
-        const message = err instanceof Error ? err.message : String(err)
+        const message = err instanceof Error
+            ? err.message
+            : (typeof err === 'object' && err !== null && typeof (err as Record<string, unknown>).message === 'string')
+                ? (err as Record<string, unknown>).message as string
+                : String(err)
         console.error('[import/approve]', message, err)
         return NextResponse.json({ error: message || 'Approval failed' }, { status: 500 })
     }

@@ -643,7 +643,7 @@
             "proofTitle": "Bukti Pembayaran",
             "proofUnavailable": "Bukti pembayaran tidak tersedia",
             "proofError": "Bukti tidak dapat dimuat",
-            "proofImportFile": "Lihat file impor"
+            "proofImportFile": "Data diimpor dari file Excel"
         },
         "reject": {
             "title": "Tolak Pembayaran",

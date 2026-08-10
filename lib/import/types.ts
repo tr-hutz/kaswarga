@@ -107,6 +107,8 @@ export interface RowValidationResult {
 export interface PersistResult {
     inserted: number
     skipped:  number
+    /** Optional detail count (e.g. total months when payments are grouped by resident+year). */
+    details?: number
 }
 
 /** Metadata needed by the engine during processing. */

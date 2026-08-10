@@ -22,17 +22,21 @@ export async function POST(
 ) {
     try {
         const ctx        = await getRequestContext()
-        const rtId       = ctx.authorization.neighborhoodId
+        const ctxRtId    = ctx.authorization.neighborhoodId  // '' for SUPER_ADMIN
         const rejecterId = ctx.authorization.userId
         const { id }     = await params
 
+        // SUPER_ADMIN has neighborhoodId='' — skip the rt_id filter so they can
+        // reject any RT's import. For regular users, restrict to their own RT.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: job, error: jobError } = await (supabaseAdmin as any)
+        let jobQuery = (supabaseAdmin as any)
             .from('import_jobs')
             .select('*')
             .eq('id', id)
-            .eq('rt_id', rtId)
-            .single()
+        if (ctxRtId) {
+            jobQuery = jobQuery.eq('rt_id', ctxRtId)
+        }
+        const { data: job, error: jobError } = await jobQuery.single()
 
         if (jobError || !job) {
             return NextResponse.json({ error: 'Import job not found' }, { status: 404 })

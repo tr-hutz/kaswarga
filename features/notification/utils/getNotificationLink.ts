@@ -35,6 +35,12 @@ export function getNotificationLink(
 
             return '/ledger'
 
+        case 'import_pending_approval':
+        case 'import_complete':
+        case 'import_rejected':
+
+            return '/payments'
+
         default:
 
             return '/notification'

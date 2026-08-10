@@ -32,7 +32,7 @@ import type { ImportDefinition } from './contract'
 import { ImportNotFoundError, ImportStatusError } from './errors'
 
 /** Update the job progress every N rows to limit Realtime traffic. */
-const PROGRESS_BATCH_SIZE = 50
+const PROGRESS_BATCH_SIZE = 250
 
 /* -------------------------------------------------------------------------- */
 /* Public API                                                                  */
@@ -143,10 +143,12 @@ export async function processImportJob<T>(
 
             processedCount++
 
-            // Update progress periodically
+            // Fire-and-forget: progress updates are cosmetic — must not block the loop.
+            // An awaited DB call here would stall the entire after() task if the
+            // connection is slow or the pool is under pressure.
             if (processedCount % PROGRESS_BATCH_SIZE === 0 || processedCount === rows.length) {
                 const percent = Math.round((processedCount / rows.length) * 100)
-                await updateJobProgress(jobId, {
+                void updateJobProgress(jobId, {
                     processed_rows:   processedCount,
                     success_rows:     validRows.length,
                     failed_rows:      errorRows.filter(r => r.status === IMPORT_ROW_STATUS.INVALID).length,
@@ -274,7 +276,7 @@ export async function approveImportJobWithRows<T>(
     validRows:  T[],
     definition: ImportDefinition<T>,
     rtId:       string,
-): Promise<void> {
+): Promise<{ inserted: number; details?: number }> {
     const job = await getJob(jobId)
     if (job.status !== IMPORT_STATUS.PENDING_APPROVAL) {
         throw new ImportStatusError(jobId, IMPORT_STATUS.PENDING_APPROVAL, job.status)
@@ -297,7 +299,7 @@ export async function approveImportJobWithRows<T>(
     if (!guardResult || (guardResult as unknown[]).length === 0) {
         // Another request already approved — idempotent OK
         const current = await getJob(jobId)
-        if (current.status === IMPORT_STATUS.COMPLETED || current.status === IMPORT_STATUS.APPROVED) return
+        if (current.status === IMPORT_STATUS.COMPLETED || current.status === IMPORT_STATUS.APPROVED) return { inserted: 0 }
         throw new ImportStatusError(jobId, IMPORT_STATUS.PENDING_APPROVAL, current.status)
     }
 
@@ -305,11 +307,31 @@ export async function approveImportJobWithRows<T>(
     const preloaded = definition.preload ? await definition.preload(context) : {}
     const enrichedContext = { ...context, ...preloaded }
 
+    let persistResult = { inserted: 0, details: undefined as number | undefined }
     if (validRows.length > 0) {
-        await definition.persist(validRows, enrichedContext)
+        try {
+            const result = await definition.persist(validRows, enrichedContext)
+            persistResult = { inserted: result.inserted, details: result.details }
+        } catch (err) {
+            // persist() failed — roll back to PENDING_APPROVAL so the user can retry.
+            // The idempotent persist() design means retrying is safe.
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (supabaseAdmin as any)
+                .from('import_jobs')
+                .update({ status: IMPORT_STATUS.PENDING_APPROVAL, approved_by: null, approved_at: null })
+                .eq('id', jobId)
+                .eq('status', IMPORT_STATUS.APPROVED)
+            throw err
+        }
     }
 
     await finalizeJob(jobId, IMPORT_STATUS.COMPLETED, { completed_at: new Date().toISOString() })
+
+    // Dismiss pending-approval notifications so RT Chair is not left with a
+    // stale bell notification pointing at an already-resolved job.
+    await dismissImportPendingNotifications(jobId)
+
+    return persistResult
 }
 
 /**
@@ -337,6 +359,34 @@ export async function rejectImportJob(
         .eq('status', IMPORT_STATUS.PENDING_APPROVAL)
 
     if (error) throw error
+
+    // Dismiss pending-approval notifications so RT Chair is not left with a
+    // stale bell notification pointing at an already-resolved job.
+    await dismissImportPendingNotifications(jobId)
+
+    // Notify the original importer about the rejection.
+    if (job.created_by) {
+        const typeName = job.import_type === 'RESIDENT' ? 'warga'
+            : job.import_type === 'PAYMENT' ? 'pembayaran' : 'pemasukan'
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (supabaseAdmin as any)
+                .from('notifications')
+                .insert({
+                    rt_id:          job.rt_id,
+                    type:           'import_rejected',
+                    title:          `Import ${typeName} ditolak`,
+                    message:        reason
+                        ? `Import ditolak: ${reason}`
+                        : `Import batch ${typeName} Anda telah ditolak.`,
+                    entity_type:    'import_jobs',
+                    entity_id:      jobId,
+                    target_user_id: job.created_by,
+                })
+        } catch {
+            // Non-critical
+        }
+    }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -401,6 +451,41 @@ async function finalizeJob(
     if (error) throw error
 }
 
+/**
+ * Fetches ALL rows for a job, bypassing PostgREST's default max_rows=1000 cap.
+ * Paginates with `.range()` until fewer than PAGE_SIZE rows are returned.
+ */
+export async function fetchAllJobRows(
+    jobId:  string,
+    status?: string,
+): Promise<ImportJobRow[]> {
+    const PAGE_SIZE = 1000
+    const all: ImportJobRow[] = []
+    let offset = 0
+
+    while (true) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let q = (supabaseAdmin as any)
+            .from('import_job_rows')
+            .select('*')
+            .eq('import_job_id', jobId)
+            .order('row_number', { ascending: true })
+            .range(offset, offset + PAGE_SIZE - 1)
+
+        if (status) q = q.eq('status', status)
+
+        const { data, error } = await q
+        if (error) throw error
+
+        const page = (data ?? []) as ImportJobRow[]
+        all.push(...page)
+        if (page.length < PAGE_SIZE) break
+        offset += PAGE_SIZE
+    }
+
+    return all
+}
+
 async function safeMarkFailed(jobId: string, message: string): Promise<void> {
     try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -426,13 +511,30 @@ const ROW_INSERT_BATCH = 500
 
 async function recordRowResults(rows: RowResultInsert[]): Promise<void> {
     if (rows.length === 0) return
+    const batches: RowResultInsert[][] = []
     for (let i = 0; i < rows.length; i += ROW_INSERT_BATCH) {
-        const batch = rows.slice(i, i + ROW_INSERT_BATCH)
+        batches.push(rows.slice(i, i + ROW_INSERT_BATCH))
+    }
+    // Insert all batches in parallel — independent inserts, no ordering requirement.
+    await Promise.all(batches.map(async batch => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error } = await (supabaseAdmin as any)
-            .from('import_job_rows')
-            .insert(batch)
+        const { error } = await (supabaseAdmin as any).from('import_job_rows').insert(batch)
         if (error) throw error
+    }))
+}
+
+async function dismissImportPendingNotifications(jobId: string): Promise<void> {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabaseAdmin as any)
+            .from('notifications')
+            .update({ is_read: true })
+            .eq('entity_type', 'import_jobs')
+            .eq('entity_id', jobId)
+            .eq('type', 'import_pending_approval')
+            .eq('is_read', false)
+    } catch {
+        // Non-critical
     }
 }
 

@@ -1,17 +1,12 @@
 /*
  * Payment Import Definition
  *
- * Business rules for importing payment confirmations.
- * Preserves ALL existing payment import behaviour from /api/payments/import.
- * The framework handles lifecycle; this file owns resident matching,
- * dedup, grouping, and persistence of payment_confirmations.
- *
  * Approval policy: BATCH — rows enter PENDING_APPROVAL after validation.
- * The approver (TREASURER / RT_CHAIR) commits via the approve endpoint.
+ * RT Chair (approvePermission) approves the batch; persist() is then called.
  *
- * NOTE: persist() on approval inserts payment_confirmations + confirmation_details.
- * The subsequent payment approval workflow (TREASURER approving individual
- * payment_confirmations) is separate from the import approval.
+ * persist() is the final step: it creates payment_confirmations (approved),
+ * confirmation_details, payments, payment_details, and ledger entries in one
+ * transaction. No separate TREASURER approval is required for imported data.
  */
 
 import { supabaseAdmin }       from '@/lib/supabase-admin'
@@ -212,90 +207,129 @@ export const paymentImportDefinition: ImportDefinition<PaymentRowPayload> = {
     async persist(rows: PaymentRowPayload[], context: ImportContext): Promise<PersistResult> {
         if (rows.length === 0) return { inserted: 0, skipped: 0 }
 
-        // Group by residentId + year for payment_confirmations
-        const groups = new Map<string, { residentId: string; year: number; months: { month: number; amount: number }[] }>()
+        const now      = new Date().toISOString()
+        const proofUrl = `${context.jobId}-import-confirm-payment.xlsx`
 
-        for (const row of rows) {
-            const key = `${row.residentId}:${row.year}`
-            if (!groups.has(key)) {
-                groups.set(key, { residentId: row.residentId, year: row.year, months: [] })
-            }
-            groups.get(key)!.months.push({ month: row.month, amount: row.amount })
-        }
-
-        const groupList = Array.from(groups.values())
-
-        // Bulk-insert payment_confirmations
+        // ── Cleanup: remove any payment_confirmations left by a previous partial run ─
+        // Cascade deletes their confirmation_details automatically.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: confirmations, error: confirmError } = await (supabaseAdmin as any)
+        await (supabaseAdmin as any)
             .from('payment_confirmations')
-            .insert(
-                groupList.map(g => ({
-                    resident_id:  g.residentId,
-                    rt_id:        context.rtId,
-                    year:         g.year,
-                    total_amount: g.months.reduce((s, m) => s + m.amount, 0),
-                    status:       'pending',
-                }))
-            )
-            .select('id, resident_id, year')
-
-        if (confirmError) throw confirmError
-
-        // Map for detail insertion
-        const confirmMap = new Map<string, string>()
-        for (const c of (confirmations as Array<{ id: string; resident_id: string; year: number }>)) {
-            confirmMap.set(`${c.resident_id}:${c.year}`, c.id)
-        }
-
-        // Bulk-insert confirmation_details
-        const details = groupList.flatMap(g => {
-            const confirmId = confirmMap.get(`${g.residentId}:${g.year}`)
-            if (!confirmId) return []
-            return g.months.map(m => ({
-                confirmation_id: confirmId,
-                resident_id:     g.residentId,
-                year:            g.year,
-                month:           m.month,
-                amount:          m.amount,
-            }))
-        })
-
-        if (details.length > 0) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { error: detailError } = await (supabaseAdmin as any)
-                .from('confirmation_details')
-                .insert(details)
-            if (detailError) throw detailError
-        }
-
-        // Notify treasurers
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: treasurers } = await (supabaseAdmin as any)
-            .from('memberships')
-            .select('user_id')
+            .delete()
             .eq('rt_id', context.rtId)
-            .eq('role', 'TREASURER')
-            .eq('status', 'active')
+            .eq('proof_url', proofUrl)
 
-        if (treasurers?.length) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await (supabaseAdmin as any)
-                .from('notifications')
-                .insert(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (treasurers as any[]).map(m => ({
-                        rt_id:          context.rtId,
-                        type:           'payment_pending',
-                        title:          'Pembayaran Impor Menunggu Persetujuan',
-                        message:        `${rows.length} data pembayaran diimpor dan menunggu persetujuan.`,
-                        entity_type:    'import_jobs',
-                        entity_id:      context.jobId,
-                        target_user_id: m.user_id,
-                    }))
-                )
-        }
+        // ── Idempotency: skip rows whose payment_details already exist ────────────
+        // payment_details has UNIQUE(resident_id, year, month) — any row that already
+        // landed there from a previous partial run is complete and can be skipped.
+        const residentIds = [...new Set(rows.map(r => r.residentId))]
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: existingDetails } = await (supabaseAdmin as any)
+            .from('payment_details')
+            .select('resident_id, year, month')
+            .in('resident_id', residentIds)
 
+        const existingSet = new Set(
+            ((existingDetails ?? []) as Array<{ resident_id: string; year: number; month: number }>)
+                .map(d => `${d.resident_id}:${d.year}:${d.month}`)
+        )
+
+        const newRows = rows.filter(r => !existingSet.has(`${r.residentId}:${r.year}:${r.month}`))
+        const skipped = rows.length - newRows.length
+
+        if (newRows.length === 0) return { inserted: 0, skipped }
+
+        // ── Step 1: payment_confirmations — one per monthly row ───────────────────
+        // Each imported monthly row gets its own confirmation (total_amount = that month).
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: confirmations, error: confError } = await (supabaseAdmin as any)
+            .from('payment_confirmations')
+            .insert(newRows.map(r => ({
+                resident_id:  r.residentId,
+                rt_id:        context.rtId,
+                year:         r.year,
+                total_amount: r.amount,
+                status:       'approved',
+                approved_at:  now,
+                proof_url:    proofUrl,
+            })))
+            .select('id')
+        if (confError) throw new Error(confError.message ?? JSON.stringify(confError))
+
+        const confIds = ((confirmations ?? []) as Array<{ id: string }>).map(c => c.id)
+
+        // ── Step 2: confirmation_details — one per confirmation ───────────────────
+        const confirmDetails = newRows.map((r, i) => ({
+            confirmation_id: confIds[i],
+            resident_id:     r.residentId,
+            year:            r.year,
+            month:           r.month,
+            amount:          r.amount,
+        }))
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: cdError } = await (supabaseAdmin as any).from('confirmation_details').insert(confirmDetails)
+        if (cdError) throw new Error(cdError.message ?? JSON.stringify(cdError))
+
+        // ── Step 3: payments — one per monthly row ────────────────────────────────
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: payments, error: paymentError } = await (supabaseAdmin as any)
+            .from('payments')
+            .insert(newRows.map(r => ({
+                resident_id:  r.residentId,
+                rt_id:        context.rtId,
+                year:         r.year,
+                total_amount: r.amount,
+                date:         now,
+            })))
+            .select('id, total_amount')
+        if (paymentError) throw new Error(paymentError.message ?? JSON.stringify(paymentError))
+
+        const paymentList = (payments ?? []) as Array<{ id: string; total_amount: number }>
+
+        // ── Step 4: payment_details — one per payment ─────────────────────────────
+        const paymentDetails = newRows.map((r, i) => ({
+            payment_id:  paymentList[i].id,
+            resident_id: r.residentId,
+            year:        r.year,
+            month:       r.month,
+            amount:      r.amount,
+        }))
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: pdError } = await (supabaseAdmin as any)
+            .from('payment_details')
+            .upsert(paymentDetails, { onConflict: 'resident_id,year,month', ignoreDuplicates: true })
+        if (pdError) throw new Error(pdError.message ?? JSON.stringify(pdError))
+
+        // ── Step 5: ledger entries — one per payment ──────────────────────────────
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: lastLedger } = await (supabaseAdmin as any)
+            .from('ledger')
+            .select('balance_after')
+            .eq('rt_id', context.rtId)
+            .order('date', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+
+        let runningBalance = (lastLedger as { balance_after: number } | null)?.balance_after ?? 0
+        const ledgerRows = paymentList.map(p => {
+            runningBalance += p.total_amount
+            return {
+                rt_id:         context.rtId,
+                type:          'pemasukan',
+                source:        'pembayaran',
+                reference_id:  p.id,
+                date:          now,
+                description:   'Pembayaran iuran warga',
+                amount:        p.total_amount,
+                balance_after: runningBalance,
+                created_by:    context.userId,
+            }
+        })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: ledgerError } = await (supabaseAdmin as any).from('ledger').insert(ledgerRows)
+        if (ledgerError) throw new Error(ledgerError.message ?? JSON.stringify(ledgerError))
+
+        // ── Step 6: activity log ──────────────────────────────────────────────────
         const { data: actor } = await supabaseAdmin
             .from('users').select('name').eq('id', context.userId).single()
 
@@ -307,12 +341,12 @@ export const paymentImportDefinition: ImportDefinition<PaymentRowPayload> = {
                 actor_id:    context.userId,
                 actor_name:  actor?.name ?? null,
                 action:      'IMPORT_PAYMENTS',
-                entity_type: 'payment_confirmations',
+                entity_type: 'payments',
                 entity_id:   context.rtId,
-                description: `Import ${groupList.length} konfirmasi pembayaran (import job ${context.jobId})`,
-                metadata:    { inserted: groupList.length, jobId: context.jobId },
+                description: `Import ${newRows.length} pembayaran dari file (job ${context.jobId})`,
+                metadata:    { payments: newRows.length, skipped, jobId: context.jobId },
             })
 
-        return { inserted: groupList.length, skipped: 0 }
+        return { inserted: newRows.length, skipped }
     },
 }

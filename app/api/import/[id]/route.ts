@@ -2,7 +2,8 @@ import { NextResponse }       from 'next/server'
 import { getRequestContext }  from '@/lib/auth/server'
 import { UnauthorizedError }  from '@/lib/auth/errors'
 import { supabaseAdmin }      from '@/lib/supabase-admin'
-import type { ImportJob, ImportJobRow } from '@/lib/import/types'
+import { fetchAllJobRows }    from '@/lib/import/engine'
+import type { ImportJob } from '@/lib/import/types'
 
 /*
 |--------------------------------------------------------------------------
@@ -18,33 +19,31 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const ctx   = await getRequestContext()
-        const rtId  = ctx.authorization.neighborhoodId
-        const { id } = await params
+        const ctx    = await getRequestContext()
+        const ctxRtId = ctx.authorization.neighborhoodId  // '' for SUPER_ADMIN
+        const { id }  = await params
 
+        // SUPER_ADMIN has neighborhoodId='' — skip rt_id filter so they can view any RT's job
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: job, error: jobError } = await (supabaseAdmin as any)
+        let jobQuery = (supabaseAdmin as any)
             .from('import_jobs')
             .select('*')
             .eq('id', id)
-            .eq('rt_id', rtId)  // RT isolation
-            .single()
+        if (ctxRtId) {
+            jobQuery = jobQuery.eq('rt_id', ctxRtId)
+        }
+        const { data: job, error: jobError } = await jobQuery.single()
 
         if (jobError || !job) {
             return NextResponse.json({ error: 'Import job not found' }, { status: 404 })
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: errorRows } = await (supabaseAdmin as any)
-            .from('import_job_rows')
-            .select('*')
-            .eq('import_job_id', id)
-            .order('row_number', { ascending: true })
-            .limit(10000)
+        // Paginated fetch — PostgREST caps at max_rows=1000 even with .limit(); must paginate.
+        const errorRows = await fetchAllJobRows(id)
 
         return NextResponse.json({
             job:       job as ImportJob,
-            errorRows: (errorRows ?? []) as ImportJobRow[],
+            errorRows,
         })
 
     } catch (err) {

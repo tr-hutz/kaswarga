@@ -11,6 +11,9 @@ import {
 import { supabase }                   from '@/lib/supabase'
 import { IMPORT_STATUS, type ImportJob, type ImportStatus } from '@/lib/import/types'
 
+/** Poll active jobs this often as a fallback when Realtime misses an update. */
+const POLL_INTERVAL_MS = 10_000
+
 // Statuses that keep a job card alive in the floating panel.
 // PENDING_APPROVAL is excluded: ImportApprovalBanner on each module page is
 // the canonical surface for approvers. The importer's card auto-dismisses
@@ -132,6 +135,31 @@ export function ImportNotificationProvider({
             setJobs(prev => prev.filter(j => !(AUTO_DISMISS_STATUSES as ImportStatus[]).includes(j.status)))
         }, AUTO_DISMISS_MS)
         return () => clearTimeout(timer)
+    }, [jobs])
+
+    // Polling fallback: if Realtime drops an update the card would stay stuck in
+    // PROCESSING/VALIDATING forever. Re-fetch the latest state for active jobs.
+    useEffect(() => {
+        const activeIds = jobs
+            .filter(j => (ACTIVE_STATUSES as ImportStatus[]).includes(j.status))
+            .map(j => j.id)
+        if (activeIds.length === 0) return
+
+        const timer = setInterval(async () => {
+            for (const id of activeIds) {
+                try {
+                    const res = await fetch(`/api/import/${id}`)
+                    if (!res.ok) continue
+                    const { job }: { job: ImportJob } = await res.json()
+                    if (!job) continue
+                    setJobs(prev => prev.map(j => j.id === id ? job : j))
+                } catch {
+                    // Non-critical — next tick will retry
+                }
+            }
+        }, POLL_INTERVAL_MS)
+
+        return () => clearInterval(timer)
     }, [jobs])
 
     function trackJob(jobId: string) {

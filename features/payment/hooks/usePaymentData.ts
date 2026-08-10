@@ -9,7 +9,7 @@ import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 export type ConfirmationRow = ReturnType<typeof mapConfirmation>[number]
 
-export function usePaymentData(query: QueryOptions, year = new Date().getFullYear()) {
+export function usePaymentData(query: QueryOptions, year?: number) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { role, membership } = (useAuth() as any) ?? {}
     const rtId      = membership?.rt?.id       as string | undefined
