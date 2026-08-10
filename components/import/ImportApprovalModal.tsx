@@ -37,8 +37,8 @@ const TYPE_LABEL: Record<string, string> = {
 
 export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
     const { toast }              = useToast()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { userId }             = (useAuth() as any) ?? {}
+    const { user }               = useAuth()
+    const userId: string | undefined = user?.id
     const [detail, setDetail]    = useState<JobDetail | null>(null)
     const [loading, setLoading]  = useState(true)
     const [acting,  setActing]   = useState<'approve' | 'reject' | null>(null)
