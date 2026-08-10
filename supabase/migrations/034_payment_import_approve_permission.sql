@@ -16,11 +16,8 @@
  */
 
 -- Insert permission
-INSERT INTO permissions (code, description)
-VALUES (
-    'payment.import_approve',
-    'Approve bulk payment import batches'
-)
+INSERT INTO permissions (code, name, description, is_system) VALUES
+    ('payment.import_approve', 'Approve Payment Import', 'Approve bulk payment import batches', true)
 ON CONFLICT (code) DO NOTHING;
 
 -- Grant to RT_CHAIR

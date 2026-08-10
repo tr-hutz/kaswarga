@@ -451,22 +451,49 @@ async function notifyJobComplete(
 ): Promise<void> {
     try {
         const typeName = type === 'RESIDENT' ? 'warga' : type === 'PAYMENT' ? 'pembayaran' : 'pemasukan'
-        const statusMsg = summary.status === IMPORT_STATUS.PENDING_APPROVAL
-            ? 'Menunggu persetujuan'
-            : 'Selesai'
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (supabaseAdmin as any)
-            .from('notifications')
-            .insert({
-                rt_id:          rtId,
-                type:           'import_complete',
-                title:          `Import ${typeName} ${statusMsg.toLowerCase()}`,
-                message:        `${summary.total} baris diproses: ${summary.success} berhasil, ${summary.failed} gagal${summary.skipped > 0 ? `, ${summary.skipped} dilewati` : ''}.`,
-                entity_type:    'import_jobs',
-                entity_id:      jobId,
-                target_user_id: userId,
-            })
+        if (summary.status === IMPORT_STATUS.PENDING_APPROVAL) {
+            // Notify RT Chair members who need to review this batch
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: chairs } = await (supabaseAdmin as any)
+                .from('memberships')
+                .select('user_id')
+                .eq('rt_id', rtId)
+                .eq('role', 'RT_CHAIR')
+                .eq('status', 'active')
+
+            if (chairs?.length) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                await (supabaseAdmin as any)
+                    .from('notifications')
+                    .insert(
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        (chairs as any[]).map((m: { user_id: string }) => ({
+                            rt_id:          rtId,
+                            type:           'import_pending_approval',
+                            title:          `Import ${typeName} menunggu persetujuan`,
+                            message:        `${summary.success} baris valid siap disetujui. Tinjau dan setujui import batch ini.`,
+                            entity_type:    'import_jobs',
+                            entity_id:      jobId,
+                            target_user_id: m.user_id,
+                        }))
+                    )
+            }
+        } else {
+            // Notify the importer about completion or failure
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (supabaseAdmin as any)
+                .from('notifications')
+                .insert({
+                    rt_id:          rtId,
+                    type:           'import_complete',
+                    title:          `Import ${typeName} selesai`,
+                    message:        `${summary.total} baris diproses: ${summary.success} berhasil, ${summary.failed} gagal${summary.skipped > 0 ? `, ${summary.skipped} dilewati` : ''}.`,
+                    entity_type:    'import_jobs',
+                    entity_id:      jobId,
+                    target_user_id: userId,
+                })
+        }
     } catch {
         // Notification failure is non-critical
     }
