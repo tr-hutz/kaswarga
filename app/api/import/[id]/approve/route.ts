@@ -85,10 +85,14 @@ export async function POST(
             .map(r => r.raw_data as RawRow)
             .filter(Boolean)
 
-        // Re-run preload + transform to rebuild typed rows server-side
+        // Re-run preload + transform to rebuild typed rows server-side.
+        // Override dbSet with an empty set: dedup was already enforced during
+        // initial processing. Re-running it here would incorrectly reject rows
+        // whenever a previous import for the same data exists in the DB.
         const context     = { jobId: id, rtId, userId: approverId }
         const preloaded   = definition.preload ? await definition.preload(context) : {}
-        const enrichedCtx = { ...context, ...preloaded }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const enrichedCtx = { ...context, ...preloaded, dbSet: new Set<string>(), fileSet: new Set<string>() }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const validTyped: any[] = rawRows
