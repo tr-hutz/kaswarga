@@ -1,11 +1,12 @@
 /*
  * Income Import Definition
  *
- * Business rules for importing income transactions.
- * Preserves existing income import behaviour.
+ * Approval policy: BATCH — rows enter PENDING_APPROVAL after validation.
+ * RT Chair approves the batch; persist() is then called.
  *
- * Approval policy: BATCH — imported income enters PENDING_APPROVAL.
- * The approver (RT_CHAIR) commits via the approve endpoint.
+ * persist() creates income_transactions (approved), ledger entries,
+ * and an activity log entry. No separate individual-record approval
+ * is required — the import batch approval covers them all.
  */
 
 import { supabaseAdmin }      from '@/lib/supabase-admin'
@@ -40,7 +41,6 @@ interface IncomePayload {
     payment_method:   string | null
     reference_number: string | null
     notes:            string | null
-    status:           'pending'
     created_by:       string
 }
 
@@ -173,7 +173,6 @@ export const incomeImportDefinition: ImportDefinition<IncomePayload> = {
             payment_method:   row.payment_method?.trim()   || null,
             reference_number: row.reference_number?.trim() || null,
             notes:            row.notes?.trim()            || null,
-            status:           'pending',
             created_by:       context.userId,
         }
     },
@@ -181,14 +180,104 @@ export const incomeImportDefinition: ImportDefinition<IncomePayload> = {
     async persist(rows: IncomePayload[], context: ImportContext): Promise<PersistResult> {
         if (rows.length === 0) return { inserted: 0, skipped: 0 }
 
+        const now = new Date().toISOString()
+
+        // ── Idempotency: skip rows already inserted by a previous partial run ─
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data, error } = await (supabaseAdmin as any)
+        const { data: existingRecs, error: existingError } = await (supabaseAdmin as any)
             .from('income_transactions')
-            .insert(rows)
-            .select('id')
+            .select('id, income_name, received_at, amount')
+            .eq('rt_id', context.rtId)
+            .is('deleted_at', null)
+        if (existingError) throw new Error(existingError.message ?? JSON.stringify(existingError))
 
-        if (error) throw error
+        const existingMap = new Map<string, string>()
+        for (const e of (existingRecs ?? []) as Array<{ id: string; income_name: string; received_at: string; amount: number }>) {
+            existingMap.set(`${String(e.income_name).toLowerCase().trim()}:${e.received_at}:${e.amount}`, e.id)
+        }
 
+        const dedupKey  = (r: IncomePayload) => `${r.income_name.toLowerCase().trim()}:${r.received_at}:${r.amount}`
+        const newRows   = rows.filter(r => !existingMap.has(dedupKey(r)))
+        const partialIds = rows
+            .filter(r => existingMap.has(dedupKey(r)))
+            .map(r => existingMap.get(dedupKey(r))!)
+
+        // ── Step 1: Insert new income_transactions as approved ────────────────
+        let freshIds: string[] = []
+
+        if (newRows.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: inserted, error: insertError } = await (supabaseAdmin as any)
+                .from('income_transactions')
+                .insert(newRows.map(r => ({
+                    ...r,
+                    status:      'approved',
+                    approved_by: context.userId,
+                    approved_at: now,
+                })))
+                .select('id')
+            if (insertError) throw new Error(insertError.message ?? JSON.stringify(insertError))
+            freshIds = ((inserted ?? []) as Array<{ id: string }>).map(i => i.id)
+        }
+
+        // ── Step 2: Ledger entries ─────────────────────────────────────────────
+        // Create for newly inserted + any orphaned rows from a previous partial run.
+        const allIds = [...freshIds, ...partialIds]
+
+        if (allIds.length > 0) {
+            // Skip IDs already ledgered (orphan recovery for previous partial run)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: existingLedger } = await (supabaseAdmin as any)
+                .from('ledger')
+                .select('reference_id')
+                .eq('rt_id', context.rtId)
+                .eq('source', 'income')
+                .in('reference_id', allIds)
+
+            const ledgeredIds = new Set(
+                ((existingLedger ?? []) as Array<{ reference_id: string }>).map(l => l.reference_id)
+            )
+            const needLedger = allIds.filter(id => !ledgeredIds.has(id))
+
+            if (needLedger.length > 0) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const { data: toledger } = await (supabaseAdmin as any)
+                    .from('income_transactions')
+                    .select('id, amount')
+                    .in('id', needLedger)
+
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const { data: lastLedger } = await (supabaseAdmin as any)
+                    .from('ledger')
+                    .select('balance_after')
+                    .eq('rt_id', context.rtId)
+                    .order('date', { ascending: false })
+                    .limit(1)
+                    .maybeSingle()
+
+                let runningBalance = (lastLedger as { balance_after: number } | null)?.balance_after ?? 0
+                const ledgerRows = ((toledger ?? []) as Array<{ id: string; amount: number }>).map(inc => {
+                    runningBalance += inc.amount
+                    return {
+                        rt_id:         context.rtId,
+                        type:          'pemasukan',
+                        source:        'income',
+                        reference_id:  inc.id,
+                        date:          now,
+                        description:   'Pemasukan warga',
+                        amount:        inc.amount,
+                        balance_after: runningBalance,
+                        created_by:    context.userId,
+                    }
+                })
+
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const { error: ledgerError } = await (supabaseAdmin as any).from('ledger').insert(ledgerRows)
+                if (ledgerError) throw new Error(ledgerError.message ?? JSON.stringify(ledgerError))
+            }
+        }
+
+        // ── Step 3: Activity log ──────────────────────────────────────────────
         const { data: actor } = await supabaseAdmin
             .from('users').select('name').eq('id', context.userId).single()
 
@@ -202,37 +291,10 @@ export const incomeImportDefinition: ImportDefinition<IncomePayload> = {
                 action:      'IMPORT_INCOME',
                 entity_type: 'income_transactions',
                 entity_id:   context.rtId,
-                description: `Import ${(data as unknown[]).length} data pemasukan (import job ${context.jobId})`,
-                metadata:    { inserted: (data as unknown[]).length, jobId: context.jobId },
+                description: `Import ${newRows.length} pemasukan dari file (job ${context.jobId})`,
+                metadata:    { inserted: newRows.length, skipped: partialIds.length, jobId: context.jobId },
             })
 
-        // Notify CHAIR for approval
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: chairs } = await (supabaseAdmin as any)
-            .from('memberships')
-            .select('user_id')
-            .eq('rt_id', context.rtId)
-            .eq('role', 'CHAIR')
-            .eq('status', 'active')
-
-        if (chairs?.length) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await (supabaseAdmin as any)
-                .from('notifications')
-                .insert(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (chairs as any[]).map(m => ({
-                        rt_id:          context.rtId,
-                        type:           'income_pending',
-                        title:          'Pemasukan Baru Menunggu Persetujuan',
-                        message:        `${(data as unknown[]).length} data pemasukan diimpor dan menunggu persetujuan Anda.`,
-                        entity_type:    'import_jobs',
-                        entity_id:      context.jobId,
-                        target_user_id: m.user_id,
-                    }))
-                )
-        }
-
-        return { inserted: (data as unknown[]).length, skipped: 0 }
+        return { inserted: newRows.length, skipped: partialIds.length }
     },
 }

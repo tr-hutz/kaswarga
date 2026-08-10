@@ -27,6 +27,7 @@ import {
     type RawRow,
     type ImportContext,
     type ImportJob,
+    type ImportJobRow,
 } from './types'
 import type { ImportDefinition } from './contract'
 import { ImportNotFoundError, ImportStatusError } from './errors'
