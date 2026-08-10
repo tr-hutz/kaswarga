@@ -103,9 +103,10 @@ export async function POST(
         return NextResponse.json({ ok: true })
 
     } catch (err) {
-        if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-        if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },    { status: 403 })
-        console.error('[import/approve]', err)
-        return NextResponse.json({ error: (err as Error).message || 'Approval failed' }, { status: 500 })
+        if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' },  { status: 401 })
+        if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },      { status: 403 })
+        const message = err instanceof Error ? err.message : String(err)
+        console.error('[import/approve]', message, err)
+        return NextResponse.json({ error: message || 'Approval failed' }, { status: 500 })
     }
 }

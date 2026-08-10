@@ -57,8 +57,11 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
         setActing('approve')
         try {
             const res = await fetch(`/api/import/${jobId}/approve`, { method: 'POST' })
-            const body = await res.json()
-            if (!res.ok) throw new Error(body.error || 'Gagal menyetujui import')
+            if (!res.ok) {
+                let msg = `Gagal menyetujui import (${res.status})`
+                try { const b = await res.json(); msg = b.error || msg } catch { /* non-JSON body */ }
+                throw new Error(msg)
+            }
             toast({ type: 'success', message: 'Import disetujui' })
             onDone()
         } catch (err) {
@@ -76,8 +79,11 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
                 headers: { 'Content-Type': 'application/json' },
                 body:    JSON.stringify({ reason: reason.trim() || undefined }),
             })
-            const body = await res.json()
-            if (!res.ok) throw new Error(body.error || 'Gagal menolak import')
+            if (!res.ok) {
+                let msg = `Gagal menolak import (${res.status})`
+                try { const b = await res.json(); msg = b.error || msg } catch { /* non-JSON body */ }
+                throw new Error(msg)
+            }
             toast({ type: 'success', message: 'Import ditolak' })
             onDone()
         } catch (err) {
@@ -356,7 +362,7 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
                                         {acting === 'approve' && (
                                             <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
                                         )}
-                                        Setujui {validRows.length} Baris
+                                        Setujui Semua ({validRows.length} baris)
                                     </button>
                                 </>
                             )}

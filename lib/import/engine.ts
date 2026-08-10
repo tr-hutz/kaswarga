@@ -459,7 +459,7 @@ async function notifyJobComplete(
                 .from('memberships')
                 .select('user_id')
                 .eq('rt_id', rtId)
-                .eq('role', 'RT_CHAIR')
+                .eq('role', 'CHAIR')
                 .eq('status', 'active')
 
             if (chairs?.length) {
