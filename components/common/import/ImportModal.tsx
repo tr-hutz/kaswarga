@@ -245,7 +245,7 @@ export default function ImportModal({
                                     disabled
                                     className="bg-primary text-white rounded-lg px-4 py-2 text-sm opacity-75 flex items-center gap-2"
                                 >
-                                    <Icon name="loader" size={14} className="animate-spin" />
+                                    <Icon name="loader2" size={14} className="animate-spin" />
                                     {tCommon('states.importing')}
                                 </button>
                             )
