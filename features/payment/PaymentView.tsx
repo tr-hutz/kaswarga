@@ -141,8 +141,8 @@ export default function PaymentView({
                 </div>
             </div>
 
-            <Can permission={PERMISSION.PAYMENT_APPROVE}>
-                <ImportApprovalBanner importType={IMPORT_TYPE.PAYMENT} />
+            <Can permission={PERMISSION.PAYMENT_IMPORT_APPROVE}>
+                <ImportApprovalBanner importType={IMPORT_TYPE.PAYMENT} onApproved={reload} />
             </Can>
 
             <DataTable

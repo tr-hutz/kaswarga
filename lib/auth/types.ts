@@ -38,7 +38,8 @@ export const PERMISSION = {
   PAYMENT_DELETE:  'payment.delete',
   PAYMENT_APPROVE: 'payment.approve',
   PAYMENT_REJECT:  'payment.reject',
-  PAYMENT_IMPORT:  'payment.import',
+  PAYMENT_IMPORT:         'payment.import',
+  PAYMENT_IMPORT_APPROVE: 'payment.import_approve',
   DASHBOARD_PAYMENT_EXPORT: 'dashboard.payment.export',
   DASHBOARD_PAYMENT_ARREARS: 'dashboard.payment.arrears',
 

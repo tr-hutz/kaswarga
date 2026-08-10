@@ -99,7 +99,7 @@ const TEMPLATE: ImportTemplate = {
 export const paymentImportDefinition: ImportDefinition<PaymentRowPayload> = {
     type:              IMPORT_TYPE.PAYMENT,
     importPermission:  PERMISSION.PAYMENT_IMPORT,
-    approvePermission: PERMISSION.PAYMENT_APPROVE,
+    approvePermission: PERMISSION.PAYMENT_IMPORT_APPROVE,
     approvalPolicy:    APPROVAL_POLICY.BATCH,
     columns:           COLUMNS,
     template:          TEMPLATE,

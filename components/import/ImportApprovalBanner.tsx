@@ -8,10 +8,11 @@ import ImportApprovalModal                   from './ImportApprovalModal'
 import { IMPORT_STATUS, type ImportJob, type ImportType } from '@/lib/import/types'
 
 interface Props {
-    importType: ImportType
+    importType:  ImportType
+    onApproved?: () => void
 }
 
-export default function ImportApprovalBanner({ importType }: Props) {
+export default function ImportApprovalBanner({ importType, onApproved }: Props) {
     const { rtId }                           = useAuth()
     const [jobs, setJobs]                    = useState<ImportJob[]>([])
     const [selectedJobId, setSelectedJobId]  = useState<string | null>(null)
@@ -81,7 +82,7 @@ export default function ImportApprovalBanner({ importType }: Props) {
                 <ImportApprovalModal
                     jobId={selectedJobId}
                     onClose={() => setSelectedJobId(null)}
-                    onDone={() => { setSelectedJobId(null); loadPendingJobs() }}
+                    onDone={() => { setSelectedJobId(null); loadPendingJobs(); onApproved?.() }}
                 />
             )}
         </>
