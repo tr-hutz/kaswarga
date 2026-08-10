@@ -63,9 +63,6 @@ interface Props {
     handleImport:    () => void
     downloadTemplate: () => void
     resetImport:     () => void
-    progress?:       number
-    processedRows?:  number
-    totalRows?:      number
 }
 
 export default function IncomeView({
@@ -81,7 +78,6 @@ export default function IncomeView({
     importOpen, openImport, closeImport,
     importRows, fileName: importFileName, fileRef: importFileRef,
     importing, handleFile, handleImport, downloadTemplate, resetImport,
-    progress, processedRows, totalRows,
 }: Props) {
     const t  = useTranslations('income')
     const tc = useTranslations('common')
@@ -191,9 +187,6 @@ export default function IncomeView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
-                progress={progress}
-                processedRows={processedRows}
-                totalRows={totalRows}
             />
 
             {/* Delete confirm */}

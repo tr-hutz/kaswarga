@@ -49,9 +49,6 @@ interface Props {
     importFileRef:   React.RefObject<HTMLInputElement | null>
     importing:       boolean
     importError:     string
-    progress?:       number
-    processedRows?:  number
-    totalRows?:      number
     handleFile:      (file: File | undefined) => void
     handleImport:    () => void
     downloadTemplate: () => void
@@ -91,7 +88,6 @@ export default function PaymentView({
     importOpen, openImport, closeImport,
     importRows, importFileName, importFileRef,
     importing, importError, handleFile, handleImport, downloadTemplate, resetImport,
-    progress, processedRows, totalRows,
     createFormOpen, openCreateForm, closeCreateForm, onCreatePayment,
     importedPendingCount, approveAllImported, approveAllLoading,
     rejectAllImported, deleteAllImported,
@@ -212,9 +208,6 @@ export default function PaymentView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
-                progress={progress}
-                processedRows={processedRows}
-                totalRows={totalRows}
             />
 
             <ConfirmDialog

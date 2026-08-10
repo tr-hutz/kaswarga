@@ -28,15 +28,11 @@ interface IncomeImportModalProps {
     onImport:           () => void
     onDownloadTemplate: () => void
     onReset:            () => void
-    progress?:          number
-    processedRows?:     number
-    totalRows?:         number
 }
 
 export default function IncomeImportModal({
     open, onClose, rows, fileName, fileRef, importing, error,
     onFile, onImport, onDownloadTemplate, onReset,
-    progress, processedRows, totalRows,
 }: IncomeImportModalProps) {
     const t = useTranslations('income')
 
@@ -74,9 +70,6 @@ export default function IncomeImportModal({
             onDownloadTemplate={onDownloadTemplate}
             onReset={onReset}
             importButtonLabel={t('import.buttonLabel')}
-            progress={progress}
-            processedRows={processedRows}
-            totalRows={totalRows}
         />
     )
 }

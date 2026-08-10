@@ -198,10 +198,6 @@ export function useJobImport({
         fileRef,
         importing,
         error,
-        // No progress/totalRows — progress tracked globally
-        progress:      0,
-        processedRows: 0,
-        totalRows:     0,
         handleFile,
         handleImport,
         downloadTemplate,

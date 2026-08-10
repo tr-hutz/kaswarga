@@ -39,7 +39,6 @@ export default function PaymentContainer() {
         importOpen, openImport, closeImport,
         rows: importRows, fileName: importFileName, fileRef: importFileRef,
         importing, error: importError,
-        progress, processedRows, totalRows,
         handleFile, handleImport, downloadTemplate, resetImport,
     } = usePaymentImport(() => {
         toast({ message: t('import.jobCreated'), type: 'info', duration: 4000 })
@@ -202,9 +201,6 @@ export default function PaymentContainer() {
             importFileRef={importFileRef}
             importing={importing}
             importError={importError}
-            progress={progress}
-            processedRows={processedRows}
-            totalRows={totalRows}
             handleFile={handleFile}
             handleImport={handleImport}
             downloadTemplate={downloadTemplate}
