@@ -422,14 +422,18 @@ type RowResultInsert = {
     error_message: string | null
 }
 
+const ROW_INSERT_BATCH = 500
+
 async function recordRowResults(rows: RowResultInsert[]): Promise<void> {
     if (rows.length === 0) return
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabaseAdmin as any)
-        .from('import_job_rows')
-        .insert(rows)
-
-    if (error) throw error
+    for (let i = 0; i < rows.length; i += ROW_INSERT_BATCH) {
+        const batch = rows.slice(i, i + ROW_INSERT_BATCH)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error } = await (supabaseAdmin as any)
+            .from('import_job_rows')
+            .insert(batch)
+        if (error) throw error
+    }
 }
 
 async function notifyJobComplete(

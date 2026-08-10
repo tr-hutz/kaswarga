@@ -40,6 +40,7 @@ export async function GET(
             .select('*')
             .eq('import_job_id', id)
             .order('row_number', { ascending: true })
+            .limit(10000)
 
         return NextResponse.json({
             job:       job as ImportJob,

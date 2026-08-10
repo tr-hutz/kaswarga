@@ -3,6 +3,7 @@
 import { useState, useEffect }    from 'react'
 import Icon                        from '@/components/ui/Icon'
 import { useToast }                from '@/components/ui/ToastProvider'
+import { useAuth }                 from '@/lib/auth/useAuth'
 import type { ImportJob, ImportJobRow } from '@/lib/import/types'
 
 interface Props {
@@ -35,11 +36,13 @@ const TYPE_LABEL: Record<string, string> = {
 }
 
 export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
-    const { toast }            = useToast()
-    const [detail, setDetail]  = useState<JobDetail | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [acting,  setActing]  = useState<'approve' | 'reject' | null>(null)
-    const [reason,  setReason]  = useState('')
+    const { toast }              = useToast()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { userId }             = (useAuth() as any) ?? {}
+    const [detail, setDetail]    = useState<JobDetail | null>(null)
+    const [loading, setLoading]  = useState(true)
+    const [acting,  setActing]   = useState<'approve' | 'reject' | null>(null)
+    const [reason,  setReason]   = useState('')
     const [showRejectForm, setShowRejectForm] = useState(false)
 
     useEffect(() => {
@@ -96,6 +99,8 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
             return sum + (parseInt((raw?.amount ?? '').replace(/[^0-9]/g, ''), 10) || 0)
         }, 0)
         : null
+
+    const isSelfApproval = !!userId && !!job?.created_by && userId === job.created_by
 
     function downloadErrors() {
         const rows = [...invalidRows, ...skippedRows]
@@ -295,7 +300,17 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
 
                 {/* Footer */}
                 {!loading && job && (
-                    <div className="flex items-center justify-between gap-3 px-6 py-4 border-t border-divider">
+                    <div className="flex flex-col gap-3 px-6 py-4 border-t border-divider">
+                        {isSelfApproval && (
+                            <div className="flex items-start gap-2 rounded-lg border border-warning/40 bg-warning/5 px-3 py-2 text-xs text-warning">
+                                <Icon name="alert-triangle" size={14} className="mt-0.5 shrink-0" />
+                                <span>
+                                    Anda tidak dapat menyetujui import milik sendiri.
+                                    Minta pengguna lain dengan akses persetujuan untuk meninjau batch ini.
+                                </span>
+                            </div>
+                        )}
+                        <div className="flex items-center justify-between gap-3">
                         <div className="text-xs text-muted">
                             {validRows.length} dari {job.total_rows} baris akan diimpor
                         </div>
@@ -335,7 +350,7 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
                                     <button
                                         type="button"
                                         onClick={handleApprove}
-                                        disabled={acting === 'approve' || validRows.length === 0}
+                                        disabled={acting === 'approve' || validRows.length === 0 || isSelfApproval}
                                         className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 flex items-center gap-2"
                                     >
                                         {acting === 'approve' && (
@@ -345,6 +360,7 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
                                     </button>
                                 </>
                             )}
+                        </div>
                         </div>
                     </div>
                 )}

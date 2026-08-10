@@ -67,7 +67,7 @@ export async function POST(
             )
         }
 
-        // Fetch valid rows from import_job_rows (stored during processImportJob)
+        // Fetch valid rows — explicit limit bypasses Supabase's default 1000-row cap
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: validRowRecords, error: rowsError } = await (supabaseAdmin as any)
             .from('import_job_rows')
@@ -75,6 +75,7 @@ export async function POST(
             .eq('import_job_id', id)
             .eq('status', IMPORT_ROW_STATUS.VALID)
             .order('row_number', { ascending: true })
+            .limit(10000)
 
         if (rowsError) {
             return NextResponse.json({ error: 'Failed to fetch import rows' }, { status: 500 })
