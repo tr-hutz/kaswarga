@@ -62,7 +62,12 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
                 try { const b = await res.json(); msg = b.error || msg } catch { /* non-JSON body */ }
                 throw new Error(msg)
             }
-            toast({ type: 'success', message: 'Import disetujui' })
+            const body = await res.json().catch(() => ({ persisted: validRows.length }))
+            if (body.persisted === 0) {
+                toast({ type: 'error', message: 'Tidak ada baris yang diimpor — semua data sudah ada di database.' })
+            } else {
+                toast({ type: 'success', message: `Import disetujui — ${body.persisted} baris diimpor` })
+            }
             onDone()
         } catch (err) {
             toast({ type: 'error', message: (err as Error).message })

@@ -124,12 +124,25 @@ export const paymentImportDefinition: ImportDefinition<PaymentRowPayload> = {
         const residentIds = Array.from(residentMap.values())
         let existingRows: Array<{ resident_id: string; year: number; month: number }> = []
         if (residentIds.length > 0) {
+            // Only block rows whose confirmation is NOT rejected (pending/processing/approved).
+            // Rejected confirmations allow re-import so users can fix and resubmit.
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data } = await (supabaseAdmin as any)
-                .from('confirmation_details')
-                .select('resident_id, year, month')
+            const { data: activeConfirms } = await (supabaseAdmin as any)
+                .from('payment_confirmations')
+                .select('id')
                 .in('resident_id', residentIds)
-            existingRows = data ?? []
+                .eq('rt_id', context.rtId)
+                .neq('status', 'rejected')
+
+            const activeIds = ((activeConfirms ?? []) as Array<{ id: string }>).map(c => c.id)
+            if (activeIds.length > 0) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const { data } = await (supabaseAdmin as any)
+                    .from('confirmation_details')
+                    .select('resident_id, year, month')
+                    .in('confirmation_id', activeIds)
+                existingRows = data ?? []
+            }
         }
 
         const dbSet = new Set<string>(

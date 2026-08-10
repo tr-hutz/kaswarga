@@ -100,7 +100,7 @@ export async function POST(
 
         await approveImportJobWithRows(id, approverId, validTyped, definition, rtId)
 
-        return NextResponse.json({ ok: true })
+        return NextResponse.json({ ok: true, persisted: validTyped.length })
 
     } catch (err) {
         if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' },  { status: 401 })
