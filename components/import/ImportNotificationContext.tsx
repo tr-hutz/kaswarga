@@ -11,29 +11,33 @@ import {
 import { supabase }                   from '@/lib/supabase'
 import { IMPORT_STATUS, type ImportJob, type ImportStatus } from '@/lib/import/types'
 
-// Statuses that are shown live via Realtime during the current session.
+// Statuses that keep a job card alive in the floating panel.
+// PENDING_APPROVAL is excluded: ImportApprovalBanner on each module page is
+// the canonical surface for approvers. The importer's card auto-dismisses
+// once the job reaches that state (see AUTO_DISMISS_STATUSES below).
 const ACTIVE_STATUSES: ImportStatus[] = [
     IMPORT_STATUS.QUEUED,
     IMPORT_STATUS.PROCESSING,
     IMPORT_STATUS.VALIDATING,
-    IMPORT_STATUS.PENDING_APPROVAL,
 ]
 
 // Only truly in-flight jobs are restored on mount.
-// PENDING_APPROVAL is intentionally excluded: those jobs persist in the DB
-// indefinitely and would re-appear on every page load, which is annoying.
-// The ImportApprovalBanner on each module page provides the canonical
-// visibility for pending approval batches.
+// PENDING_APPROVAL is excluded because those jobs persist in the DB
+// indefinitely and would re-appear on every page load / server restart.
 const MOUNT_STATUSES: ImportStatus[] = [
     IMPORT_STATUS.QUEUED,
     IMPORT_STATUS.PROCESSING,
     IMPORT_STATUS.VALIDATING,
 ]
 
-const TERMINAL_STATUSES: ImportStatus[] = [
+// Statuses that trigger auto-dismiss of the floating card after AUTO_DISMISS_MS.
+// PENDING_APPROVAL is included so the importer sees brief "awaiting approval"
+// feedback before the card disappears — the importer cannot action this state.
+const AUTO_DISMISS_STATUSES: ImportStatus[] = [
     IMPORT_STATUS.COMPLETED,
     IMPORT_STATUS.FAILED,
     IMPORT_STATUS.REJECTED,
+    IMPORT_STATUS.PENDING_APPROVAL,
 ]
 
 const AUTO_DISMISS_MS = 6000
@@ -120,12 +124,12 @@ export function ImportNotificationProvider({
         return () => { supabase.removeChannel(channel) }
     }, [rtId, userId])
 
-    // Auto-dismiss terminal jobs after AUTO_DISMISS_MS
+    // Auto-dismiss completed / failed / pending-approval cards after AUTO_DISMISS_MS
     useEffect(() => {
-        const hasTerminal = jobs.some(j => (TERMINAL_STATUSES as ImportStatus[]).includes(j.status))
-        if (!hasTerminal) return
+        const hasDismissible = jobs.some(j => (AUTO_DISMISS_STATUSES as ImportStatus[]).includes(j.status))
+        if (!hasDismissible) return
         const timer = setTimeout(() => {
-            setJobs(prev => prev.filter(j => !(TERMINAL_STATUSES as ImportStatus[]).includes(j.status)))
+            setJobs(prev => prev.filter(j => !(AUTO_DISMISS_STATUSES as ImportStatus[]).includes(j.status)))
         }, AUTO_DISMISS_MS)
         return () => clearTimeout(timer)
     }, [jobs])
