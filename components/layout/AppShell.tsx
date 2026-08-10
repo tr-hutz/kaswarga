@@ -46,7 +46,7 @@ export default function AppShell({
 
                                  }: { children: ReactNode }) {
 
-  const { membership, loading, rtId } = useAuth()
+  const { membership, loading, rtId, user } = useAuth()
   const pathname                = usePathname()
   const router                  = useRouter()
   const t                       = useTranslations('appShell')
@@ -156,7 +156,7 @@ export default function AppShell({
 
   return (
 
-      <ImportNotificationProvider rtId={rtId}>
+      <ImportNotificationProvider rtId={rtId} userId={user?.id}>
 
         <UserThemeSync />
 

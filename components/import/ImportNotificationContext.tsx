@@ -56,22 +56,25 @@ export function useImportNotifications() {
 
 export function ImportNotificationProvider({
     rtId,
+    userId,
     children,
 }: {
-    rtId: string | null | undefined
+    rtId:    string | null | undefined
+    userId?: string | null
     children: ReactNode
 }) {
     const [jobs, setJobs] = useState<ImportJob[]>([])
     const dismissedRef    = useRef(new Set<string>())
 
-    // Load in-progress / pending jobs on mount
+    // Load in-progress jobs on mount — only jobs the current user created
     useEffect(() => {
-        if (!rtId) return
+        if (!rtId || !userId) return
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ;(supabase as any)
             .from('import_jobs')
             .select('*')
             .in('status', MOUNT_STATUSES)
+            .eq('created_by', userId)
             .order('created_at', { ascending: false })
             .limit(20)
             .then(({ data }: { data: ImportJob[] | null }) => {
@@ -79,15 +82,15 @@ export function ImportNotificationProvider({
                     setJobs(data.filter(j => !dismissedRef.current.has(j.id)))
                 }
             })
-    }, [rtId])
+    }, [rtId, userId])
 
-    // Realtime subscription for live updates
+    // Realtime subscription for live updates — only own jobs
     useEffect(() => {
-        if (!rtId) return
+        if (!rtId || !userId) return
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const channel = (supabase as any)
-            .channel(`import-jobs:${rtId}`)
+            .channel(`import-jobs:${rtId}:${userId}`)
             .on('postgres_changes', {
                 event:  '*',
                 schema: 'public',
@@ -96,6 +99,7 @@ export function ImportNotificationProvider({
             }, (payload: { new: ImportJob }) => {
                 const updated = payload.new
                 if (!updated?.id) return
+                if (updated.created_by !== userId) return
                 if (dismissedRef.current.has(updated.id)) return
 
                 setJobs(prev => {
@@ -114,7 +118,7 @@ export function ImportNotificationProvider({
             .subscribe()
 
         return () => { supabase.removeChannel(channel) }
-    }, [rtId])
+    }, [rtId, userId])
 
     // Auto-dismiss terminal jobs after AUTO_DISMISS_MS
     useEffect(() => {
