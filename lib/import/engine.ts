@@ -344,7 +344,7 @@ export async function approveImportJobWithRows<T>(
                 .from('notifications')
                 .insert({
                     rt_id:          job.rt_id,
-                    type:           'import_approved',
+                    type:           importNotifType(job.import_type as ImportType, 'approved'),
                     title:          `Import ${typeName} disetujui`,
                     message:        `${persistResult.inserted} data berhasil diimpor dari import batch ${typeName} Anda.`,
                     entity_type:    'import_jobs',
@@ -401,7 +401,7 @@ export async function rejectImportJob(
                 .from('notifications')
                 .insert({
                     rt_id:          job.rt_id,
-                    type:           'import_rejected',
+                    type:           importNotifType(job.import_type as ImportType, 'rejected'),
                     title:          `Import ${typeName} ditolak`,
                     message:        reason
                         ? `Import ditolak: ${reason}`
@@ -552,17 +552,23 @@ async function recordRowResults(rows: RowResultInsert[]): Promise<void> {
 
 async function dismissImportPendingNotifications(jobId: string): Promise<void> {
     try {
+        // Filter by entity_id (jobId) only — the notification type is now module-specific
+        // (e.g. expense_import_pending_approval) so we cannot filter by a single literal type.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabaseAdmin as any)
             .from('notifications')
             .update({ is_read: true })
             .eq('entity_type', 'import_jobs')
             .eq('entity_id', jobId)
-            .eq('type', 'import_pending_approval')
             .eq('is_read', false)
     } catch {
         // Non-critical
     }
+}
+
+/** Builds a module-specific notification type string, e.g. "expense_import_pending_approval". */
+function importNotifType(importType: ImportType, event: 'pending_approval' | 'complete' | 'approved' | 'rejected'): string {
+    return `${importType.toLowerCase()}_import_${event}`
 }
 
 async function notifyJobComplete(
@@ -587,13 +593,14 @@ async function notifyJobComplete(
         if (summary.status === IMPORT_STATUS.PENDING_APPROVAL) {
             // Idempotency guard: skip if approval notification already exists for this job.
             // Protects against duplicate notifications when the background worker retries.
+            const notifType = importNotifType(type, 'pending_approval')
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { data: existing } = await (supabaseAdmin as any)
                 .from('notifications')
                 .select('id')
                 .eq('entity_type', 'import_jobs')
                 .eq('entity_id', jobId)
-                .eq('type', 'import_pending_approval')
+                .eq('type', notifType)
                 .limit(1)
                 .maybeSingle()
 
@@ -616,7 +623,7 @@ async function notifyJobComplete(
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (chairs as any[]).map((m: { user_id: string }) => ({
                             rt_id:          rtId,
-                            type:           'import_pending_approval',
+                            type:           notifType,
                             title:          `Import ${typeName} menunggu persetujuan`,
                             message:        `${summary.success} baris valid siap disetujui. Tinjau dan setujui import batch ini.`,
                             entity_type:    'import_jobs',
@@ -626,6 +633,7 @@ async function notifyJobComplete(
                     )
             }
         } else {
+            const notifType = importNotifType(type, 'complete')
             // Idempotency guard: skip if completion notification already exists for this job.
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { data: existing } = await (supabaseAdmin as any)
@@ -633,7 +641,7 @@ async function notifyJobComplete(
                 .select('id')
                 .eq('entity_type', 'import_jobs')
                 .eq('entity_id', jobId)
-                .eq('type', 'import_complete')
+                .eq('type', notifType)
                 .eq('target_user_id', userId)
                 .limit(1)
                 .maybeSingle()
@@ -645,7 +653,7 @@ async function notifyJobComplete(
                     .from('notifications')
                     .insert({
                         rt_id:          rtId,
-                        type:           'import_complete',
+                        type:           notifType,
                         title:          `Import ${typeName} selesai`,
                         message:        `${summary.total} baris diproses: ${summary.success} berhasil, ${summary.failed} gagal${summary.skipped > 0 ? `, ${summary.skipped} dilewati` : ''}.`,
                         entity_type:    'import_jobs',

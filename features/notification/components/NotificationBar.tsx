@@ -56,7 +56,7 @@ export default function NotificationBar() {
         onReload: reload,
         onNew: (notification) => {
             const isRejected = notification?.type === 'payment_rejected'
-                || notification?.type === 'import_rejected'
+                || (notification?.type as string)?.endsWith('_import_rejected')
             toast({
                 title:    notification?.title,
                 message:  notification?.message,
