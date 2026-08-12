@@ -10,12 +10,14 @@ import type { ImportType }       from './types'
 import { residentImportDefinition } from './definitions/resident.definition'
 import { paymentImportDefinition }  from './definitions/payment.definition'
 import { incomeImportDefinition }   from './definitions/income.definition'
+import { expenseImportDefinition }  from './definitions/expense.definition'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const registry: Record<ImportType, ImportDefinition<any>> = {
     RESIDENT: residentImportDefinition,
     PAYMENT:  paymentImportDefinition,
     INCOME:   incomeImportDefinition,
+    EXPENSE:  expenseImportDefinition,
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

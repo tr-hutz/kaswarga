@@ -28,7 +28,8 @@
 CREATE TYPE import_type AS ENUM (
     'RESIDENT',
     'PAYMENT',
-    'INCOME'
+    'INCOME',
+    'EXPENSE'
 );
 
 CREATE TYPE import_status AS ENUM (

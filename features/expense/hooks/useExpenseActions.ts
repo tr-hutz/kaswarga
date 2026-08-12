@@ -26,12 +26,10 @@ import { useExpenseApproval } from './useExpenseApproval'
 export function useExpenseActions({
 
                                           onReload,
-                                          onImportSuccess,
                                           onApprovalSuccess
 
                                       }: {
     onReload?:          () => void
-    onImportSuccess?:   (inserted: number) => void
     onApprovalSuccess?: () => void
 } = {}) {
 
@@ -237,7 +235,7 @@ export function useExpenseActions({
     const {
         rows:      importRows,
         ...restImport
-    } = useExpenseImport(onImportSuccess)
+    } = useExpenseImport()
 
     /*
      |-------------------------------------------------------------

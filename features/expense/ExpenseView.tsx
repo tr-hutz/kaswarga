@@ -29,9 +29,6 @@ interface Props {
     setSort:         (by: string, dir: 'asc' | 'desc') => void
     setFilter:       (key: string, value: unknown) => void
     importError:     string
-    progress?:       number
-    processedRows?:  number
-    totalRows?:      number
     // from useExpenseActions
     selectedRow:     MappedExpense | null
     drawerOpen:      boolean
@@ -79,7 +76,6 @@ export default function ExpenseView({
     importOpen, openImport, closeImport,
     importRows, fileName: importFileName, fileRef: importFileRef,
     importing, handleFile, handleImport, downloadTemplate, resetImport,
-    progress, processedRows, totalRows,
     approvalLoading, approveExpense, rejectExpense, approveAllExpenses,
     deleteTarget, confirmDelete, cancelDelete,
 }: Props) {
@@ -221,9 +217,6 @@ export default function ExpenseView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
-                progress={progress}
-                processedRows={processedRows}
-                totalRows={totalRows}
             />
 
             <ConfirmDialog

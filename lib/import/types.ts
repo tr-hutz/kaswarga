@@ -14,6 +14,7 @@ export const IMPORT_TYPE = {
     RESIDENT: 'RESIDENT',
     PAYMENT:  'PAYMENT',
     INCOME:   'INCOME',
+    EXPENSE:  'EXPENSE',
 } as const
 
 export type ImportType = typeof IMPORT_TYPE[keyof typeof IMPORT_TYPE]
