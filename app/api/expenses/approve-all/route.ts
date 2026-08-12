@@ -14,6 +14,19 @@ export async function POST() {
         const rtId  = ctx.authorization.neighborhoodId
         const userId = ctx.authorization.userId
 
+        // Snapshot pending expenses before approval so we can send per-creator summary notifications
+        const { data: pendingExpenses } = await (supabaseAdmin as any)
+            .from('expenses')
+            .select('created_by')
+            .eq('rt_id', rtId)
+            .eq('status', 'pending')
+            .eq('active', true)
+
+        const byCreator = new Map<string, number>()
+        for (const e of (pendingExpenses ?? []) as Array<{ created_by: string | null }>) {
+            if (e.created_by) byCreator.set(e.created_by, (byCreator.get(e.created_by) ?? 0) + 1)
+        }
+
         const { data, error } = await (supabaseAdmin as any).rpc('approve_all_pending_expenses', {
             p_rt_id:   rtId,
             p_user_id: userId,
@@ -34,8 +47,23 @@ export async function POST() {
                 description: `Approve all pending expenses (${data ?? 0} approved)`,
                 metadata:    { approvedCount: data ?? 0 }
             })
+
+            // One summary notification per creator instead of N individual ones
+            if (byCreator.size > 0 && (data ?? 0) > 0) {
+                await (supabaseAdmin as any).from('notifications').insert(
+                    [...byCreator.entries()].map(([creatorId, count]) => ({
+                        rt_id:          rtId,
+                        type:           'expense_approved',
+                        title:          'Pengeluaran Disetujui',
+                        message:        `${count} pengeluaran Anda telah disetujui`,
+                        entity_type:    'expenses',
+                        entity_id:      rtId,
+                        target_user_id: creatorId,
+                    }))
+                )
+            }
         } catch {
-            // Activity log errors must not block the main flow
+            // Activity log / notification errors must not block the main flow
         }
 
         return NextResponse.json({ approved: data })
