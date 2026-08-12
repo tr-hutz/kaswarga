@@ -44,7 +44,14 @@ export async function POST(
         }
         const { data: job, error: jobError } = await jobQuery.single()
 
-        if (jobError || !job) {
+        if (jobError) {
+            if (jobError.code === 'PGRST116') {
+                return NextResponse.json({ error: 'Import job not found' }, { status: 404 })
+            }
+            console.error('[import/approve] DB error — id=%s code=%s msg=%s', id, jobError.code, jobError.message)
+            return NextResponse.json({ error: 'Failed to fetch import job' }, { status: 500 })
+        }
+        if (!job) {
             return NextResponse.json({ error: 'Import job not found' }, { status: 404 })
         }
 
@@ -93,8 +100,11 @@ export async function POST(
         // whenever a previous import for the same data exists in the DB.
         const context     = { jobId: id, rtId, userId: approverId }
         const preloaded   = definition.preload ? await definition.preload(context) : {}
+        // Override dedup sets so re-validation trusts the stored VALID status from
+        // initial import and does not reject rows that are already in the DB.
+        // dbSet/fileSet cover payment; existingSet covers income.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const enrichedCtx = { ...context, ...preloaded, dbSet: new Set<string>(), fileSet: new Set<string>() }
+        const enrichedCtx = { ...context, ...preloaded, dbSet: new Set<string>(), fileSet: new Set<string>(), existingSet: new Set<string>() }
 
         // Log residentMap size so we can diagnose RESIDENT_NOT_FOUND failures
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

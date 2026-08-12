@@ -332,6 +332,30 @@ export async function approveImportJobWithRows<T>(
     // stale bell notification pointing at an already-resolved job.
     await dismissImportPendingNotifications(jobId)
 
+    // Notify the original importer about the approval.
+    if (job.created_by) {
+        const typeName = job.import_type === 'RESIDENT' ? 'warga'
+            : job.import_type === 'PAYMENT'  ? 'pembayaran'
+            : job.import_type === 'EXPENSE'  ? 'pengeluaran'
+            : 'pemasukan'
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (supabaseAdmin as any)
+                .from('notifications')
+                .insert({
+                    rt_id:          job.rt_id,
+                    type:           'import_approved',
+                    title:          `Import ${typeName} disetujui`,
+                    message:        `${persistResult.inserted} data berhasil diimpor dari import batch ${typeName} Anda.`,
+                    entity_type:    'import_jobs',
+                    entity_id:      jobId,
+                    target_user_id: job.created_by,
+                })
+        } catch {
+            // Non-critical
+        }
+    }
+
     return persistResult
 }
 
@@ -368,7 +392,9 @@ export async function rejectImportJob(
     // Notify the original importer about the rejection.
     if (job.created_by) {
         const typeName = job.import_type === 'RESIDENT' ? 'warga'
-            : job.import_type === 'PAYMENT' ? 'pembayaran' : 'pemasukan'
+            : job.import_type === 'PAYMENT'  ? 'pembayaran'
+            : job.import_type === 'EXPENSE'  ? 'pengeluaran'
+            : 'pemasukan'
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             await (supabaseAdmin as any)
@@ -553,7 +579,10 @@ async function notifyJobComplete(
     },
 ): Promise<void> {
     try {
-        const typeName = type === 'RESIDENT' ? 'warga' : type === 'PAYMENT' ? 'pembayaran' : 'pemasukan'
+        const typeName = type === 'RESIDENT' ? 'warga'
+            : type === 'PAYMENT'  ? 'pembayaran'
+            : type === 'EXPENSE'  ? 'pengeluaran'
+            : 'pemasukan'
 
         if (summary.status === IMPORT_STATUS.PENDING_APPROVAL) {
             // Notify RT Chair members who need to review this batch

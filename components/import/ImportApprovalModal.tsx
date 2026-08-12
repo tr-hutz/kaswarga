@@ -33,6 +33,7 @@ const TYPE_LABEL: Record<string, string> = {
     RESIDENT: 'Warga',
     PAYMENT:  'Pembayaran',
     INCOME:   'Pemasukan',
+    EXPENSE:  'Pengeluaran',
 }
 
 export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
@@ -47,7 +48,7 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
 
     useEffect(() => {
         fetch(`/api/import/${jobId}`)
-            .then(r => r.json())
+            .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
             .then((d: JobDetail) => setDetail(d))
             .catch(() => toast({ type: 'error', message: 'Gagal memuat detail import' }))
             .finally(() => setLoading(false))

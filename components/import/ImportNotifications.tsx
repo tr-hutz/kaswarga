@@ -1,6 +1,5 @@
 'use client'
 
-import Link       from 'next/link'
 import Icon       from '@/components/ui/Icon'
 import ProgressBar from '@/components/ui/ProgressBar'
 import { useImportNotifications } from './ImportNotificationContext'
@@ -10,12 +9,7 @@ const TYPE_LABEL: Record<string, string> = {
     [IMPORT_TYPE.RESIDENT]: 'Warga',
     [IMPORT_TYPE.PAYMENT]:  'Pembayaran',
     [IMPORT_TYPE.INCOME]:   'Pemasukan',
-}
-
-const APPROVAL_PATH: Record<string, string> = {
-    [IMPORT_TYPE.RESIDENT]: '/residents',
-    [IMPORT_TYPE.PAYMENT]:  '/payments',
-    [IMPORT_TYPE.INCOME]:   '/income',
+    [IMPORT_TYPE.EXPENSE]:  'Pengeluaran',
 }
 
 function statusLabel(status: string): string {
@@ -89,22 +83,14 @@ function ImportJobCard({ job, onDismiss }: { job: ImportJob; onDismiss: () => vo
             )}
 
             {isPendingApproval && (
-                <div className="flex items-center justify-between pt-0.5">
-                    <span className="text-xs text-warning font-medium">
-                        {job.success_rows} baris menunggu
-                        {(job.total_rows - job.success_rows - job.failed_rows) > 0 && (
-                            <span className="font-normal ml-1">
-                                ({job.total_rows - job.success_rows - job.failed_rows} dilewati)
-                            </span>
-                        )}
-                    </span>
-                    <Link
-                        href={APPROVAL_PATH[job.import_type] ?? '/'}
-                        className="text-xs text-primary hover:underline font-medium"
-                    >
-                        Tinjau →
-                    </Link>
-                </div>
+                <p className="text-xs text-warning font-medium pt-0.5">
+                    {job.success_rows} baris menunggu persetujuan
+                    {(job.total_rows - job.success_rows - job.failed_rows) > 0 && (
+                        <span className="font-normal ml-1">
+                            ({job.total_rows - job.success_rows - job.failed_rows} dilewati)
+                        </span>
+                    )}
+                </p>
             )}
 
             {isCompleted && (

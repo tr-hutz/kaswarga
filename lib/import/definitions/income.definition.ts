@@ -159,15 +159,24 @@ export const incomeImportDefinition: ImportDefinition<IncomePayload> = {
 
     transform(row: RawRow, context: ImportContext): IncomePayload {
         const amount = parseInt(row.amount.replace(/[^0-9]/g, ''), 10) || 0
+
+        const VALID_CATEGORIES = new Set(['DONATION', 'GOVERNMENT', 'EVENT', 'BAZAAR', 'RENTAL', 'SALES', 'INTEREST', 'OTHER'])
+        const VALID_SOURCES    = new Set(['RESIDENT', 'NON_RESIDENT', 'ORGANIZATION', 'GOVERNMENT', 'ANONYMOUS'])
+
+        const rawCategory    = (row.income_category?.trim() || '').toUpperCase()
+        const rawSource      = (row.source_type?.trim()     || '').toUpperCase()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const incomeCategory = (VALID_CATEGORIES.has(rawCategory) ? rawCategory : 'OTHER')     as any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const sourceType     = (VALID_SOURCES.has(rawSource)      ? rawSource   : 'ANONYMOUS') as any
+
         return {
             rt_id:            context.rtId,
             income_name:      row.income_name.trim(),
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            income_category:  (row.income_category?.trim() || 'OTHER') as any,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            source_type:      (row.source_type?.trim()     || 'ANONYMOUS') as any,
+            income_category:  incomeCategory,
+            source_type:      sourceType,
             payer_name:       row.payer_name?.trim()       || null,
-            is_anonymous:     !row.source_type?.trim() || row.source_type.trim() === 'ANONYMOUS',
+            is_anonymous:     sourceType === 'ANONYMOUS',
             amount,
             received_at:      row.received_at.trim(),
             payment_method:   row.payment_method?.trim()   || null,

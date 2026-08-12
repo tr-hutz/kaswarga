@@ -38,7 +38,14 @@ export async function POST(
         }
         const { data: job, error: jobError } = await jobQuery.single()
 
-        if (jobError || !job) {
+        if (jobError) {
+            if (jobError.code === 'PGRST116') {
+                return NextResponse.json({ error: 'Import job not found' }, { status: 404 })
+            }
+            console.error('[import/reject] DB error — id=%s code=%s msg=%s', id, jobError.code, jobError.message)
+            return NextResponse.json({ error: 'Failed to fetch import job' }, { status: 500 })
+        }
+        if (!job) {
             return NextResponse.json({ error: 'Import job not found' }, { status: 404 })
         }
 

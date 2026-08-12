@@ -34,7 +34,15 @@ export async function GET(
         }
         const { data: job, error: jobError } = await jobQuery.single()
 
-        if (jobError || !job) {
+        if (jobError) {
+            if (jobError.code === 'PGRST116') {
+                console.warn('[import/get] job not found — id=%s rt_id=%s', id, ctxRtId || '(super_admin)')
+                return NextResponse.json({ error: 'Import job not found' }, { status: 404 })
+            }
+            console.error('[import/get] DB error — id=%s rt_id=%s code=%s msg=%s', id, ctxRtId, jobError.code, jobError.message)
+            return NextResponse.json({ error: 'Failed to fetch import job' }, { status: 500 })
+        }
+        if (!job) {
             return NextResponse.json({ error: 'Import job not found' }, { status: 404 })
         }
 
