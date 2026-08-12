@@ -36,6 +36,7 @@ export default function ExpenseContainer() {
             setSort={setSort}
             setFilter={setFilter}
             importError={importError}
+            onApproved={reload}
             {...actions}
         />
     )

@@ -585,6 +585,20 @@ async function notifyJobComplete(
             : 'pemasukan'
 
         if (summary.status === IMPORT_STATUS.PENDING_APPROVAL) {
+            // Idempotency guard: skip if approval notification already exists for this job.
+            // Protects against duplicate notifications when the background worker retries.
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: existing } = await (supabaseAdmin as any)
+                .from('notifications')
+                .select('id')
+                .eq('entity_type', 'import_jobs')
+                .eq('entity_id', jobId)
+                .eq('type', 'import_pending_approval')
+                .limit(1)
+                .maybeSingle()
+
+            if (existing) return
+
             // Notify RT Chair members who need to review this batch
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const { data: chairs } = await (supabaseAdmin as any)
@@ -612,19 +626,33 @@ async function notifyJobComplete(
                     )
             }
         } else {
-            // Notify the importer about completion or failure
+            // Idempotency guard: skip if completion notification already exists for this job.
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await (supabaseAdmin as any)
+            const { data: existing } = await (supabaseAdmin as any)
                 .from('notifications')
-                .insert({
-                    rt_id:          rtId,
-                    type:           'import_complete',
-                    title:          `Import ${typeName} selesai`,
-                    message:        `${summary.total} baris diproses: ${summary.success} berhasil, ${summary.failed} gagal${summary.skipped > 0 ? `, ${summary.skipped} dilewati` : ''}.`,
-                    entity_type:    'import_jobs',
-                    entity_id:      jobId,
-                    target_user_id: userId,
-                })
+                .select('id')
+                .eq('entity_type', 'import_jobs')
+                .eq('entity_id', jobId)
+                .eq('type', 'import_complete')
+                .eq('target_user_id', userId)
+                .limit(1)
+                .maybeSingle()
+
+            if (!existing) {
+                // Notify the importer about completion or failure
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                await (supabaseAdmin as any)
+                    .from('notifications')
+                    .insert({
+                        rt_id:          rtId,
+                        type:           'import_complete',
+                        title:          `Import ${typeName} selesai`,
+                        message:        `${summary.total} baris diproses: ${summary.success} berhasil, ${summary.failed} gagal${summary.skipped > 0 ? `, ${summary.skipped} dilewati` : ''}.`,
+                        entity_type:    'import_jobs',
+                        entity_id:      jobId,
+                        target_user_id: userId,
+                    })
+            }
         }
     } catch {
         // Notification failure is non-critical

@@ -12,6 +12,8 @@ import ExpenseImportModal     from './components/import/ExpenseImportModal'
 import { buildExpenseColumns } from './components/ExpenseColumns'
 import ConfirmDialog           from '@/components/ui/ConfirmDialog'
 import ExportDropdown         from '@/components/ui/ExportDropdown'
+import ImportApprovalBanner   from '@/components/import/ImportApprovalBanner'
+import { IMPORT_TYPE }        from '@/lib/import/types'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 import type { MappedExpense } from './hooks/useExpenseData'
 import Icon from "@/components/ui/Icon";
@@ -29,6 +31,7 @@ interface Props {
     setSort:         (by: string, dir: 'asc' | 'desc') => void
     setFilter:       (key: string, value: unknown) => void
     importError:     string
+    onApproved:      () => void
     // from useExpenseActions
     selectedRow:     MappedExpense | null
     drawerOpen:      boolean
@@ -68,7 +71,7 @@ export default function ExpenseView({
     result, loading, fetchError, onRetry,
     categories,
     query, setPage, setPageSize, setSearch, setSort, setFilter,
-    importError,
+    importError, onApproved,
     selectedRow, drawerOpen, formOpen,
     openDrawer, closeDrawer,
     openCreateForm, openEditForm, closeForm, submitForm,
@@ -128,6 +131,10 @@ export default function ExpenseView({
                     </Can>
                 </div>
             </div>
+
+            <Can permission={PERMISSION.EXPENSE_APPROVE}>
+                <ImportApprovalBanner importType={IMPORT_TYPE.EXPENSE} onApproved={onApproved} />
+            </Can>
 
             <DataTable
                 columns={columns}

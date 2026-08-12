@@ -1,9 +1,10 @@
 /*
  * Expense Import Definition
  *
- * Approval policy: NONE — rows are inserted directly as status='pending' and
- * flow into the existing per-record expense approval workflow (same as manual
- * creation). No separate batch-approval step is needed for expenses.
+ * Approval policy: BATCH — validated rows enter PENDING_APPROVAL and require
+ * RT Chair batch approval before being committed to the expenses table.
+ * After batch approval, persist() inserts expenses as status='pending' and
+ * they flow into the existing per-record expense approval workflow.
  */
 
 import { supabaseAdmin }      from '@/lib/supabase-admin'
@@ -95,8 +96,8 @@ const TEMPLATE: ImportTemplate = {
 export const expenseImportDefinition: ImportDefinition<ExpensePayload> = {
     type:              IMPORT_TYPE.EXPENSE,
     importPermission:  PERMISSION.EXPENSE_IMPORT,
-    approvePermission: null,
-    approvalPolicy:    APPROVAL_POLICY.NONE,
+    approvePermission: PERMISSION.EXPENSE_APPROVE,
+    approvalPolicy:    APPROVAL_POLICY.BATCH,
     columns:           COLUMNS,
     template:          TEMPLATE,
 
@@ -195,28 +196,6 @@ export const expenseImportDefinition: ImportDefinition<ExpensePayload> = {
             description: `Import ${insertedCount} data pengeluaran dari file (job ${context.jobId})`,
             metadata:    { inserted: insertedCount, skipped, jobId: context.jobId },
         })
-
-        // Step 3: Notify RT Chair — new pending expenses need individual approval
-        const { data: chairs } = await supabaseAdmin
-            .from('memberships')
-            .select('user_id')
-            .eq('rt_id', context.rtId)
-            .eq('role', 'CHAIR')
-            .eq('status', 'active')
-
-        if (chairs?.length && insertedCount > 0) {
-            await supabaseAdmin.from('notifications').insert(
-                (chairs as Array<{ user_id: string }>).map(m => ({
-                    rt_id:          context.rtId,
-                    type:           'expense_pending',
-                    title:          'Pengeluaran Baru Menunggu Persetujuan',
-                    message:        `${insertedCount} data pengeluaran diimpor dan menunggu persetujuan Anda.`,
-                    entity_type:    'expenses',
-                    entity_id:      context.rtId,
-                    target_user_id: m.user_id,
-                }))
-            )
-        }
 
         return { inserted: insertedCount, skipped }
     },
