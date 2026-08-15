@@ -12,8 +12,9 @@ import ConfirmDialog         from '@/components/ui/ConfirmDialog'
 import IncomeDrawer          from './components/drawer/IncomeDrawer'
 import IncomeForm            from './components/forms/IncomeForm'
 import IncomeImportModal     from './components/import/IncomeImportModal'
-import ImportApprovalBanner  from '@/components/import/ImportApprovalBanner'
-import { IMPORT_TYPE }       from '@/lib/import/types'
+import ImportApprovalBanner     from '@/components/import/ImportApprovalBanner'
+import ImportConfirmationBanner from '@/components/import/ImportConfirmationBanner'
+import { IMPORT_TYPE }          from '@/lib/import/types'
 import type { QueryOptions, PageResult, Column } from '@/lib/types/query'
 
 interface Props {
@@ -117,7 +118,10 @@ export default function IncomeView({
                 </div>
             </div>
 
-            {/* Import batch approval banner */}
+            <Can permission={PERMISSION.INCOME_IMPORT}>
+                <ImportConfirmationBanner importType={IMPORT_TYPE.INCOME} />
+            </Can>
+
             <Can permission={PERMISSION.INCOME_APPROVE}>
                 <ImportApprovalBanner importType={IMPORT_TYPE.INCOME} />
             </Can>

@@ -12,8 +12,9 @@ import ExpenseImportModal     from './components/import/ExpenseImportModal'
 import { buildExpenseColumns } from './components/ExpenseColumns'
 import ConfirmDialog           from '@/components/ui/ConfirmDialog'
 import ExportDropdown         from '@/components/ui/ExportDropdown'
-import ImportApprovalBanner   from '@/components/import/ImportApprovalBanner'
-import { IMPORT_TYPE }        from '@/lib/import/types'
+import ImportApprovalBanner      from '@/components/import/ImportApprovalBanner'
+import ImportConfirmationBanner  from '@/components/import/ImportConfirmationBanner'
+import { IMPORT_TYPE }           from '@/lib/import/types'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 import type { MappedExpense } from './hooks/useExpenseData'
 import Icon from "@/components/ui/Icon";
@@ -131,6 +132,10 @@ export default function ExpenseView({
                     </Can>
                 </div>
             </div>
+
+            <Can permission={PERMISSION.EXPENSE_IMPORT}>
+                <ImportConfirmationBanner importType={IMPORT_TYPE.EXPENSE} onConfirmed={onApproved} />
+            </Can>
 
             <Can permission={PERMISSION.EXPENSE_APPROVE}>
                 <ImportApprovalBanner importType={IMPORT_TYPE.EXPENSE} onApproved={onApproved} />

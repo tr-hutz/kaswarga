@@ -9,6 +9,7 @@ import PaymentDetailDrawer      from './components/details/PaymentDetailDrawer'
 import PaymentImportModal       from './components/import/PaymentImportModal'
 import PaymentForm              from './components/forms/PaymentForm'
 import ImportApprovalBanner     from '@/components/import/ImportApprovalBanner'
+import ImportConfirmationBanner from '@/components/import/ImportConfirmationBanner'
 import { IMPORT_TYPE }          from '@/lib/import/types'
 import ExportDropdown           from '@/components/ui/ExportDropdown'
 import DangerDropdown           from '@/components/ui/DangerDropdown'
@@ -136,6 +137,10 @@ export default function PaymentView({
                     </Can>
                 </div>
             </div>
+
+            <Can permission={PERMISSION.PAYMENT_IMPORT}>
+                <ImportConfirmationBanner importType={IMPORT_TYPE.PAYMENT} onConfirmed={reload} />
+            </Can>
 
             <Can permission={PERMISSION.PAYMENT_IMPORT_APPROVE}>
                 <ImportApprovalBanner importType={IMPORT_TYPE.PAYMENT} onApproved={reload} />

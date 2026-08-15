@@ -35,6 +35,7 @@ export function getNotificationLink(
 
             return '/ledger'
 
+        case 'payment_import_staged':
         case 'payment_import_pending_approval':
         case 'payment_import_complete':
         case 'payment_import_approved':
@@ -42,6 +43,7 @@ export function getNotificationLink(
 
             return '/payments'
 
+        case 'income_import_staged':
         case 'income_import_pending_approval':
         case 'income_import_complete':
         case 'income_import_approved':
@@ -49,6 +51,7 @@ export function getNotificationLink(
 
             return '/income'
 
+        case 'expense_import_staged':
         case 'expense_import_pending_approval':
         case 'expense_import_complete':
         case 'expense_import_approved':
