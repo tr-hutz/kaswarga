@@ -1,10 +1,10 @@
 /*
  * Expense Import Definition
  *
- * Approval policy: BATCH — validated rows enter PENDING_APPROVAL and require
- * RT Chair batch approval before being committed to the expenses table.
- * After batch approval, persist() inserts expenses as status='pending' and
- * they flow into the existing per-record expense approval workflow.
+ * Approval policy: BATCH — Treasurer confirms → persist() inserts expenses as
+ * status='pending' (with import_job_id) → RT Chair batch-approves all linked
+ * expenses in one action via approve_expenses_by_import_job() RPC.
+ * No per-record approval round needed after import batch approval.
  */
 
 import { supabaseAdmin }      from '@/lib/supabase-admin'
@@ -28,15 +28,16 @@ import type {
 /* -------------------------------------------------------------------------- */
 
 interface ExpensePayload {
-    rt_id:       string
-    date:        string
-    category:    string | null
-    amount:      number
-    recipient:   string | null
-    description: string | null
-    active:      boolean
-    status:      string
-    created_by:  string
+    rt_id:         string
+    date:          string
+    category:      string | null
+    amount:        number
+    recipient:     string | null
+    description:   string | null
+    active:        boolean
+    status:        string
+    created_by:    string
+    import_job_id: string
 }
 
 /* -------------------------------------------------------------------------- */
@@ -138,15 +139,16 @@ export const expenseImportDefinition: ImportDefinition<ExpensePayload> = {
     transform(row: RawRow, context: ImportContext): ExpensePayload {
         const amount = parseInt(row.amount.replace(/[^0-9]/g, ''), 10) || 0
         return {
-            rt_id:       context.rtId,
-            date:        row.date.trim(),
-            category:    row.category?.trim()    || null,
+            rt_id:         context.rtId,
+            date:          row.date.trim(),
+            category:      row.category?.trim()    || null,
             amount,
-            recipient:   row.recipient?.trim()   || null,
-            description: row.description?.trim() || null,
-            active:      true,
-            status:      'pending',
-            created_by:  context.userId,
+            recipient:     row.recipient?.trim()   || null,
+            description:   row.description?.trim() || null,
+            active:        true,
+            status:        'pending',
+            created_by:    context.userId,
+            import_job_id: context.jobId,
         }
     },
 
@@ -173,8 +175,10 @@ export const expenseImportDefinition: ImportDefinition<ExpensePayload> = {
 
         if (newRows.length === 0) return { inserted: 0, skipped }
 
-        // Step 1: Insert expense rows as 'pending' — existing approval flow takes over
-        const { data: inserted, error: insertError } = await supabaseAdmin
+        // Step 1: Insert expense rows as 'pending' — PIC batch-approves via approveImportBatch()
+        // Cast to any: import_job_id column added in migration 034, not yet in generated types.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: inserted, error: insertError } = await (supabaseAdmin as any)
             .from('expenses')
             .insert(newRows)
             .select('id')

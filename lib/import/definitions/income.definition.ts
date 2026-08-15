@@ -42,6 +42,7 @@ interface IncomePayload {
     reference_number: string | null
     notes:            string | null
     created_by:       string
+    import_job_id:    string
 }
 
 /* -------------------------------------------------------------------------- */
@@ -183,6 +184,7 @@ export const incomeImportDefinition: ImportDefinition<IncomePayload> = {
             reference_number: row.reference_number?.trim() || null,
             notes:            row.notes?.trim()            || null,
             created_by:       context.userId,
+            import_job_id:    context.jobId,
         }
     },
 
