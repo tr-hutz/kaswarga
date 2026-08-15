@@ -1,19 +1,30 @@
-import { NextResponse }       from 'next/server'
-import { getRequestContext }  from '@/lib/auth/server'
-import { requirePermission }  from '@/lib/auth/helpers'
+import { NextResponse }        from 'next/server'
+import { getRequestContext }   from '@/lib/auth/server'
+import { requirePermission }   from '@/lib/auth/helpers'
 import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
-import { supabaseAdmin }      from '@/lib/supabase-admin'
-import { getImportDefinition }   from '@/lib/import/registry'
-import { approveImportJobWithRows, fetchAllJobRows } from '@/lib/import/engine'
+import { supabaseAdmin }       from '@/lib/supabase-admin'
+import { getImportDefinition } from '@/lib/import/registry'
+import {
+    approveImportBatch,
+    approveImportJobWithRows,
+    fetchAllJobRows,
+} from '@/lib/import/engine'
 import { IMPORT_STATUS, type ImportJob, type ImportJobRow, type RawRow } from '@/lib/import/types'
 
 /*
 |--------------------------------------------------------------------------
 | POST /api/import/[id]/approve
 |
-| Approves a PENDING_APPROVAL import batch.
-| Valid rows are fetched from import_job_rows (status=VALID) — the client
-| does NOT need to send them back.
+| PIC approves a PENDING_APPROVAL import batch.
+|
+| New flow (job has confirmed_at set):
+|   Calls approveImportBatch() — no row data needed.
+|   For expense imports, batch-approves all linked pending expenses.
+|
+| Legacy flow (job has no confirmed_at):
+|   Fetches raw rows, re-transforms, calls persist() via
+|   approveImportJobWithRows() — backward compat with jobs created
+|   before migration 034.
 |
 | Guards:
 |   - Job must be PENDING_APPROVAL
@@ -28,20 +39,17 @@ export async function POST(
 ) {
     try {
         const ctx        = await getRequestContext()
-        const ctxRtId    = ctx.authorization.neighborhoodId  // '' for SUPER_ADMIN
+        const ctxRtId    = ctx.authorization.neighborhoodId
         const approverId = ctx.authorization.userId
         const { id }     = await params
 
-        // SUPER_ADMIN has neighborhoodId='' — skip the rt_id filter so they can
-        // approve any RT's import. For regular users, restrict to their own RT.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let jobQuery = (supabaseAdmin as any)
             .from('import_jobs')
             .select('*')
             .eq('id', id)
-        if (ctxRtId) {
-            jobQuery = jobQuery.eq('rt_id', ctxRtId)
-        }
+        if (ctxRtId) jobQuery = jobQuery.eq('rt_id', ctxRtId)
+
         const { data: job, error: jobError } = await jobQuery.single()
 
         if (jobError) {
@@ -56,8 +64,7 @@ export async function POST(
         }
 
         const typedJob = job as ImportJob
-        // Use the job's rt_id as the effective RT context (handles SUPER_ADMIN case)
-        const rtId = (typedJob as unknown as { rt_id: string }).rt_id
+        const rtId     = typedJob.rt_id
 
         if (typedJob.status !== IMPORT_STATUS.PENDING_APPROVAL) {
             return NextResponse.json(
@@ -72,7 +79,6 @@ export async function POST(
             requirePermission(ctx.authorization, definition.approvePermission)
         }
 
-        // Importer !== Approver guard
         if (typedJob.created_by === approverId) {
             return NextResponse.json(
                 { error: 'Importer tidak dapat menyetujui import milik sendiri' },
@@ -80,7 +86,16 @@ export async function POST(
             )
         }
 
-        // Paginated fetch — PostgREST caps at max_rows=1000 even with .limit(); must paginate.
+        // ── New flow (job was confirmed by Treasurer) ─────────────────────────
+        // persist() was already called during confirmation.
+        // Just batch-approve domain records and complete the job.
+        if (typedJob.confirmed_at) {
+            const result = await approveImportBatch(id, approverId, rtId)
+            return NextResponse.json({ ok: true, approved: result.approved })
+        }
+
+        // ── Legacy flow (job created before migration 034) ────────────────────
+        // persist() has not been called yet — use the old row-based path.
         let validRowRecords: ImportJobRow[]
         try {
             validRowRecords = await fetchAllJobRows(id, 'VALID')
@@ -92,29 +107,11 @@ export async function POST(
             .map(r => r.raw_data as RawRow)
             .filter(Boolean)
 
-        console.log('[import/approve] rawRows fetched:', rawRows.length, '| rtId:', rtId)
-
-        // Re-run preload + transform to rebuild typed rows server-side.
-        // Override dbSet with an empty set: dedup was already enforced during
-        // initial processing. Re-running it here would incorrectly reject rows
-        // whenever a previous import for the same data exists in the DB.
-        const context     = { jobId: id, rtId, userId: approverId }
+        // Re-run preload + transform with importer context (fix created_by).
+        const context     = { jobId: id, rtId, userId: typedJob.created_by }
         const preloaded   = definition.preload ? await definition.preload(context) : {}
-        // Override dedup sets so re-validation trusts the stored VALID status from
-        // initial import and does not reject rows that are already in the DB.
-        // dbSet/fileSet cover payment; existingSet covers income.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const enrichedCtx = { ...context, ...preloaded, dbSet: new Set<string>(), fileSet: new Set<string>(), existingSet: new Set<string>() }
-
-        // Log residentMap size so we can diagnose RESIDENT_NOT_FOUND failures
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const preloadedAny = preloaded as any
-        console.log('[import/approve] residentMap size:', preloadedAny?.residentMap?.size ?? 'N/A')
-        if (rawRows.length > 0) {
-            const sampleRow = rawRows[0]
-            console.log('[import/approve] sample raw row keys:', Object.keys(sampleRow))
-            console.log('[import/approve] sample raw row:', JSON.stringify(sampleRow))
-        }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const validTyped: any[] = []
@@ -124,12 +121,11 @@ export async function POST(
             if (result.valid) {
                 validTyped.push(definition.transform(row, enrichedCtx))
             } else {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const code = (result as any).errorCode ?? (result as any).skipReason ?? 'UNKNOWN'
                 rejectedReasons[code] = (rejectedReasons[code] ?? 0) + 1
             }
         }
-
-        console.log('[import/approve] validTyped:', validTyped.length, '| rejected:', JSON.stringify(rejectedReasons))
 
         const persistResult = await approveImportJobWithRows(id, approverId, validTyped, definition, rtId)
 
