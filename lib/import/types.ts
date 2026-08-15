@@ -23,6 +23,10 @@ export const IMPORT_STATUS = {
     QUEUED:            'QUEUED',
     PROCESSING:        'PROCESSING',
     VALIDATING:        'VALIDATING',
+    STAGED:            'STAGED',            // Validation complete — awaiting Treasurer confirmation
+    PROMOTING:         'PROMOTING',         // Treasurer confirmed — persist() in progress
+    PROMOTED:          'PROMOTED',          // persist() complete — transitioning to PENDING_APPROVAL
+    CANCELLED:         'CANCELLED',         // Treasurer cancelled before promotion
     PENDING_APPROVAL:  'PENDING_APPROVAL',
     APPROVED:          'APPROVED',
     REJECTED:          'REJECTED',
@@ -66,6 +70,8 @@ export interface ImportJob {
     failed_rows:      number
     progress_percent: number
     created_by:       string
+    confirmed_by:     string | null
+    confirmed_at:     string | null
     approved_by:      string | null
     rejected_by:      string | null
     rejection_reason: string | null
