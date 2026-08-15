@@ -17,7 +17,11 @@ function statusLabel(status: string): string {
         case IMPORT_STATUS.QUEUED:           return 'Menunggu antrian...'
         case IMPORT_STATUS.PROCESSING:       return 'Memproses...'
         case IMPORT_STATUS.VALIDATING:       return 'Memvalidasi...'
-        case IMPORT_STATUS.PENDING_APPROVAL: return 'Menunggu Persetujuan'
+        case IMPORT_STATUS.STAGED:           return 'Menunggu Konfirmasi'
+        case IMPORT_STATUS.PROMOTING:        return 'Menyimpan data...'
+        case IMPORT_STATUS.PROMOTED:         return 'Data Disimpan'
+        case IMPORT_STATUS.CANCELLED:        return 'Dibatalkan'
+        case IMPORT_STATUS.PENDING_APPROVAL: return 'Menunggu Persetujuan PIC'
         case IMPORT_STATUS.COMPLETED:        return 'Selesai'
         case IMPORT_STATUS.FAILED:           return 'Gagal'
         case IMPORT_STATUS.REJECTED:         return 'Ditolak'
@@ -26,11 +30,17 @@ function statusLabel(status: string): string {
 }
 
 function ImportJobCard({ job, onDismiss }: { job: ImportJob; onDismiss: () => void }) {
-    const isInProgress      = ([IMPORT_STATUS.QUEUED, IMPORT_STATUS.PROCESSING, IMPORT_STATUS.VALIDATING] as ImportStatus[]).includes(job.status)
+    const isInProgress      = ([
+        IMPORT_STATUS.QUEUED,
+        IMPORT_STATUS.PROCESSING,
+        IMPORT_STATUS.VALIDATING,
+        IMPORT_STATUS.PROMOTING,
+    ] as ImportStatus[]).includes(job.status)
+    const isStaged          = job.status === IMPORT_STATUS.STAGED
     const isPendingApproval = job.status === IMPORT_STATUS.PENDING_APPROVAL
-    const isCompleted       = job.status === IMPORT_STATUS.COMPLETED
-    const isFailed          = job.status === IMPORT_STATUS.FAILED || job.status === IMPORT_STATUS.REJECTED
-    const isTerminal        = isCompleted || isFailed
+    const isCompleted       = job.status === IMPORT_STATUS.COMPLETED || job.status === IMPORT_STATUS.PROMOTED
+    const isFailed          = job.status === IMPORT_STATUS.FAILED || job.status === IMPORT_STATUS.REJECTED || job.status === IMPORT_STATUS.CANCELLED
+    const isTerminal        = isCompleted || isFailed || isStaged || isPendingApproval
 
     const typeLabel = TYPE_LABEL[job.import_type] ?? job.import_type
     const shortName = job.filename.length > 32 ? `${job.filename.slice(0, 29)}…` : job.filename
@@ -43,7 +53,7 @@ function ImportJobCard({ job, onDismiss }: { job: ImportJob; onDismiss: () => vo
                     {isInProgress && (
                         <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin shrink-0" />
                     )}
-                    {isPendingApproval && (
+                    {(isStaged || isPendingApproval) && (
                         <Icon name="clock"        size={16} className="text-warning  shrink-0" />
                     )}
                     {isCompleted && (
@@ -82,14 +92,20 @@ function ImportJobCard({ job, onDismiss }: { job: ImportJob; onDismiss: () => vo
                 />
             )}
 
-            {isPendingApproval && (
+            {isStaged && (
                 <p className="text-xs text-warning font-medium pt-0.5">
-                    {job.success_rows} baris menunggu persetujuan
-                    {(job.total_rows - job.success_rows - job.failed_rows) > 0 && (
-                        <span className="font-normal ml-1">
-                            ({job.total_rows - job.success_rows - job.failed_rows} dilewati)
+                    {job.success_rows} baris siap dikonfirmasi
+                    {job.failed_rows > 0 && (
+                        <span className="font-normal text-danger ml-1">
+                            ({job.failed_rows} tidak valid)
                         </span>
                     )}
+                </p>
+            )}
+
+            {isPendingApproval && (
+                <p className="text-xs text-warning font-medium pt-0.5">
+                    {job.success_rows} baris menunggu persetujuan PIC
                 </p>
             )}
 
@@ -106,11 +122,10 @@ function ImportJobCard({ job, onDismiss }: { job: ImportJob; onDismiss: () => vo
 
             {isFailed && (
                 <p className="text-xs text-danger">
-                    {job.status === IMPORT_STATUS.REJECTED
-                        ? 'Import ditolak'
-                        : job.failed_rows > 0
-                            ? `${job.failed_rows} baris gagal`
-                            : 'Import gagal'}
+                    {job.status === IMPORT_STATUS.REJECTED  ? 'Import ditolak'
+                    : job.status === IMPORT_STATUS.CANCELLED ? 'Import dibatalkan'
+                    : job.failed_rows > 0                    ? `${job.failed_rows} baris gagal`
+                    :                                          'Import gagal'}
                 </p>
             )}
         </div>

@@ -15,28 +15,33 @@ import { IMPORT_STATUS, type ImportJob, type ImportStatus } from '@/lib/import/t
 const POLL_INTERVAL_MS = 10_000
 
 // Statuses that keep a job card alive in the floating panel.
-// PENDING_APPROVAL is excluded: ImportApprovalBanner on each module page is
-// the canonical surface for approvers. The importer's card auto-dismisses
-// once the job reaches that state (see AUTO_DISMISS_STATUSES below).
+// STAGED and PENDING_APPROVAL are excluded: ImportConfirmationBanner /
+// ImportApprovalBanner on each module page are the canonical surfaces.
+// The importer's card auto-dismisses once the job leaves the in-progress states.
 const ACTIVE_STATUSES: ImportStatus[] = [
     IMPORT_STATUS.QUEUED,
     IMPORT_STATUS.PROCESSING,
     IMPORT_STATUS.VALIDATING,
+    IMPORT_STATUS.PROMOTING,
 ]
 
 // Only truly in-flight jobs are restored on mount.
-// PENDING_APPROVAL is excluded because those jobs persist in the DB
-// indefinitely and would re-appear on every page load / server restart.
 const MOUNT_STATUSES: ImportStatus[] = [
     IMPORT_STATUS.QUEUED,
     IMPORT_STATUS.PROCESSING,
     IMPORT_STATUS.VALIDATING,
+    IMPORT_STATUS.PROMOTING,
 ]
 
 // Statuses that trigger auto-dismiss of the floating card after AUTO_DISMISS_MS.
-// PENDING_APPROVAL is included so the importer sees brief "awaiting approval"
-// feedback before the card disappears — the importer cannot action this state.
+// STAGED: Treasurer sees a brief "awaiting confirmation" message, then uses the
+//   ImportConfirmationBanner on the page.
+// PENDING_APPROVAL: importer sees brief "awaiting PIC" feedback, then the card
+//   disappears — the ImportApprovalBanner is the canonical surface for the PIC.
 const AUTO_DISMISS_STATUSES: ImportStatus[] = [
+    IMPORT_STATUS.STAGED,
+    IMPORT_STATUS.PROMOTED,
+    IMPORT_STATUS.CANCELLED,
     IMPORT_STATUS.COMPLETED,
     IMPORT_STATUS.FAILED,
     IMPORT_STATUS.REJECTED,

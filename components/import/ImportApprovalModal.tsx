@@ -63,13 +63,15 @@ export default function ImportApprovalModal({ jobId, onClose, onDone }: Props) {
                 try { const b = await res.json(); msg = b.error || msg } catch { /* non-JSON body */ }
                 throw new Error(msg)
             }
-            const body = await res.json().catch(() => ({ persisted: validRows.length }))
-            if (body.persisted === 0) {
+            const body = await res.json().catch(() => ({ approved: validRows.length }))
+            // New flow returns `approved`, legacy returns `persisted`
+            const count = body.approved ?? body.persisted ?? validRows.length
+            if (count === 0 && !body.approved) {
                 const reasons = body.rejected ? Object.keys(body.rejected).join(', ') : ''
                 const detail  = reasons ? ` (${reasons})` : ''
                 toast({ type: 'error', message: `Tidak ada baris yang diimpor${detail}. Coba lagi atau hubungi administrator.` })
             } else {
-                toast({ type: 'success', message: `Import disetujui — ${body.persisted} data berhasil diimpor` })
+                toast({ type: 'success', message: `Import disetujui — ${count} data berhasil diproses` })
             }
             onDone()
         } catch (err) {
