@@ -4,17 +4,20 @@
  * The engine owns the complete import lifecycle. It is domain-agnostic:
  * all business rules are delegated to the supplied ImportDefinition<T>.
  *
- * Lifecycle:
- *   QUEUED → PROCESSING → VALIDATING → PENDING_APPROVAL | COMPLETED | FAILED
+ * Canonical lifecycle:
  *
- * Background processing:
- *   The API route creates the job and returns immediately.
- *   processJob() is called inside Next.js after() — it runs after the
- *   HTTP response is sent, without blocking the client.
+ *   QUEUED → PROCESSING → VALIDATING → STAGED
+ *     Treasurer Confirms → PROMOTING → PROMOTED → PENDING_APPROVAL
+ *       PIC Approves  → COMPLETED
+ *       PIC Rejects   → REJECTED
+ *     Treasurer Cancels → CANCELLED
  *
- * Progress tracking:
- *   processed_rows and progress_percent are updated every PROGRESS_BATCH_SIZE rows.
- *   Supabase Realtime delivers the updates to subscribed clients.
+ *   NONE policy shortcut (e.g. resident):
+ *   QUEUED → PROCESSING → VALIDATING → COMPLETED
+ *
+ * Notification semantics:
+ *   Batch action  → exactly 1 notification
+ *   Row-level DB update from a batch action → 0 notifications
  */
 
 import { supabaseAdmin } from '@/lib/supabase-admin'
@@ -22,6 +25,7 @@ import {
     IMPORT_STATUS,
     IMPORT_ROW_STATUS,
     APPROVAL_POLICY,
+    IMPORT_TYPE,
     type ImportType,
     type ImportStatus,
     type RawRow,
@@ -41,7 +45,6 @@ const PROGRESS_BATCH_SIZE = 250
 
 /**
  * Creates an import job record and returns the job ID.
- * The caller is responsible for triggering processJob() in the background.
  */
 export async function createImportJob(params: {
     rtId:     string
@@ -73,13 +76,12 @@ export async function createImportJob(params: {
 }
 
 /**
- * Processes an import job end-to-end.
+ * Processes an import job end-to-end (validation phase only).
  *
- * Designed to be called inside Next.js after():
- *   after(() => processImportJob(jobId, rows, definition))
+ * For NONE policy: persist() is called immediately → COMPLETED.
+ * For BATCH policy: rows are staged in import_job_rows → STAGED → notify Treasurer.
  *
- * The function transitions the job through its lifecycle, updates progress,
- * persists row-level results, and (for NONE policy) commits valid rows.
+ * Designed to run inside Next.js after() — after the HTTP response is sent.
  */
 export async function processImportJob<T>(
     jobId:      string,
@@ -93,7 +95,6 @@ export async function processImportJob<T>(
     try {
         await updateJobStatus(jobId, IMPORT_STATUS.PROCESSING, { started_at: new Date().toISOString() })
 
-        // Pre-load domain data (e.g. resident lookup map for payment import)
         const preloaded = definition.preload
             ? await definition.preload(context)
             : {}
@@ -103,18 +104,16 @@ export async function processImportJob<T>(
 
         // ── Validation + transformation ──────────────────────────────────────
         const validRows:   T[]                        = []
-        const errorRows:   Parameters<typeof recordRowResults>[0] = []
+        const rowResults:  Parameters<typeof recordRowResults>[0] = []
         let   processedCount = 0
 
         for (const [index, row] of rows.entries()) {
-            const rowNumber   = index + 2  // 1-based; row 1 = header
-            const validation  = definition.validateRow(row, enrichedContext)
+            const rowNumber  = index + 2  // 1-based; row 1 = header
+            const validation = definition.validateRow(row, enrichedContext)
 
             if (validation.valid) {
                 validRows.push(definition.transform(row, enrichedContext))
-                // Store valid raw rows so the approval route can reconstruct them
-                // without the client having to send them back.
-                errorRows.push({
+                rowResults.push({
                     import_job_id: jobId,
                     row_number:    rowNumber,
                     status:        IMPORT_ROW_STATUS.VALID,
@@ -123,7 +122,7 @@ export async function processImportJob<T>(
                     error_message: null,
                 })
             } else if (validation.skipped) {
-                errorRows.push({
+                rowResults.push({
                     import_job_id: jobId,
                     row_number:    rowNumber,
                     status:        IMPORT_ROW_STATUS.SKIPPED,
@@ -132,7 +131,7 @@ export async function processImportJob<T>(
                     error_message: validation.errorMessage ?? 'Row skipped (duplicate)',
                 })
             } else {
-                errorRows.push({
+                rowResults.push({
                     import_job_id: jobId,
                     row_number:    rowNumber,
                     status:        IMPORT_ROW_STATUS.INVALID,
@@ -144,32 +143,27 @@ export async function processImportJob<T>(
 
             processedCount++
 
-            // Fire-and-forget: progress updates are cosmetic — must not block the loop.
-            // An awaited DB call here would stall the entire after() task if the
-            // connection is slow or the pool is under pressure.
             if (processedCount % PROGRESS_BATCH_SIZE === 0 || processedCount === rows.length) {
                 const percent = Math.round((processedCount / rows.length) * 100)
                 void updateJobProgress(jobId, {
                     processed_rows:   processedCount,
                     success_rows:     validRows.length,
-                    failed_rows:      errorRows.filter(r => r.status === IMPORT_ROW_STATUS.INVALID).length,
+                    failed_rows:      rowResults.filter(r => r.status === IMPORT_ROW_STATUS.INVALID).length,
                     progress_percent: percent,
                 })
             }
         }
 
-        // Persist all row results (valid + invalid + skipped)
-        if (errorRows.length > 0) {
-            await recordRowResults(errorRows)
+        if (rowResults.length > 0) {
+            await recordRowResults(rowResults)
         }
 
         const successRows = validRows.length
-        const failedRows  = errorRows.filter(r => r.status === IMPORT_ROW_STATUS.INVALID).length
-        const skippedRows = errorRows.filter(r => r.status === IMPORT_ROW_STATUS.SKIPPED).length
+        const failedRows  = rowResults.filter(r => r.status === IMPORT_ROW_STATUS.INVALID).length
+        const skippedRows = rowResults.filter(r => r.status === IMPORT_ROW_STATUS.SKIPPED).length
 
-        // ── Approval policy branch ───────────────────────────────────────────
         if (definition.approvalPolicy === APPROVAL_POLICY.NONE) {
-            // Persist immediately
+            // No confirmation or approval step — commit immediately.
             if (validRows.length > 0) {
                 await definition.persist(validRows, enrichedContext)
             }
@@ -180,21 +174,19 @@ export async function processImportJob<T>(
                 progress_percent: 100,
                 completed_at:     new Date().toISOString(),
             })
-            await notifyJobComplete(jobId, rtId, userId, definition.type, {
+            await notifyImporterComplete(jobId, rtId, userId, definition.type, {
                 total: rows.length, success: successRows, failed: failedRows, skipped: skippedRows,
-                status: IMPORT_STATUS.COMPLETED,
             })
         } else {
-            // BATCH: hold for approver
-            await finalizeJob(jobId, IMPORT_STATUS.PENDING_APPROVAL, {
+            // BATCH: stage rows, notify Treasurer to confirm.
+            await finalizeJob(jobId, IMPORT_STATUS.STAGED, {
                 processed_rows:   processedCount,
                 success_rows:     successRows,
                 failed_rows:      failedRows,
                 progress_percent: 100,
             })
-            await notifyJobComplete(jobId, rtId, userId, definition.type, {
+            await notifyImporterStaged(jobId, rtId, userId, definition.type, {
                 total: rows.length, success: successRows, failed: failedRows, skipped: skippedRows,
-                status: IMPORT_STATUS.PENDING_APPROVAL,
             })
         }
 
@@ -205,79 +197,143 @@ export async function processImportJob<T>(
 }
 
 /**
- * Approves a PENDING_APPROVAL import job.
- * Atomically transitions to APPROVED and persists valid rows.
- * Idempotent: throws ImportStatusError if status is not PENDING_APPROVAL.
+ * Treasurer confirms a STAGED import job.
+ *
+ * Transitions: STAGED → PROMOTING → persist() → PROMOTED → PENDING_APPROVAL
+ *
+ * persist() is called here — not during PIC approval. This separates
+ * import confirmation (Treasurer) from business approval (PIC).
  */
-export async function approveImportJob<T>(
+export async function confirmImportJob<T>(
     jobId:      string,
-    approverId: string,
+    confirmerId: string,
     definition: ImportDefinition<T>,
     rtId:       string,
 ): Promise<void> {
     const job = await getJob(jobId)
-    if (job.status !== IMPORT_STATUS.PENDING_APPROVAL) {
-        throw new ImportStatusError(jobId, IMPORT_STATUS.PENDING_APPROVAL, job.status)
+    if (job.status !== IMPORT_STATUS.STAGED) {
+        throw new ImportStatusError(jobId, IMPORT_STATUS.STAGED, job.status)
     }
 
-    // Transition to APPROVED (atomic guard)
+    // Atomic guard — prevents double-confirmation
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: guardError } = await (supabaseAdmin as any)
+    const { data: guardResult, error: guardError } = await (supabaseAdmin as any)
         .from('import_jobs')
-        .update({ status: IMPORT_STATUS.APPROVED, approved_by: approverId, approved_at: new Date().toISOString() })
+        .update({
+            status:       IMPORT_STATUS.PROMOTING,
+            confirmed_by: confirmerId,
+            confirmed_at: new Date().toISOString(),
+        })
         .eq('id', jobId)
-        .eq('status', IMPORT_STATUS.PENDING_APPROVAL) // only update if still PENDING_APPROVAL
+        .eq('status', IMPORT_STATUS.STAGED)
+        .select('id')
 
     if (guardError) throw guardError
-
-    // Re-fetch to verify the update was applied (race condition guard)
-    const updated = await getJob(jobId)
-    if (updated.status !== IMPORT_STATUS.APPROVED) {
-        throw new ImportStatusError(jobId, IMPORT_STATUS.APPROVED, updated.status)
+    if (!guardResult || (guardResult as unknown[]).length === 0) {
+        const current = await getJob(jobId)
+        if (current.status !== IMPORT_STATUS.STAGED) return  // Already confirmed by another request
+        throw new ImportStatusError(jobId, IMPORT_STATUS.STAGED, current.status)
     }
 
-    // Retrieve valid rows (they were transformed before approval — reconstruct from raw_data)
-    // We reconstruct by re-running transform on validated raw rows.
-    // In practice the valid rows are derived from the NOT-in-import_job_rows rows.
-    const context: ImportContext = { jobId, rtId, userId: approverId }
-    const preloaded = definition.preload
-        ? await definition.preload(context)
-        : {}
-    const enrichedContext = { ...context, ...preloaded }
+    // Fetch valid rows — stored by processImportJob
+    let validRowRecords: ImportJobRow[]
+    try {
+        validRowRecords = await fetchAllJobRows(jobId, 'VALID')
+    } catch (err) {
+        await safeMarkFailed(jobId, 'Failed to fetch valid rows for confirmation')
+        throw err
+    }
 
-    // Get error row numbers to exclude
+    const rawRows: RawRow[] = validRowRecords
+        .map(r => r.raw_data as RawRow)
+        .filter(Boolean)
+
+    // Re-run preload + transform with the confirmer's context.
+    // The confirmer is always the original importer (or someone with import permission).
+    // context.userId = confirmerId = original importer → correct created_by on domain records.
+    const context: ImportContext = { jobId, rtId, userId: confirmerId }
+    const preloaded = definition.preload ? await definition.preload(context) : {}
+    // Override dedup sets — validation already ran; don't re-reject valid rows.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: errorRowData } = await (supabaseAdmin as any)
-        .from('import_job_rows')
-        .select('row_number')
-        .eq('import_job_id', jobId)
+    const enrichedCtx = { ...context, ...preloaded, dbSet: new Set<string>(), fileSet: new Set<string>(), existingSet: new Set<string>() }
 
-    const errorRowNumbers = new Set<number>(
-        ((errorRowData ?? []) as Array<{ row_number: number }>).map(r => r.row_number)
-    )
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const validTyped: any[] = []
+    for (const row of rawRows) {
+        const result = definition.validateRow(row, enrichedCtx)
+        if (result.valid) {
+            validTyped.push(definition.transform(row, enrichedCtx))
+        }
+    }
 
-    // We need the original rows — stored by passing them as a callback.
-    // This approval path is called from the approve route which must also supply rows.
-    // For now persist is called with empty array as a no-op signal;
-    // the actual persist happens via approveImportJobWithRows (see below).
-    await definition.persist([], enrichedContext)
+    try {
+        if (validTyped.length > 0) {
+            await definition.persist(validTyped, enrichedCtx)
+        }
+    } catch (err) {
+        // persist() failed — roll back to STAGED so Treasurer can retry.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabaseAdmin as any)
+            .from('import_jobs')
+            .update({ status: IMPORT_STATUS.STAGED, confirmed_by: null, confirmed_at: null })
+            .eq('id', jobId)
+            .eq('status', IMPORT_STATUS.PROMOTING)
+        throw err
+    }
 
-    await finalizeJob(jobId, IMPORT_STATUS.COMPLETED, { completed_at: new Date().toISOString() })
+    // Transition to PROMOTED, then immediately to PENDING_APPROVAL to notify PIC.
+    await finalizeJob(jobId, IMPORT_STATUS.PROMOTED, {})
 
-    void errorRowNumbers // suppress unused warning — used conceptually above
+    // PENDING_APPROVAL: notify the PIC approver(s).
+    await finalizeJob(jobId, IMPORT_STATUS.PENDING_APPROVAL, {})
+    await notifyPicPendingApproval(jobId, rtId, definition.type, validTyped.length)
 }
 
 /**
- * Full approval path that includes the valid row data.
- * The approval API route must supply the original validated rows.
+ * Treasurer cancels a STAGED import job.
+ * Transitions: STAGED → CANCELLED
+ * Does NOT delete staging data — kept for auditability.
  */
-export async function approveImportJobWithRows<T>(
+export async function cancelImportJob(
+    jobId:     string,
+    cancellerId: string,
+): Promise<void> {
+    const job = await getJob(jobId)
+    if (job.status !== IMPORT_STATUS.STAGED) {
+        throw new ImportStatusError(jobId, IMPORT_STATUS.STAGED, job.status)
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabaseAdmin as any)
+        .from('import_jobs')
+        .update({ status: IMPORT_STATUS.CANCELLED })
+        .eq('id', jobId)
+        .eq('status', IMPORT_STATUS.STAGED)
+
+    if (error) throw error
+
+    // Dismiss staged notifications so importer is not left with a stale card.
+    await dismissImportNotifications(jobId)
+
+    void cancellerId // logged via API audit
+}
+
+/**
+ * PIC approves a PENDING_APPROVAL import batch.
+ *
+ * For expense imports: batch-approves all linked pending expenses
+ * (creates ledger entries via approve_expenses_by_import_job RPC).
+ *
+ * For all other import types: domain records are already committed;
+ * approval just marks the import job as COMPLETED.
+ *
+ * Idempotent — safe to call twice.
+ */
+export async function approveImportBatch(
     jobId:      string,
     approverId: string,
-    validRows:  T[],
-    definition: ImportDefinition<T>,
     rtId:       string,
-): Promise<{ inserted: number; details?: number }> {
+): Promise<{ approved: number }> {
     const job = await getJob(jobId)
     if (job.status !== IMPORT_STATUS.PENDING_APPROVAL) {
         throw new ImportStatusError(jobId, IMPORT_STATUS.PENDING_APPROVAL, job.status)
@@ -300,22 +356,22 @@ export async function approveImportJobWithRows<T>(
     if (!guardResult || (guardResult as unknown[]).length === 0) {
         // Another request already approved — idempotent OK
         const current = await getJob(jobId)
-        if (current.status === IMPORT_STATUS.COMPLETED || current.status === IMPORT_STATUS.APPROVED) return { inserted: 0 }
+        if (current.status === IMPORT_STATUS.COMPLETED || current.status === IMPORT_STATUS.APPROVED) return { approved: 0 }
         throw new ImportStatusError(jobId, IMPORT_STATUS.PENDING_APPROVAL, current.status)
     }
 
-    const context: ImportContext = { jobId, rtId, userId: approverId }
-    const preloaded = definition.preload ? await definition.preload(context) : {}
-    const enrichedContext = { ...context, ...preloaded }
+    let approved = 0
 
-    let persistResult = { inserted: 0, details: undefined as number | undefined }
-    if (validRows.length > 0) {
+    // Batch-approve domain records for expense imports.
+    // For income/payment, records were already committed as approved by persist().
+    if (job.import_type === IMPORT_TYPE.EXPENSE) {
         try {
-            const result = await definition.persist(validRows, enrichedContext)
-            persistResult = { inserted: result.inserted, details: result.details }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: count } = await (supabaseAdmin as any)
+                .rpc('approve_expenses_by_import_job', { p_job_id: jobId, p_user_id: approverId })
+            approved = (count as number) ?? 0
         } catch (err) {
-            // persist() failed — roll back to PENDING_APPROVAL so the user can retry.
-            // The idempotent persist() design means retrying is safe.
+            // Roll back to PENDING_APPROVAL so PIC can retry
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             await (supabaseAdmin as any)
                 .from('import_jobs')
@@ -324,48 +380,31 @@ export async function approveImportJobWithRows<T>(
                 .eq('status', IMPORT_STATUS.APPROVED)
             throw err
         }
+    } else {
+        // For income/payment the count is the number of valid rows persisted.
+        approved = job.success_rows
     }
 
     await finalizeJob(jobId, IMPORT_STATUS.COMPLETED, { completed_at: new Date().toISOString() })
 
-    // Dismiss pending-approval notifications so RT Chair is not left with a
-    // stale bell notification pointing at an already-resolved job.
-    await dismissImportPendingNotifications(jobId)
+    await dismissImportNotifications(jobId)
 
-    // Notify the original importer about the approval.
-    if (job.created_by) {
-        const typeName = job.import_type === 'RESIDENT' ? 'warga'
-            : job.import_type === 'PAYMENT'  ? 'pembayaran'
-            : job.import_type === 'EXPENSE'  ? 'pengeluaran'
-            : 'pemasukan'
-        try {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            await (supabaseAdmin as any)
-                .from('notifications')
-                .insert({
-                    rt_id:          job.rt_id,
-                    type:           importNotifType(job.import_type as ImportType, 'approved'),
-                    title:          `Import ${typeName} disetujui`,
-                    message:        `${persistResult.inserted} data berhasil diimpor dari import batch ${typeName} Anda.`,
-                    entity_type:    'import_jobs',
-                    entity_id:      jobId,
-                    target_user_id: job.created_by,
-                })
-        } catch {
-            // Non-critical
-        }
-    }
+    await notifyImporterApproved(job, approved)
 
-    return persistResult
+    return { approved }
 }
 
 /**
- * Rejects a PENDING_APPROVAL import job.
+ * PIC rejects a PENDING_APPROVAL import batch.
+ *
+ * For expense imports: batch-rejects all pending linked expenses.
+ * For income/payment: records already committed — domain records are kept
+ * (known limitation; PIC should coordinate manually for reversals).
  */
-export async function rejectImportJob(
-    jobId:    string,
+export async function rejectImportBatch(
+    jobId:      string,
     rejecterId: string,
-    reason:   string | null,
+    reason:     string | null,
 ): Promise<void> {
     const job = await getJob(jobId)
     if (job.status !== IMPORT_STATUS.PENDING_APPROVAL) {
@@ -385,102 +424,112 @@ export async function rejectImportJob(
 
     if (error) throw error
 
-    // Dismiss pending-approval notifications so RT Chair is not left with a
-    // stale bell notification pointing at an already-resolved job.
-    await dismissImportPendingNotifications(jobId)
-
-    // Notify the original importer about the rejection.
-    if (job.created_by) {
-        const typeName = job.import_type === 'RESIDENT' ? 'warga'
-            : job.import_type === 'PAYMENT'  ? 'pembayaran'
-            : job.import_type === 'EXPENSE'  ? 'pengeluaran'
-            : 'pemasukan'
+    // For expense: mark linked pending expenses as rejected.
+    if (job.import_type === IMPORT_TYPE.EXPENSE) {
         try {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             await (supabaseAdmin as any)
-                .from('notifications')
-                .insert({
-                    rt_id:          job.rt_id,
-                    type:           importNotifType(job.import_type as ImportType, 'rejected'),
-                    title:          `Import ${typeName} ditolak`,
-                    message:        reason
-                        ? `Import ditolak: ${reason}`
-                        : `Import batch ${typeName} Anda telah ditolak.`,
-                    entity_type:    'import_jobs',
-                    entity_id:      jobId,
-                    target_user_id: job.created_by,
+                .rpc('reject_expenses_by_import_job', {
+                    p_job_id:  jobId,
+                    p_user_id: rejecterId,
+                    p_reason:  reason ?? null,
                 })
         } catch {
-            // Non-critical
+            // Non-critical — the import job is already REJECTED
         }
     }
+
+    await dismissImportNotifications(jobId)
+
+    await notifyImporterRejected(job, reason)
 }
 
 /* -------------------------------------------------------------------------- */
-/* Helpers                                                                     */
+/* Legacy approval path (backward compat for jobs created before migration)   */
 /* -------------------------------------------------------------------------- */
 
-async function getJob(jobId: string): Promise<ImportJob> {
+/**
+ * @deprecated Use approveImportBatch() for jobs created with the new flow
+ * (confirmed_at is set). This path handles legacy PENDING_APPROVAL jobs where
+ * persist() hasn't been called yet (confirmed_at = null).
+ */
+export async function approveImportJobWithRows<T>(
+    jobId:      string,
+    approverId: string,
+    validRows:  T[],
+    definition: ImportDefinition<T>,
+    rtId:       string,
+): Promise<{ inserted: number; details?: number }> {
+    const job = await getJob(jobId)
+    if (job.status !== IMPORT_STATUS.PENDING_APPROVAL) {
+        throw new ImportStatusError(jobId, IMPORT_STATUS.PENDING_APPROVAL, job.status)
+    }
+
+    // Atomic transition
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabaseAdmin as any)
+    const { data: guardResult, error: guardError } = await (supabaseAdmin as any)
         .from('import_jobs')
-        .select('*')
+        .update({
+            status:       IMPORT_STATUS.APPROVED,
+            approved_by:  approverId,
+            approved_at:  new Date().toISOString(),
+        })
         .eq('id', jobId)
-        .single()
+        .eq('status', IMPORT_STATUS.PENDING_APPROVAL)
+        .select('id')
 
-    if (error) throw error
-    if (!data)  throw new ImportNotFoundError(jobId)
-    return data as ImportJob
-}
+    if (guardError) throw guardError
+    if (!guardResult || (guardResult as unknown[]).length === 0) {
+        const current = await getJob(jobId)
+        if (current.status === IMPORT_STATUS.COMPLETED || current.status === IMPORT_STATUS.APPROVED) return { inserted: 0 }
+        throw new ImportStatusError(jobId, IMPORT_STATUS.PENDING_APPROVAL, current.status)
+    }
 
-async function updateJobStatus(
-    jobId:  string,
-    status: ImportStatus,
-    extra?: Record<string, unknown>,
-): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabaseAdmin as any)
-        .from('import_jobs')
-        .update({ status, ...extra })
-        .eq('id', jobId)
+    const context: ImportContext = { jobId, rtId, userId: job.created_by }
+    const preloaded = definition.preload ? await definition.preload(context) : {}
+    const enrichedContext = { ...context, ...preloaded }
 
-    if (error) throw error
-}
+    let persistResult = { inserted: 0, details: undefined as number | undefined }
+    if (validRows.length > 0) {
+        try {
+            const result = await definition.persist(validRows, enrichedContext)
+            persistResult = { inserted: result.inserted, details: result.details }
+        } catch (err) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (supabaseAdmin as any)
+                .from('import_jobs')
+                .update({ status: IMPORT_STATUS.PENDING_APPROVAL, approved_by: null, approved_at: null })
+                .eq('id', jobId)
+                .eq('status', IMPORT_STATUS.APPROVED)
+            throw err
+        }
+    }
 
-async function updateJobProgress(
-    jobId: string,
-    data:  {
-        processed_rows:   number
-        success_rows:     number
-        failed_rows:      number
-        progress_percent: number
-    },
-): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabaseAdmin as any)
-        .from('import_jobs')
-        .update(data)
-        .eq('id', jobId)
-    // Best-effort — don't throw on progress update failure
-}
+    await finalizeJob(jobId, IMPORT_STATUS.COMPLETED, { completed_at: new Date().toISOString() })
+    await dismissImportNotifications(jobId)
+    await notifyImporterApproved(job, persistResult.inserted)
 
-async function finalizeJob(
-    jobId:  string,
-    status: ImportStatus,
-    data:   Record<string, unknown> = {},
-): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error } = await (supabaseAdmin as any)
-        .from('import_jobs')
-        .update({ status, ...data })
-        .eq('id', jobId)
-
-    if (error) throw error
+    return persistResult
 }
 
 /**
+ * @deprecated Use rejectImportBatch() for the new flow.
+ * Kept for backward compat with the legacy approval path.
+ */
+export async function rejectImportJob(
+    jobId:      string,
+    rejecterId: string,
+    reason:     string | null,
+): Promise<void> {
+    return rejectImportBatch(jobId, rejecterId, reason)
+}
+
+/* -------------------------------------------------------------------------- */
+/* Row helpers                                                                  */
+/* -------------------------------------------------------------------------- */
+
+/**
  * Fetches ALL rows for a job, bypassing PostgREST's default max_rows=1000 cap.
- * Paginates with `.range()` until fewer than PAGE_SIZE rows are returned.
  */
 export async function fetchAllJobRows(
     jobId:  string,
@@ -513,6 +562,68 @@ export async function fetchAllJobRows(
     return all
 }
 
+/* -------------------------------------------------------------------------- */
+/* Internal helpers                                                            */
+/* -------------------------------------------------------------------------- */
+
+async function getJob(jobId: string): Promise<ImportJob> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabaseAdmin as any)
+        .from('import_jobs')
+        .select('*')
+        .eq('id', jobId)
+        .single()
+
+    if (error) throw error
+    if (!data)  throw new ImportNotFoundError(jobId)
+    return data as ImportJob
+}
+
+async function updateJobStatus(
+    jobId:  string,
+    status: ImportStatus,
+    extra?: Record<string, unknown>,
+): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabaseAdmin as any)
+        .from('import_jobs')
+        .update({ status, ...extra })
+        .eq('id', jobId)
+
+    if (error) throw error
+}
+
+async function updateJobProgress(
+    jobId: string,
+    data: {
+        processed_rows:   number
+        success_rows:     number
+        failed_rows:      number
+        progress_percent: number
+    },
+): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await (supabaseAdmin as any)
+        .from('import_jobs')
+        .update(data)
+        .eq('id', jobId)
+    // Best-effort — don't throw on progress update failure
+}
+
+async function finalizeJob(
+    jobId:  string,
+    status: ImportStatus,
+    data:   Record<string, unknown> = {},
+): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabaseAdmin as any)
+        .from('import_jobs')
+        .update({ status, ...data })
+        .eq('id', jobId)
+
+    if (error) throw error
+}
+
 async function safeMarkFailed(jobId: string, message: string): Promise<void> {
     try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -521,7 +632,7 @@ async function safeMarkFailed(jobId: string, message: string): Promise<void> {
             .update({ status: IMPORT_STATUS.FAILED, rejection_reason: message.slice(0, 500) })
             .eq('id', jobId)
     } catch {
-        // Silent — we're already in error recovery
+        // Silent — already in error recovery
     }
 }
 
@@ -542,7 +653,6 @@ async function recordRowResults(rows: RowResultInsert[]): Promise<void> {
     for (let i = 0; i < rows.length; i += ROW_INSERT_BATCH) {
         batches.push(rows.slice(i, i + ROW_INSERT_BATCH))
     }
-    // Insert all batches in parallel — independent inserts, no ordering requirement.
     await Promise.all(batches.map(async batch => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error } = await (supabaseAdmin as any).from('import_job_rows').insert(batch)
@@ -550,10 +660,8 @@ async function recordRowResults(rows: RowResultInsert[]): Promise<void> {
     }))
 }
 
-async function dismissImportPendingNotifications(jobId: string): Promise<void> {
+async function dismissImportNotifications(jobId: string): Promise<void> {
     try {
-        // Filter by entity_id (jobId) only — the notification type is now module-specific
-        // (e.g. expense_import_pending_approval) so we cannot filter by a single literal type.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabaseAdmin as any)
             .from('notifications')
@@ -566,103 +674,208 @@ async function dismissImportPendingNotifications(jobId: string): Promise<void> {
     }
 }
 
-/** Builds a module-specific notification type string, e.g. "expense_import_pending_approval". */
-function importNotifType(importType: ImportType, event: 'pending_approval' | 'complete' | 'approved' | 'rejected'): string {
+/** Builds a module-specific notification type string. */
+function importNotifType(
+    importType: ImportType,
+    event: 'staged' | 'pending_approval' | 'complete' | 'approved' | 'rejected',
+): string {
     return `${importType.toLowerCase()}_import_${event}`
 }
 
-async function notifyJobComplete(
+function typeName(importType: ImportType): string {
+    switch (importType) {
+        case 'RESIDENT': return 'warga'
+        case 'PAYMENT':  return 'pembayaran'
+        case 'EXPENSE':  return 'pengeluaran'
+        default:         return 'pemasukan'
+    }
+}
+
+/** Notifies the Treasurer (importer) that rows have been staged and await confirmation. */
+async function notifyImporterStaged(
     jobId:   string,
     rtId:    string,
     userId:  string,
     type:    ImportType,
-    summary: {
-        total:   number
-        success: number
-        failed:  number
-        skipped: number
-        status:  ImportStatus
-    },
+    summary: { total: number; success: number; failed: number; skipped: number },
 ): Promise<void> {
     try {
-        const typeName = type === 'RESIDENT' ? 'warga'
-            : type === 'PAYMENT'  ? 'pembayaran'
-            : type === 'EXPENSE'  ? 'pengeluaran'
-            : 'pemasukan'
+        const notifType = importNotifType(type, 'staged')
 
-        if (summary.status === IMPORT_STATUS.PENDING_APPROVAL) {
-            // Idempotency guard: skip if approval notification already exists for this job.
-            // Protects against duplicate notifications when the background worker retries.
-            const notifType = importNotifType(type, 'pending_approval')
+        // Idempotency — skip if notification already exists
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: existing } = await (supabaseAdmin as any)
+            .from('notifications')
+            .select('id')
+            .eq('entity_type', 'import_jobs')
+            .eq('entity_id', jobId)
+            .eq('type', notifType)
+            .limit(1)
+            .maybeSingle()
+
+        if (existing) return
+
+        const name = typeName(type)
+        const detail = summary.failed > 0
+            ? `${summary.success} valid, ${summary.failed} tidak valid${summary.skipped > 0 ? `, ${summary.skipped} dilewati` : ''}.`
+            : `${summary.success} baris valid${summary.skipped > 0 ? `, ${summary.skipped} dilewati` : ''}.`
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabaseAdmin as any)
+            .from('notifications')
+            .insert({
+                rt_id:          rtId,
+                type:           notifType,
+                title:          `Validasi import ${name} selesai`,
+                message:        `${detail} Data siap dikonfirmasi untuk disimpan.`,
+                entity_type:    'import_jobs',
+                entity_id:      jobId,
+                target_user_id: userId,
+            })
+    } catch {
+        // Non-critical
+    }
+}
+
+/** Notifies PIC (RT Chairs) that an import batch is awaiting approval. */
+async function notifyPicPendingApproval(
+    jobId:    string,
+    rtId:     string,
+    type:     ImportType,
+    rowCount: number,
+): Promise<void> {
+    try {
+        const notifType = importNotifType(type, 'pending_approval')
+
+        // Idempotency guard
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: existing } = await (supabaseAdmin as any)
+            .from('notifications')
+            .select('id')
+            .eq('entity_type', 'import_jobs')
+            .eq('entity_id', jobId)
+            .eq('type', notifType)
+            .limit(1)
+            .maybeSingle()
+
+        if (existing) return
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: chairs } = await (supabaseAdmin as any)
+            .from('memberships')
+            .select('user_id')
+            .eq('rt_id', rtId)
+            .eq('role', 'CHAIR')
+            .eq('status', 'active')
+
+        const name = typeName(type)
+        if (chairs?.length) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data: existing } = await (supabaseAdmin as any)
+            await (supabaseAdmin as any)
                 .from('notifications')
-                .select('id')
-                .eq('entity_type', 'import_jobs')
-                .eq('entity_id', jobId)
-                .eq('type', notifType)
-                .limit(1)
-                .maybeSingle()
-
-            if (existing) return
-
-            // Notify RT Chair members who need to review this batch
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data: chairs } = await (supabaseAdmin as any)
-                .from('memberships')
-                .select('user_id')
-                .eq('rt_id', rtId)
-                .eq('role', 'CHAIR')
-                .eq('status', 'active')
-
-            if (chairs?.length) {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                await (supabaseAdmin as any)
-                    .from('notifications')
-                    .insert(
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        (chairs as any[]).map((m: { user_id: string }) => ({
-                            rt_id:          rtId,
-                            type:           notifType,
-                            title:          `Import ${typeName} menunggu persetujuan`,
-                            message:        `${summary.success} baris valid siap disetujui. Tinjau dan setujui import batch ini.`,
-                            entity_type:    'import_jobs',
-                            entity_id:      jobId,
-                            target_user_id: m.user_id,
-                        }))
-                    )
-            }
-        } else {
-            const notifType = importNotifType(type, 'complete')
-            // Idempotency guard: skip if completion notification already exists for this job.
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data: existing } = await (supabaseAdmin as any)
-                .from('notifications')
-                .select('id')
-                .eq('entity_type', 'import_jobs')
-                .eq('entity_id', jobId)
-                .eq('type', notifType)
-                .eq('target_user_id', userId)
-                .limit(1)
-                .maybeSingle()
-
-            if (!existing) {
-                // Notify the importer about completion or failure
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                await (supabaseAdmin as any)
-                    .from('notifications')
-                    .insert({
+                .insert(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (chairs as any[]).map((m: { user_id: string }) => ({
                         rt_id:          rtId,
                         type:           notifType,
-                        title:          `Import ${typeName} selesai`,
-                        message:        `${summary.total} baris diproses: ${summary.success} berhasil, ${summary.failed} gagal${summary.skipped > 0 ? `, ${summary.skipped} dilewati` : ''}.`,
+                        title:          `Import ${name} menunggu persetujuan`,
+                        message:        `${rowCount} baris valid siap disetujui. Tinjau dan setujui import batch ini.`,
                         entity_type:    'import_jobs',
                         entity_id:      jobId,
-                        target_user_id: userId,
-                    })
-            }
+                        target_user_id: m.user_id,
+                    }))
+                )
         }
     } catch {
-        // Notification failure is non-critical
+        // Non-critical
+    }
+}
+
+/** Notifies the importer (job.created_by) that a NONE-policy import completed. */
+async function notifyImporterComplete(
+    jobId:   string,
+    rtId:    string,
+    userId:  string,
+    type:    ImportType,
+    summary: { total: number; success: number; failed: number; skipped: number },
+): Promise<void> {
+    try {
+        const notifType = importNotifType(type, 'complete')
+
+        // Idempotency
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: existing } = await (supabaseAdmin as any)
+            .from('notifications')
+            .select('id')
+            .eq('entity_type', 'import_jobs')
+            .eq('entity_id', jobId)
+            .eq('type', notifType)
+            .eq('target_user_id', userId)
+            .limit(1)
+            .maybeSingle()
+
+        if (existing) return
+
+        const name = typeName(type)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabaseAdmin as any)
+            .from('notifications')
+            .insert({
+                rt_id:          rtId,
+                type:           notifType,
+                title:          `Import ${name} selesai`,
+                message:        `${summary.total} baris diproses: ${summary.success} berhasil, ${summary.failed} gagal${summary.skipped > 0 ? `, ${summary.skipped} dilewati` : ''}.`,
+                entity_type:    'import_jobs',
+                entity_id:      jobId,
+                target_user_id: userId,
+            })
+    } catch {
+        // Non-critical
+    }
+}
+
+/** Notifies the original importer (job.created_by) that PIC approved the batch. */
+async function notifyImporterApproved(job: ImportJob, approvedCount: number): Promise<void> {
+    if (!job.created_by) return
+    try {
+        const name = typeName(job.import_type as ImportType)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabaseAdmin as any)
+            .from('notifications')
+            .insert({
+                rt_id:          job.rt_id,
+                type:           importNotifType(job.import_type as ImportType, 'approved'),
+                title:          `Import ${name} disetujui`,
+                message:        `${approvedCount} data berhasil diimpor dari import batch ${name} Anda.`,
+                entity_type:    'import_jobs',
+                entity_id:      job.id,
+                target_user_id: job.created_by,
+            })
+    } catch {
+        // Non-critical
+    }
+}
+
+/** Notifies the original importer (job.created_by) that PIC rejected the batch. */
+async function notifyImporterRejected(job: ImportJob, reason: string | null): Promise<void> {
+    if (!job.created_by) return
+    try {
+        const name = typeName(job.import_type as ImportType)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabaseAdmin as any)
+            .from('notifications')
+            .insert({
+                rt_id:          job.rt_id,
+                type:           importNotifType(job.import_type as ImportType, 'rejected'),
+                title:          `Import ${name} ditolak`,
+                message:        reason
+                    ? `Import ditolak: ${reason}`
+                    : `Import batch ${name} Anda telah ditolak.`,
+                entity_type:    'import_jobs',
+                entity_id:      job.id,
+                target_user_id: job.created_by,
+            })
+    } catch {
+        // Non-critical
     }
 }
