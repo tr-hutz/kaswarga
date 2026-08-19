@@ -1139,6 +1139,8 @@
                 "reject": "Tolak",
                 "export": "Ekspor",
                 "import": "Impor",
+                "import_approve": "Setujui Impor",
+                "role_update": "Ubah Peran",
                 "override": "Kesampingkan",
                 "payment": {
                     "export": "Ekspor Pembayaran",
