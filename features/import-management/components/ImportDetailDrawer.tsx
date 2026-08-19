@@ -42,8 +42,7 @@ export default function ImportDetailDrawer({
 }: Props) {
     const t   = useTranslations('importManagement.detail')
     const { user } = useAuth()
-    const [detail, setDetail]     = useState<JobDetail | null>(null)
-    const [fetching, setFetching] = useState(true)
+    const [detail, setDetail] = useState<JobDetail | null>(null)
     const [showReject, setShowReject] = useState(false)
     const [reason, setReason]     = useState('')
 
@@ -79,7 +78,6 @@ export default function ImportDetailDrawer({
             .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json() })
             .then((d: JobDetail) => setDetail(d))
             .catch(() => setDetail(null))
-            .finally(() => setFetching(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, job?.id])
 
@@ -208,12 +206,8 @@ export default function ImportDetailDrawer({
                         </div>
                     )}
 
-                    {/* Invalid rows */}
-                    {fetching ? (
-                        <div className="flex justify-center py-8">
-                            <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                        </div>
-                    ) : invalidRows.length > 0 ? (
+                    {/* Invalid rows — shown once detail has loaded */}
+                    {invalidRows.length > 0 ? (
                         <div className="rounded-lg border border-danger/30 bg-danger/5 p-4 space-y-2">
                             <div className="flex items-center justify-between">
                                 <p className="text-xs font-semibold text-danger">
