@@ -107,6 +107,14 @@ export const NAVIGATION: NavItem[] = [
     },
 
     {
+        label:       'importManagement',
+        href:        '/imports',
+        icon:        'upload',
+        permission:  PERMISSION.IMPORT_VIEW,
+        requiresRt:  true,
+    },
+
+    {
         label:      'notification',
         href:       '/notification',
         icon:       'vibrate',

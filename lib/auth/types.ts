@@ -106,6 +106,9 @@ export const PERMISSION = {
   PERMISSION_UPDATE:   'permission.update',
   PERMISSION_OVERRIDE: 'permission.override',
 
+  // Import Management
+  IMPORT_VIEW: 'import.view',
+
   // Audit
   AUDIT_VIEW: 'audit.view',
 

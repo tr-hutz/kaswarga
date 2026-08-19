@@ -89,6 +89,7 @@
         "expenses": "Pengeluaran",
         "income": "Pemasukan",
         "ledger": "Buku Kas",
+        "importManagement": "Manajemen Impor",
         "notification": "Notifikasi",
         "activity": "Aktivitas",
         "rtProfile": "Profil RT",
@@ -504,6 +505,88 @@
         "invalidRowsNote": "Baris yang tidak valid tidak akan diimpor.",
         "status": "Status",
         "required": "wajib"
+    },
+    "importManagement": {
+        "title": "Manajemen Impor",
+        "subtitle": "Monitor proses import data warga dan transaksi.",
+        "addButton": "Import Data",
+        "searchPlaceholder": "Cari nama file...",
+        "emptyTitle": "Belum ada data import",
+        "emptyDescription": "Import data warga atau transaksi menggunakan tombol \"Import Data\".",
+        "errorMessage": "Data import tidak dapat dimuat.",
+        "filters": {
+            "allStatuses": "Semua Status",
+            "allModules":  "Semua Modul"
+        },
+        "status": {
+            "QUEUED":           "Antrian",
+            "PROCESSING":       "Sedang diproses",
+            "VALIDATING":       "Memvalidasi",
+            "STAGED":           "Menunggu konfirmasi",
+            "PROMOTING":        "Menyimpan data",
+            "PROMOTED":         "Disimpan",
+            "CANCELLED":        "Dibatalkan",
+            "PENDING_APPROVAL": "Menunggu persetujuan",
+            "APPROVED":         "Disetujui",
+            "REJECTED":         "Ditolak",
+            "COMPLETED":        "Selesai",
+            "FAILED":           "Gagal"
+        },
+        "modules": {
+            "RESIDENT": "Warga",
+            "PAYMENT":  "Pembayaran",
+            "INCOME":   "Pemasukan",
+            "EXPENSE":  "Pengeluaran"
+        },
+        "columns": {
+            "file":       "File",
+            "module":     "Modul",
+            "total":      "Total",
+            "success":    "Berhasil",
+            "failed":     "Gagal",
+            "status":     "Status",
+            "date":       "Tanggal"
+        },
+        "detail": {
+            "title":          "Detail Import",
+            "file":           "File",
+            "module":         "Modul",
+            "date":           "Tanggal",
+            "totalRows":      "Total Baris",
+            "successRows":    "Berhasil",
+            "failedRows":     "Tidak Valid",
+            "skippedRows":    "Dilewati",
+            "status":         "Status",
+            "staged": {
+                "description": "Data telah divalidasi dan siap dikonfirmasi.",
+                "note":        "Menyimpan data akan memasukkan baris valid ke modul tujuan. Data belum dianggap disetujui sampai PIC menyetujuinya."
+            },
+            "pendingApproval": {
+                "description": "Data telah disimpan dan menunggu persetujuan."
+            },
+            "actions": {
+                "confirm":       "Simpan Data",
+                "cancel":        "Batalkan",
+                "approveAll":    "Setujui Semua ({count})",
+                "rejectAll":     "Tolak Semua",
+                "viewDetail":    "Lihat Detail",
+                "confirmReject": "Konfirmasi Tolak",
+                "rejectReason":  "Alasan penolakan (opsional)",
+                "rejectPlaceholder": "Tulis alasan penolakan..."
+            },
+            "selfApprovalWarning": "Anda tidak dapat menyetujui import milik sendiri.",
+            "errorRows": "{count} baris tidak valid (tidak akan diimpor)",
+            "downloadErrors": "Unduh laporan error"
+        },
+        "importDialog": {
+            "title":           "Import Data",
+            "moduleLabel":     "Modul",
+            "modulePlaceholder": "Pilih modul...",
+            "fileLabel":       "File",
+            "noModuleSelected": "Pilih modul terlebih dahulu.",
+            "importButton":    "Impor",
+            "rowsWillImport":  "{count} baris akan diimpor"
+        }
     },
     "appShell": {
         "noMembership": {
