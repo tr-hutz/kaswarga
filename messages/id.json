@@ -708,6 +708,12 @@
         "addButton": "Tambah Pemasukan",
         "approveAll": "Setujui Semua ({count})",
         "searchPlaceholder": "Cari pemasukan...",
+        "filters": {
+            "allCategories":    "Semua Kategori",
+            "allSourceTypes":   "Semua Jenis",
+            "allStatuses":      "Semua Status",
+            "allPaymentMethods":"Semua Jenis Pembayaran"
+        },
         "import": {
             "title": "Import Data Pemasukan",
             "required": "wajib",
