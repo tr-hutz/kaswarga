@@ -18,12 +18,13 @@ interface Props {
     query:        QueryOptions
     setPage:      (p: number) => void
     setPageSize:  (s: number) => void
+    setSearch:    (s: string) => void
     isSuperAdmin: boolean
 }
 
 export default function ActivityView({
     result, stats, loading, error, onRetry,
-    query, setPage, setPageSize, isSuperAdmin,
+    query, setPage, setPageSize, setSearch, isSuperAdmin,
 }: Props) {
     const t = useTranslations('activity')
 
@@ -71,6 +72,8 @@ export default function ActivityView({
                 query={query}
                 onPageChange={setPage}
                 onPageSizeChange={setPageSize}
+                onSearch={setSearch}
+                searchPlaceholder={t('searchPlaceholder')}
                 onRetry={onRetry}
                 onRowClick={openDrawer}
             />

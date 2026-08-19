@@ -275,6 +275,7 @@
     "activity": {
         "title": "Aktivitas",
         "subtitle": "Histori aktivitas sistem",
+        "searchPlaceholder": "Cari deskripsi atau nama pelaku...",
         "loading": "Loading...",
         "table": {
             "actor": "Pelaku",
