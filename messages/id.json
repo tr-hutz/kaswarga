@@ -1124,6 +1124,7 @@
             "role": "Peran",
             "permission": "Izin",
             "audit": "Audit",
+            "import": "Impor",
             "other": "Lainnya",
             "rbac": "Otorisasi"
         },
@@ -1277,6 +1278,7 @@
             "role": "Peran",
             "permission": "Izin",
             "audit": "Audit",
+            "import": "Impor",
             "other": "Lainnya",
             "rbac": "Otorisasi"
         },
