@@ -62,7 +62,6 @@ interface Props {
     approvalLoading:    boolean
     approveExpense:     (r: MappedExpense) => void
     rejectExpense:      (r: MappedExpense) => void
-    approveAllExpenses: () => void
     deleteTarget:       MappedExpense | null
     confirmDelete:      () => void
     cancelDelete:       () => void
@@ -80,7 +79,7 @@ export default function ExpenseView({
     importOpen, openImport, closeImport,
     importRows, fileName: importFileName, fileRef: importFileRef,
     importing, handleFile, handleImport, downloadTemplate, resetImport,
-    approvalLoading, approveExpense, rejectExpense, approveAllExpenses,
+    approvalLoading, approveExpense, rejectExpense,
     deleteTarget, confirmDelete, cancelDelete,
 }: Props) {
     const t  = useTranslations('expenses')
@@ -89,7 +88,6 @@ export default function ExpenseView({
     const canManageExpenses = usePermission(PERMISSION.EXPENSE_CREATE)
 
     const data = result?.data ?? []
-    const pendingCount = data.filter((r) => r.status === 'pending').length
 
     const columns = useMemo(
         () => buildExpenseColumns({
@@ -111,16 +109,6 @@ export default function ExpenseView({
                     <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                    <Can permission={PERMISSION.EXPENSE_APPROVE}>
-                        {pendingCount > 0 && (
-                            <button
-                                onClick={approveAllExpenses}
-                                className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
-                            >
-                                {t('approveAll', { count: pendingCount })}
-                            </button>
-                        )}
-                    </Can>
                     <Can permission={PERMISSION.EXPENSE_CREATE}>
                         <button
                             onClick={openCreateForm}
