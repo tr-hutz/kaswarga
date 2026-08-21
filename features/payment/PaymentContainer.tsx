@@ -13,13 +13,11 @@ import { useToast }           from '@/components/ui/ToastProvider'
 import { exportToCSV, exportToExcel } from '@/lib/export/export-utils'
 import { buildPaymentColumns } from './components/PaymentColumns'
 import PaymentView            from './PaymentView'
-import { usePermission }      from '@/lib/auth/usePermission'
-import { PERMISSION }         from '@/lib/auth/types'
+
 
 export default function PaymentContainer() {
     const t  = useTranslations('payments')
     const tc = useTranslations('common')
-    const canManage = usePermission(PERMISSION.PAYMENT_UPDATE)
     const { toast } = (useToast() as any)
 
     const { query, setPage, setPageSize, setSearch, setSort, setFilter } =
@@ -43,75 +41,6 @@ export default function PaymentContainer() {
     } = usePaymentImport(() => {
         toast({ message: t('import.jobCreated'), type: 'info', duration: 4000 })
     })
-
-    // Approve all imported
-    const [approveAllLoading, setApproveAllLoading] = useState(false)
-
-    async function handleApproveAllImported() {
-        setApproveAllLoading(true)
-        try {
-            const res  = await fetch('/api/payments/approve-all-imported', { method: 'POST' })
-            const body = await res.json()
-            if (!res.ok) throw new Error(body.error || 'Failed')
-            toast({ message: t('approveAllSuccess', { count: body.approved }), type: 'success' })
-            reload()
-        } catch (err) {
-            toast({ message: (err as Error).message, type: 'error' })
-        } finally {
-            setApproveAllLoading(false)
-        }
-    }
-
-    // Reject / delete all imported
-    const [bulkActionLoading,   setBulkActionLoading]   = useState(false)
-    const [deleteAllConfirmOpen, setDeleteAllConfirmOpen] = useState(false)
-
-    async function handleRejectAllImported() {
-        const reason = await prompt({
-            title:            t('rejectAll.title'),
-            description:      t('rejectAll.description'),
-            placeholder:      t('rejectAll.placeholder'),
-            confirmLabel:     t('rejectAll.confirmLabel'),
-            confirmClassName: 'bg-danger hover:bg-danger/80 text-white',
-        })
-        if (!reason) return
-        setBulkActionLoading(true)
-        try {
-            const res  = await fetch('/api/payments/reject-all-imported', {
-                method:  'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify({ reason }),
-            })
-            const body = await res.json()
-            if (!res.ok) throw new Error(body.error || 'Failed')
-            toast({ message: t('rejectAllSuccess', { count: body.rejected }), type: 'success' })
-            reload()
-        } catch (err) {
-            toast({ message: (err as Error).message, type: 'error' })
-        } finally {
-            setBulkActionLoading(false)
-        }
-    }
-
-    function handleDeleteAllImported() {
-        setDeleteAllConfirmOpen(true)
-    }
-
-    async function confirmDeleteAll() {
-        setDeleteAllConfirmOpen(false)
-        setBulkActionLoading(true)
-        try {
-            const res  = await fetch('/api/payments/delete-all-imported', { method: 'POST' })
-            const body = await res.json()
-            if (!res.ok) throw new Error(body.error || 'Failed')
-            toast({ message: t('deleteAllSuccess', { count: body.deleted }), type: 'success' })
-            reload()
-        } catch (err) {
-            toast({ message: (err as Error).message, type: 'error' })
-        } finally {
-            setBulkActionLoading(false)
-        }
-    }
 
     async function handleApprove(payment: any) {
         await approve(payment.id)
@@ -157,10 +86,6 @@ export default function PaymentContainer() {
     }
 
     const data = result?.data ?? []
-
-    const importedPendingCount = canManage
-        ? data.filter(r => r.status === 'pending' && r.proofUrl?.includes('-import-confirm-payment.xlsx')).length
-        : 0
 
     const columns = useMemo(
         () => buildPaymentColumns({ t: (k: string) => t(k as any) }),
@@ -210,17 +135,6 @@ export default function PaymentContainer() {
             openCreateForm={() => setCreateFormOpen(true)}
             closeCreateForm={() => setCreateFormOpen(false)}
             onCreatePayment={handleCreatePayment}
-            // approve all imported
-            importedPendingCount={importedPendingCount}
-            approveAllImported={handleApproveAllImported}
-            approveAllLoading={approveAllLoading}
-            // reject / delete all imported
-            rejectAllImported={handleRejectAllImported}
-            deleteAllImported={handleDeleteAllImported}
-            confirmDeleteAll={confirmDeleteAll}
-            cancelDeleteAll={() => setDeleteAllConfirmOpen(false)}
-            deleteAllConfirmOpen={deleteAllConfirmOpen}
-            bulkActionLoading={bulkActionLoading}
         />
     )
 }
