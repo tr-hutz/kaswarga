@@ -12,6 +12,9 @@ import ExpenseImportModal     from './components/import/ExpenseImportModal'
 import { buildExpenseColumns } from './components/ExpenseColumns'
 import ConfirmDialog           from '@/components/ui/ConfirmDialog'
 import ExportDropdown         from '@/components/ui/ExportDropdown'
+import ImportApprovalBanner      from '@/components/import/ImportApprovalBanner'
+import ImportConfirmationBanner  from '@/components/import/ImportConfirmationBanner'
+import { IMPORT_TYPE }           from '@/lib/import/types'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 import type { MappedExpense } from './hooks/useExpenseData'
 import Icon from "@/components/ui/Icon";
@@ -29,9 +32,7 @@ interface Props {
     setSort:         (by: string, dir: 'asc' | 'desc') => void
     setFilter:       (key: string, value: unknown) => void
     importError:     string
-    progress?:       number
-    processedRows?:  number
-    totalRows?:      number
+    onApproved:      () => void
     // from useExpenseActions
     selectedRow:     MappedExpense | null
     drawerOpen:      boolean
@@ -61,7 +62,6 @@ interface Props {
     approvalLoading:    boolean
     approveExpense:     (r: MappedExpense) => void
     rejectExpense:      (r: MappedExpense) => void
-    approveAllExpenses: () => void
     deleteTarget:       MappedExpense | null
     confirmDelete:      () => void
     cancelDelete:       () => void
@@ -71,7 +71,7 @@ export default function ExpenseView({
     result, loading, fetchError, onRetry,
     categories,
     query, setPage, setPageSize, setSearch, setSort, setFilter,
-    importError,
+    importError, onApproved,
     selectedRow, drawerOpen, formOpen,
     openDrawer, closeDrawer,
     openCreateForm, openEditForm, closeForm, submitForm,
@@ -79,8 +79,7 @@ export default function ExpenseView({
     importOpen, openImport, closeImport,
     importRows, fileName: importFileName, fileRef: importFileRef,
     importing, handleFile, handleImport, downloadTemplate, resetImport,
-    progress, processedRows, totalRows,
-    approvalLoading, approveExpense, rejectExpense, approveAllExpenses,
+    approvalLoading, approveExpense, rejectExpense,
     deleteTarget, confirmDelete, cancelDelete,
 }: Props) {
     const t  = useTranslations('expenses')
@@ -89,7 +88,6 @@ export default function ExpenseView({
     const canManageExpenses = usePermission(PERMISSION.EXPENSE_CREATE)
 
     const data = result?.data ?? []
-    const pendingCount = data.filter((r) => r.status === 'pending').length
 
     const columns = useMemo(
         () => buildExpenseColumns({
@@ -111,16 +109,6 @@ export default function ExpenseView({
                     <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                    <Can permission={PERMISSION.EXPENSE_APPROVE}>
-                        {pendingCount > 0 && (
-                            <button
-                                onClick={approveAllExpenses}
-                                className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition"
-                            >
-                                {t('approveAll', { count: pendingCount })}
-                            </button>
-                        )}
-                    </Can>
                     <Can permission={PERMISSION.EXPENSE_CREATE}>
                         <button
                             onClick={openCreateForm}
@@ -132,6 +120,14 @@ export default function ExpenseView({
                     </Can>
                 </div>
             </div>
+
+            <Can permission={PERMISSION.EXPENSE_IMPORT}>
+                <ImportConfirmationBanner importType={IMPORT_TYPE.EXPENSE} onConfirmed={onApproved} />
+            </Can>
+
+            <Can permission={PERMISSION.EXPENSE_APPROVE}>
+                <ImportApprovalBanner importType={IMPORT_TYPE.EXPENSE} onApproved={onApproved} />
+            </Can>
 
             <DataTable
                 columns={columns}
@@ -221,9 +217,6 @@ export default function ExpenseView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
-                progress={progress}
-                processedRows={processedRows}
-                totalRows={totalRows}
             />
 
             <ConfirmDialog

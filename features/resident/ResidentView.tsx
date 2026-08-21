@@ -67,9 +67,6 @@ interface Props {
     fileRef:          React.RefObject<HTMLInputElement>
     importing:        boolean
     importError:      string
-    progress?:        number
-    processedRows?:   number
-    totalRows?:       number
     handleFile:       (file: File | undefined) => void
     handleImport:     () => void
     downloadTemplate: () => void
@@ -88,7 +85,6 @@ export default function ResidentView({
     importOpen, openImport, closeImport,
     rows: importRows, fileName: importFileName, fileRef: importFileRef,
     importing, importError,
-    progress, processedRows, totalRows,
     handleFile, handleImport, downloadTemplate, resetImport,
     changeRoleTarget, closeChangeRole,
 }: Props) {
@@ -229,9 +225,6 @@ export default function ResidentView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
-                progress={progress}
-                processedRows={processedRows}
-                totalRows={totalRows}
             />
         </div>
     )

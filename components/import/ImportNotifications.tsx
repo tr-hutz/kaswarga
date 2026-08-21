@@ -1,0 +1,152 @@
+'use client'
+
+import Icon       from '@/components/ui/Icon'
+import ProgressBar from '@/components/ui/ProgressBar'
+import { useImportNotifications } from './ImportNotificationContext'
+import { IMPORT_STATUS, IMPORT_TYPE, type ImportJob, type ImportStatus } from '@/lib/import/types'
+
+const TYPE_LABEL: Record<string, string> = {
+    [IMPORT_TYPE.RESIDENT]: 'Warga',
+    [IMPORT_TYPE.PAYMENT]:  'Pembayaran',
+    [IMPORT_TYPE.INCOME]:   'Pemasukan',
+    [IMPORT_TYPE.EXPENSE]:  'Pengeluaran',
+}
+
+function statusLabel(status: string): string {
+    switch (status) {
+        case IMPORT_STATUS.QUEUED:           return 'Menunggu antrian...'
+        case IMPORT_STATUS.PROCESSING:       return 'Memproses...'
+        case IMPORT_STATUS.VALIDATING:       return 'Memvalidasi...'
+        case IMPORT_STATUS.STAGED:           return 'Menunggu Konfirmasi'
+        case IMPORT_STATUS.PROMOTING:        return 'Menyimpan data...'
+        case IMPORT_STATUS.PROMOTED:         return 'Data Disimpan'
+        case IMPORT_STATUS.CANCELLED:        return 'Dibatalkan'
+        case IMPORT_STATUS.PENDING_APPROVAL: return 'Menunggu Persetujuan PIC'
+        case IMPORT_STATUS.COMPLETED:        return 'Selesai'
+        case IMPORT_STATUS.FAILED:           return 'Gagal'
+        case IMPORT_STATUS.REJECTED:         return 'Ditolak'
+        default:                             return status
+    }
+}
+
+function ImportJobCard({ job, onDismiss }: { job: ImportJob; onDismiss: () => void }) {
+    const isInProgress      = ([
+        IMPORT_STATUS.QUEUED,
+        IMPORT_STATUS.PROCESSING,
+        IMPORT_STATUS.VALIDATING,
+        IMPORT_STATUS.PROMOTING,
+    ] as ImportStatus[]).includes(job.status)
+    const isStaged          = job.status === IMPORT_STATUS.STAGED
+    const isPendingApproval = job.status === IMPORT_STATUS.PENDING_APPROVAL
+    const isCompleted       = job.status === IMPORT_STATUS.COMPLETED || job.status === IMPORT_STATUS.PROMOTED
+    const isFailed          = job.status === IMPORT_STATUS.FAILED || job.status === IMPORT_STATUS.REJECTED || job.status === IMPORT_STATUS.CANCELLED
+    const isTerminal        = isCompleted || isFailed || isStaged || isPendingApproval
+
+    const typeLabel = TYPE_LABEL[job.import_type] ?? job.import_type
+    const shortName = job.filename.length > 32 ? `${job.filename.slice(0, 29)}…` : job.filename
+
+    return (
+        <div className="bg-surface border border-divider rounded-xl shadow-card w-72 p-3.5 space-y-2">
+
+            <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                    {isInProgress && (
+                        <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin shrink-0" />
+                    )}
+                    {(isStaged || isPendingApproval) && (
+                        <Icon name="clock"        size={16} className="text-warning  shrink-0" />
+                    )}
+                    {isCompleted && (
+                        <Icon name="check-circle" size={16} className="text-success  shrink-0" />
+                    )}
+                    {isFailed && (
+                        <Icon name="alert-circle" size={16} className="text-danger   shrink-0" />
+                    )}
+                    <div className="min-w-0">
+                        <p className="text-xs font-semibold text-foreground leading-tight">
+                            Impor {typeLabel}
+                        </p>
+                        <p className="text-xs text-muted truncate">{shortName}</p>
+                    </div>
+                </div>
+
+                {isTerminal && (
+                    <button
+                        onClick={onDismiss}
+                        aria-label="Tutup notifikasi"
+                        className="p-0.5 rounded hover:bg-canvas text-subtle hover:text-foreground shrink-0"
+                    >
+                        <Icon name="x" size={14} />
+                    </button>
+                )}
+            </div>
+
+            {isInProgress && (
+                <ProgressBar
+                    value={job.progress_percent}
+                    sublabel={
+                        job.total_rows > 0
+                            ? `${job.processed_rows} / ${job.total_rows} baris`
+                            : statusLabel(job.status)
+                    }
+                />
+            )}
+
+            {isStaged && (
+                <p className="text-xs text-warning font-medium pt-0.5">
+                    {job.success_rows} baris siap dikonfirmasi
+                    {job.failed_rows > 0 && (
+                        <span className="font-normal text-danger ml-1">
+                            ({job.failed_rows} tidak valid)
+                        </span>
+                    )}
+                </p>
+            )}
+
+            {isPendingApproval && (
+                <p className="text-xs text-warning font-medium pt-0.5">
+                    {job.success_rows} baris menunggu persetujuan PIC
+                </p>
+            )}
+
+            {isCompleted && (
+                <p className="text-xs text-success">
+                    {job.success_rows} baris berhasil diimpor
+                    {(job.total_rows - job.success_rows - job.failed_rows) > 0 && (
+                        <span className="text-warning ml-1">
+                            ({job.total_rows - job.success_rows - job.failed_rows} dilewati)
+                        </span>
+                    )}
+                </p>
+            )}
+
+            {isFailed && (
+                <p className="text-xs text-danger">
+                    {job.status === IMPORT_STATUS.REJECTED  ? 'Import ditolak'
+                    : job.status === IMPORT_STATUS.CANCELLED ? 'Import dibatalkan'
+                    : job.failed_rows > 0                    ? `${job.failed_rows} baris gagal`
+                    :                                          'Import gagal'}
+                </p>
+            )}
+        </div>
+    )
+}
+
+export default function ImportNotifications() {
+    const { jobs, dismissJob } = useImportNotifications()
+
+    if (jobs.length === 0) return null
+
+    return (
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 items-end pointer-events-none">
+            {jobs.slice(0, 5).map(job => (
+                <div key={job.id} className="pointer-events-auto">
+                    <ImportJobCard
+                        job={job}
+                        onDismiss={() => dismissJob(job.id)}
+                    />
+                </div>
+            ))}
+        </div>
+    )
+}

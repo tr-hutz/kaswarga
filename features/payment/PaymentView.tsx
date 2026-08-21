@@ -8,8 +8,10 @@ import { DataTable }            from '@/components/common/data-table'
 import PaymentDetailDrawer      from './components/details/PaymentDetailDrawer'
 import PaymentImportModal       from './components/import/PaymentImportModal'
 import PaymentForm              from './components/forms/PaymentForm'
+import ImportApprovalBanner     from '@/components/import/ImportApprovalBanner'
+import ImportConfirmationBanner from '@/components/import/ImportConfirmationBanner'
+import { IMPORT_TYPE }          from '@/lib/import/types'
 import ExportDropdown           from '@/components/ui/ExportDropdown'
-import DangerDropdown           from '@/components/ui/DangerDropdown'
 import ConfirmDialog            from '@/components/ui/ConfirmDialog'
 import Icon                     from '@/components/ui/Icon'
 import type { Column, QueryOptions, PageResult } from '@/lib/types/query'
@@ -47,9 +49,6 @@ interface Props {
     importFileRef:   React.RefObject<HTMLInputElement | null>
     importing:       boolean
     importError:     string
-    progress?:       number
-    processedRows?:  number
-    totalRows?:      number
     handleFile:      (file: File | undefined) => void
     handleImport:    () => void
     downloadTemplate: () => void
@@ -66,17 +65,9 @@ interface Props {
         notes:      string | null
         date:       string
     }) => Promise<void>
-    // approve all imported
-    importedPendingCount: number
-    approveAllImported:   () => void
-    approveAllLoading:    boolean
-    // reject / delete all imported
-    rejectAllImported:    () => void
-    deleteAllImported:    () => void
     confirmDeleteAll:     () => void
     cancelDeleteAll:      () => void
     deleteAllConfirmOpen: boolean
-    bulkActionLoading:    boolean
 }
 
 export default function PaymentView({
@@ -89,12 +80,8 @@ export default function PaymentView({
     importOpen, openImport, closeImport,
     importRows, importFileName, importFileRef,
     importing, importError, handleFile, handleImport, downloadTemplate, resetImport,
-    progress, processedRows, totalRows,
     createFormOpen, openCreateForm, closeCreateForm, onCreatePayment,
-    importedPendingCount, approveAllImported, approveAllLoading,
-    rejectAllImported, deleteAllImported,
     confirmDeleteAll, cancelDeleteAll, deleteAllConfirmOpen,
-    bulkActionLoading,
 }: Props) {
     const canExport = usePermission(PERMISSION.DASHBOARD_PAYMENT_EXPORT)
 
@@ -106,27 +93,6 @@ export default function PaymentView({
                     <p className="text-sm text-muted mt-1">{t('subtitle')}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                    <Can permission={PERMISSION.PAYMENT_APPROVE}>
-                        {importedPendingCount > 0 && (
-                            <>
-                                <DangerDropdown
-                                    label={t('rejectAll.button')}
-                                    disabled={bulkActionLoading || approveAllLoading}
-                                    items={[
-                                        { label: t('rejectAll.option'), iconName: 'x-circle', onClick: rejectAllImported },
-                                        { label: t('deleteAll.option'), iconName: 'trash-2',  onClick: deleteAllImported },
-                                    ]}
-                                />
-                                <button
-                                    onClick={approveAllImported}
-                                    disabled={approveAllLoading || bulkActionLoading}
-                                    className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-success/90 transition disabled:opacity-60"
-                                >
-                                    {t('approveAll', { count: importedPendingCount })}
-                                </button>
-                            </>
-                        )}
-                    </Can>
                     <Can permission={PERMISSION.PAYMENT_CREATE}>
                         <button
                             onClick={openCreateForm}
@@ -138,6 +104,14 @@ export default function PaymentView({
                     </Can>
                 </div>
             </div>
+
+            <Can permission={PERMISSION.PAYMENT_IMPORT}>
+                <ImportConfirmationBanner importType={IMPORT_TYPE.PAYMENT} onConfirmed={reload} />
+            </Can>
+
+            <Can permission={PERMISSION.PAYMENT_IMPORT_APPROVE}>
+                <ImportApprovalBanner importType={IMPORT_TYPE.PAYMENT} onApproved={reload} />
+            </Can>
 
             <DataTable
                 columns={columns}
@@ -165,23 +139,23 @@ export default function PaymentView({
                     </select>
                 }
                 renderActions={
-                    canExport ? (
-                        <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
+                        {canExport && (
                             <ExportDropdown
                                 onExportExcel={onExportExcel}
                                 onExportCSV={onExportCSV}
                             />
-                            <Can permission={PERMISSION.PAYMENT_CREATE}>
-                                <button
-                                    onClick={openImport}
-                                    className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
-                                >
-                                    <Icon name="upload" size={15} />
-                                    {tc('actions.import')}
-                                </button>
-                            </Can>
-                        </div>
-                    ) : undefined
+                        )}
+                        <Can permission={PERMISSION.PAYMENT_IMPORT}>
+                            <button
+                                onClick={openImport}
+                                className="flex items-center gap-1.5 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground"
+                            >
+                                <Icon name="upload" size={15} />
+                                {tc('actions.import')}
+                            </button>
+                        </Can>
+                    </div>
                 }
             />
 
@@ -206,9 +180,6 @@ export default function PaymentView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
-                progress={progress}
-                processedRows={processedRows}
-                totalRows={totalRows}
             />
 
             <ConfirmDialog

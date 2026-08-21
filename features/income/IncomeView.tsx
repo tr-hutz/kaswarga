@@ -12,6 +12,9 @@ import ConfirmDialog         from '@/components/ui/ConfirmDialog'
 import IncomeDrawer          from './components/drawer/IncomeDrawer'
 import IncomeForm            from './components/forms/IncomeForm'
 import IncomeImportModal     from './components/import/IncomeImportModal'
+import ImportApprovalBanner     from '@/components/import/ImportApprovalBanner'
+import ImportConfirmationBanner from '@/components/import/ImportConfirmationBanner'
+import { IMPORT_TYPE }          from '@/lib/import/types'
 import type { QueryOptions, PageResult, Column } from '@/lib/types/query'
 
 interface Props {
@@ -45,7 +48,6 @@ interface Props {
     approvalLoading: boolean
     approveIncome:   (id: string) => void
     rejectIncome:    (id: string, reason: string) => void
-    approveAllIncome: () => void
     // export
     exportCSV:       (rows: any[]) => void
     exportExcel:     (rows: any[]) => void
@@ -61,9 +63,6 @@ interface Props {
     handleImport:    () => void
     downloadTemplate: () => void
     resetImport:     () => void
-    progress?:       number
-    processedRows?:  number
-    totalRows?:      number
 }
 
 export default function IncomeView({
@@ -74,18 +73,16 @@ export default function IncomeView({
     openDrawer, closeDrawer,
     openCreateForm, openEditForm, closeForm, submitForm,
     removeRow, confirmDelete, cancelDelete,
-    approvalLoading, approveIncome, rejectIncome, approveAllIncome,
+    approvalLoading, approveIncome, rejectIncome,
     exportCSV, exportExcel,
     importOpen, openImport, closeImport,
     importRows, fileName: importFileName, fileRef: importFileRef,
     importing, handleFile, handleImport, downloadTemplate, resetImport,
-    progress, processedRows, totalRows,
 }: Props) {
     const t  = useTranslations('income')
     const tc = useTranslations('common')
 
-    const data         = result?.data ?? []
-    const pendingCount = data.filter((r: any) => r.status === 'pending').length
+    const data = result?.data ?? []
 
     return (
         <div className="space-y-6">
@@ -97,16 +94,6 @@ export default function IncomeView({
                     <p className="text-sm text-muted mt-0.5">{t('subtitle')}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                    <Can permission={PERMISSION.INCOME_APPROVE}>
-                        {pendingCount > 0 && (
-                            <button
-                                onClick={approveAllIncome}
-                                className="flex-shrink-0 bg-success text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-success/90 transition"
-                            >
-                                {t('approveAll', { count: pendingCount } as any)}
-                            </button>
-                        )}
-                    </Can>
                     <Can permission={PERMISSION.INCOME_CREATE}>
                         <button
                             onClick={openCreateForm}
@@ -118,6 +105,14 @@ export default function IncomeView({
                     </Can>
                 </div>
             </div>
+
+            <Can permission={PERMISSION.INCOME_IMPORT}>
+                <ImportConfirmationBanner importType={IMPORT_TYPE.INCOME} />
+            </Can>
+
+            <Can permission={PERMISSION.INCOME_APPROVE}>
+                <ImportApprovalBanner importType={IMPORT_TYPE.INCOME} />
+            </Can>
 
             {/* Table */}
             <DataTable
@@ -132,6 +127,57 @@ export default function IncomeView({
                 onRowClick={openDrawer}
                 searchPlaceholder={t('searchPlaceholder')}
                 onSearch={setSearch}
+                renderFilters={
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <select
+                            value={String(query.filters?.income_category ?? 'all')}
+                            onChange={(e) => setFilter('income_category', e.target.value)}
+                            className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
+                        >
+                            <option value="all">{t('filters.allCategories')}</option>
+                            <option value="DONATION">{t('categories.DONATION')}</option>
+                            <option value="GOVERNMENT">{t('categories.GOVERNMENT')}</option>
+                            <option value="EVENT">{t('categories.EVENT')}</option>
+                            <option value="BAZAAR">{t('categories.BAZAAR')}</option>
+                            <option value="RENTAL">{t('categories.RENTAL')}</option>
+                            <option value="SALES">{t('categories.SALES')}</option>
+                            <option value="INTEREST">{t('categories.INTEREST')}</option>
+                            <option value="OTHER">{t('categories.OTHER')}</option>
+                        </select>
+                        <select
+                            value={String(query.filters?.source_type ?? 'all')}
+                            onChange={(e) => setFilter('source_type', e.target.value)}
+                            className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
+                        >
+                            <option value="all">{t('filters.allSourceTypes')}</option>
+                            <option value="RESIDENT">{t('sourceTypes.RESIDENT')}</option>
+                            <option value="NON_RESIDENT">{t('sourceTypes.NON_RESIDENT')}</option>
+                            <option value="ORGANIZATION">{t('sourceTypes.ORGANIZATION')}</option>
+                            <option value="GOVERNMENT">{t('sourceTypes.GOVERNMENT')}</option>
+                            <option value="ANONYMOUS">{t('sourceTypes.ANONYMOUS')}</option>
+                        </select>
+                        <select
+                            value={String(query.filters?.status ?? 'all')}
+                            onChange={(e) => setFilter('status', e.target.value)}
+                            className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
+                        >
+                            <option value="all">{t('filters.allStatuses')}</option>
+                            <option value="pending">{t('status.pending')}</option>
+                            <option value="approved">{t('status.approved')}</option>
+                            <option value="rejected">{t('status.rejected')}</option>
+                        </select>
+                        <select
+                            value={String(query.filters?.payment_method ?? 'all')}
+                            onChange={(e) => setFilter('payment_method', e.target.value)}
+                            className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
+                        >
+                            <option value="all">{t('filters.allPaymentMethods')}</option>
+                            <option value="CASH">{t('paymentMethods.CASH')}</option>
+                            <option value="TRANSFER">{t('paymentMethods.TRANSFER')}</option>
+                            <option value="QRIS">{t('paymentMethods.QRIS')}</option>
+                        </select>
+                    </div>
+                }
                 renderActions={
                     <div className="flex items-center gap-2 flex-wrap">
                         <Can permission={PERMISSION.INCOME_EXPORT}>
@@ -184,9 +230,6 @@ export default function IncomeView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
-                progress={progress}
-                processedRows={processedRows}
-                totalRows={totalRows}
             />
 
             {/* Delete confirm */}

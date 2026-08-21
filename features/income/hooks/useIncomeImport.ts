@@ -1,6 +1,7 @@
 'use client'
 
-import { useImport } from '@/components/common/import/useImport'
+import { useJobImport } from '@/components/common/import/useJobImport'
+import { IMPORT_TYPE }  from '@/lib/import/types'
 
 const COLUMN_ALIASES = {
     tanggal:          'received_at',
@@ -25,12 +26,12 @@ const COLUMN_ALIASES = {
     notes:            'notes',
 }
 
-export function useIncomeImport(onSuccess?: (inserted: number, skipped: number) => void) {
-    return useImport({
+export function useIncomeImport(onJobCreated?: (jobId: string) => void) {
+    return useJobImport({
+        importType:        IMPORT_TYPE.INCOME,
         columnAliases:     COLUMN_ALIASES,
         isValidRow:        (r: Record<string, string>) =>
             !!r.received_at?.trim() && !!r.amount?.trim() && !!r.income_name?.trim(),
-        apiEndpoint:       '/api/income/import',
         templateData: [
             {
                 received_at: '2026-07-01', income_name: 'Iuran Keamanan',
@@ -45,6 +46,6 @@ export function useIncomeImport(onSuccess?: (inserted: number, skipped: number) 
         ],
         templateSheetName: 'Income',
         templateFileName:  'income-import-template.xlsx',
-        onSuccess: (inserted, skipped) => onSuccess?.(inserted, skipped ?? 0),
+        onJobCreated,
     })
 }

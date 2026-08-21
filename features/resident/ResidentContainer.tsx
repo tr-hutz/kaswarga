@@ -87,10 +87,8 @@ export default function ResidentContainer() {
     // Drawer / form / export / import
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { toast } = (useToast() as any) ?? {}
-    const { error: importError, ...actions } = useResidentActions((inserted: number, skipped?: number) => {
-        refresh()
-        const skipMsg = skipped ? `, ${skipped} ${t('import.skippedSuffix')}` : ''
-        toast({ message: t('import.successMessage', { inserted }) + skipMsg, type: 'success' })
+    const { error: importError, ...actions } = useResidentActions(() => {
+        toast({ message: t('import.jobCreated'), type: 'info', duration: 4000 })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
 

@@ -231,17 +231,24 @@ export default function ImportModal({
                     </button>
                     {hasFile && (
                         importing ? (
-                            <div className="flex-1 max-w-xs">
-                                <ProgressBar
-                                    value={progress ?? 0}
-                                    label={tCommon('states.importing')}
-                                    sublabel={
-                                        (totalRows ?? 0) > 0
-                                            ? `${processedRows ?? 0} / ${totalRows ?? 0} baris`
-                                            : undefined
-                                    }
-                                />
-                            </div>
+                            (totalRows ?? 0) > 0 ? (
+                                <div className="flex-1 max-w-xs">
+                                    <ProgressBar
+                                        value={progress ?? 0}
+                                        label={tCommon('states.importing')}
+                                        sublabel={`${processedRows ?? 0} / ${totalRows} baris`}
+                                    />
+                                </div>
+                            ) : (
+                                <button
+                                    type="button"
+                                    disabled
+                                    className="bg-primary text-white rounded-lg px-4 py-2 text-sm opacity-75 flex items-center gap-2"
+                                >
+                                    <Icon name="loader2" size={14} className="animate-spin" />
+                                    {tCommon('states.importing')}
+                                </button>
+                            )
                         ) : (
                             <button
                                 type="button"

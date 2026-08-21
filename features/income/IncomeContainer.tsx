@@ -26,10 +26,6 @@ export default function IncomeContainer() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
 
-    const pendingIds = (result?.data ?? [])
-        .filter((r: any) => r.status === 'pending')
-        .map((r: any) => r.id as string)
-
     const columns = useMemo(
         () => buildIncomeColumns({
             t:        k => t(k as any),
@@ -55,7 +51,6 @@ export default function IncomeContainer() {
             setSearch={setSearch}
             setFilter={setFilter}
             importError={importError ?? ''}
-            approveAllIncome={() => actions.approveAll(pendingIds)}
             {...actions}
         />
     )

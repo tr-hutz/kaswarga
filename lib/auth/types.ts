@@ -38,6 +38,8 @@ export const PERMISSION = {
   PAYMENT_DELETE:  'payment.delete',
   PAYMENT_APPROVE: 'payment.approve',
   PAYMENT_REJECT:  'payment.reject',
+  PAYMENT_IMPORT:         'payment.import',
+  PAYMENT_IMPORT_APPROVE: 'payment.import_approve',
   DASHBOARD_PAYMENT_EXPORT: 'dashboard.payment.export',
   DASHBOARD_PAYMENT_ARREARS: 'dashboard.payment.arrears',
 
@@ -103,6 +105,9 @@ export const PERMISSION = {
   PERMISSION_VIEW:     'permission.view',
   PERMISSION_UPDATE:   'permission.update',
   PERMISSION_OVERRIDE: 'permission.override',
+
+  // Import Management
+  IMPORT_VIEW: 'import.view',
 
   // Audit
   AUDIT_VIEW: 'audit.view',

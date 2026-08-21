@@ -328,7 +328,7 @@ export async function findPaymentConfirmations(options: {
 export async function findConfirmationsPaginated(
     rtId: string,
     query: QueryOptions,
-    year = new Date().getFullYear(),
+    year?: number,
     residentId?: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<PageResult<any>> {
@@ -355,8 +355,11 @@ export async function findConfirmationsPaginated(
             )
         `, { count: 'exact' })
         .eq('rt_id', rtId)
-        .eq('year', year)
         .order('created_at', { ascending: false })
+
+    if (year) {
+        q = q.eq('year', year)
+    }
 
     if (residentId) {
         q = q.eq('resident_id', residentId)

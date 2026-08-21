@@ -22,19 +22,20 @@ export default function PaymentProofPreview({ url }: { url?: string | null }) {
         return <NoBukti label={t('detail.proofError')} />
     }
 
-    const isImportFile = /\.(xlsx|csv)$/i.test(url)
+    // Synthetic marker written by the import engine — not a real storage URL.
+    const isImportMarker = url.includes('-import-confirm-payment.xlsx')
+    const isStorageUrl   = url.startsWith('http://') || url.startsWith('https://')
+    const isImportFile   = !isStorageUrl && /\.(xlsx|csv)$/i.test(url)
 
     return (
         <div>
             <h3 className="text-sm font-semibold mb-3">
                 {t('detail.proofTitle')}
             </h3>
-            {isImportFile ? (
+            {isImportMarker || isImportFile ? (
                 <div className="rounded-lg border border-divider bg-canvas p-4 text-sm text-muted flex items-center gap-2">
                     <Icon name="file-text" size={16} />
-                    <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary underline">
-                        {t('detail.proofImportFile')}
-                    </a>
+                    <span>{t('detail.proofImportFile')}</span>
                 </div>
             ) : failed ? (
                 <NoBukti label={t('detail.proofError')} />

@@ -97,7 +97,7 @@ Supabase
 
 ├── Storage
 
-└── Realtime (Future)
+└── Realtime (import progress, notifications)
 
 ```
 
@@ -129,9 +129,11 @@ roles/
 components/
 ui/
 layout/
+import/          ← shared import UI (notifications, approval)
 
 lib/
 supabase/
+import/          ← shared import framework (engine, types, definitions)
 utils/
 constants/
 
@@ -651,6 +653,64 @@ KasWarga aims to become a maintainable, scalable and secure community management
 Every new feature should follow the same architecture defined in this document.
 
 Deviation from these principles should be documented and justified during code review.
+
+---
+
+# 24. Shared Import Framework
+
+All bulk import operations (Resident, Payment, Income) use the shared import framework in `lib/import/`.
+
+## Design
+
+```
+POST /api/import
+    │
+    ├── createImportJob()        → import_jobs (QUEUED)
+    │
+    └── after(() => processImportJob())   ← background, non-blocking
+              │
+              ├── preload()              ← RT-scoped lookup data
+              ├── validateRow()          ← per-row validation
+              ├── transform()            ← raw → domain type
+              ├── recordRowResults()     → import_job_rows (VALID/INVALID/SKIPPED)
+              │
+              ├── NONE policy  → persist() → COMPLETED
+              └── BATCH policy → PENDING_APPROVAL → approver confirms
+```
+
+## Approval (BATCH only)
+
+```
+POST /api/import/[id]/approve
+    │
+    ├── Guards: status=PENDING_APPROVAL, approver≠importer, permission check
+    ├── Fetch VALID rows from import_job_rows
+    ├── Re-run preload + transform
+    └── persist() → COMPLETED
+
+POST /api/import/[id]/reject
+    │
+    └── status → REJECTED
+```
+
+## UI
+
+- `ImportNotificationProvider` mounts in `AppShell` and subscribes to Supabase Realtime on `import_jobs`.
+- `ImportNotifications` renders floating per-job progress cards that survive page navigation.
+- `ImportApprovalBanner` is embedded in Payment and Income module pages for authorized approvers.
+- `ImportApprovalModal` provides the review and approve/reject UI.
+
+## Domain Adapters
+
+Each domain implements `ImportDefinition<T>` in `lib/import/definitions/`:
+
+| File | Type | Policy |
+|------|------|--------|
+| resident.definition.ts | RESIDENT | NONE |
+| payment.definition.ts  | PAYMENT  | BATCH |
+| income.definition.ts   | INCOME   | BATCH |
+
+Full architecture details: `docs/architecture/SHARED_IMPORT_FRAMEWORK.md`
 
 ---
 

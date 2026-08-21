@@ -59,6 +59,16 @@ export async function findIncomesPaginated(
         q = q.eq('income_category', category)
     }
 
+    const sourceType = query.filters?.source_type
+    if (sourceType && sourceType !== 'all') {
+        q = q.eq('source_type', sourceType)
+    }
+
+    const paymentMethod = query.filters?.payment_method
+    if (paymentMethod && paymentMethod !== 'all') {
+        q = q.eq('payment_method', paymentMethod)
+    }
+
     q = q.range(from, to)
 
     const { data, error, count } = await q

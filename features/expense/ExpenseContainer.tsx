@@ -18,9 +18,6 @@ export default function ExpenseContainer() {
 
     const { error: importError, ...actions } = useExpenseActions({
         onReload:          reload,
-        onImportSuccess:   () => {
-            reload()
-        },
         onApprovalSuccess: () => { reload() },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
@@ -39,6 +36,7 @@ export default function ExpenseContainer() {
             setSort={setSort}
             setFilter={setFilter}
             importError={importError}
+            onApproved={reload}
             {...actions}
         />
     )
