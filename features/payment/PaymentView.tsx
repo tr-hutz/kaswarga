@@ -12,7 +12,6 @@ import ImportApprovalBanner     from '@/components/import/ImportApprovalBanner'
 import ImportConfirmationBanner from '@/components/import/ImportConfirmationBanner'
 import { IMPORT_TYPE }          from '@/lib/import/types'
 import ExportDropdown           from '@/components/ui/ExportDropdown'
-import ConfirmDialog            from '@/components/ui/ConfirmDialog'
 import Icon                     from '@/components/ui/Icon'
 import type { Column, QueryOptions, PageResult } from '@/lib/types/query'
 import type { ConfirmationRow } from './hooks/usePaymentData'
@@ -65,9 +64,6 @@ interface Props {
         notes:      string | null
         date:       string
     }) => Promise<void>
-    confirmDeleteAll:     () => void
-    cancelDeleteAll:      () => void
-    deleteAllConfirmOpen: boolean
 }
 
 export default function PaymentView({
@@ -81,7 +77,6 @@ export default function PaymentView({
     importRows, importFileName, importFileRef,
     importing, importError, handleFile, handleImport, downloadTemplate, resetImport,
     createFormOpen, openCreateForm, closeCreateForm, onCreatePayment,
-    confirmDeleteAll, cancelDeleteAll, deleteAllConfirmOpen,
 }: Props) {
     const canExport = usePermission(PERMISSION.DASHBOARD_PAYMENT_EXPORT)
 
@@ -180,16 +175,6 @@ export default function PaymentView({
                 onImport={handleImport}
                 onDownloadTemplate={downloadTemplate}
                 onReset={resetImport}
-            />
-
-            <ConfirmDialog
-                open={deleteAllConfirmOpen}
-                title={t('deleteAll.title')}
-                message={t('deleteAll.confirm')}
-                confirmLabel={t('deleteAll.confirmLabel')}
-                cancelLabel={tc('actions.cancel')}
-                onConfirm={confirmDeleteAll}
-                onCancel={cancelDeleteAll}
             />
 
             <PaymentForm
