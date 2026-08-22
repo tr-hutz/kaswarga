@@ -32,7 +32,7 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
 
     useEffect(() => {
         if (open) {
-            setForm(initialData ? { ...emptyForm(), ...initialData, target_amount: initialData.target_amount ?? '', ends_at: initialData.ends_at ?? '' } : emptyForm())
+            setForm(initialData ? { ...emptyForm(), ...initialData, description: initialData.description ?? '', target_amount: initialData.target_amount ?? '', ends_at: initialData.ends_at ?? '' } : emptyForm())
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])
