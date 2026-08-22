@@ -5,7 +5,6 @@ import { requirePermission } from '@/lib/auth/helpers'
 import { PERMISSION }        from '@/lib/auth/types'
 import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 import {
-    findCampaignById,
     getCampaignProgress,
     countCampaignContributions,
     findCampaignContributions,
@@ -19,7 +18,9 @@ export async function GET(_req: Request, { params }: Params) {
         requirePermission(ctx.authorization, PERMISSION.INCOME_VIEW)
 
         const { id } = await params
-        const campaign = await findCampaignById(id)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: campaign } = await (supabaseAdmin as any)
+            .from('income_campaigns').select('id,rt_id,name,contribution_code_prefix,description,target_amount,starts_at,ends_at,status,cancelled_note,created_by,updated_by,created_at,updated_at').eq('id', id).is('deleted_at', null).maybeSingle()
         if (!campaign) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
         const [progress, contributions] = await Promise.all([
@@ -47,7 +48,9 @@ export async function PUT(req: Request, { params }: Params) {
         const rtId     = ctx.authorization.neighborhoodId
         const body     = await req.json()
 
-        const campaign = await findCampaignById(id)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: campaign } = await (supabaseAdmin as any)
+            .from('income_campaigns').select('id, name, status').eq('id', id).is('deleted_at', null).maybeSingle()
         if (!campaign) return NextResponse.json({ error: 'Not found' }, { status: 404 })
         if (!['DRAFT', 'ACTIVE'].includes(campaign.status)) {
             return NextResponse.json({ error: 'Only DRAFT or ACTIVE campaigns can be updated' }, { status: 409 })
@@ -115,7 +118,9 @@ export async function DELETE(_req: Request, { params }: Params) {
         const userId   = ctx.authorization.userId
         const rtId     = ctx.authorization.neighborhoodId
 
-        const campaign = await findCampaignById(id)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: campaign } = await (supabaseAdmin as any)
+            .from('income_campaigns').select('id, name, status').eq('id', id).is('deleted_at', null).maybeSingle()
         if (!campaign) return NextResponse.json({ error: 'Not found' }, { status: 404 })
         if (!['DRAFT', 'CANCELLED'].includes(campaign.status)) {
             return NextResponse.json({ error: 'Only DRAFT or CANCELLED campaigns can be deleted' }, { status: 409 })

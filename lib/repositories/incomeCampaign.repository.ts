@@ -21,14 +21,18 @@ const SELECT_FIELDS = `
     updated_at
 `
 
+// Server-side reads use supabaseAdmin (browser client has no JWT in API routes).
+// Client-side reads (findCampaignById) use the browser supabase client.
+
 export async function findCampaignsPaginated(
     rtId: string,
     query: QueryOptions,
 ): Promise<PageResult<any>> {
+    const { supabaseAdmin } = await import('../supabase-admin')
     const from = (query.page - 1) * query.pageSize
     const to   = from + query.pageSize - 1
 
-    let q = (supabase as any)
+    let q = (supabaseAdmin as any)
         .from(TABLE)
         .select(SELECT_FIELDS, { count: 'exact' })
         .eq('rt_id', rtId)
@@ -61,9 +65,10 @@ export async function findCampaignsPaginated(
 }
 
 export async function findActiveCampaigns(rtId: string): Promise<any[]> {
+    const { supabaseAdmin } = await import('../supabase-admin')
     const today = new Date().toISOString().slice(0, 10)
 
-    const { data, error } = await (supabase as any)
+    const { data, error } = await (supabaseAdmin as any)
         .from(TABLE)
         .select(SELECT_FIELDS)
         .eq('rt_id', rtId)
@@ -77,6 +82,7 @@ export async function findActiveCampaigns(rtId: string): Promise<any[]> {
     return data ?? []
 }
 
+// Used from income.service.ts which can run client-side — keep using browser client.
 export async function findCampaignById(id: string): Promise<any | null> {
     const { data, error } = await (supabase as any)
         .from(TABLE)
@@ -90,7 +96,8 @@ export async function findCampaignById(id: string): Promise<any | null> {
 }
 
 export async function getCampaignProgress(campaignId: string): Promise<{ approved_amount: number; pending_amount: number; donor_count: number }> {
-    const { data, error } = await (supabase as any)
+    const { supabaseAdmin } = await import('../supabase-admin')
+    const { data, error } = await (supabaseAdmin as any)
         .from('income_transactions')
         .select('amount, status')
         .eq('campaign_id', campaignId)
@@ -166,7 +173,8 @@ export async function countCampaignContributions(campaignId: string): Promise<nu
 }
 
 export async function findCampaignContributions(campaignId: string): Promise<{ monetary: any[]; inKind: any[] }> {
-    const { data, error } = await (supabase as any)
+    const { supabaseAdmin } = await import('../supabase-admin')
+    const { data, error } = await (supabaseAdmin as any)
         .from('income_transactions')
         .select(`
             id, income_category, amount, status, contribution_code,

@@ -4,8 +4,6 @@ import { getRequestContext } from '@/lib/auth/server'
 import { requirePermission } from '@/lib/auth/helpers'
 import { PERMISSION }        from '@/lib/auth/types'
 import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
-import { findCampaignById }  from '@/lib/repositories/incomeCampaign.repository'
-
 type Params = { params: Promise<{ id: string }> }
 
 export async function POST(_req: Request, { params }: Params) {
@@ -17,7 +15,9 @@ export async function POST(_req: Request, { params }: Params) {
         const userId = ctx.authorization.userId
         const rtId   = ctx.authorization.neighborhoodId
 
-        const campaign = await findCampaignById(id)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: campaign } = await (supabaseAdmin as any)
+            .from('income_campaigns').select('id, name, status').eq('id', id).is('deleted_at', null).maybeSingle()
         if (!campaign) return NextResponse.json({ error: 'Not found' }, { status: 404 })
         if (campaign.status !== 'DRAFT') {
             return NextResponse.json({ error: 'Only DRAFT campaigns can be activated' }, { status: 409 })
