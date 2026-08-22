@@ -817,6 +817,7 @@
             "empty": "Belum ada data pemasukan.",
             "loading": "Memuat data..."
         },
+        "tabTransactions": "Transaksi",
         "categories": {
             "DONATION": "Donasi",
             "GOVERNMENT": "Pemerintah",
@@ -825,7 +826,8 @@
             "RENTAL": "Sewa",
             "SALES": "Penjualan",
             "INTEREST": "Bunga",
-            "OTHER": "Lainnya"
+            "OTHER": "Lainnya",
+            "IN_KIND": "Non-Tunai"
         },
         "sourceTypes": {
             "RESIDENT": "Warga",
@@ -892,6 +894,94 @@
             "rejectReason": "Alasan penolakan",
             "rejectReasonPlaceholder": "Tuliskan alasan penolakan (opsional)...",
             "confirmReject": "Konfirmasi Tolak"
+        },
+        "campaigns": {
+            "tabLabel": "Kampanye",
+            "title": "Kampanye Donasi",
+            "subtitle": "Kelola kampanye penggalangan dana RT",
+            "addButton": "Buat Kampanye",
+            "searchPlaceholder": "Cari nama kampanye...",
+            "filters": {
+                "allStatuses": "Semua Status"
+            },
+            "status": {
+                "DRAFT": "Draf",
+                "ACTIVE": "Aktif",
+                "COMPLETED": "Selesai",
+                "CANCELLED": "Dibatalkan"
+            },
+            "columns": {
+                "name": "Nama Kampanye",
+                "status": "Status",
+                "codePrefix": "Prefiks Kode",
+                "target": "Target",
+                "approved": "Disetujui",
+                "pending": "Menunggu",
+                "donorCount": "Donatur",
+                "period": "Periode"
+            },
+            "detail": {
+                "title": "Detail Kampanye",
+                "approved": "Disetujui",
+                "pending": "Menunggu",
+                "remaining": "Sisa",
+                "target": "Target",
+                "openEnded": "Tanpa Target",
+                "period": "Periode",
+                "description": "Deskripsi",
+                "monetaryList": "Kontribusi Tunai",
+                "inKindList": "Kontribusi Non-Tunai",
+                "noDonations": "Belum ada kontribusi."
+            },
+            "progress": {
+                "approvedLabel": "Disetujui",
+                "pendingLabel": "Menunggu Persetujuan"
+            },
+            "form": {
+                "createTitle": "Buat Kampanye",
+                "editTitle": "Edit Kampanye",
+                "name": "Nama Kampanye",
+                "namePlaceholder": "contoh: Renovasi Balai RT",
+                "codePrefix": "Prefiks Kode Kontribusi",
+                "codePrefixHint": "2-4 huruf kapital, contoh: RBR untuk Renovasi Balai RT",
+                "codePrefixPreview": "Kode kontribusi akan tampak seperti: {preview}",
+                "codePrefixLocked": "Prefiks tidak dapat diubah setelah kontribusi pertama dicatat",
+                "description": "Deskripsi",
+                "descriptionPlaceholder": "Tujuan dan informasi kampanye...",
+                "targetAmount": "Target Dana",
+                "targetAmountPlaceholder": "Kosongkan jika tidak ada target",
+                "startsAt": "Tanggal Mulai",
+                "endsAt": "Tanggal Selesai",
+                "endsAtOptional": "Kosongkan jika tidak ada batas waktu",
+                "submit": "Simpan",
+                "cancel": "Batal"
+            },
+            "contributionCode": {
+                "successLabel": "Kode Kontribusi",
+                "successHint": "Gunakan kode ini sebagai keterangan saat transfer bank.",
+                "notProof": "Kode kontribusi bukan bukti penerimaan dana.",
+                "copy": "Salin kode",
+                "copied": "Disalin!"
+            },
+            "actions": {
+                "activate": "Aktifkan",
+                "cancel": "Batalkan Kampanye",
+                "cancelNote": "Alasan pembatalan (opsional)",
+                "edit": "Edit"
+            },
+            "selector": {
+                "label": "Kampanye",
+                "placeholder": "Pilih kampanye (opsional)"
+            },
+            "card": {
+                "sectionTitle": "Kampanye Aktif",
+                "donateButton": "Donasi Sekarang",
+                "noDeadline": "Tanpa batas waktu",
+                "deadline": "Berakhir {date}",
+                "approved": "Disetujui",
+                "pending": "Menunggu",
+                "openEnded": "Tanpa Target"
+            }
         }
     },
     "expenses": {
