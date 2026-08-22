@@ -112,11 +112,11 @@ CREATE POLICY "campaign: delete"
 
 -- ─── Permission seeds ─────────────────────────────────────────────────────────
 
-INSERT INTO permissions (code, module, label, description)
+INSERT INTO permissions (code, name, description, is_system)
 VALUES
-    ('income.campaign.create', 'income', 'Buat Kampanye', 'Membuat kampanye donasi baru'),
-    ('income.campaign.update', 'income', 'Edit Kampanye', 'Mengedit kampanye atau mengubah statusnya'),
-    ('income.campaign.delete', 'income', 'Hapus Kampanye', 'Menghapus kampanye draf atau yang dibatalkan')
+    ('income.campaign.create', 'Create Campaign',  'Create a new donation campaign',                  true),
+    ('income.campaign.update', 'Update Campaign',  'Edit a campaign or change its status',            true),
+    ('income.campaign.delete', 'Delete Campaign',  'Delete a draft or cancelled campaign',            true)
 ON CONFLICT (code) DO NOTHING;
 
 -- Assign to RT_ADMIN and TREASURER (income.campaign.create, income.campaign.update)
