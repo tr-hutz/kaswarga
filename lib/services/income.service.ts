@@ -6,6 +6,7 @@ import {
     updateIncome,
     softDeleteIncome,
 } from '../repositories/income.repository'
+import { findCampaignById } from '../repositories/incomeCampaign.repository'
 
 async function getMembershipContext() {
     const membership = await getCurrentMembership()
@@ -18,12 +19,49 @@ async function getMembershipContext() {
 export async function createIncome(payload: Record<string, unknown>) {
     const { userId, rtId } = await getMembershipContext()
 
-    const row = await insertIncome({
+    const insertPayload: Record<string, unknown> = {
         ...payload,
         rt_id:      rtId,
         created_by: userId,
         status:     'pending',
-    })
+        // Never allow client to set contribution_code
+        contribution_code: undefined,
+    }
+    delete insertPayload['contribution_code']
+
+    // Campaign validation + contribution code generation
+    if (insertPayload['campaign_id']) {
+        const campaignId = insertPayload['campaign_id'] as string
+        const campaign   = await findCampaignById(campaignId)
+
+        if (!campaign || campaign.rt_id !== rtId) {
+            throw new Error('Campaign not found')
+        }
+        if (campaign.status !== 'ACTIVE') {
+            throw new Error('Campaign is not active')
+        }
+
+        const today = new Date().toISOString().slice(0, 10)
+        if (campaign.starts_at > today) {
+            throw new Error('Campaign has not started yet')
+        }
+        if (campaign.ends_at && campaign.ends_at < today) {
+            throw new Error('Campaign has ended')
+        }
+        if (insertPayload['income_category'] !== 'DONATION') {
+            throw new Error('Only DONATION category can be linked to a campaign')
+        }
+
+        // Generate contribution code via DB function (atomic, concurrency-safe)
+        const { data: seqData, error: seqErr } = await (supabase as any).rpc('next_contribution_sequence', { p_rt_id: rtId })
+        if (seqErr) throw seqErr
+
+        const year   = new Date().getFullYear().toString().slice(-2)
+        const code   = `${campaign.contribution_code_prefix}${year}-${seqData}`
+        insertPayload['contribution_code'] = code
+    }
+
+    const row = await insertIncome(insertPayload)
 
     try {
         const { data: actor } = await supabase
