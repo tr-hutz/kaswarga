@@ -22,6 +22,7 @@ export function useCampaignData(query: QueryOptions) {
                 status:   (query.filters?.status as string) ?? 'all',
             })
             const res  = await fetch(`/api/income/campaigns?${params}`)
+            if (!res.ok) throw new Error(`API error ${res.status}`)
             const data = await res.json()
             setResult(data)
         } catch (err) {

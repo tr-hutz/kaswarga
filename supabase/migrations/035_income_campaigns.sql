@@ -5,7 +5,7 @@ ALTER TYPE income_category ADD VALUE IF NOT EXISTS 'IN_KIND';
 
 -- ─── income_campaigns ────────────────────────────────────────────────────────
 
-CREATE TABLE income_campaigns (
+CREATE TABLE IF NOT EXISTS income_campaigns (
     id                         uuid        NOT NULL DEFAULT gen_random_uuid(),
     rt_id                      uuid        NOT NULL,
     name                       text        NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE income_campaigns (
 
 -- ─── rt_contribution_sequences (atomic sequence counter per RT) ───────────────
 
-CREATE TABLE rt_contribution_sequences (
+CREATE TABLE IF NOT EXISTS rt_contribution_sequences (
     rt_id      uuid    NOT NULL,
     next_seq   bigint  NOT NULL DEFAULT 1,
 
@@ -68,27 +68,34 @@ $$;
 -- ─── Alter income_transactions ────────────────────────────────────────────────
 
 ALTER TABLE income_transactions
-    ADD COLUMN campaign_id           uuid,
-    ADD COLUMN contribution_code     text,
-    ADD COLUMN in_kind_description   text,
-    ADD COLUMN in_kind_quantity      numeric,
-    ADD COLUMN in_kind_unit          text;
+    ADD COLUMN IF NOT EXISTS campaign_id           uuid,
+    ADD COLUMN IF NOT EXISTS contribution_code     text,
+    ADD COLUMN IF NOT EXISTS in_kind_description   text,
+    ADD COLUMN IF NOT EXISTS in_kind_quantity      numeric,
+    ADD COLUMN IF NOT EXISTS in_kind_unit          text;
 
+ALTER TABLE income_transactions
+    DROP CONSTRAINT IF EXISTS income_transactions_campaign_fk;
 ALTER TABLE income_transactions
     ADD CONSTRAINT income_transactions_campaign_fk
         FOREIGN KEY (campaign_id) REFERENCES income_campaigns(id) ON DELETE RESTRICT;
 
 -- Partial unique index: only enforces uniqueness when contribution_code is set
-CREATE UNIQUE INDEX idx_income_contribution_code_rt
+CREATE UNIQUE INDEX IF NOT EXISTS idx_income_contribution_code_rt
     ON income_transactions (rt_id, contribution_code)
     WHERE contribution_code IS NOT NULL;
 
-CREATE INDEX idx_income_campaign_id
+CREATE INDEX IF NOT EXISTS idx_income_campaign_id
     ON income_transactions (campaign_id);
 
 -- ─── RLS on income_campaigns ─────────────────────────────────────────────────
 
 ALTER TABLE income_campaigns ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "campaign: view"   ON income_campaigns;
+DROP POLICY IF EXISTS "campaign: create" ON income_campaigns;
+DROP POLICY IF EXISTS "campaign: update" ON income_campaigns;
+DROP POLICY IF EXISTS "campaign: delete" ON income_campaigns;
 
 CREATE POLICY "campaign: view"
     ON income_campaigns FOR SELECT TO authenticated
