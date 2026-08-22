@@ -63,6 +63,11 @@ export const PERMISSION = {
   INCOME_EXPORT:  'income.export',
   INCOME_IMPORT:  'income.import',
 
+  // Income — Campaigns
+  INCOME_CAMPAIGN_CREATE: 'income.campaign.create',
+  INCOME_CAMPAIGN_UPDATE: 'income.campaign.update',
+  INCOME_CAMPAIGN_DELETE: 'income.campaign.delete',
+
   // Ledger
   LEDGER_VIEW:   'ledger.view',
   LEDGER_EXPORT: 'ledger.export',
