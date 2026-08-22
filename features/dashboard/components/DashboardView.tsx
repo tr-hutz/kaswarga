@@ -21,6 +21,9 @@ import MonthlyExpenseByCategoryChart
 import ResidentArrearsSummary
   from '@/features/resident/components/analytics/ResidentArrearsSummary'
 
+import ActiveCampaignsSection
+  from '@/features/income/components/campaigns/ActiveCampaignsSection'
+
 import Icon       from '@/components/ui/Icon'
 import {
   formatRupiah
@@ -238,6 +241,10 @@ export default function DashboardView({
         </div>
 
       </div>
+
+      {/* KAMPANYE AKTIF */}
+
+      <ActiveCampaignsSection />
 
       {/* ARREARS TABLE — ledger.export permission required */}
 

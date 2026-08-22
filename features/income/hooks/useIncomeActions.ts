@@ -59,12 +59,17 @@ export function useIncomeActions({
         setSubmitting(true)
         try {
             if (!selectedRow) {
-                await createIncome(payload)
+                const row = await createIncome(payload)
+                if (!row?.contribution_code) {
+                    closeForm()
+                }
+                await onReload?.()
+                return row
             } else {
                 await updateIncomeById(selectedRow.id, payload)
+                closeForm()
+                await onReload?.()
             }
-            closeForm()
-            await onReload?.()
         } catch (err) {
             console.error('[INCOME SUBMIT]', err)
         } finally {

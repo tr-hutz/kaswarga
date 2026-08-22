@@ -15,6 +15,7 @@ import IncomeImportModal     from './components/import/IncomeImportModal'
 import ImportApprovalBanner     from '@/components/import/ImportApprovalBanner'
 import ImportConfirmationBanner from '@/components/import/ImportConfirmationBanner'
 import { IMPORT_TYPE }          from '@/lib/import/types'
+import CampaignListView      from './components/campaigns/CampaignListView'
 import type { QueryOptions, PageResult, Column } from '@/lib/types/query'
 
 interface Props {
@@ -48,6 +49,9 @@ interface Props {
     approvalLoading: boolean
     approveIncome:   (id: string) => void
     rejectIncome:    (id: string, reason: string) => void
+    // tabs
+    activeTab:       'transactions' | 'campaigns'
+    setActiveTab:    (tab: 'transactions' | 'campaigns') => void
     // export
     exportCSV:       (rows: any[]) => void
     exportExcel:     (rows: any[]) => void
@@ -69,6 +73,7 @@ export default function IncomeView({
     result, columns, loading, error, onRetry,
     query, setPage, setPageSize, setSearch, setFilter,
     importError,
+    activeTab, setActiveTab,
     selectedRow, drawerOpen, formOpen, submitting, deleteTarget, deleting,
     openDrawer, closeDrawer,
     openCreateForm, openEditForm, closeForm, submitForm,
@@ -93,19 +98,49 @@ export default function IncomeView({
                     <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-0.5">{t('subtitle')}</p>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                    <Can permission={PERMISSION.INCOME_CREATE}>
-                        <button
-                            onClick={openCreateForm}
-                            className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg px-4 py-2.5 transition-colors"
-                        >
-                            <Icon name="plus" size={16} />
-                            {t('addButton')}
-                        </button>
-                    </Can>
-                </div>
+                {activeTab === 'transactions' && (
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        <Can permission={PERMISSION.INCOME_CREATE}>
+                            <button
+                                onClick={openCreateForm}
+                                className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg px-4 py-2.5 transition-colors"
+                            >
+                                <Icon name="plus" size={16} />
+                                {t('addButton')}
+                            </button>
+                        </Can>
+                    </div>
+                )}
             </div>
 
+            {/* Tabs */}
+            <div className="flex border-b border-divider">
+                <button
+                    onClick={() => setActiveTab('transactions')}
+                    className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                        activeTab === 'transactions'
+                            ? 'border-primary text-primary'
+                            : 'border-transparent text-muted hover:text-foreground'
+                    }`}
+                >
+                    {t('tabTransactions')}
+                </button>
+                <button
+                    onClick={() => setActiveTab('campaigns')}
+                    className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+                        activeTab === 'campaigns'
+                            ? 'border-primary text-primary'
+                            : 'border-transparent text-muted hover:text-foreground'
+                    }`}
+                >
+                    {t('campaigns.tabLabel')}
+                </button>
+            </div>
+
+            {activeTab === 'campaigns' && <CampaignListView />}
+
+            {activeTab === 'transactions' && (
+            <>
             <Can permission={PERMISSION.INCOME_IMPORT}>
                 <ImportConfirmationBanner importType={IMPORT_TYPE.INCOME} />
             </Can>
@@ -241,6 +276,8 @@ export default function IncomeView({
                 onCancel={cancelDelete}
                 loading={deleting}
             />
+            </>
+            )}
 
         </div>
     )
