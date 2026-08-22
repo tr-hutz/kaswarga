@@ -93,7 +93,7 @@ ALTER TABLE income_campaigns ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "campaign: view"
     ON income_campaigns FOR SELECT TO authenticated
     USING (
-        rt_id IN (SELECT rt_id FROM rt_members WHERE user_id = auth.uid())
+        rt_id IN (SELECT rt_id FROM memberships WHERE user_id = auth.uid())
         AND deleted_at IS NULL
     );
 
