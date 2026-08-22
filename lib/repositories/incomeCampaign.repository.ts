@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase }      from '../supabase'
-import { supabaseAdmin } from '../supabase-admin'
 import type { QueryOptions, PageResult } from '../types/query'
 
 const TABLE = 'income_campaigns'
@@ -155,7 +154,8 @@ export async function softDeleteCampaign(id: string, userId: string): Promise<vo
 }
 
 export async function countCampaignContributions(campaignId: string): Promise<number> {
-    const { count, error } = await (supabaseAdmin as any)
+    const { supabaseAdmin } = await import('../supabase-admin')
+    const { count, error }  = await (supabaseAdmin as any)
         .from('income_transactions')
         .select('id', { count: 'exact', head: true })
         .eq('campaign_id', campaignId)
