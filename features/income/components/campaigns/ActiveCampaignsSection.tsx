@@ -44,6 +44,7 @@ export default function ActiveCampaignsSection() {
                         return res.json()
                     }}
                     preFillCampaignId={preFillCampaign?.id ?? ''}
+                    preFillCampaignName={preFillCampaign?.name ?? ''}
                     preFillCategory="DONATION"
                 />
             )}

@@ -41,13 +41,14 @@ interface IncomeFormProps {
     onSubmit:      (form: any) => Promise<any>
     initialData?:  any
     // Pre-filled from campaign card (locked fields)
-    preFillCampaignId?:  string
-    preFillCategory?:    string
+    preFillCampaignId?:   string
+    preFillCampaignName?: string
+    preFillCategory?:     string
 }
 
-function emptyForm(campaignId = '', category = '') {
+function emptyForm(campaignId = '', category = '', campaignName = '') {
     return {
-        income_name:      '',
+        income_name:      campaignName,
         income_category:  category,
         campaign_id:      campaignId,
         source_type:      'ANONYMOUS',
@@ -63,17 +64,17 @@ function emptyForm(campaignId = '', category = '') {
     }
 }
 
-export default function IncomeForm({ open, onClose, onSubmit, initialData = null, preFillCampaignId = '', preFillCategory = '' }: IncomeFormProps) {
+export default function IncomeForm({ open, onClose, onSubmit, initialData = null, preFillCampaignId = '', preFillCampaignName = '', preFillCategory = '' }: IncomeFormProps) {
     const t  = useTranslations('income')
     const tc = useTranslations('common')
 
-    const { membership } = useAuth()
+    const { membership, wargaId } = useAuth()
     const rtId = (membership as any)?.rt?.id as string | undefined
 
     const { campaigns: activeCampaigns } = useActiveCampaigns()
 
     const [residents,          setResidents]          = useState<Array<{ id: string; name: string }>>([])
-    const [form,               setForm]               = useState(() => emptyForm(preFillCampaignId, preFillCategory))
+    const [form,               setForm]               = useState(() => emptyForm(preFillCampaignId, preFillCategory, preFillCampaignName))
     const [saving,             setSaving]             = useState(false)
     const [attachmentFile,     setAttachmentFile]     = useState<File | null>(null)
     const [contributionCode,   setContributionCode]   = useState<string | null>(null)
@@ -83,9 +84,15 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     useEffect(() => {
         if (open) {
             const base = initialData
-                ? { ...emptyForm(preFillCampaignId, preFillCategory), ...initialData }
-                : emptyForm(preFillCampaignId, preFillCategory)
+                ? { ...emptyForm(preFillCampaignId, preFillCategory, preFillCampaignName), ...initialData }
+                : emptyForm(preFillCampaignId, preFillCategory, preFillCampaignName)
             base.payment_method = normalizePaymentMethod(base.payment_method)
+            // When entering from a campaign card and current user is a resident,
+            // auto-fill source as the current resident so they don't have to select manually.
+            if (!initialData && preFillCampaignId && wargaId) {
+                base.source_type = 'RESIDENT'
+                base.resident_id = wargaId
+            }
             setForm(base)
             setAttachmentFile(null)
             setContributionCode(null)
@@ -168,10 +175,11 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
         }).catch(() => {})
     }
 
-    const isResident  = form.source_type === 'RESIDENT'
-    const isAnonymous = form.source_type === 'ANONYMOUS'
-    const isDonation  = (form as any).income_category === 'DONATION'
+    const isResident     = form.source_type === 'RESIDENT'
+    const isAnonymous    = form.source_type === 'ANONYMOUS'
+    const isDonation     = (form as any).income_category === 'DONATION'
     const campaignLocked = Boolean(preFillCampaignId)
+    const residentLocked = campaignLocked && Boolean(wargaId)
 
     const inputCls = 'w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30'
 
@@ -236,7 +244,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             onChange={e => set('income_name', e.target.value)}
                             placeholder={t('form.incomeNamePlaceholder')}
                             required
-                            className={inputCls}
+                            disabled={campaignLocked}
+                            className={`${inputCls} ${campaignLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                         />
                     </div>
 
@@ -249,7 +258,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             value={form.income_category}
                             onChange={e => set('income_category', e.target.value)}
                             required
-                            className={inputCls}
+                            disabled={campaignLocked}
+                            className={`${inputCls} ${campaignLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                         >
                             <option value="">{t('form.selectCategory')}</option>
                             {CATEGORIES.map(c => (
@@ -289,7 +299,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             value={form.source_type}
                             onChange={e => set('source_type', e.target.value)}
                             required
-                            className={inputCls}
+                            disabled={residentLocked}
+                            className={`${inputCls} ${residentLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                         >
                             {SOURCE_TYPES.map(s => (
                                 <option key={s} value={s}>
@@ -309,7 +320,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                                 value={form.resident_id}
                                 onChange={e => set('resident_id', e.target.value)}
                                 required={isResident}
-                                className={inputCls}
+                                disabled={residentLocked}
+                                className={`${inputCls} ${residentLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                             >
                                 <option value="">{t('form.selectResident')}</option>
                                 {residents.map((r: any) => (
