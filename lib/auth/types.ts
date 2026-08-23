@@ -64,9 +64,10 @@ export const PERMISSION = {
   INCOME_IMPORT:  'income.import',
 
   // Income — Campaigns
-  INCOME_CAMPAIGN_CREATE: 'income.campaign.create',
-  INCOME_CAMPAIGN_UPDATE: 'income.campaign.update',
-  INCOME_CAMPAIGN_DELETE: 'income.campaign.delete',
+  INCOME_CAMPAIGN_CREATE:   'income.campaign.create',
+  INCOME_CAMPAIGN_UPDATE:   'income.campaign.update',
+  INCOME_CAMPAIGN_DELETE:   'income.campaign.delete',
+  INCOME_CAMPAIGN_ACTIVATE: 'income.campaign.activate',
 
   // Ledger
   LEDGER_VIEW:   'ledger.view',

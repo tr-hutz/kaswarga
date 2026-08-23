@@ -162,34 +162,40 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
                         </>
                     )}
 
-                    {/* Actions */}
+                    {/* Actions for Admin/Treasurer: edit metadata only */}
                     <Can permission={PERMISSION.INCOME_CAMPAIGN_UPDATE}>
-                        <div className="flex gap-2 pt-2">
-                            {data.status === 'DRAFT' && (
-                                <button
-                                    onClick={() => onActivate(data.id)}
-                                    className="flex-1 bg-success hover:bg-success/80 text-white text-sm rounded-lg py-2"
-                                >
-                                    {t('actions.activate')}
-                                </button>
-                            )}
-                            {['DRAFT', 'ACTIVE'].includes(data.status) && (
+                        {['DRAFT', 'ACTIVE'].includes(data.status) && (
+                            <div className="flex gap-2 pt-2">
                                 <button
                                     onClick={() => onEdit(data)}
                                     className="flex-1 border border-divider text-sm rounded-lg py-2 hover:bg-canvas"
                                 >
                                     {t('actions.edit')}
                                 </button>
-                            )}
-                            {['DRAFT', 'ACTIVE'].includes(data.status) && (
+                            </div>
+                        )}
+                    </Can>
+
+                    {/* Actions for RT Chair: activate or reject/cancel */}
+                    <Can permission={PERMISSION.INCOME_CAMPAIGN_ACTIVATE}>
+                        {['DRAFT', 'ACTIVE'].includes(data.status) && (
+                            <div className="flex gap-2 pt-2">
+                                {data.status === 'DRAFT' && (
+                                    <button
+                                        onClick={() => onActivate(data.id)}
+                                        className="flex-1 bg-success hover:bg-success/80 text-white text-sm rounded-lg py-2"
+                                    >
+                                        {t('actions.activate')}
+                                    </button>
+                                )}
                                 <button
                                     onClick={() => setShowCancel(true)}
                                     className="flex-1 border border-danger/40 text-danger text-sm rounded-lg py-2 hover:bg-danger/5"
                                 >
                                     {t('actions.cancel')}
                                 </button>
-                            )}
-                        </div>
+                            </div>
+                        )}
                     </Can>
 
                     {/* Cancel note input */}

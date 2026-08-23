@@ -121,13 +121,13 @@ CREATE POLICY "campaign: delete"
 
 INSERT INTO permissions (code, name, description, is_system)
 VALUES
-    ('income.campaign.create', 'Create Campaign',  'Create a new donation campaign',                  true),
-    ('income.campaign.update', 'Update Campaign',  'Edit a campaign or change its status',            true),
-    ('income.campaign.delete', 'Delete Campaign',  'Delete a draft or cancelled campaign',            true)
+    ('income.campaign.create',   'Create Campaign',   'Create a new donation campaign (DRAFT)',           true),
+    ('income.campaign.update',   'Update Campaign',   'Edit campaign metadata (name, dates, target)',     true),
+    ('income.campaign.delete',   'Delete Campaign',   'Delete a draft or cancelled campaign',             true),
+    ('income.campaign.activate', 'Activate Campaign', 'Activate or cancel/reject a campaign (RT Chair)',  true)
 ON CONFLICT (code) DO NOTHING;
 
--- Assign to RT_ADMIN and TREASURER (income.campaign.create, income.campaign.update)
--- Assign to RT_ADMIN only (income.campaign.delete)
+-- RT_ADMIN + TREASURER: create and update campaign metadata
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r
@@ -136,10 +136,20 @@ WHERE r.code IN ('RT_ADMIN', 'TREASURER')
   AND p.code IN ('income.campaign.create', 'income.campaign.update')
 ON CONFLICT DO NOTHING;
 
+-- RT_ADMIN only: delete campaign
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT r.id, p.id
 FROM roles r
 CROSS JOIN permissions p
 WHERE r.code = 'RT_ADMIN'
   AND p.code = 'income.campaign.delete'
+ON CONFLICT DO NOTHING;
+
+-- RT_CHAIR only: activate or reject/cancel campaign
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id
+FROM roles r
+CROSS JOIN permissions p
+WHERE r.code = 'RT_CHAIR'
+  AND p.code = 'income.campaign.activate'
 ON CONFLICT DO NOTHING;

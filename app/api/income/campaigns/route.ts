@@ -107,6 +107,31 @@ export async function POST(req: Request) {
             })
         } catch { /* non-critical */ }
 
+        // Notify RT_CHAIR to review and activate the new campaign
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: chairs } = await (supabaseAdmin as any)
+                .from('memberships')
+                .select('user_id')
+                .eq('rt_id', rtId)
+                .eq('role', 'CHAIR')
+                .eq('status', 'active')
+
+            if (chairs && chairs.length > 0) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const rows = (chairs as any[]).map((m: any) => ({
+                    rt_id:          rtId,
+                    type:           'campaign_pending',
+                    title:          'Kampanye Donasi Baru',
+                    message:        `Kampanye "${name}" menunggu aktivasi Anda`,
+                    entity_type:    'income_campaigns',
+                    entity_id:      campaign.id,
+                    target_user_id: m.user_id,
+                }))
+                await supabaseAdmin.from('notifications').insert(rows)
+            }
+        } catch { /* non-critical */ }
+
         return NextResponse.json(campaign, { status: 201 })
 
     } catch (err) {

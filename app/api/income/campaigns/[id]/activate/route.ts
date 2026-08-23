@@ -9,7 +9,7 @@ type Params = { params: Promise<{ id: string }> }
 export async function POST(_req: Request, { params }: Params) {
     try {
         const ctx    = await getRequestContext()
-        requirePermission(ctx.authorization, PERMISSION.INCOME_CAMPAIGN_UPDATE)
+        requirePermission(ctx.authorization, PERMISSION.INCOME_CAMPAIGN_ACTIVATE)
 
         const { id } = await params
         const userId = ctx.authorization.userId

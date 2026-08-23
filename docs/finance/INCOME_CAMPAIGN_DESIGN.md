@@ -302,9 +302,10 @@ A separate `income.campaign.view` permission is **not introduced** for MVP. Camp
 
 | Code | Description |
 |---|---|
-| `income.campaign.create` | Create a fundraising campaign |
-| `income.campaign.update` | Edit campaign metadata or transition its status |
-| `income.campaign.delete` | Soft-delete or cancel a DRAFT campaign |
+| `income.campaign.create`   | Create a fundraising campaign (status: DRAFT) |
+| `income.campaign.update`   | Edit campaign metadata (name, dates, target) |
+| `income.campaign.activate` | Activate (DRAFT→ACTIVE) or cancel/reject a campaign — RT Chair only |
+| `income.campaign.delete`   | Soft-delete a DRAFT or CANCELLED campaign with zero contributions |
 
 ### 5.2 Role Matrix
 
@@ -314,6 +315,7 @@ A separate `income.campaign.view` permission is **not introduced** for MVP. Camp
 | View campaign list in Income tab (`income.view`) | ✅ | ✅ | ✅ | ✅ | ❌ |
 | `income.campaign.create` | ✅ | ❌ | ✅ | ❌ | ❌ |
 | `income.campaign.update` | ✅ | ❌ | ✅ | ❌ | ❌ |
+| `income.campaign.activate` | ❌ | ✅ | ❌ | ❌ | ❌ |
 | `income.campaign.delete` | ✅ | ❌ | ❌ | ❌ | ❌ |
 | Approve/reject contributions (`income.approve`) | ✅ | ✅ | ❌ | ❌ | ❌ |
 
@@ -323,9 +325,10 @@ SUPER_ADMIN is not assigned an rt_members membership and therefore has no RT-sco
 
 ```typescript
 // Income — Campaigns
-INCOME_CAMPAIGN_CREATE: 'income.campaign.create',
-INCOME_CAMPAIGN_UPDATE: 'income.campaign.update',
-INCOME_CAMPAIGN_DELETE: 'income.campaign.delete',
+INCOME_CAMPAIGN_CREATE:   'income.campaign.create',
+INCOME_CAMPAIGN_UPDATE:   'income.campaign.update',
+INCOME_CAMPAIGN_DELETE:   'income.campaign.delete',
+INCOME_CAMPAIGN_ACTIVATE: 'income.campaign.activate',
 ```
 
 ---
@@ -359,6 +362,8 @@ Server validates:
 
 Permission: `income.campaign.create`. Activity log: `campaign_create`.
 
+**Post-create notification:** All active RT_CHAIR members receive a notification (`type: campaign_pending`) prompting them to review and activate the campaign. This mirrors the existing income/expense notification pattern and uses `supabaseAdmin` to bypass RLS.
+
 #### `GET /api/income/campaigns/active`
 Lightweight, unpaginated list of campaigns that are currently accepting contributions:
 
@@ -377,10 +382,10 @@ Single campaign with `approved_amount`, `pending_amount`, monetary contribution 
 Updates `name`, `description`, `target_amount`, `starts_at`, `ends_at` for `DRAFT` or `ACTIVE` campaigns. Rejects update to `contribution_code_prefix` if any contributions already exist for this campaign. Permission: `income.campaign.update`. Activity log: `campaign_update`.
 
 #### `POST /api/income/campaigns/[id]/activate`
-`DRAFT` → `ACTIVE`. Permission: `income.campaign.update`. Activity log: `campaign_activate`.
+`DRAFT` → `ACTIVE`. Permission: `income.campaign.activate` (RT_CHAIR only). Activity log: `campaign_activate`.
 
 #### `POST /api/income/campaigns/[id]/cancel`
-`ACTIVE` or `DRAFT` → `CANCELLED`. Body: `{ "cancelled_note": "..." }` (optional). Existing pending contributions continue through the approval flow unchanged. Permission: `income.campaign.update`. Activity log: `campaign_cancel`.
+`ACTIVE` or `DRAFT` → `CANCELLED`. Body: `{ "cancelled_note": "..." }` (optional). Existing pending contributions continue through the approval flow unchanged. Permission: `income.campaign.activate` (RT_CHAIR only — acts as rejection for DRAFT, cancellation for ACTIVE). Activity log: `campaign_cancel`.
 
 #### `DELETE /api/income/campaigns/[id]`
 Soft-deletes a `DRAFT` or `CANCELLED` campaign with zero contributions. Permission: `income.campaign.delete`. Activity log: `campaign_delete`.
