@@ -47,6 +47,31 @@ export async function POST(_req: Request, { params }: Params) {
             })
         } catch { /* non-critical */ }
 
+        // Notify RT_ADMIN and TREASURER that the campaign is now active
+        try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: members } = await (supabaseAdmin as any)
+                .from('memberships')
+                .select('user_id')
+                .eq('rt_id', rtId)
+                .in('role', ['ADMIN', 'TREASURER'])
+                .eq('status', 'active')
+
+            if (members && members.length > 0) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const rows = (members as any[]).map((m: any) => ({
+                    rt_id:          rtId,
+                    type:           'campaign_activated',
+                    title:          'Kampanye Aktif',
+                    message:        `Kampanye "${campaign.name}" telah diaktifkan dan siap menerima donasi`,
+                    entity_type:    'income_campaigns',
+                    entity_id:      id,
+                    target_user_id: m.user_id,
+                }))
+                await supabaseAdmin.from('notifications').insert(rows)
+            }
+        } catch { /* non-critical */ }
+
         return NextResponse.json({ ok: true })
 
     } catch (err) {

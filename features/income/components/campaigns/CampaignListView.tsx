@@ -1,18 +1,19 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useMemo }           from 'react'
-import { useTranslations }   from 'next-intl'
-import { useDataTable }      from '@/lib/hooks/useDataTable'
-import { useCampaignData }   from '../../hooks/useCampaignData'
+import { useMemo }            from 'react'
+import { useTranslations }    from 'next-intl'
+import { useDataTable }       from '@/lib/hooks/useDataTable'
+import { useCampaignData }    from '../../hooks/useCampaignData'
 import { useCampaignActions } from '../../hooks/useCampaignActions'
-import { DataTable }         from '@/components/common/data-table'
-import Can                   from '@/components/ui/Can'
-import Icon                  from '@/components/ui/Icon'
-import { PERMISSION }        from '@/lib/auth/types'
-import { formatRupiah }      from '@/lib/utils'
-import CampaignDetailDrawer  from './CampaignDetailDrawer'
-import CampaignForm          from './CampaignForm'
+import { DataTable }          from '@/components/common/data-table'
+import Can                    from '@/components/ui/Can'
+import Icon                   from '@/components/ui/Icon'
+import { PERMISSION }         from '@/lib/auth/types'
+import { usePermission }      from '@/lib/auth/usePermission'
+import { formatRupiah }       from '@/lib/utils'
+import CampaignDetailDrawer   from './CampaignDetailDrawer'
+import CampaignForm           from './CampaignForm'
 
 export default function CampaignListView() {
     const t = useTranslations('income.campaigns')
@@ -31,6 +32,8 @@ export default function CampaignListView() {
         CANCELLED: 'bg-danger/10 text-danger',
     }
 
+    const canEdit = usePermission(PERMISSION.INCOME_CAMPAIGN_UPDATE)
+
     const columns = useMemo(() => [
         {
             key:    'name',
@@ -47,11 +50,6 @@ export default function CampaignListView() {
             ),
         },
         {
-            key:    'contribution_code_prefix',
-            title:  t('columns.codePrefix'),
-            render: (row: any) => <span className="font-mono text-sm text-foreground">{row.contribution_code_prefix}</span>,
-        },
-        {
             key:    'target_amount',
             title:  t('columns.target'),
             render: (row: any) => row.target_amount ? formatRupiah(row.target_amount) : <span className="text-muted">{t('detail.openEnded')}</span>,
@@ -61,13 +59,20 @@ export default function CampaignListView() {
             title:  t('columns.approved'),
             render: (row: any) => formatRupiah(row.approved_amount ?? 0),
         },
-        {
-            key:    'donor_count',
-            title:  t('columns.donorCount'),
-            render: (row: any) => <span className="text-foreground">{row.donor_count ?? 0}</span>,
-        },
+        ...(canEdit ? [{
+            key:    'actions',
+            title:  '',
+            render: (row: any) => ['DRAFT', 'ACTIVE'].includes(row.status) ? (
+                <button
+                    onClick={e => { e.stopPropagation(); actions.openEditForm(row) }}
+                    className="text-xs border border-divider rounded-lg px-3 py-1 hover:bg-canvas text-foreground"
+                >
+                    {t('actions.edit')}
+                </button>
+            ) : null,
+        }] : []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    ], [])
+    ], [canEdit])
 
     return (
         <div className="space-y-4">
@@ -115,7 +120,6 @@ export default function CampaignListView() {
                 onClose={actions.closeDrawer}
                 onActivate={actions.activateCampaign}
                 onCancel={actions.cancelCampaign}
-                onEdit={campaign => { actions.closeDrawer(); actions.openEditForm(campaign) }}
             />
 
             <CampaignForm

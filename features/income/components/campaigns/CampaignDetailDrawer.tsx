@@ -10,15 +10,14 @@ import { PERMISSION }          from '@/lib/auth/types'
 import CampaignProgressBar     from '@/components/common/CampaignProgressBar'
 
 interface Props {
-    open:             boolean
-    campaign:         any
-    onClose:          () => void
-    onActivate:       (id: string) => void
-    onCancel:         (id: string, note?: string) => void
-    onEdit:           (campaign: any) => void
+    open:       boolean
+    campaign:   any
+    onClose:    () => void
+    onActivate: (id: string) => void
+    onCancel:   (id: string, note?: string) => void
 }
 
-export default function CampaignDetailDrawer({ open, campaign, onClose, onActivate, onCancel, onEdit }: Props) {
+export default function CampaignDetailDrawer({ open, campaign, onClose, onActivate, onCancel }: Props) {
     const t = useTranslations('income.campaigns')
 
     const [detail,       setDetail]      = useState<any>(null)
@@ -84,7 +83,7 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
                         />
                     </div>
 
-                    {/* Period + description */}
+                    {/* Period, code prefix, donor count, description */}
                     <div className="text-sm space-y-2">
                         {(data.starts_at || data.ends_at) && (
                             <div>
@@ -95,6 +94,16 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
                                 </span>
                             </div>
                         )}
+                        {data.contribution_code_prefix && (
+                            <div>
+                                <span className="text-muted">{t('columns.codePrefix')}: </span>
+                                <span className="font-mono text-foreground">{data.contribution_code_prefix}</span>
+                            </div>
+                        )}
+                        <div>
+                            <span className="text-muted">{t('columns.donorCount')}: </span>
+                            <span className="text-foreground">{data.donor_count ?? 0}</span>
+                        </div>
                         {data.description && (
                             <div>
                                 <span className="text-muted">{t('detail.description')}: </span>
@@ -162,21 +171,7 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
                         </>
                     )}
 
-                    {/* Actions for Admin/Treasurer: edit metadata only */}
-                    <Can permission={PERMISSION.INCOME_CAMPAIGN_UPDATE}>
-                        {['DRAFT', 'ACTIVE'].includes(data.status) && (
-                            <div className="flex gap-2 pt-2">
-                                <button
-                                    onClick={() => onEdit(data)}
-                                    className="flex-1 border border-divider text-sm rounded-lg py-2 hover:bg-canvas"
-                                >
-                                    {t('actions.edit')}
-                                </button>
-                            </div>
-                        )}
-                    </Can>
-
-                    {/* Actions for RT Chair: activate or reject/cancel */}
+                    {/* Actions for RT Chair: activate or cancel */}
                     <Can permission={PERMISSION.INCOME_CAMPAIGN_ACTIVATE}>
                         {['DRAFT', 'ACTIVE'].includes(data.status) && (
                             <div className="flex gap-2 pt-2">
