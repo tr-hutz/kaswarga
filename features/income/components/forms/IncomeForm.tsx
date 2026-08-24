@@ -76,6 +76,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     const [residents,          setResidents]          = useState<Array<{ id: string; name: string }>>([])
     const [form,               setForm]               = useState(() => emptyForm(preFillCampaignId, preFillCategory, preFillCampaignName))
     const [saving,             setSaving]             = useState(false)
+    const [submitError,        setSubmitError]        = useState<string | null>(null)
     const [attachmentFile,     setAttachmentFile]     = useState<File | null>(null)
     const [contributionCode,   setContributionCode]   = useState<string | null>(null)
     const [codeCopied,         setCodeCopied]         = useState(false)
@@ -117,6 +118,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setSaving(true)
+        setSubmitError(null)
         try {
             const payload: any = {
                 income_name:      form.income_name,
@@ -162,6 +164,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
             } else {
                 onClose()
             }
+        } catch (err: any) {
+            setSubmitError(err?.message ?? 'Terjadi kesalahan, coba lagi.')
         } finally {
             setSaving(false)
         }
@@ -443,6 +447,11 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             </a>
                         )}
                     </div>
+
+                    {/* Submit error */}
+                    {submitError && (
+                        <p className="text-sm text-danger">{submitError}</p>
+                    )}
 
                     {/* Actions */}
                     <div className="flex gap-3 pt-2">

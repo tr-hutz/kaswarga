@@ -35,12 +35,15 @@ export default function ActiveCampaignsSection() {
                     open={formOpen}
                     onClose={() => setFormOpen(false)}
                     onSubmit={async (payload) => {
-                        const res = await fetch('/api/income', {
+                        const res = await fetch(`/api/income/campaigns/${preFillCampaign?.id}/donate`, {
                             method:  'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body:    JSON.stringify(payload),
                         })
-                        if (!res.ok) throw new Error('Failed')
+                        if (!res.ok) {
+                            const data = await res.json().catch(() => ({}))
+                            throw new Error(data?.error ?? 'Failed')
+                        }
                         return res.json()
                     }}
                     preFillCampaignId={preFillCampaign?.id ?? ''}
