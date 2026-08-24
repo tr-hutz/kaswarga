@@ -913,7 +913,7 @@
             "columns": {
                 "name": "Nama Kampanye",
                 "status": "Status",
-                "codePrefix": "Prefiks Kode",
+                "campaignCode": "Kode Transfer",
                 "target": "Target",
                 "approved": "Disetujui",
                 "pending": "Menunggu",
@@ -942,10 +942,9 @@
                 "editTitle": "Edit Kampanye",
                 "name": "Nama Kampanye",
                 "namePlaceholder": "contoh: Renovasi Balai RT",
-                "codePrefix": "Prefiks Kode Kontribusi",
-                "codePrefixHint": "2-4 huruf kapital, contoh: RBR untuk Renovasi Balai RT",
-                "codePrefixPreview": "Kode kontribusi akan tampak seperti: {preview}",
-                "codePrefixLocked": "Prefiks tidak dapat diubah setelah kontribusi pertama dicatat",
+                "campaignCode": "Kode Transfer",
+                "campaignCodeHint": "Kode yang diinput warga pada berita transfer bank, contoh: MAROENS8AGT26",
+                "campaignCodePlaceholder": "contoh: MAROENS8AGT26",
                 "description": "Deskripsi",
                 "descriptionPlaceholder": "Tujuan dan informasi kampanye...",
                 "targetAmount": "Target Dana",
@@ -965,7 +964,7 @@
             },
             "actions": {
                 "activate": "Aktifkan",
-                "cancel": "Batalkan Kampanye",
+                "cancel": "Batalkan",
                 "cancelNote": "Alasan pembatalan (opsional)",
                 "edit": "Edit"
             },

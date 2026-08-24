@@ -16,7 +16,7 @@ export async function POST(req: Request, { params }: Params) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: campaign } = await (supabaseAdmin as any)
             .from('income_campaigns')
-            .select('id, name, status, rt_id, contribution_code_prefix, starts_at, ends_at')
+            .select('id, name, status, rt_id, campaign_code, starts_at, ends_at')
             .eq('id', id)
             .is('deleted_at', null)
             .maybeSingle()
@@ -38,13 +38,7 @@ export async function POST(req: Request, { params }: Params) {
 
         const body = await req.json()
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: seqData, error: seqErr } = await (supabaseAdmin as any)
-            .rpc('next_contribution_sequence', { p_rt_id: rtId })
-        if (seqErr) throw seqErr
-
-        const year              = new Date().getFullYear().toString().slice(-2)
-        const contribution_code = `${campaign.contribution_code_prefix}${year}-${seqData}`
+        const contribution_code = campaign.campaign_code as string
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: row, error } = await (supabaseAdmin as any)

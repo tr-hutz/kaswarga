@@ -94,10 +94,10 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
                                 </span>
                             </div>
                         )}
-                        {data.contribution_code_prefix && (
+                        {data.campaign_code && (
                             <div>
-                                <span className="text-muted">{t('columns.codePrefix')}: </span>
-                                <span className="font-mono text-foreground">{data.contribution_code_prefix}</span>
+                                <span className="text-muted">{t('columns.campaignCode')}: </span>
+                                <span className="font-mono text-foreground">{data.campaign_code}</span>
                             </div>
                         )}
                         <div>

@@ -20,7 +20,7 @@ export async function GET(_req: Request, { params }: Params) {
         const { id } = await params
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: campaign } = await (supabaseAdmin as any)
-            .from('income_campaigns').select('id,rt_id,name,contribution_code_prefix,description,target_amount,starts_at,ends_at,status,cancelled_note,created_by,updated_by,created_at,updated_at').eq('id', id).is('deleted_at', null).maybeSingle()
+            .from('income_campaigns').select('id,rt_id,name,campaign_code,description,target_amount,starts_at,ends_at,status,cancelled_note,created_by,updated_by,created_at,updated_at').eq('id', id).is('deleted_at', null).maybeSingle()
         if (!campaign) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
         const [progress, contributions] = await Promise.all([
@@ -59,7 +59,7 @@ export async function PUT(req: Request, { params }: Params) {
         const { name, description, target_amount, starts_at, ends_at } = body
 
         // If trying to update prefix, check no contributions exist
-        if (body.contribution_code_prefix !== undefined) {
+        if (body.campaign_code !== undefined) {
             const count = await countCampaignContributions(id)
             if (count > 0) {
                 return NextResponse.json({ error: 'Cannot change prefix after contributions exist' }, { status: 409 })

@@ -49,15 +49,15 @@ export async function POST(req: Request) {
         const userId = ctx.authorization.userId
         const body   = await req.json()
 
-        const { name, contribution_code_prefix, description, target_amount, starts_at, ends_at } = body
+        const { name, campaign_code, description, target_amount, starts_at, ends_at } = body
 
-        if (!name || !contribution_code_prefix) {
-            return NextResponse.json({ error: 'name and contribution_code_prefix are required' }, { status: 400 })
+        if (!name || !campaign_code) {
+            return NextResponse.json({ error: 'name and campaign_code are required' }, { status: 400 })
         }
 
-        const prefix = String(contribution_code_prefix).toUpperCase()
-        if (!/^[A-Z]{2,4}$/.test(prefix)) {
-            return NextResponse.json({ error: 'contribution_code_prefix must be 2-4 uppercase letters' }, { status: 400 })
+        const code = String(campaign_code).toUpperCase().replace(/\s+/g, '')
+        if (code.length < 3 || code.length > 20) {
+            return NextResponse.json({ error: 'campaign_code must be 3-20 characters' }, { status: 400 })
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,27 +65,27 @@ export async function POST(req: Request) {
             .from('income_campaigns')
             .select('id')
             .eq('rt_id', rtId)
-            .eq('contribution_code_prefix', prefix)
+            .eq('campaign_code', code)
             .limit(1)
             .maybeSingle()
 
         if (existing) {
-            return NextResponse.json({ error: 'Contribution code prefix already used in this RT' }, { status: 409 })
+            return NextResponse.json({ error: 'Campaign code already used in this RT' }, { status: 409 })
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: campaign, error } = await (supabaseAdmin as any)
             .from('income_campaigns')
             .insert({
-                rt_id:                    rtId,
+                rt_id:         rtId,
                 name,
-                contribution_code_prefix: prefix,
-                description:              description  || null,
-                target_amount:            target_amount ? Number(target_amount) : null,
-                starts_at:                starts_at    || new Date().toISOString().slice(0, 10),
-                ends_at:                  ends_at      || null,
-                status:                   'DRAFT',
-                created_by:               userId,
+                campaign_code: code,
+                description:   description  || null,
+                target_amount: target_amount ? Number(target_amount) : null,
+                starts_at:     starts_at    || new Date().toISOString().slice(0, 10),
+                ends_at:       ends_at      || null,
+                status:        'DRAFT',
+                created_by:    userId,
             })
             .select()
             .single()

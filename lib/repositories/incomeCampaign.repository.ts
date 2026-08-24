@@ -8,7 +8,7 @@ const SELECT_FIELDS = `
     id,
     rt_id,
     name,
-    contribution_code_prefix,
+    campaign_code,
     description,
     target_amount,
     starts_at,

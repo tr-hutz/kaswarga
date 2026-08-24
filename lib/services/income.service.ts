@@ -52,13 +52,7 @@ export async function createIncome(payload: Record<string, unknown>) {
             throw new Error('Only DONATION category can be linked to a campaign')
         }
 
-        // Generate contribution code via DB function (atomic, concurrency-safe)
-        const { data: seqData, error: seqErr } = await (supabase as any).rpc('next_contribution_sequence', { p_rt_id: rtId })
-        if (seqErr) throw seqErr
-
-        const year   = new Date().getFullYear().toString().slice(-2)
-        const code   = `${campaign.contribution_code_prefix}${year}-${seqData}`
-        insertPayload['contribution_code'] = code
+        insertPayload['contribution_code'] = campaign.campaign_code
     }
 
     const row = await insertIncome(insertPayload)

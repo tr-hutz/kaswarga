@@ -6,64 +6,32 @@ ALTER TYPE income_category ADD VALUE IF NOT EXISTS 'IN_KIND';
 -- ─── income_campaigns ────────────────────────────────────────────────────────
 
 CREATE TABLE IF NOT EXISTS income_campaigns (
-    id                         uuid        NOT NULL DEFAULT gen_random_uuid(),
-    rt_id                      uuid        NOT NULL,
-    name                       text        NOT NULL,
-    contribution_code_prefix   text        NOT NULL,
-    description                text,
-    target_amount              bigint,
-    starts_at                  date        NOT NULL DEFAULT CURRENT_DATE,
-    ends_at                    date,
-    status                     text        NOT NULL DEFAULT 'DRAFT',
-    cancelled_note             text,
-    created_by                 uuid,
-    updated_by                 uuid,
-    created_at                 timestamptz NOT NULL DEFAULT now(),
-    updated_at                 timestamptz NOT NULL DEFAULT now(),
-    deleted_at                 timestamptz,
-    deleted_by                 uuid,
+    id            uuid        NOT NULL DEFAULT gen_random_uuid(),
+    rt_id         uuid        NOT NULL,
+    name          text        NOT NULL,
+    campaign_code text        NOT NULL,
+    description   text,
+    target_amount bigint,
+    starts_at     date        NOT NULL DEFAULT CURRENT_DATE,
+    ends_at       date,
+    status        text        NOT NULL DEFAULT 'DRAFT',
+    cancelled_note text,
+    created_by    uuid,
+    updated_by    uuid,
+    created_at    timestamptz NOT NULL DEFAULT now(),
+    updated_at    timestamptz NOT NULL DEFAULT now(),
+    deleted_at    timestamptz,
+    deleted_by    uuid,
 
     CONSTRAINT income_campaigns_pkey
         PRIMARY KEY (id),
     CONSTRAINT income_campaigns_rt_fk
         FOREIGN KEY (rt_id) REFERENCES rt(id) ON DELETE CASCADE,
-    CONSTRAINT income_campaigns_prefix_rt_unique
-        UNIQUE (rt_id, contribution_code_prefix),
+    CONSTRAINT income_campaigns_code_rt_unique
+        UNIQUE (rt_id, campaign_code),
     CONSTRAINT income_campaigns_status_check
-        CHECK (status IN ('DRAFT', 'ACTIVE', 'COMPLETED', 'CANCELLED')),
-    CONSTRAINT income_campaigns_prefix_format
-        CHECK (contribution_code_prefix ~ '^[A-Z]{2,4}$')
+        CHECK (status IN ('DRAFT', 'ACTIVE', 'COMPLETED', 'CANCELLED'))
 );
-
--- ─── rt_contribution_sequences (atomic sequence counter per RT) ───────────────
-
-CREATE TABLE IF NOT EXISTS rt_contribution_sequences (
-    rt_id      uuid    NOT NULL,
-    next_seq   bigint  NOT NULL DEFAULT 1,
-
-    CONSTRAINT rt_contribution_sequences_pkey PRIMARY KEY (rt_id),
-    CONSTRAINT rt_contribution_sequences_rt_fk
-        FOREIGN KEY (rt_id) REFERENCES rt(id) ON DELETE CASCADE
-);
-
--- Atomically get and increment the sequence for an RT.
--- Returns the sequence number to use (pre-increment value).
-CREATE OR REPLACE FUNCTION next_contribution_sequence(p_rt_id uuid)
-RETURNS bigint
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    v_seq bigint;
-BEGIN
-    INSERT INTO rt_contribution_sequences (rt_id, next_seq)
-    VALUES (p_rt_id, 2)
-    ON CONFLICT (rt_id) DO UPDATE
-        SET next_seq = rt_contribution_sequences.next_seq + 1
-    RETURNING next_seq - 1 INTO v_seq;
-
-    RETURN v_seq;
-END;
-$$;
 
 -- ─── Alter income_transactions ────────────────────────────────────────────────
 

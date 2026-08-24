@@ -15,12 +15,12 @@ interface Props {
 
 function emptyForm() {
     return {
-        name:                     '',
-        contribution_code_prefix: '',
-        description:              '',
-        target_amount:            '',
-        starts_at:                new Date().toISOString().slice(0, 10),
-        ends_at:                  '',
+        name:          '',
+        campaign_code: '',
+        description:   '',
+        target_amount: '',
+        starts_at:     new Date().toISOString().slice(0, 10),
+        ends_at:       '',
     }
 }
 
@@ -32,7 +32,7 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
 
     useEffect(() => {
         if (open) {
-            setForm(initialData ? { ...emptyForm(), ...initialData, description: initialData.description ?? '', target_amount: initialData.target_amount ?? '', ends_at: initialData.ends_at ?? '' } : emptyForm())
+            setForm(initialData ? { ...emptyForm(), ...initialData, campaign_code: initialData.campaign_code ?? '', description: initialData.description ?? '', target_amount: initialData.target_amount ?? '', ends_at: initialData.ends_at ?? '' } : emptyForm())
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])
@@ -43,9 +43,7 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
         setForm((prev: any) => ({ ...prev, [field]: value }))
     }
 
-    const prefix       = form.contribution_code_prefix.toUpperCase().replace(/[^A-Z]/g, '')
-    const year         = new Date().getFullYear().toString().slice(-2)
-    const previewCode  = prefix ? `${prefix}${year}-1` : ''
+    const campaignCode = (form.campaign_code as string).toUpperCase().replace(/\s+/g, '')
     const isEdit       = Boolean(initialData?.id)
 
     async function handleSubmit(e: FormEvent) {
@@ -53,12 +51,12 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
         setSaving(true)
         try {
             await onSubmit({
-                name:                     form.name,
-                contribution_code_prefix: prefix,
-                description:              form.description || null,
-                target_amount:            form.target_amount ? Number(form.target_amount) : null,
-                starts_at:                form.starts_at,
-                ends_at:                  form.ends_at || null,
+                name:          form.name,
+                campaign_code: campaignCode,
+                description:   form.description || null,
+                target_amount: form.target_amount ? Number(form.target_amount) : null,
+                starts_at:     form.starts_at,
+                ends_at:       form.ends_at || null,
             })
         } finally {
             setSaving(false)
@@ -95,26 +93,22 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
                         />
                     </div>
 
-                    {/* Contribution Code Prefix */}
+                    {/* Campaign Code */}
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                            {t('codePrefix')} <span className="text-danger">*</span>
+                            {t('campaignCode')} <span className="text-danger">*</span>
                         </label>
                         <input
                             type="text"
-                            value={prefix}
-                            onChange={e => set('contribution_code_prefix', e.target.value)}
-                            placeholder="RBR"
-                            maxLength={4}
+                            value={campaignCode}
+                            onChange={e => set('campaign_code', e.target.value)}
+                            placeholder={t('campaignCodePlaceholder')}
+                            maxLength={20}
                             required
-                            className={`${inputCls} uppercase font-mono`}
+                            disabled={isEdit}
+                            className={`${inputCls} uppercase font-mono ${isEdit ? 'opacity-60 cursor-not-allowed' : ''}`}
                         />
-                        <p className="text-xs text-muted mt-1">{t('codePrefixHint')}</p>
-                        {previewCode && (
-                            <p className="text-xs text-primary mt-0.5">
-                                {t('codePrefixPreview', { preview: previewCode })}
-                            </p>
-                        )}
+                        <p className="text-xs text-muted mt-1">{t('campaignCodeHint')}</p>
                     </div>
 
                     {/* Description */}
