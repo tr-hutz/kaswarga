@@ -34,13 +34,25 @@ export async function POST() {
         if (fetchError) throw fetchError
         if (!pending?.length) return NextResponse.json({ approved: 0 })
 
+        // Re-fetch with resident_id + year so we can notify residents
+        const { data: pendingFull } = await (supabaseAdmin as any)
+            .from('payment_confirmations')
+            .select('id, resident_id, year')
+            .eq('rt_id', rtId)
+            .eq('status', 'pending')
+            .like('proof_url', '%-import-confirm-payment.xlsx')
+
         let approved = 0
-        for (const { id } of pending) {
+        const approvedConfirmations: Array<{ id: string; resident_id: string; year: number }> = []
+        for (const row of (pendingFull ?? [])) {
             const { error } = await (supabaseAdmin as any).rpc('approve_confirmation', {
-                p_confirmation_id: id,
+                p_confirmation_id: row.id,
                 p_user_id:         userId,
             })
-            if (!error) approved++
+            if (!error) {
+                approved++
+                if (row.resident_id) approvedConfirmations.push(row)
+            }
         }
 
         try {
@@ -56,8 +68,36 @@ export async function POST() {
                 description: `Setujui semua pembayaran impor (${approved} disetujui)`,
                 metadata:    { approved },
             })
+
+            // Notify each affected resident (batch lookup + insert)
+            if (approvedConfirmations.length > 0) {
+                const residentIds = [...new Set(approvedConfirmations.map(c => c.resident_id))]
+                const { data: memberships } = await (supabaseAdmin as any)
+                    .from('memberships')
+                    .select('resident_id, user_id')
+                    .eq('rt_id', rtId)
+                    .eq('status', 'active')
+                    .in('resident_id', residentIds)
+
+                const residentUserMap: Record<string, string> = {}
+                for (const m of (memberships ?? [])) residentUserMap[m.resident_id] = m.user_id
+
+                const notifs = approvedConfirmations
+                    .filter(c => residentUserMap[c.resident_id])
+                    .map(c => ({
+                        rt_id:          rtId,
+                        type:           'payment_approved',
+                        title:          'Pembayaran Disetujui',
+                        message:        `Konfirmasi pembayaran iuran Anda untuk tahun ${c.year} telah disetujui.`,
+                        entity_type:    'payment_confirmations',
+                        entity_id:      c.id,
+                        target_user_id: residentUserMap[c.resident_id],
+                    }))
+
+                if (notifs.length) await (supabaseAdmin as any).from('notifications').insert(notifs)
+            }
         } catch {
-            // Activity log errors must not block the main flow
+            // Activity log / notification errors must not block the main flow
         }
 
         return NextResponse.json({ approved })
