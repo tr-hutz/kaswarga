@@ -72,6 +72,13 @@ export async function POST(req: Request, { params }: Params) {
 
         if (error) throw error
 
+        // Fire-and-forget: notify reviewer (Treasurer, or Chair if submitter is Treasurer)
+        fetch('/api/income/notify', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ incomeId: row.id, rtId, incomeName: row.income_name ?? null, createdBy: userId }),
+        }).catch(err => console.error('[campaign/donate notify]', err))
+
         return NextResponse.json(row, { status: 201 })
 
     } catch (err) {

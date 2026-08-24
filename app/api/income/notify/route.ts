@@ -20,27 +20,49 @@ export async function POST(req: Request) {
         const ctx = await getRequestContext()
         void ctx // validate session is present
 
-        const { incomeId, rtId, incomeName } = await req.json() as {
+        const { incomeId, rtId, incomeName, createdBy } = await req.json() as {
             incomeId:   string
             rtId:       string
             incomeName: string | null
+            createdBy?: string | null
         }
 
         if (!incomeId || !rtId) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
         }
 
+        // Maker-checker: if submitter is a Treasurer, escalate to Chair instead
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: chairs } = await (supabaseAdmin as any)
+        const { data: rt } = await (supabaseAdmin as any)
+            .from('rt').select('maker_checker_enabled').eq('id', rtId).single()
+        const makerCheckerEnabled = rt?.maker_checker_enabled ?? true
+
+        let submitterIsTreasurer = false
+        if (makerCheckerEnabled && createdBy) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: submitterMembership } = await (supabaseAdmin as any)
+                .from('memberships')
+                .select('role')
+                .eq('user_id', createdBy)
+                .eq('rt_id', rtId)
+                .eq('status', 'active')
+                .maybeSingle()
+            submitterIsTreasurer = submitterMembership?.role === 'TREASURER'
+        }
+
+        const targetRole = (makerCheckerEnabled && submitterIsTreasurer) ? 'CHAIR' : 'TREASURER'
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: reviewers } = await (supabaseAdmin as any)
             .from('memberships')
             .select('user_id')
             .eq('rt_id', rtId)
-            .eq('role', 'CHAIR')
+            .eq('role', targetRole)
             .eq('status', 'active')
 
-        if (chairs && chairs.length > 0) {
+        if (reviewers && reviewers.length > 0) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const rows = (chairs as any[]).map((m: any) => ({
+            const rows = (reviewers as any[]).map((m: any) => ({
                 rt_id:          rtId,
                 type:           'income_pending',
                 title:          'Pemasukan Baru',

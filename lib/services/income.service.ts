@@ -88,11 +88,11 @@ export async function createIncome(payload: Record<string, unknown>) {
         // activity log failure must not block the main flow
     }
 
-    // Notify all CHAIR in the RT via API route (uses supabaseAdmin to bypass RLS)
+    // Notify reviewer (Treasurer, or Chair if submitter is Treasurer) via API route
     fetch('/api/income/notify', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ incomeId: row.id, rtId, incomeName: row.income_name ?? null }),
+        body:    JSON.stringify({ incomeId: row.id, rtId, incomeName: row.income_name ?? null, createdBy: userId }),
     }).catch(err => console.error('[Income Notify]', err))
 
     return row

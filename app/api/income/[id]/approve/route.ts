@@ -107,10 +107,11 @@ export async function POST(
 
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const { data: adminMembers } = await (supabaseAdmin as any)
-                            .from('rt_members')
-                            .select('user_id, roles!inner(code)')
+                            .from('memberships')
+                            .select('user_id')
                             .eq('rt_id', rtId)
-                            .in('roles.code', ['RT_ADMIN', 'RT_CHAIR'])
+                            .in('role', ['ADMIN', 'CHAIR'])
+                            .eq('status', 'active')
 
                         const notifs = (adminMembers ?? []).map((m: { user_id: string }) => ({
                             rt_id:          rtId,
