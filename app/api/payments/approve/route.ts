@@ -54,6 +54,31 @@ export async function POST(req: Request) {
             },
         })
 
+        // Notify the resident that their payment was approved
+        try {
+            if (confirmation?.resident_id) {
+                const { data: membership } = await supabaseAdmin
+                    .from('memberships')
+                    .select('user_id')
+                    .eq('resident_id', confirmation.resident_id)
+                    .eq('rt_id', rtId)
+                    .eq('status', 'active')
+                    .maybeSingle()
+
+                if (membership?.user_id) {
+                    await supabaseAdmin.from('notifications').insert({
+                        rt_id:          rtId,
+                        type:           'payment_approved',
+                        title:          'Pembayaran Disetujui',
+                        message:        `Konfirmasi pembayaran iuran Anda untuk tahun ${confirmation.year} telah disetujui.`,
+                        entity_type:    'payment_confirmations',
+                        entity_id:      confirmationId,
+                        target_user_id: membership.user_id,
+                    })
+                }
+            }
+        } catch { /* non-critical */ }
+
         return NextResponse.json({ success: true })
 
     } catch (err) {
