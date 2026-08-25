@@ -16,9 +16,14 @@ export async function POST(_req: Request, { params }: Params) {
         const rtId   = ctx.authorization.neighborhoodId
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: campaign } = await (supabaseAdmin as any)
-            .from('income_campaigns').select('id, name, status').eq('id', id).is('deleted_at', null).maybeSingle()
-        if (!campaign) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+        const { data: campaign, error: fetchError } = await (supabaseAdmin as any)
+            .from('income_campaigns').select('id, rt_id, name, status').eq('id', id).is('deleted_at', null).maybeSingle()
+        if (fetchError) {
+            console.error('[campaigns/activate] fetch error:', fetchError)
+            throw fetchError
+        }
+        if (!campaign) return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
+        if (campaign.rt_id !== rtId) return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
         if (campaign.status !== 'DRAFT') {
             return NextResponse.json({ error: 'Only DRAFT campaigns can be activated' }, { status: 409 })
         }
