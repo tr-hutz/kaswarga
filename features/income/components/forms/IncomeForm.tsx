@@ -38,7 +38,7 @@ function normalizePaymentMethod(value: string | null | undefined): string {
 interface IncomeFormProps {
     open:          boolean
     onClose:       () => void
-    onSubmit:      (form: any) => Promise<any>
+    onSubmit:      (form: any) => Promise<void>
     initialData?:  any
     // Pre-filled from campaign card (locked fields)
     preFillCampaignId?:   string
@@ -78,8 +78,6 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     const [saving,             setSaving]             = useState(false)
     const [submitError,        setSubmitError]        = useState<string | null>(null)
     const [attachmentFile,     setAttachmentFile]     = useState<File | null>(null)
-    const [contributionCode,   setContributionCode]   = useState<string | null>(null)
-    const [codeCopied,         setCodeCopied]         = useState(false)
 
     // Reset form and attachment each time the form opens
     useEffect(() => {
@@ -96,8 +94,6 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
             }
             setForm(base)
             setAttachmentFile(null)
-            setContributionCode(null)
-            setCodeCopied(false)
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])
@@ -158,25 +154,13 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                 payload.attachment_url = upload.path
             }
 
-            const result = await onSubmit(payload)
-            if (result?.contribution_code) {
-                setContributionCode(result.contribution_code)
-            } else {
-                onClose()
-            }
+            await onSubmit(payload)
+            onClose()
         } catch (err: any) {
             setSubmitError(err?.message ?? 'Terjadi kesalahan, coba lagi.')
         } finally {
             setSaving(false)
         }
-    }
-
-    function copyCode() {
-        if (!contributionCode) return
-        navigator.clipboard.writeText(contributionCode).then(() => {
-            setCodeCopied(true)
-            setTimeout(() => setCodeCopied(false), 2000)
-        }).catch(() => {})
     }
 
     const isResident     = form.source_type === 'RESIDENT'
@@ -186,35 +170,6 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     const residentLocked = campaignLocked && Boolean(wargaId)
 
     const inputCls = 'w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30'
-
-    // Contribution code success screen
-    if (contributionCode) {
-        const tc2 = t('campaigns.contributionCode' as any)
-        void tc2 // suppress unused warning — tc2 used via t() below
-        return (
-            <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4" onClick={onClose}>
-                <div className="bg-surface rounded-xl shadow-default w-full max-w-md p-8 space-y-4 text-center" onClick={e => e.stopPropagation()}>
-                    <div className="text-success text-4xl">✓</div>
-                    <h3 className="text-lg font-semibold text-foreground">Donasi berhasil dicatat.</h3>
-                    <div className="bg-canvas rounded-lg p-4 space-y-2">
-                        <p className="text-sm text-muted">{t('campaigns.contributionCode.successLabel' as any)}</p>
-                        <p className="text-2xl font-mono font-bold text-primary">{contributionCode}</p>
-                        <p className="text-xs text-muted">{t('campaigns.contributionCode.successHint' as any)}</p>
-                        <p className="text-xs text-warning font-medium">{t('campaigns.contributionCode.notProof' as any)}</p>
-                    </div>
-                    <button
-                        onClick={copyCode}
-                        className="w-full border border-primary text-primary rounded-lg py-2 text-sm font-medium hover:bg-primary/5"
-                    >
-                        {codeCopied ? t('campaigns.contributionCode.copied' as any) : t('campaigns.contributionCode.copy' as any)}
-                    </button>
-                    <button onClick={onClose} className="w-full text-sm text-muted hover:text-foreground">
-                        Tutup
-                    </button>
-                </div>
-            </div>
-        )
-    }
 
     return (
         <div

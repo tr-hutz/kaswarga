@@ -44,7 +44,6 @@ export default function ActiveCampaignsSection() {
                             const data = await res.json().catch(() => ({}))
                             throw new Error(data?.error ?? 'Failed')
                         }
-                        return res.json()
                     }}
                     preFillCampaignId={preFillCampaign?.id ?? ''}
                     preFillCampaignName={preFillCampaign?.name ?? ''}
