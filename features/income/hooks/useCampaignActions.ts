@@ -62,7 +62,10 @@ export function useCampaignActions({ onReload }: Options) {
 
     async function activateCampaign(id: string) {
         const res = await fetch(`/api/income/campaigns/${id}/activate`, { method: 'POST' })
-        if (!res.ok) throw new Error('Failed to activate')
+        if (!res.ok) {
+            const body = await res.json().catch(() => ({}))
+            throw new Error(body?.error ?? `Gagal mengaktifkan kampanye (${res.status})`)
+        }
         closeDrawer()
         onReload()
     }
@@ -73,14 +76,20 @@ export function useCampaignActions({ onReload }: Options) {
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({ cancelled_note: note ?? null }),
         })
-        if (!res.ok) throw new Error('Failed to cancel')
+        if (!res.ok) {
+            const body = await res.json().catch(() => ({}))
+            throw new Error(body?.error ?? `Gagal membatalkan kampanye (${res.status})`)
+        }
         closeDrawer()
         onReload()
     }
 
     async function deleteCampaign(id: string) {
         const res = await fetch(`/api/income/campaigns/${id}`, { method: 'DELETE' })
-        if (!res.ok) throw new Error('Failed to delete')
+        if (!res.ok) {
+            const body = await res.json().catch(() => ({}))
+            throw new Error(body?.error ?? `Gagal menghapus kampanye (${res.status})`)
+        }
         closeDrawer()
         onReload()
     }

@@ -33,6 +33,11 @@ CREATE TABLE IF NOT EXISTS income_campaigns (
         CHECK (status IN ('DRAFT', 'ACTIVE', 'COMPLETED', 'CANCELLED'))
 );
 
+-- ─── Alter rt ────────────────────────────────────────────────────────────────
+
+ALTER TABLE rt
+    ADD COLUMN IF NOT EXISTS maker_checker_enabled boolean NOT NULL DEFAULT TRUE;
+
 -- ─── Alter income_transactions ────────────────────────────────────────────────
 
 ALTER TABLE income_transactions
@@ -48,10 +53,9 @@ ALTER TABLE income_transactions
     ADD CONSTRAINT income_transactions_campaign_fk
         FOREIGN KEY (campaign_id) REFERENCES income_campaigns(id) ON DELETE RESTRICT;
 
--- Partial unique index: only enforces uniqueness when contribution_code is set
-CREATE UNIQUE INDEX IF NOT EXISTS idx_income_contribution_code_rt
-    ON income_transactions (rt_id, contribution_code)
-    WHERE contribution_code IS NOT NULL;
+-- NOTE: contribution_code is NOT unique per-transaction — all donors of the same
+-- campaign share the same code (= campaign_code). Only campaign_id index is needed.
+DROP INDEX IF EXISTS idx_income_contribution_code_rt;
 
 CREATE INDEX IF NOT EXISTS idx_income_campaign_id
     ON income_transactions (campaign_id);

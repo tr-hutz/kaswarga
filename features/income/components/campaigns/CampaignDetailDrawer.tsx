@@ -24,12 +24,14 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
     const [loadingDetail, setLoadingDetail] = useState(false)
     const [cancelNote,   setCancelNote]  = useState('')
     const [showCancel,   setShowCancel]  = useState(false)
+    const [actionError,  setActionError] = useState<string | null>(null)
 
     useEffect(() => {
         if (!open || !campaign?.id) return
         setDetail(null)
         setShowCancel(false)
         setCancelNote('')
+        setActionError(null)
 
         setLoadingDetail(true)
         fetch(`/api/income/campaigns/${campaign.id}`)
@@ -171,20 +173,31 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
                         </>
                     )}
 
+                    {/* Action error message */}
+                    {actionError && (
+                        <div className="rounded-lg bg-danger/10 border border-danger/30 px-3 py-2 text-sm text-danger">
+                            {actionError}
+                        </div>
+                    )}
+
                     {/* Actions for RT Chair: activate or cancel */}
                     <Can permission={PERMISSION.INCOME_CAMPAIGN_ACTIVATE}>
                         {['DRAFT', 'ACTIVE'].includes(data.status) && (
                             <div className="flex gap-2 pt-2">
                                 {data.status === 'DRAFT' && (
                                     <button
-                                        onClick={() => onActivate(data.id)}
+                                        onClick={async () => {
+                                            setActionError(null)
+                                            try { await onActivate(data.id) }
+                                            catch (e: any) { setActionError(e?.message ?? 'Gagal mengaktifkan') }
+                                        }}
                                         className="flex-1 bg-success hover:bg-success/80 text-white text-sm rounded-lg py-2"
                                     >
                                         {t('actions.activate')}
                                     </button>
                                 )}
                                 <button
-                                    onClick={() => setShowCancel(true)}
+                                    onClick={() => { setActionError(null); setShowCancel(true) }}
                                     className="flex-1 border border-danger/40 text-danger text-sm rounded-lg py-2 hover:bg-danger/5"
                                 >
                                     {t('actions.cancel')}
@@ -213,7 +226,11 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
                                     Batal
                                 </button>
                                 <button
-                                    onClick={() => onCancel(data.id, cancelNote)}
+                                    onClick={async () => {
+                                        setActionError(null)
+                                        try { await onCancel(data.id, cancelNote) }
+                                        catch (e: any) { setActionError(e?.message ?? 'Gagal membatalkan'); setShowCancel(false) }
+                                    }}
                                     className="flex-1 bg-danger hover:bg-danger/80 text-white text-sm rounded-lg py-2"
                                 >
                                     Konfirmasi
