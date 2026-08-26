@@ -21,7 +21,8 @@ export default function NotificationContainer() {
                 await markNotificationRead(notification.id)
                 reload()
             }
-            router.push(getNotificationLink(notification, membership?.role))
+            const link = getNotificationLink(notification, membership?.role)
+            if (link) router.push(link)
         } catch (err) {
             console.error(err)
         }

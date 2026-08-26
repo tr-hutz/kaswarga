@@ -7,10 +7,15 @@ const PAYMENTS_MODULE_ROLES = new Set(['RT_ADMIN', 'RT_CHAIR', 'TREASURER', 'SEC
 // Roles that have access to the expenses module (/expenses page)
 const EXPENSES_MODULE_ROLES = new Set(['RT_ADMIN', 'RT_CHAIR', 'TREASURER', 'SECRETARY', 'RESIDENT'])
 
+/**
+ * Returns the destination URL for a notification click, or null when the
+ * recipient has no actionable page to navigate to (e.g. a RESIDENT receiving
+ * an income_approved notification). Callers should skip router.push when null.
+ */
 export function getNotificationLink(
     notification: { type: string },
     role?: string | null,
-): string {
+): string | null {
 
     switch (notification.type) {
 
@@ -47,12 +52,13 @@ export function getNotificationLink(
             return INCOME_MODULE_ROLES.has(role ?? '') ? '/income?status=pending' : '/dashboard'
 
         case 'income_approved':
-            // Submitter may be a RESIDENT who cannot access /income
-            return INCOME_MODULE_ROLES.has(role ?? '') ? '/income?status=approved' : '/dashboard'
-
         case 'income_rejected':
-            // Submitter may be a RESIDENT who cannot access /income
-            return INCOME_MODULE_ROLES.has(role ?? '') ? '/income?status=rejected' : '/dashboard'
+            // Submitter may be a RESIDENT — no actionable destination, widget refresh
+            // happens via Supabase Realtime subscription on income_transactions.
+            if (!INCOME_MODULE_ROLES.has(role ?? '')) return null
+            return notification.type === 'income_approved'
+                ? '/income?status=approved'
+                : '/income?status=rejected'
 
         case 'campaign_activated':
         case 'campaign_completed':
