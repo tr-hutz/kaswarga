@@ -43,6 +43,23 @@ export function getNotificationLink(
 
             return '/payments'
 
+        case 'income_pending':
+
+            return '/income?status=pending'
+
+        case 'income_approved':
+
+            return '/income?status=approved'
+
+        case 'income_rejected':
+
+            return '/income?status=rejected'
+
+        case 'campaign_activated':
+        case 'campaign_completed':
+
+            return '/income?tab=campaigns'
+
         case 'income_import_staged':
         case 'income_import_pending_approval':
         case 'income_import_complete':

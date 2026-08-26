@@ -17,11 +17,13 @@ import ErrorState from '@/components/ui/ErrorState'
 
 interface NotificationViewProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    notifications: any[]
-    loading:       boolean
-    error:         boolean
-    onRetry:       () => void
-    onMarkAllRead: () => void
+    notifications:          any[]
+    loading:                boolean
+    error:                  boolean
+    onRetry:                () => void
+    onMarkAllRead:          () => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onNotificationClick?:   (n: any) => void
 }
 
 export default function NotificationView({
@@ -30,7 +32,8 @@ export default function NotificationView({
                                              loading,
                                              error,
                                              onRetry,
-                                             onMarkAllRead
+                                             onMarkAllRead,
+                                             onNotificationClick,
 
                                          }: NotificationViewProps) {
 
@@ -131,9 +134,8 @@ export default function NotificationView({
 
             <NotificationList
 
-                notifications={
-                    filtered
-                }
+                notifications={filtered}
+                onNotificationClick={onNotificationClick}
 
             />
 
