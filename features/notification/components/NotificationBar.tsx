@@ -62,7 +62,7 @@ export default function NotificationBar() {
                 message:  notification?.message,
                 type:     isRejected ? 'error' : 'success',
                 duration: 0,
-                onClick:  () => router.push(getNotificationLink(notification))
+                onClick:  () => router.push(getNotificationLink(notification, membership?.role))
             })
         }
     })
@@ -85,7 +85,7 @@ export default function NotificationBar() {
                 reload()
             }
             setOpen(false)
-            router.push(getNotificationLink(notification))
+            router.push(getNotificationLink(notification, membership?.role))
         } catch (err) {
             console.error(err)
         }
