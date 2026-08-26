@@ -30,6 +30,7 @@ export async function POST(
 
         if (fetchErr || !income) return NextResponse.json({ error: 'Not found' }, { status: 404 })
         if (income.status !== 'pending') return NextResponse.json({ error: 'Already processed' }, { status: 409 })
+        if (income.created_by === userId) return NextResponse.json({ error: 'Anda tidak dapat menyetujui pemasukan yang Anda buat sendiri' }, { status: 409 })
 
         const now = new Date().toISOString()
 

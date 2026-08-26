@@ -6,6 +6,7 @@ import { createIncome, updateIncomeById, deleteIncomeById } from '@/lib/services
 import { useIncomeApproval } from './useIncomeApproval'
 import { useIncomeImport }   from './useIncomeImport'
 import { exportIncomeToCSV, exportIncomeToExcel } from '../services/income-export-transform'
+import { useToast }          from '@/components/ui/ToastProvider'
 
 export function useIncomeActions({
     onReload,
@@ -14,6 +15,8 @@ export function useIncomeActions({
     onReload?:          () => void
     onApprovalSuccess?: () => void
 } = {}) {
+
+    const { toast } = (useToast() as any)
 
     const [selectedRow,  setSelectedRow]  = useState<any>(null)
     const [drawerOpen,   setDrawerOpen]   = useState(false)
@@ -59,19 +62,17 @@ export function useIncomeActions({
         setSubmitting(true)
         try {
             if (!selectedRow) {
-                const row = await createIncome(payload)
-                if (!row?.contribution_code) {
-                    closeForm()
-                }
-                await onReload?.()
-                return row
+                await createIncome(payload)
+                toast({ message: 'Pemasukan berhasil dicatat.', type: 'success' })
             } else {
                 await updateIncomeById(selectedRow.id, payload)
-                closeForm()
-                await onReload?.()
+                toast({ message: 'Pemasukan berhasil diperbarui.', type: 'success' })
             }
+            closeForm()
+            await onReload?.()
         } catch (err) {
             console.error('[INCOME SUBMIT]', err)
+            throw err
         } finally {
             setSubmitting(false)
         }

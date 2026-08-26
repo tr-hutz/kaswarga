@@ -888,7 +888,8 @@
             "attachment": "Lampiran",
             "approvedAt": "Disetujui pada {date}",
             "rejectedAt": "Ditolak",
-            "rejectionNote": "Alasan Ditolak"
+            "rejectionNote": "Alasan Ditolak",
+            "selfSubmissionNote": "Pemasukan ini diajukan oleh Anda. Persetujuan dilakukan oleh pengguna lain yang berwenang."
         },
         "approvalBar": {
             "rejectReason": "Alasan penolakan",

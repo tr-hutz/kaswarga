@@ -6,9 +6,11 @@ import { useTranslations }   from 'next-intl'
 import { useActiveCampaigns } from '../../hooks/useActiveCampaigns'
 import CampaignCard          from './CampaignCard'
 import IncomeForm            from '../forms/IncomeForm'
+import { useToast }          from '@/components/ui/ToastProvider'
 
 export default function ActiveCampaignsSection() {
     const t = useTranslations('income.campaigns.card')
+    const { toast } = (useToast() as any)
 
     const { campaigns, loading } = useActiveCampaigns()
     const [formOpen,       setFormOpen]       = useState(false)
@@ -44,6 +46,7 @@ export default function ActiveCampaignsSection() {
                             const data = await res.json().catch(() => ({}))
                             throw new Error(data?.error ?? 'Failed')
                         }
+                        toast({ message: 'Donasi berhasil dicatat. Terima kasih!', type: 'success' })
                     }}
                     preFillCampaignId={preFillCampaign?.id ?? ''}
                     preFillCampaignName={preFillCampaign?.name ?? ''}

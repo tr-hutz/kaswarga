@@ -125,3 +125,13 @@ CROSS JOIN permissions p
 WHERE r.code = 'RT_CHAIR'
   AND p.code = 'income.campaign.activate'
 ON CONFLICT DO NOTHING;
+
+-- TREASURER: approve and reject income transactions
+-- Maker-checker: server enforces created_by != approver_id so self-approval is blocked.
+INSERT INTO role_permissions (role_id, permission_id, allow)
+SELECT r.id, p.id, true
+FROM   roles r
+CROSS  JOIN permissions p
+WHERE  r.code = 'TREASURER'
+  AND  p.code IN ('income.approve', 'income.reject')
+ON CONFLICT (role_id, permission_id) DO NOTHING;
