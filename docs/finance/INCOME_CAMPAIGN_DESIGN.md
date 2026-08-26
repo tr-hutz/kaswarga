@@ -2,7 +2,7 @@
 
 > Status: Implemented — reflects Sprint 5.9 as built.
 >
-> Last Updated: 2026-08-22
+> Last Updated: 2026-08-26
 
 ---
 
@@ -307,7 +307,7 @@ A separate `income.campaign.view` permission is **not introduced** for MVP. Camp
 | `income.campaign.update` | ✅ | ❌ | ✅ | ❌ | ❌ |
 | `income.campaign.activate` | ❌ | ✅ | ❌ | ❌ | ❌ |
 | `income.campaign.delete` | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Approve/reject contributions (`income.approve`) | ✅ | ✅ | ❌ | ❌ | ❌ |
+| Approve/reject contributions (`income.approve`) | ✅ | ✅ | ✅ | ❌ | ❌ |
 
 SUPER_ADMIN is not assigned an rt_members membership and therefore has no RT-scoped campaign visibility through this RLS policy.
 
@@ -597,19 +597,9 @@ Fields:
 
 When `income_category = 'DONATION'`, an optional selector appears using active campaigns from `GET /api/income/campaigns/active`. Hidden entirely if no active campaigns exist.
 
-After a campaign-linked monetary contribution is submitted successfully, the form's success state prominently displays:
+After a campaign-linked monetary contribution is submitted successfully, a toast notification confirms the submission. The form closes immediately. The `contribution_code` is not shown in a success dialog — it is available on the transaction detail drawer at any later time (visible to staff in `IncomeDrawer`).
 
-```
-Donasi berhasil dicatat.
-
-Kode Kontribusi: MAROENS8AGT26
-Gunakan kode ini sebagai keterangan saat transfer bank.
-Kode kontribusi bukan bukti penerimaan dana.
-
-[Salin Kode]
-```
-
-The code is read-only and copyable. It is the same `campaign_code` value shared by all donors of this campaign. It also appears on the transaction detail drawer at any later time.
+The `contributionCode` success state and copy-code dialog were removed from `IncomeForm` (Sprint 5.9 post-implementation). Staff can find the code in the campaign's contribution list in `CampaignDetailDrawer`.
 
 ### 8.6 Progress Display (`CampaignProgressBar`)
 
@@ -677,11 +667,7 @@ Server:
   5. Fire-and-forget: notify TREASURER (or CHAIR if submitter is TREASURER
      and rt.maker_checker_enabled = true)
          ↓
-UI displays success state:
-  "Kode Kontribusi: MAROENS8AGT26
-   Gunakan kode ini sebagai keterangan saat transfer bank.
-   Kode kontribusi bukan bukti penerimaan dana."
-  [Salin Kode]
+UI shows success toast and form closes
          ↓
 TREASURER receives notification → reviews and approves or rejects
          ↓
@@ -749,16 +735,22 @@ All entries: `entity_type: 'campaign'`, `entity_id: campaign.id`.
 | Donation rejected | Submitting resident | `income_rejected` |
 | Target reached (ACTIVE → COMPLETED) | All active ADMIN + CHAIR | `campaign_completed` |
 
-**Maker-Checker rule (income donations):**
+**Maker-Checker rules:**
 
-When a donation is submitted via `POST /api/income/campaigns/[id]/donate` or `POST /api/income`, the notification target is resolved by `POST /api/income/notify`:
+**1. Notification routing** — When a donation is submitted via `POST /api/income/campaigns/[id]/donate` or `POST /api/income`, the notification target is resolved by `notifyIncomeReviewer()` in `lib/services/incomeNotification.server.ts`:
 
 1. Read `rt.maker_checker_enabled` for the RT.
 2. Look up the submitter's active membership role.
 3. If `maker_checker_enabled = true` AND submitter's role = `TREASURER` → notify **CHAIR**.
 4. Otherwise → notify **TREASURER**.
 
-This prevents a Treasurer from being the sole approver of their own donation. The same logic is applied in the payment module (`POST /api/payments/notify`). `maker_checker_enabled` is stored in the `rt` table (`boolean NOT NULL DEFAULT TRUE`); no admin UI exists in this sprint.
+> **Implementation note:** The `/donate` route handler calls `notifyIncomeReviewer()` directly (server-side function). It previously used `fetch('/api/income/notify', ...)` with a relative URL which silently failed in server-side context. The HTTP route `/api/income/notify` still exists for the client-side `income.service.ts` path and delegates to the same function.
+
+**2. Self-approval guard** — The `POST /api/income/[id]/approve` and `POST /api/income/[id]/reject` endpoints reject any attempt where `income.created_by === approver_id` with HTTP 409. This applies to all roles regardless of permission. The `IncomeDrawer` also shows a notice ("Pemasukan ini diajukan oleh Anda. Persetujuan dilakukan oleh pengguna lain yang berwenang.") instead of approve/reject buttons when the current user is the submitter.
+
+**3. TREASURER as checker** — TREASURER now holds `income.approve` and `income.reject` permissions (migration 035, seeded via `role_permissions`). This allows TREASURER to approve income submitted by RT_CHAIR (e.g. when RT_CHAIR donates via the campaign card). RT_CHAIR retains approve/reject for income submitted by RT_ADMIN or TREASURER.
+
+`maker_checker_enabled` is stored in the `rt` table (`boolean NOT NULL DEFAULT TRUE`); no admin UI exists in this sprint.
 
 Deadline passing does **not** trigger a notification (no scheduler in this sprint). A future background job may add this separately.
 
@@ -972,6 +964,10 @@ All confirmed by product owner (2026-08-22). Do not reopen during implementation
 | 19 | Notification routing | Hardcoded-role routing (TREASURER for income/payment, CHAIR for expenses). Not RBAC-driven. Maker-checker escalates to CHAIR when submitter is TREASURER and `rt.maker_checker_enabled = true`. |
 | 20 | Resident donation endpoint | Dedicated `POST /api/income/campaigns/[id]/donate` — no `income.create` permission required; residents donate without staff access |
 | 21 | Maker-checker configurability | `rt.maker_checker_enabled BOOLEAN NOT NULL DEFAULT TRUE`; per-RT; no admin UI in this sprint |
+| 22 | Self-approval guard | API-level: `created_by === approver_id` → 409. UI-level: `IncomeDrawer` hides approve/reject buttons for the submitter. Both layers are required; server-side is authoritative. |
+| 23 | TREASURER as income checker | TREASURER granted `income.approve` + `income.reject` (migration 035). Enables RT_CHAIR-submits / TREASURER-approves flow. Maker-checker self-approval guard prevents TREASURER from approving their own submissions. |
+| 24 | Notification routing server-side | `notifyIncomeReviewer()` in `lib/services/incomeNotification.server.ts` called directly from server-side route handlers. Relative-URL `fetch()` cannot be used from API route handlers (server-side context). HTTP `/api/income/notify` retained for client-side callers. |
+| 25 | Resident notification no-op | `income_approved`/`income_rejected` notifications to RESIDENT return `null` from `getNotificationLink()`. Callers skip `router.push`. Widget refresh is handled by Supabase Realtime subscription on `income_transactions`. |
 
 ---
 
@@ -985,6 +981,10 @@ All implementation decisions have been resolved during the sprint:
 - **Beranda/Dasbor slot**: `ActiveCampaignsSection` component inserted into both pages.
 - **Maker-checker**: `rt.maker_checker_enabled` column added to `rt` table in migration 035 (`BOOLEAN NOT NULL DEFAULT TRUE`).
 - **Resident donation**: dedicated `/donate` endpoint, no permission gate beyond authentication.
+- **Contribution code success dialog**: removed from `IncomeForm`. Form closes with a success toast; code visible in `CampaignDetailDrawer`.
+- **TREASURER as checker**: `income.approve` + `income.reject` granted to TREASURER in migration 035.
+- **Self-approval guard**: server returns 409 when `created_by === approver_id`. UI hides buttons for self-submissions.
+- **Server-side notify**: `notifyIncomeReviewer()` extracted to `lib/services/incomeNotification.server.ts`; called directly from `/donate` handler.
 
 ---
 
@@ -1004,3 +1004,7 @@ All implementation decisions have been resolved during the sprint:
 | `POST /api/income/campaigns/[id]/donate` endpoint | ✅ Implemented |
 | Maker-checker (`rt.maker_checker_enabled`) | ✅ Implemented |
 | Admin UI for `maker_checker_enabled` | 🔲 Future sprint |
+| `lib/services/incomeNotification.server.ts` | ✅ Implemented |
+| TREASURER `income.approve` + `income.reject` grants | ✅ Implemented (migration 035) |
+| Self-approval guard (API + UI) | ✅ Implemented |
+| Notification routing (`getNotificationLink` role-aware) | ✅ Implemented |

@@ -212,8 +212,8 @@ Legend
 | income.create  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 | income.update  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 | income.delete  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
-| income.approve | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| income.reject  | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| income.approve | ❌ | ✅ | ❌ | ✅ | ❌ | ❌ |
+| income.reject  | ❌ | ✅ | ❌ | ✅ | ❌ | ❌ |
 | income.export  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 | income.import  | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
 
