@@ -455,6 +455,22 @@ export async function getDashboardData(
 
   /*
    |--------------------------------------------------------------------------
+   | INCOME ANALYTICS  (fetched here so cashflow can include it)
+   |--------------------------------------------------------------------------
+   */
+
+  let incomeData: Array<{ amount: number; income_category: string; received_at: string }> = []
+
+  try {
+    if (rtId) {
+      incomeData = await findApprovedIncomesByYear(rtId, year)
+    }
+  } catch {
+    // non-critical — dashboard still renders without income analytics
+  }
+
+  /*
+   |--------------------------------------------------------------------------
    | CASHFLOW CHART
    |--------------------------------------------------------------------------
    */
@@ -465,7 +481,7 @@ export async function getDashboardData(
       const monthId =
         month.id
 
-        const income =
+        const paymentIncome =
             paymentData.reduce(
 
                 (
@@ -516,6 +532,13 @@ export async function getDashboardData(
 
                 0
             )
+
+        // Approved income transactions (donations, campaigns, etc.) for this month
+        const incomeTransactionTotal = incomeData
+            .filter(i => new Date(i.received_at).getMonth() + 1 === monthId)
+            .reduce((sum, i) => sum + Number(i.amount ?? 0), 0)
+
+        const income = paymentIncome + incomeTransactionTotal
 
       const expense =
         expenseData
@@ -631,22 +654,6 @@ export async function getDashboardData(
     }
     return { month: month.short, values }
   })
-
-  /*
-   |--------------------------------------------------------------------------
-   | INCOME ANALYTICS
-   |--------------------------------------------------------------------------
-   */
-
-  let incomeData: Array<{ amount: number; income_category: string; received_at: string }> = []
-
-  try {
-    if (rtId) {
-      incomeData = await findApprovedIncomesByYear(rtId, year)
-    }
-  } catch {
-    // non-critical — dashboard still renders without income analytics
-  }
 
   const currentYear = new Date().getFullYear()
 
