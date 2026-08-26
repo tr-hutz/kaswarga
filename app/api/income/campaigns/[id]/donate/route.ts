@@ -2,6 +2,7 @@ import { NextResponse }      from 'next/server'
 import { supabaseAdmin }     from '@/lib/supabase-admin'
 import { getRequestContext } from '@/lib/auth/server'
 import { UnauthorizedError } from '@/lib/auth/errors'
+import { notifyIncomeReviewer } from '@/lib/services/incomeNotification.server'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -67,11 +68,8 @@ export async function POST(req: Request, { params }: Params) {
         if (error) throw error
 
         // Fire-and-forget: notify reviewer (Treasurer, or Chair if submitter is Treasurer)
-        fetch('/api/income/notify', {
-            method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ incomeId: row.id, rtId, incomeName: row.income_name ?? null, createdBy: userId }),
-        }).catch(err => console.error('[campaign/donate notify]', err))
+        notifyIncomeReviewer({ incomeId: row.id, rtId, incomeName: row.income_name ?? null, createdBy: userId })
+            .catch(err => console.error('[campaign/donate notify]', err))
 
         return NextResponse.json(row, { status: 201 })
 
