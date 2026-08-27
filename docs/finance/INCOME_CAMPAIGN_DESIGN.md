@@ -2,7 +2,7 @@
 
 > Status: Implemented — reflects Sprint 5.9 as built.
 >
-> Last Updated: 2026-08-26
+> Last Updated: 2026-08-27
 
 ---
 
@@ -626,9 +626,28 @@ Active campaigns appear for all authenticated RT members on **Beranda** (residen
 
 **RT-scoping**: a resident or staff member sees only their own RT's campaigns. This is enforced by the RLS view policy (§4.5). No additional application-layer filter is needed.
 
-**Visibility rule**: section is hidden entirely if no active, non-expired campaigns exist.
+**Visibility rule**: the entire section is hidden (returns `null`) when the API returns zero active campaigns. Only campaigns that satisfy all three conditions appear: `status = 'ACTIVE'`, `starts_at <= today`, `ends_at IS NULL OR ends_at >= today`. DRAFT, COMPLETED, and CANCELLED campaigns are never shown.
 
-Each `CampaignCard` shows: campaign name, progress bar (approved + pending), target, deadline, `[Donasi Sekarang]` button.
+**Collapsible banner (`ActiveCampaignsSection`):**
+
+The campaign cards are wrapped in a collapsible banner component that:
+- Sits at the **top of the module** above all existing content on both Beranda and Dasbor.
+- Has a header row: megaphone icon + "Kampanye Aktif" label + count badge + chevron toggle.
+- Clicking the header toggles expand/collapse; state persists in `localStorage` under a per-module key.
+- The banner state on Beranda and Dasbor is **independent**: collapsing one does not affect the other.
+
+| Module | `localStorage` key |
+|---|---|
+| Beranda | `home-campaigns-banner` |
+| Dasbor | `dashboard-campaigns-banner` |
+
+When collapsed, only the header row is visible. When expanded, cards are shown in a responsive grid (1 / 2 / 3 columns at sm / lg breakpoints).
+
+**Refresh button on each card:**
+
+Each `CampaignCard` displays a `refresh-cw` icon button in the top-right corner of the card header. Clicking it triggers `reload()` on the shared `useActiveCampaigns` hook, which re-fetches all active campaigns. Because all cards share the same data source, one refresh reloads the entire list.
+
+Each `CampaignCard` shows: campaign name, progress bar (approved + pending), target, deadline, refresh button, `[Donasi Sekarang]` button.
 
 Clicking `[Donasi Sekarang]` opens `IncomeForm` with:
 - `income_category` pre-set to `DONATION`, **locked**
@@ -968,6 +987,8 @@ All confirmed by product owner (2026-08-22). Do not reopen during implementation
 | 23 | TREASURER as income checker | TREASURER granted `income.approve` + `income.reject` (migration 035). Enables RT_CHAIR-submits / TREASURER-approves flow. Maker-checker self-approval guard prevents TREASURER from approving their own submissions. |
 | 24 | Notification routing server-side | `notifyIncomeReviewer()` in `lib/services/incomeNotification.server.ts` called directly from server-side route handlers. Relative-URL `fetch()` cannot be used from API route handlers (server-side context). HTTP `/api/income/notify` retained for client-side callers. |
 | 25 | Resident notification no-op | `income_approved`/`income_rejected` notifications to RESIDENT return `null` from `getNotificationLink()`. Callers skip `router.push`. Widget refresh is handled by Supabase Realtime subscription on `income_transactions`. |
+| 26 | Collapsible campaign banner | `ActiveCampaignsSection` is a collapsible banner placed at the top of each module. Banner expand/collapse state is persisted in `localStorage` using a per-module `storageKey`. Beranda and Dasbor banner states are fully independent. All cards share one data fetch; one refresh reloads the full list. |
+| 27 | Cashflow chart includes approved income | The "Arus Kas" chart (`CashFlowChart`) sums both iuran payment income (`paymentData`) and approved income transactions (`incomeData`) for each month. Without this, approved donations would not appear in the cash flow view. |
 
 ---
 
@@ -985,6 +1006,9 @@ All implementation decisions have been resolved during the sprint:
 - **TREASURER as checker**: `income.approve` + `income.reject` granted to TREASURER in migration 035.
 - **Self-approval guard**: server returns 409 when `created_by === approver_id`. UI hides buttons for self-submissions.
 - **Server-side notify**: `notifyIncomeReviewer()` extracted to `lib/services/incomeNotification.server.ts`; called directly from `/donate` handler.
+- **Collapsible banner**: `ActiveCampaignsSection` wraps cards in a collapsible header. State saved to `localStorage` per `storageKey`. Placed at the top of Beranda (`storageKey="home-campaigns-banner"`) and Dasbor (`storageKey="dashboard-campaigns-banner"`).
+- **Refresh button**: each `CampaignCard` renders a `refresh-cw` icon button; click triggers `reload()` on the shared hook, refreshing all cards.
+- **Cashflow fix**: `lib/services/dashboard.service.ts` fetches `incomeData` before the cashflow block and adds `incomeTransactionTotal` (approved income per month) to the monthly income sum alongside `paymentIncome`.
 
 ---
 
@@ -1008,3 +1032,6 @@ All implementation decisions have been resolved during the sprint:
 | TREASURER `income.approve` + `income.reject` grants | ✅ Implemented (migration 035) |
 | Self-approval guard (API + UI) | ✅ Implemented |
 | Notification routing (`getNotificationLink` role-aware) | ✅ Implemented |
+| Collapsible banner (`ActiveCampaignsSection`) with per-module `localStorage` state | ✅ Implemented |
+| Refresh button on each `CampaignCard` | ✅ Implemented |
+| Cashflow chart includes approved income transactions | ✅ Implemented (`dashboard.service.ts`) |
