@@ -60,6 +60,9 @@ export default function HomeView({
         {t('title')}
       </h1>
 
+      {/* KAMPANYE AKTIF */}
+      <ActiveCampaignsSection storageKey="home-campaigns-banner" />
+
       {/* RANGKUMAN STATUS PEMBAYARAN */}
 
       <div className="bg-surface rounded-xl border border-divider shadow-card p-6 space-y-6">
@@ -101,9 +104,6 @@ export default function HomeView({
         </div>
 
       </div>
-
-      {/* KAMPANYE AKTIF */}
-      <ActiveCampaignsSection />
 
       {/* AJUKAN PEMBAYARAN */}
 

@@ -176,6 +176,9 @@ export default function DashboardView({
 
       </div>
 
+      {/* KAMPANYE AKTIF */}
+      <ActiveCampaignsSection storageKey="dashboard-campaigns-banner" />
+
       {/* STATUS IURAN WARGA */}
 
       <div className="space-y-3">
@@ -242,9 +245,6 @@ export default function DashboardView({
 
       </div>
 
-      {/* KAMPANYE AKTIF */}
-
-      <ActiveCampaignsSection />
 
       {/* ARREARS TABLE — ledger.export permission required */}
 
