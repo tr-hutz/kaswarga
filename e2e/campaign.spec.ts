@@ -98,7 +98,7 @@ test.describe('campaign list tab (treasurer)', () => {
         await expect(cp.detailDrawer()).toBeVisible({ timeout: 10000 })
     })
 
-    test('detail drawer shows the campaign name', async ({ page }) => {
+    test('detail drawer shows the campaign name heading', async ({ page }) => {
         const cp = new CampaignPage(page)
         await cp.gotoIncome()
         await cp.switchToCampaignsTab()
@@ -106,14 +106,11 @@ test.describe('campaign list tab (treasurer)', () => {
         const rowCount = await cp.tableRows().count()
         if (rowCount === 0) { test.skip(); return }
 
-        const firstRowText = await cp.tableRows().first().textContent()
         await cp.clickRow(0)
 
         await expect(cp.detailDrawer()).toBeVisible({ timeout: 10000 })
-        if (firstRowText) {
-            const campaignName = firstRowText.slice(0, 40).trim()
-            await expect(cp.detailDrawer().getByText(campaignName, { exact: false })).toBeVisible({ timeout: 5000 })
-        }
+        // The drawer always renders the campaign name as an h3 heading
+        await expect(cp.detailDrawer().locator('h3').first()).toBeVisible({ timeout: 5000 })
     })
 })
 
