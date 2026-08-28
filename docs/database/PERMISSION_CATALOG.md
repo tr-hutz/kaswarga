@@ -135,8 +135,8 @@ PostgreSQL RLS
 | income.create | Create income transaction | Active | |
 | income.update | Edit income transaction | Active | Pending only |
 | income.delete | Delete income transaction | Active | Soft Delete only |
-| income.approve | Approve income transaction | Active | Triggers ledger entry |
-| income.reject | Reject income transaction | Active | |
+| income.approve | Approve income transaction | Active | Triggers ledger entry; held by RT_CHAIR and TREASURER |
+| income.reject | Reject income transaction | Active | Held by RT_CHAIR and TREASURER; maker-checker enforced (BR-156) |
 
 ---
 

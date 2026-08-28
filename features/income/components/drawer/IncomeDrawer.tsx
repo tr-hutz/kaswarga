@@ -9,6 +9,7 @@ import Icon                from '@/components/ui/Icon'
 import Ribbadge            from '@/components/ui/Ribbadge'
 import { formatRupiah }    from '@/lib/utils'
 import IncomeStatusBadge   from '../IncomeStatusBadge'
+import { useAuth }         from '@/lib/auth/useAuth'
 
 interface IncomeDrawerProps {
     open:            boolean
@@ -81,6 +82,8 @@ export default function IncomeDrawer({
 }: IncomeDrawerProps) {
     const t  = useTranslations('income')
     const tc = useTranslations('common')
+    const { wargaId } = useAuth()
+    const isSelfSubmission = row?.created_by && wargaId && row.created_by === wargaId
 
     if (!open || !row) return null
 
@@ -168,16 +171,24 @@ export default function IncomeDrawer({
                         </div>
                     </div>
 
-                    {/* Approval bar — visible only to users with approve/reject permission */}
+                    {/* Approval bar — visible to users with approve/reject permission */}
                     <Can permission={PERMISSION.INCOME_APPROVE}>
-                        <ApprovalBar
-                            row={row}
-                            onApprove={onApprove}
-                            onReject={onReject}
-                            loading={approvalLoading}
-                            t={t}
-                            tc={tc}
-                        />
+                        {isSelfSubmission && row?.status === 'pending' ? (
+                            <div className="pt-4 border-t border-divider">
+                                <p className="text-sm text-muted text-center">
+                                    {t('drawer.selfSubmissionNote')}
+                                </p>
+                            </div>
+                        ) : (
+                            <ApprovalBar
+                                row={row}
+                                onApprove={onApprove}
+                                onReject={onReject}
+                                loading={approvalLoading}
+                                t={t}
+                                tc={tc}
+                            />
+                        )}
                     </Can>
                 </div>
             </div>

@@ -7,6 +7,7 @@ import { useTranslations }     from 'next-intl'
 import { useAuth }             from '@/lib/auth/useAuth'
 import { supabase }            from '@/lib/supabase'
 import { findResidents }       from '@/lib/repositories/resident.repository'
+import { useActiveCampaigns }  from '../../hooks/useActiveCampaigns'
 import Icon                    from '@/components/ui/Icon'
 
 const CATEGORIES = [
@@ -35,16 +36,21 @@ function normalizePaymentMethod(value: string | null | undefined): string {
 }
 
 interface IncomeFormProps {
-    open:         boolean
-    onClose:      () => void
-    onSubmit:     (form: any) => Promise<void>
-    initialData?: any
+    open:          boolean
+    onClose:       () => void
+    onSubmit:      (form: any) => Promise<void>
+    initialData?:  any
+    // Pre-filled from campaign card (locked fields)
+    preFillCampaignId?:   string
+    preFillCampaignName?: string
+    preFillCategory?:     string
 }
 
-function emptyForm() {
+function emptyForm(campaignId = '', category = '', campaignName = '') {
     return {
-        income_name:      '',
-        income_category:  '',
+        income_name:      campaignName,
+        income_category:  category,
+        campaign_id:      campaignId,
         source_type:      'ANONYMOUS',
         resident_id:      '',
         payer_name:       '',
@@ -58,23 +64,34 @@ function emptyForm() {
     }
 }
 
-export default function IncomeForm({ open, onClose, onSubmit, initialData = null }: IncomeFormProps) {
+export default function IncomeForm({ open, onClose, onSubmit, initialData = null, preFillCampaignId = '', preFillCampaignName = '', preFillCategory = '' }: IncomeFormProps) {
     const t  = useTranslations('income')
     const tc = useTranslations('common')
 
-    const { membership } = useAuth()
+    const { membership, wargaId } = useAuth()
     const rtId = (membership as any)?.rt?.id as string | undefined
 
-    const [residents,       setResidents]       = useState<Array<{ id: string; name: string }>>([])
-    const [form,            setForm]            = useState(emptyForm)
-    const [saving,          setSaving]          = useState(false)
-    const [attachmentFile,  setAttachmentFile]  = useState<File | null>(null)
+    const { campaigns: activeCampaigns } = useActiveCampaigns()
+
+    const [residents,          setResidents]          = useState<Array<{ id: string; name: string }>>([])
+    const [form,               setForm]               = useState(() => emptyForm(preFillCampaignId, preFillCategory, preFillCampaignName))
+    const [saving,             setSaving]             = useState(false)
+    const [submitError,        setSubmitError]        = useState<string | null>(null)
+    const [attachmentFile,     setAttachmentFile]     = useState<File | null>(null)
 
     // Reset form and attachment each time the form opens
     useEffect(() => {
         if (open) {
-            const base = initialData ? { ...emptyForm(), ...initialData } : emptyForm()
+            const base = initialData
+                ? { ...emptyForm(preFillCampaignId, preFillCategory, preFillCampaignName), ...initialData }
+                : emptyForm(preFillCampaignId, preFillCategory, preFillCampaignName)
             base.payment_method = normalizePaymentMethod(base.payment_method)
+            // When entering from a campaign card and current user is a resident,
+            // auto-fill source as the current resident so they don't have to select manually.
+            if (!initialData && preFillCampaignId && wargaId) {
+                base.source_type = 'RESIDENT'
+                base.resident_id = wargaId
+            }
             setForm(base)
             setAttachmentFile(null)
         }
@@ -97,6 +114,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         setSaving(true)
+        setSubmitError(null)
         try {
             const payload: any = {
                 income_name:      form.income_name,
@@ -109,6 +127,10 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                 received_at:      form.received_at,
                 notes:            form.notes            || null,
                 attachment_url:   form.attachment_url   || null,
+            }
+
+            if ((form as any).campaign_id) {
+                payload.campaign_id = (form as any).campaign_id
             }
 
             if (form.source_type === 'RESIDENT') {
@@ -133,13 +155,19 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
             }
 
             await onSubmit(payload)
+            onClose()
+        } catch (err: any) {
+            setSubmitError(err?.message ?? 'Terjadi kesalahan, coba lagi.')
         } finally {
             setSaving(false)
         }
     }
 
-    const isResident  = form.source_type === 'RESIDENT'
-    const isAnonymous = form.source_type === 'ANONYMOUS'
+    const isResident     = form.source_type === 'RESIDENT'
+    const isAnonymous    = form.source_type === 'ANONYMOUS'
+    const isDonation     = (form as any).income_category === 'DONATION'
+    const campaignLocked = Boolean(preFillCampaignId)
+    const residentLocked = campaignLocked && Boolean(wargaId)
 
     const inputCls = 'w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30'
 
@@ -175,7 +203,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             onChange={e => set('income_name', e.target.value)}
                             placeholder={t('form.incomeNamePlaceholder')}
                             required
-                            className={inputCls}
+                            disabled={campaignLocked}
+                            className={`${inputCls} ${campaignLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                         />
                     </div>
 
@@ -188,7 +217,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             value={form.income_category}
                             onChange={e => set('income_category', e.target.value)}
                             required
-                            className={inputCls}
+                            disabled={campaignLocked}
+                            className={`${inputCls} ${campaignLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                         >
                             <option value="">{t('form.selectCategory')}</option>
                             {CATEGORIES.map(c => (
@@ -199,6 +229,26 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                         </select>
                     </div>
 
+                    {/* Campaign selector — shown for DONATION when active campaigns exist */}
+                    {isDonation && activeCampaigns.length > 0 && (
+                        <div>
+                            <label className="block text-sm font-medium text-foreground mb-1">
+                                {t('campaigns.selector.label' as any)}
+                            </label>
+                            <select
+                                value={(form as any).campaign_id ?? ''}
+                                onChange={e => set('campaign_id', e.target.value)}
+                                disabled={campaignLocked}
+                                className={`${inputCls} ${campaignLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
+                            >
+                                <option value="">{t('campaigns.selector.placeholder' as any)}</option>
+                                {activeCampaigns.map((c: any) => (
+                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
                     {/* Source Type */}
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
@@ -208,7 +258,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             value={form.source_type}
                             onChange={e => set('source_type', e.target.value)}
                             required
-                            className={inputCls}
+                            disabled={residentLocked}
+                            className={`${inputCls} ${residentLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                         >
                             {SOURCE_TYPES.map(s => (
                                 <option key={s} value={s}>
@@ -228,7 +279,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                                 value={form.resident_id}
                                 onChange={e => set('resident_id', e.target.value)}
                                 required={isResident}
-                                className={inputCls}
+                                disabled={residentLocked}
+                                className={`${inputCls} ${residentLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                             >
                                 <option value="">{t('form.selectResident')}</option>
                                 {residents.map((r: any) => (
@@ -350,6 +402,11 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             </a>
                         )}
                     </div>
+
+                    {/* Submit error */}
+                    {submitError && (
+                        <p className="text-sm text-danger">{submitError}</p>
+                    )}
 
                     {/* Actions */}
                     <div className="flex gap-3 pt-2">

@@ -93,6 +93,14 @@ These roles are intended as starting templates only.
 | expense.create | ✅ | ❌ | ✅ | ❌ | ❌ |
 | expense.update | ✅ | ❌ | ✅ | ❌ | ❌ |
 | expense.delete | ✅ | ❌ | ✅ | ❌ | ❌ |
+| income.view | ✅ | ✅ | ✅ | ❌ | ❌ |
+| income.create | ✅ | ❌ | ✅ | ❌ | ❌ |
+| income.update | ✅ | ❌ | ✅ | ❌ | ❌ |
+| income.delete | ✅ | ❌ | ✅ | ❌ | ❌ |
+| income.approve | ✅ | ✅ | ✅ | ❌ | ❌ |
+| income.reject | ✅ | ✅ | ✅ | ❌ | ❌ |
+| income.export | ✅ | ❌ | ✅ | ❌ | ❌ |
+| income.import | ✅ | ❌ | ✅ | ❌ | ❌ |
 | ledger.view | ✅ | ✅ | ✅ | ❌ | ✅ |
 | ledger.export | ✅ | ✅ | ✅ | ❌ | ❌ |
 | report.view | ✅ | ✅ | ✅ | ✅ | ❌ |

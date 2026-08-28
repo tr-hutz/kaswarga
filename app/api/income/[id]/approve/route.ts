@@ -23,13 +23,14 @@ export async function POST(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: income, error: fetchErr } = await (supabaseAdmin as any)
             .from('income_transactions')
-            .select('id, rt_id, income_name, amount, status, created_by')
+            .select('id, rt_id, income_name, amount, status, created_by, campaign_id, income_category')
             .eq('id', id)
             .is('deleted_at', null)
             .single()
 
         if (fetchErr || !income) return NextResponse.json({ error: 'Not found' }, { status: 404 })
         if (income.status !== 'pending') return NextResponse.json({ error: 'Already processed' }, { status: 409 })
+        if (income.created_by === userId) return NextResponse.json({ error: 'Anda tidak dapat menyetujui pemasukan yang Anda buat sendiri' }, { status: 409 })
 
         const now = new Date().toISOString()
 
@@ -61,6 +62,76 @@ export async function POST(
         })
 
         if (ledgerErr) throw ledgerErr
+
+        // 3b. Synchronous campaign completion check
+        if (income.campaign_id && income.income_category === 'DONATION') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: campaign } = await (supabaseAdmin as any)
+                .from('income_campaigns')
+                .select('id, name, target_amount, status')
+                .eq('id', income.campaign_id)
+                .single()
+
+            if (campaign && campaign.status === 'ACTIVE' && campaign.target_amount != null) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const { data: sumRows } = await (supabaseAdmin as any)
+                    .from('income_transactions')
+                    .select('amount')
+                    .eq('campaign_id', income.campaign_id)
+                    .eq('income_category', 'DONATION')
+                    .eq('status', 'approved')
+                    .is('deleted_at', null)
+
+                const approvedTotal = (sumRows ?? []).reduce((sum: number, r: { amount: number }) => sum + (r.amount ?? 0), 0)
+
+                if (approvedTotal >= campaign.target_amount) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    await (supabaseAdmin as any)
+                        .from('income_campaigns')
+                        .update({ status: 'COMPLETED', updated_at: now, updated_by: userId })
+                        .eq('id', income.campaign_id)
+
+                    // Campaign completed activity log + notifications (non-blocking)
+                    try {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const { data: actor } = await (supabaseAdmin as any).from('users').select('name').eq('id', userId).single()
+                        await supabaseAdmin.from('activity_logs').insert({
+                            rt_id:       rtId,
+                            actor_id:    userId,
+                            actor_name:  actor?.name ?? null,
+                            action:      'campaign_completed',
+                            entity_type: 'campaign',
+                            entity_id:   income.campaign_id,
+                            description: `Kampanye selesai: ${campaign.name}`,
+                            visibility:  'internal',
+                        })
+
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const { data: adminMembers } = await (supabaseAdmin as any)
+                            .from('memberships')
+                            .select('user_id')
+                            .eq('rt_id', rtId)
+                            .in('role', ['ADMIN', 'CHAIR'])
+                            .eq('status', 'active')
+
+                        const notifs = (adminMembers ?? []).map((m: { user_id: string }) => ({
+                            rt_id:          rtId,
+                            type:           'campaign_completed',
+                            title:          'Kampanye Selesai',
+                            message:        `Kampanye "${campaign.name}" telah mencapai target.`,
+                            entity_type:    'campaign',
+                            entity_id:      income.campaign_id,
+                            target_user_id: m.user_id,
+                        }))
+
+                        if (notifs.length) {
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            await (supabaseAdmin as any).from('notifications').insert(notifs)
+                        }
+                    } catch { /* non-critical */ }
+                }
+            }
+        }
 
         // 4. Activity log + notification (non-blocking)
         try {

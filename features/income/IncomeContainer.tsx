@@ -1,7 +1,7 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useMemo }           from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslations }   from 'next-intl'
 import { useDataTable }      from '@/lib/hooks/useDataTable'
 import { useIncomeData }     from './hooks/useIncomeData'
@@ -13,6 +13,8 @@ import IncomeView            from './IncomeView'
 export default function IncomeContainer() {
     const t  = useTranslations('income')
     const tc = useTranslations('common')
+
+    const [activeTab, setActiveTab] = useState<'transactions' | 'campaigns'>('transactions')
 
     const { query, setPage, setPageSize, setSearch, setFilter } =
         useDataTable({}, 'income')
@@ -51,6 +53,8 @@ export default function IncomeContainer() {
             setSearch={setSearch}
             setFilter={setFilter}
             importError={importError ?? ''}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
             {...actions}
         />
     )

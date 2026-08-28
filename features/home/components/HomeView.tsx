@@ -1,15 +1,10 @@
 ﻿'use client'
-import { useTranslations } from 'next-intl'
-import PaymentSummary
-  from './PaymentSummary'
-
-import MonthCard
-  from './MonthCard'
-
-import PaymentForm
-  from './PaymentForm'
-
-import { MONTHS } from '@/lib/constants/months'
+import { useTranslations }       from 'next-intl'
+import PaymentSummary            from './PaymentSummary'
+import MonthCard                 from './MonthCard'
+import PaymentForm               from './PaymentForm'
+import ActiveCampaignsSection    from '@/features/income/components/campaigns/ActiveCampaignsSection'
+import { MONTHS }                from '@/lib/constants/months'
 
 interface HomeViewProps {
   loading:        boolean
@@ -64,6 +59,9 @@ export default function HomeView({
       <h1 className="text-2xl font-bold text-foreground">
         {t('title')}
       </h1>
+
+      {/* KAMPANYE AKTIF */}
+      <ActiveCampaignsSection storageKey="home-campaigns-banner" />
 
       {/* RANGKUMAN STATUS PEMBAYARAN */}
 

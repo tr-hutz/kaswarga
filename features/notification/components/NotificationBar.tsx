@@ -57,12 +57,13 @@ export default function NotificationBar() {
         onNew: (notification) => {
             const isRejected = notification?.type === 'payment_rejected'
                 || (notification?.type as string)?.endsWith('_import_rejected')
+            const link = getNotificationLink(notification, membership?.role)
             toast({
                 title:    notification?.title,
                 message:  notification?.message,
                 type:     isRejected ? 'error' : 'success',
                 duration: 0,
-                onClick:  () => router.push(getNotificationLink(notification))
+                onClick:  link ? () => router.push(link) : undefined,
             })
         }
     })
@@ -85,7 +86,8 @@ export default function NotificationBar() {
                 reload()
             }
             setOpen(false)
-            router.push(getNotificationLink(notification))
+            const link = getNotificationLink(notification, membership?.role)
+            if (link) router.push(link)
         } catch (err) {
             console.error(err)
         }

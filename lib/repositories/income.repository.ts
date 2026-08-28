@@ -21,6 +21,11 @@ const SELECT_FIELDS = `
     status,
     notes,
     attachment_url,
+    campaign_id,
+    contribution_code,
+    in_kind_description,
+    in_kind_quantity,
+    in_kind_unit,
     created_by,
     approved_by,
     approved_at,
@@ -67,6 +72,11 @@ export async function findIncomesPaginated(
     const paymentMethod = query.filters?.payment_method
     if (paymentMethod && paymentMethod !== 'all') {
         q = q.eq('payment_method', paymentMethod)
+    }
+
+    const campaignId = query.filters?.campaign_id
+    if (campaignId) {
+        q = q.eq('campaign_id', campaignId)
     }
 
     q = q.range(from, to)

@@ -6,6 +6,7 @@ import {
     updateIncome,
     softDeleteIncome,
 } from '../repositories/income.repository'
+import { findCampaignById } from '../repositories/incomeCampaign.repository'
 
 async function getMembershipContext() {
     const membership = await getCurrentMembership()
@@ -18,12 +19,43 @@ async function getMembershipContext() {
 export async function createIncome(payload: Record<string, unknown>) {
     const { userId, rtId } = await getMembershipContext()
 
-    const row = await insertIncome({
+    const insertPayload: Record<string, unknown> = {
         ...payload,
         rt_id:      rtId,
         created_by: userId,
         status:     'pending',
-    })
+        // Never allow client to set contribution_code
+        contribution_code: undefined,
+    }
+    delete insertPayload['contribution_code']
+
+    // Campaign validation + contribution code generation
+    if (insertPayload['campaign_id']) {
+        const campaignId = insertPayload['campaign_id'] as string
+        const campaign   = await findCampaignById(campaignId)
+
+        if (!campaign || campaign.rt_id !== rtId) {
+            throw new Error('Campaign not found')
+        }
+        if (campaign.status !== 'ACTIVE') {
+            throw new Error('Campaign is not active')
+        }
+
+        const today = new Date().toISOString().slice(0, 10)
+        if (campaign.starts_at > today) {
+            throw new Error('Campaign has not started yet')
+        }
+        if (campaign.ends_at && campaign.ends_at < today) {
+            throw new Error('Campaign has ended')
+        }
+        if (insertPayload['income_category'] !== 'DONATION') {
+            throw new Error('Only DONATION category can be linked to a campaign')
+        }
+
+        insertPayload['contribution_code'] = campaign.campaign_code
+    }
+
+    const row = await insertIncome(insertPayload)
 
     try {
         const { data: actor } = await supabase
@@ -50,11 +82,11 @@ export async function createIncome(payload: Record<string, unknown>) {
         // activity log failure must not block the main flow
     }
 
-    // Notify all CHAIR in the RT via API route (uses supabaseAdmin to bypass RLS)
+    // Notify reviewer (Treasurer, or Chair if submitter is Treasurer) via API route
     fetch('/api/income/notify', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ incomeId: row.id, rtId, incomeName: row.income_name ?? null }),
+        body:    JSON.stringify({ incomeId: row.id, rtId, incomeName: row.income_name ?? null, createdBy: userId }),
     }).catch(err => console.error('[Income Notify]', err))
 
     return row

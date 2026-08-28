@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
         const { data: confirmation } = await supabaseAdmin
             .from('payment_confirmations')
-            .select('rt_id, year')
+            .select('rt_id, year, resident_id')
             .eq('id', confirmationId)
             .single()
 
@@ -26,22 +26,42 @@ export async function POST(req: Request) {
             .select('*', { count: 'exact', head: true })
             .eq('confirmation_id', confirmationId)
 
-        const { data: treasurers } = await db
+        // Maker-checker: if submitting resident has TREASURER role, escalate to Chair
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: rt } = await (supabaseAdmin as any)
+            .from('rt').select('maker_checker_enabled').eq('id', confirmation.rt_id).single()
+        const makerCheckerEnabled = rt?.maker_checker_enabled ?? true
+
+        let submitterIsTreasurer = false
+        if (makerCheckerEnabled && confirmation.resident_id) {
+            const { data: submitterMembership } = await db
+                .from('memberships')
+                .select('role')
+                .eq('resident_id', confirmation.resident_id)
+                .eq('rt_id', confirmation.rt_id)
+                .eq('status', 'active')
+                .maybeSingle()
+            submitterIsTreasurer = submitterMembership?.role === 'TREASURER'
+        }
+
+        const targetRole = (makerCheckerEnabled && submitterIsTreasurer) ? 'CHAIR' : 'TREASURER'
+
+        const { data: reviewers } = await db
             .from('memberships')
             .select('user_id')
             .eq('rt_id', confirmation.rt_id)
-            .eq('role', 'TREASURER')
+            .eq('role', targetRole)
             .eq('status', 'active')
 
-        if (!treasurers?.length) return NextResponse.json({ ok: true })
+        if (!reviewers?.length) return NextResponse.json({ ok: true })
 
         const months = monthCount ?? 0
         await db.from('notifications').insert(
-            treasurers.map((t: { user_id: string }) => ({
+            reviewers.map((t: { user_id: string }) => ({
                 rt_id:          confirmation.rt_id,
                 type:           'payment_pending',
-                title:          'New Payment Submission',
-                message:        `A resident submitted a payment confirmation for ${confirmation.year} (${months} month${months !== 1 ? 's' : ''})`,
+                title:          'Konfirmasi Pembayaran Baru',
+                message:        `Warga mengajukan konfirmasi pembayaran iuran ${confirmation.year} (${months} bulan)`,
                 entity_type:    'payment_confirmations',
                 entity_id:      confirmationId,
                 target_user_id: t.user_id,

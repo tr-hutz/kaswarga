@@ -21,6 +21,9 @@ import MonthlyExpenseByCategoryChart
 import ResidentArrearsSummary
   from '@/features/resident/components/analytics/ResidentArrearsSummary'
 
+import ActiveCampaignsSection
+  from '@/features/income/components/campaigns/ActiveCampaignsSection'
+
 import Icon       from '@/components/ui/Icon'
 import {
   formatRupiah
@@ -173,6 +176,9 @@ export default function DashboardView({
 
       </div>
 
+      {/* KAMPANYE AKTIF */}
+      <ActiveCampaignsSection storageKey="dashboard-campaigns-banner" />
+
       {/* STATUS IURAN WARGA */}
 
       <div className="space-y-3">
@@ -238,6 +244,7 @@ export default function DashboardView({
         </div>
 
       </div>
+
 
       {/* ARREARS TABLE — ledger.export permission required */}
 

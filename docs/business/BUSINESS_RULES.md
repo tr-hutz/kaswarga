@@ -630,6 +630,16 @@ There is no CRUD UI for income categories.
 
 ---
 
+## BR-156
+
+An income transaction may not be approved or rejected by the user who created it (maker-checker rule).
+
+If the submitter holds income.approve or income.reject permission, those actions must be performed by a different authorized user.
+
+The server enforces this rule by returning HTTP 409 when `created_by === approver_id`. The UI hides the approval bar when the current user is the submitter.
+
+---
+
 # 16. Security
 
 ## BR-100

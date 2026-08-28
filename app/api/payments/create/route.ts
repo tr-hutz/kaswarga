@@ -133,6 +133,29 @@ export async function POST(req: Request) {
             metadata:    { residentId, year, months, totalAmount },
         })
 
+        // Notify resident that their payment was recorded and approved
+        try {
+            const { data: membership } = await supabaseAdmin
+                .from('memberships')
+                .select('user_id')
+                .eq('resident_id', residentId)
+                .eq('rt_id', rtId)
+                .eq('status', 'active')
+                .maybeSingle()
+
+            if (membership?.user_id) {
+                await supabaseAdmin.from('notifications').insert({
+                    rt_id:          rtId,
+                    type:           'payment_approved',
+                    title:          'Pembayaran Dicatat',
+                    message:        `Pembayaran iuran Anda untuk ${months.length} bulan tahun ${year} telah dicatat dan disetujui.`,
+                    entity_type:    'payment_confirmations',
+                    entity_id:      confirmation.id,
+                    target_user_id: membership.user_id,
+                })
+            }
+        } catch { /* non-critical */ }
+
         return NextResponse.json({ success: true, confirmationId: confirmation.id })
 
     } catch (err) {

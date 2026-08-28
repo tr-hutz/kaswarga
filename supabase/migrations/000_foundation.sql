@@ -40,10 +40,11 @@ create table rt (
     account_holder text,
     qris_url       text,
     logo_url       text,
-    active         boolean     not null default true,
-    deleted_at     timestamptz,
-    created_at     timestamptz not null default now(),
-    updated_at     timestamptz not null default now()
+    active                boolean     not null default true,
+    maker_checker_enabled boolean     not null default true,
+    deleted_at            timestamptz,
+    created_at            timestamptz not null default now(),
+    updated_at            timestamptz not null default now()
 );
 
 
