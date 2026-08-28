@@ -67,7 +67,7 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
 
     return (
         <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4" onClick={onClose}>
-            <div className="bg-surface rounded-xl shadow-default w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div data-testid="campaign-form-modal" className="bg-surface rounded-xl shadow-default w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <div className="px-6 py-4 border-b border-divider flex justify-between items-center">
                     <h2 className="text-lg font-semibold text-foreground">
                         {isEdit ? t('editTitle') : t('createTitle')}

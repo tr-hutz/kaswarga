@@ -16,7 +16,7 @@ export default function CampaignCard({ campaign, onDonate, onRefresh }: Props) {
     const t = useTranslations('income.campaigns.card')
 
     return (
-        <div className="bg-surface border border-divider rounded-xl p-4 space-y-3">
+        <div data-testid="campaign-card" className="bg-surface border border-divider rounded-xl p-4 space-y-3">
             <div className="flex items-start justify-between gap-2">
                 <h3 className="text-sm font-semibold text-foreground leading-tight">{campaign.name}</h3>
                 <div className="flex items-center gap-1.5 shrink-0">
@@ -54,6 +54,7 @@ export default function CampaignCard({ campaign, onDonate, onRefresh }: Props) {
             )}
 
             <button
+                data-testid="campaign-donate-btn"
                 onClick={() => onDonate(campaign)}
                 className="w-full bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg py-2 transition-colors"
             >

@@ -56,6 +56,7 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
     return (
         <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
             <div
+                data-testid="campaign-detail-drawer"
                 className="w-full max-w-md h-full bg-surface shadow-xl overflow-y-auto"
                 onClick={e => e.stopPropagation()}
             >
@@ -186,6 +187,7 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
                             <div className="flex gap-2 pt-2">
                                 {data.status === 'DRAFT' && (
                                     <button
+                                        data-testid="campaign-activate-btn"
                                         onClick={async () => {
                                             setActionError(null)
                                             try { await onActivate(data.id) }

@@ -39,11 +39,12 @@ export default function ActiveCampaignsSection({ storageKey = 'active-campaigns-
     if (!loading && campaigns.length === 0) return null
 
     return (
-        <div className="rounded-xl border border-divider bg-surface shadow-card overflow-hidden">
+        <div data-testid="campaigns-banner" className="rounded-xl border border-divider bg-surface shadow-card overflow-hidden">
 
             {/* Banner header */}
             <button
                 type="button"
+                data-testid="campaigns-banner-toggle"
                 onClick={() => setCollapsed(c => !c)}
                 className="w-full flex items-center justify-between px-4 py-3 hover:bg-canvas transition-colors"
             >
@@ -65,7 +66,7 @@ export default function ActiveCampaignsSection({ storageKey = 'active-campaigns-
 
             {/* Cards */}
             {!collapsed && (
-                <div className="px-4 pb-4 pt-1">
+                <div data-testid="campaigns-banner-content" className="px-4 pb-4 pt-1">
                     {loading ? (
                         <div className="flex justify-center py-6">
                             <div className="w-5 h-5 border-2 border-divider border-t-primary rounded-full animate-spin" />
