@@ -41,6 +41,10 @@ export async function findLedgerPaginated(
         q = q.ilike('description', `%${term}%`)
     }
 
+    if (query.filters?.type && query.filters.type !== 'all') {
+        q = q.eq('type', query.filters.type)
+    }
+
     q = q.range(from, to)
 
     const { data, error, count } = await q

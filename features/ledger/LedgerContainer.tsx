@@ -7,7 +7,7 @@ import { useLedgerActions } from './hooks/useLedgerActions'
 import { useLedgerRealtime } from './hooks/useLedgerRealtime'
 
 export default function LedgerContainer() {
-    const { query, setPage, setPageSize, setSearch, setSort } =
+    const { query, setPage, setPageSize, setSearch, setSort, setFilter } =
         useDataTable({}, 'ledger')
 
     const { result, totals, loading, error, reload } = useLedgerData(query)
@@ -28,6 +28,7 @@ export default function LedgerContainer() {
             setPageSize={setPageSize}
             setSearch={setSearch}
             setSort={setSort}
+            setFilter={setFilter}
             selectedRow={selectedRow}
             drawerOpen={drawerOpen}
             openDrawer={openDrawer}

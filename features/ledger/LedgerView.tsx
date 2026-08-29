@@ -22,6 +22,7 @@ interface Props {
     setPageSize:     (s: number) => void
     setSearch:       (s: string) => void
     setSort:         (by: string, dir: 'asc' | 'desc') => void
+    setFilter:       (key: string, value: unknown) => void
     selectedRow:     LedgerRow | null
     drawerOpen:      boolean
     openDrawer:      (r: LedgerRow) => void
@@ -32,7 +33,7 @@ interface Props {
 
 export default function LedgerView({
     result, totals, loading, error, onRetry,
-    query, setPage, setPageSize, setSearch, setSort,
+    query, setPage, setPageSize, setSearch, setSort, setFilter,
     selectedRow, drawerOpen, openDrawer, closeDrawer,
     exportCSV, exportExcel,
 }: Props) {
@@ -74,6 +75,17 @@ export default function LedgerView({
                 onPageSizeChange={setPageSize}
                 onRetry={onRetry}
                 onRowClick={openDrawer}
+                renderFilters={
+                    <select
+                        value={String(query.filters?.type ?? 'all')}
+                        onChange={(e) => setFilter('type', e.target.value)}
+                        className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
+                    >
+                        <option value="all">{t('filters.allTypes')}</option>
+                        <option value="pemasukan">{t('filters.pemasukan')}</option>
+                        <option value="pengeluaran">{t('filters.pengeluaran')}</option>
+                    </select>
+                }
                 renderActions={
                     <ExportDropdown
                         onExportExcel={() => exportExcel(data)}

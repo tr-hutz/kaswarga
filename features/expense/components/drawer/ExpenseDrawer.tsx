@@ -7,6 +7,7 @@ import Can                 from '@/components/ui/Can'
 import { PERMISSION }      from '@/lib/auth/types'
 import Icon                from '@/components/ui/Icon'
 import Ribbadge            from '@/components/ui/Ribbadge'
+import { useKeyDown }      from '@/lib/hooks/useKeyDown'
 
 interface ExpenseDrawerProps {
     open:            boolean
@@ -31,6 +32,8 @@ export default function ExpenseDrawer({
 
     const t  = useTranslations('expenses')
     const tc = useTranslations('common')
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open || !row) return null
 

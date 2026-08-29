@@ -1,6 +1,5 @@
 ﻿'use client'
 
-import { useRouter }        from 'next/navigation'
 import { useAuth }          from '../../lib/auth/useAuth'
 import { useNotifications } from './hooks/useNotifications'
 import NotificationView     from './NotificationView'
@@ -10,8 +9,6 @@ import { getNotificationLink } from './utils/getNotificationLink'
 export default function NotificationContainer() {
 
     const { membership } = useAuth()
-    const router         = useRouter()
-
     const { notifications, loading, error, reload } = useNotifications()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -21,11 +18,14 @@ export default function NotificationContainer() {
                 await markNotificationRead(notification.id)
                 reload()
             }
-            const link = getNotificationLink(notification, membership?.role)
-            if (link) router.push(link)
         } catch (err) {
             console.error(err)
         }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    function getLink(notification: any): string | null {
+        return getNotificationLink(notification, membership?.role)
     }
 
     async function handleMarkAllRead() {
@@ -46,6 +46,7 @@ export default function NotificationContainer() {
             onRetry={reload}
             onMarkAllRead={handleMarkAllRead}
             onNotificationClick={handleNotificationClick}
+            getLink={getLink}
         />
     )
 }

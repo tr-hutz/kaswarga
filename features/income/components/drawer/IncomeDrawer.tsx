@@ -10,6 +10,7 @@ import Ribbadge            from '@/components/ui/Ribbadge'
 import { formatRupiah }    from '@/lib/utils'
 import IncomeStatusBadge   from '../IncomeStatusBadge'
 import { useAuth }         from '@/lib/auth/useAuth'
+import { useKeyDown }      from '@/lib/hooks/useKeyDown'
 
 interface IncomeDrawerProps {
     open:            boolean
@@ -84,6 +85,8 @@ export default function IncomeDrawer({
     const tc = useTranslations('common')
     const { wargaId } = useAuth()
     const isSelfSubmission = row?.created_by && wargaId && row.created_by === wargaId
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open || !row) return null
 

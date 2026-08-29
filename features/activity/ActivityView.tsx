@@ -19,12 +19,13 @@ interface Props {
     setPage:      (p: number) => void
     setPageSize:  (s: number) => void
     setSearch:    (s: string) => void
+    setFilter:    (key: string, value: unknown) => void
     isSuperAdmin: boolean
 }
 
 export default function ActivityView({
     result, stats, loading, error, onRetry,
-    query, setPage, setPageSize, setSearch, isSuperAdmin,
+    query, setPage, setPageSize, setSearch, setFilter, isSuperAdmin,
 }: Props) {
     const t = useTranslations('activity')
 
@@ -76,6 +77,38 @@ export default function ActivityView({
                 searchPlaceholder={t('searchPlaceholder')}
                 onRetry={onRetry}
                 onRowClick={openDrawer}
+                renderFilters={
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <select
+                            value={String(query.filters?.action ?? 'all')}
+                            onChange={(e) => setFilter('action', e.target.value)}
+                            className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
+                        >
+                            <option value="all">{t('filters.allActions')}</option>
+                            <option value="CREATE">{t('filters.create')}</option>
+                            <option value="UPDATE">{t('filters.update')}</option>
+                            <option value="DELETE">{t('filters.delete')}</option>
+                            <option value="APPROVE">{t('filters.approve')}</option>
+                            <option value="REJECT">{t('filters.reject')}</option>
+                            <option value="SUBMIT">{t('filters.submit')}</option>
+                        </select>
+                        <select
+                            value={String(query.filters?.entity_type ?? 'all')}
+                            onChange={(e) => setFilter('entity_type', e.target.value)}
+                            className="h-9 rounded-lg border border-divider bg-surface px-3 text-sm text-foreground"
+                        >
+                            <option value="all">{t('filters.allEntities')}</option>
+                            <option value="income_transactions">{t('entities.income_transactions')}</option>
+                            <option value="expense">{t('entities.expense')}</option>
+                            <option value="payment">{t('entities.payment')}</option>
+                            <option value="residents">{t('entities.residents')}</option>
+                            <option value="campaign">{t('entities.campaign')}</option>
+                            <option value="rt">{t('entities.rt')}</option>
+                            <option value="auth">{t('entities.auth')}</option>
+                            <option value="user">{t('entities.user')}</option>
+                        </select>
+                    </div>
+                }
             />
 
             <ActivityDrawer open={drawerOpen} row={selectedRow} onClose={closeDrawer} />

@@ -40,6 +40,14 @@ export async function findActivitiesPaginated(
         q = q.or(`description.ilike.%${term}%,actor_name.ilike.%${term}%`)
     }
 
+    if (query.filters?.action && query.filters.action !== 'all') {
+        q = q.ilike('action', `${query.filters.action}%`)
+    }
+
+    if (query.filters?.entity_type && query.filters.entity_type !== 'all') {
+        q = q.eq('entity_type', query.filters.entity_type)
+    }
+
     q = q.range(from, to)
 
     const { data, error, count } = await q

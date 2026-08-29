@@ -9,11 +9,14 @@ interface NotificationListProps {
     notifications?:        any[]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onNotificationClick?:  (n: any) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getLink?:              (n: any) => string | null
 }
 
 export default function NotificationList({
     notifications = [],
     onNotificationClick,
+    getLink,
 }: NotificationListProps) {
 
     const t = useTranslations('notification')
@@ -32,6 +35,7 @@ export default function NotificationList({
                         key={notification.id}
                         notification={notification}
                         onClick={onNotificationClick}
+                        getLink={getLink}
                     />
                 ))
             )}
