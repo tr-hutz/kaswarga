@@ -54,17 +54,21 @@ export default function AppShell({
   const tTopbar                 = useTranslations('topbar')
 
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [navState, setNavState] = useState<NavState>(() => {
-    if (typeof window === 'undefined') return 'full'
-    const saved = localStorage.getItem('nav-state')
-    if (saved === 'full' || saved === 'mini' || saved === 'hidden') return saved as NavState
-    return localStorage.getItem('nav-open') === 'false' ? 'hidden' : 'full'
-  })
+  const [navState, setNavState] = useState<NavState>('full')
+
+  // Load the per-user nav preference once the authenticated user is known.
+  useEffect(() => {
+    if (!user?.id) return
+    const saved = localStorage.getItem(`nav-state:${user.id}`)
+    if (saved === 'full' || saved === 'mini' || saved === 'hidden') {
+      setNavState(saved)
+    }
+  }, [user?.id])
 
   function cycleNav() {
     setNavState(prev => {
       const next: NavState = prev === 'full' ? 'mini' : prev === 'mini' ? 'hidden' : 'full'
-      localStorage.setItem('nav-state', next)
+      if (user?.id) localStorage.setItem(`nav-state:${user.id}`, next)
       return next
     })
   }
