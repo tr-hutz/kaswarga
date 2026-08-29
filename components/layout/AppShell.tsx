@@ -16,6 +16,7 @@ import Topbar          from './Topbar'
 import Sidebar         from './Sidebar'
 import MobileOverlay   from './MobileOverlay'
 import UserThemeSync   from './UserThemeSync'
+import type { NavState } from '../../lib/types/nav'
 
 import { useAuth }  from '../../lib/auth/useAuth'
 import { logout }   from '../../lib/services/auth.service'
@@ -53,15 +54,17 @@ export default function AppShell({
   const tTopbar                 = useTranslations('topbar')
 
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [navOpen, setNavOpen] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return true
-    return localStorage.getItem('nav-open') !== 'false'
+  const [navState, setNavState] = useState<NavState>(() => {
+    if (typeof window === 'undefined') return 'full'
+    const saved = localStorage.getItem('nav-state')
+    if (saved === 'full' || saved === 'mini' || saved === 'hidden') return saved as NavState
+    return localStorage.getItem('nav-open') === 'false' ? 'hidden' : 'full'
   })
 
-  function toggleNav() {
-    setNavOpen(prev => {
-      const next = !prev
-      localStorage.setItem('nav-open', String(next))
+  function cycleNav() {
+    setNavState(prev => {
+      const next: NavState = prev === 'full' ? 'mini' : prev === 'mini' ? 'hidden' : 'full'
+      localStorage.setItem('nav-state', next)
       return next
     })
   }
@@ -175,8 +178,8 @@ export default function AppShell({
         <Topbar
             mobileOpen={mobileOpen}
             setMobileOpen={setMobileOpen}
-            navOpen={navOpen}
-            onNavToggle={toggleNav}
+            navState={navState}
+            onNavToggle={cycleNav}
         />
 
         <MobileOverlay
@@ -186,14 +189,14 @@ export default function AppShell({
 
         <Sidebar
             mobileOpen={mobileOpen}
-            navOpen={navOpen}
+            navState={navState}
             onClose={() => setMobileOpen(false)}
         />
 
         <main
             data-testid="shell-ready"
             className={`
-                ${navOpen ? 'lg:pl-72' : 'lg:pl-0'}
+                ${navState === 'full' ? 'lg:pl-72' : navState === 'mini' ? 'lg:pl-14' : 'lg:pl-0'}
                 pt-16
                 min-h-screen
                 bg-canvas

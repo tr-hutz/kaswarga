@@ -11,7 +11,7 @@ import { usePendingCounts } from './usePendingCounts'
 
 const EMPTY_PERMISSIONS: ReadonlySet<string> = Object.freeze(new Set<string>())
 
-export default function SidebarMenu({ onClose }: { onClose?: () => void }) {
+export default function SidebarMenu({ onClose, compact = false }: { onClose?: () => void; compact?: boolean }) {
     const pathname = usePathname()
     const { permissions, rtId, membership } = useAuth()
     const perms: ReadonlySet<string> = permissions ?? EMPTY_PERMISSIONS
@@ -44,13 +44,13 @@ export default function SidebarMenu({ onClose }: { onClose?: () => void }) {
             <Link
                 href="/"
                 onClick={onClose}
-                className="flex items-center gap-3 px-6 h-16 shrink-0"
+                className={`flex items-center h-16 shrink-0 transition-all duration-300 ${compact ? 'justify-center px-0' : 'gap-3 px-6'}`}
             >
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary">
                     <span className="text-white font-bold text-sm">KW</span>
                 </div>
-                <div className="min-w-0">
-                    <div className="font-semibold text-white text-sm leading-tight">KasWarga</div>
+                <div className={`min-w-0 overflow-hidden transition-all duration-300 ${compact ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
+                    <div className="font-semibold text-white text-sm leading-tight whitespace-nowrap">KasWarga</div>
                     {membership?.rt?.name && (
                         <div className="text-xs text-white/60 truncate leading-tight">{membership.rt.name}</div>
                     )}
@@ -70,6 +70,7 @@ export default function SidebarMenu({ onClose }: { onClose?: () => void }) {
                             0
                         }
                         onClick={onClose}
+                        compact={compact}
                     />
                 ))}
             </nav>

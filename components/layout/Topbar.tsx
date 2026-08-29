@@ -7,6 +7,7 @@ import NotificationBar from '../../features/notification/components/Notification
 import { logActivity } from '../../lib/services/activity-logger'
 import { logout } from '../../lib/services/auth.service'
 import { useTranslations } from 'next-intl'
+import type { NavState } from '../../lib/types/nav'
 
 const ROLE_LABELS: Record<string, string> = {
     SUPER_ADMIN: 'Super Admin',
@@ -19,11 +20,11 @@ const ROLE_LABELS: Record<string, string> = {
 interface TopbarProps {
     mobileOpen:   boolean
     setMobileOpen: (open: boolean) => void
-    navOpen?:     boolean
+    navState?:    NavState
     onNavToggle?: () => void
 }
 
-export default function Topbar({ mobileOpen, setMobileOpen, navOpen = true, onNavToggle }: TopbarProps) {
+export default function Topbar({ mobileOpen, setMobileOpen, navState = 'full', onNavToggle }: TopbarProps) {
     const t = useTranslations('topbar')
     const { membership, role } = useAuth()
 
@@ -43,7 +44,7 @@ export default function Topbar({ mobileOpen, setMobileOpen, navOpen = true, onNa
     }
 
     return (
-        <header className={`fixed top-0 right-0 z-40 h-16 bg-header border-b border-divider shadow-card-2 flex items-center px-4 md:px-6 justify-between transition-[left] duration-300 ease-in-out left-0 ${navOpen ? 'lg:left-72' : 'lg:left-0'}`}>
+        <header className={`fixed top-0 right-0 z-40 h-16 bg-header border-b border-divider shadow-card-2 flex items-center px-4 md:px-6 justify-between transition-[left] duration-300 ease-in-out left-0 ${navState === 'full' ? 'lg:left-72' : navState === 'mini' ? 'lg:left-14' : 'lg:left-0'}`}>
 
             {/* LEFT — desktop nav toggle + mobile hamburger */}
             <div className="flex items-center gap-2">
@@ -54,7 +55,7 @@ export default function Topbar({ mobileOpen, setMobileOpen, navOpen = true, onNa
                         className="hidden lg:flex p-2 rounded-lg hover:bg-canvas transition-colors text-muted hover:text-foreground"
                         aria-label={t('navToggle')}
                     >
-                        <Icon name={navOpen ? 'panel-left-close' : 'panel-left-open'} size={20} />
+                        <Icon name={navState === 'full' ? 'panel-left-close' : navState === 'mini' ? 'panel-left' : 'panel-left-open'} size={20} />
                     </button>
                 )}
 
