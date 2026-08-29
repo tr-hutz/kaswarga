@@ -59,8 +59,10 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
             toast({ message: t('form.saveSuccess'), type: 'success' })
             onSuccess()
         } catch (err) {
-            console.error(err)
-            setSaveError(t('form.saveFailed'))
+            const msg = (err as Error).message
+            if (msg === 'DUPLICATE_NAME')  setSaveError(t('form.duplicateName'))
+            else if (msg === 'DUPLICATE_PHONE') setSaveError(t('form.duplicatePhone'))
+            else setSaveError(t('form.saveFailed'))
         } finally {
             setSaving(false)
         }

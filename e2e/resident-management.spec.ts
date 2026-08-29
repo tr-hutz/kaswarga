@@ -92,6 +92,48 @@ test.describe('create resident (admin)', () => {
     // Success toast appears immediately before the table reload completes
     await expect(page.getByText('Warga disimpan')).toBeVisible({ timeout: 15000 })
   })
+
+  test('shows error when creating resident with duplicate name', async ({ page }) => {
+    const residents = new ResidentsPage(page)
+    await residents.goto()
+
+    const uniqueName = `Warga Unik ${Date.now()}`
+
+    // Create the first resident
+    await residents.openAddModal()
+    await residents.fillResidentForm(uniqueName, 'BlokDup', '1', '')
+    await residents.saveResident()
+    await expect(page.getByText('Warga disimpan')).toBeVisible({ timeout: 15000 })
+
+    // Try to create a second resident with the same name
+    await residents.openAddModal()
+    await residents.fillResidentForm(uniqueName, 'BlokDup', '2', '')
+    await residents.saveResident()
+
+    await expect(page.getByText('Nama warga sudah terdaftar di RT ini')).toBeVisible({ timeout: 10000 })
+    await expect(residents.modal()).toBeVisible()
+  })
+
+  test('shows error when creating resident with duplicate phone', async ({ page }) => {
+    const residents = new ResidentsPage(page)
+    await residents.goto()
+
+    const uniquePhone = `081${Date.now().toString().slice(-9)}`
+
+    // Create the first resident with this phone
+    await residents.openAddModal()
+    await residents.fillResidentForm(`Warga Telepon A ${Date.now()}`, 'BlokPhone', '1', uniquePhone)
+    await residents.saveResident()
+    await expect(page.getByText('Warga disimpan')).toBeVisible({ timeout: 15000 })
+
+    // Try to create another resident with the same phone
+    await residents.openAddModal()
+    await residents.fillResidentForm(`Warga Telepon B ${Date.now()}`, 'BlokPhone', '2', uniquePhone)
+    await residents.saveResident()
+
+    await expect(page.getByText('Nomor telepon sudah digunakan warga lain')).toBeVisible({ timeout: 10000 })
+    await expect(residents.modal()).toBeVisible()
+  })
 })
 
 // ---------------------------------------------------------------------------

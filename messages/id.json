@@ -676,7 +676,9 @@
       "phone": "Nomor Telepon",
       "phonePlaceholder": "08123456789",
       "saveSuccess": "Warga disimpan",
-      "saveFailed": "Gagal menyimpan warga"
+      "saveFailed": "Gagal menyimpan warga",
+      "duplicateName": "Nama warga sudah terdaftar di RT ini",
+      "duplicatePhone": "Nomor telepon sudah digunakan warga lain"
     },
     "drawer": {
       "title": "Detail Warga",

@@ -141,6 +141,18 @@ create index idx_payment_details_payment_id
 
 create index idx_users_deleted_at              on users              (deleted_at) where deleted_at is null;
 create index idx_residents_deleted_at          on residents          (deleted_at) where deleted_at is null;
+
+-- Unique name per RT (case-insensitive, active rows only)
+create unique index idx_residents_unique_name_per_rt
+    on residents (rt_id, lower(name))
+    where deleted_at is null;
+
+-- Unique phone per RT (active rows, non-null, non-empty)
+create unique index idx_residents_unique_phone_per_rt
+    on residents (rt_id, phone)
+    where deleted_at is null
+      and phone is not null
+      and phone <> '';
 create index idx_notifications_deleted_at      on notifications      (deleted_at) where deleted_at is null;
 create index idx_expenses_deleted_at           on expenses           (deleted_at) where deleted_at is null;
 create index idx_expense_categories_deleted_at on expense_categories (deleted_at) where deleted_at is null;

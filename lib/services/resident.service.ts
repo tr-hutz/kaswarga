@@ -9,6 +9,16 @@ import {
     updateResidentById
 } from '../repositories/resident.repository'
 
+function handleResidentDbError(error: unknown): never {
+    const e = error as { code?: string; message?: string }
+    if (e?.code === '23505') {
+        const msg = (e.message ?? '').toLowerCase()
+        if (msg.includes('phone_per_rt')) throw new Error('DUPLICATE_PHONE')
+        throw new Error('DUPLICATE_NAME')
+    }
+    throw error
+}
+
 /*
  |-------------------------------------------------------------
  | GET RESIDENTS
@@ -63,7 +73,7 @@ export async function createResident(
         phone:        payload.phone,
         rt_id:        rtId,
         active:       true
-    })
+    }).catch(handleResidentDbError)
 
     logActivity({
         rtId:       membership?.rt?.id,
@@ -100,7 +110,7 @@ export async function updateResident(
         phone:        payload.phone,
         updated_at:   new Date().toISOString(),
         updated_by:   membership?.user?.id ?? null
-    })
+    }).catch(handleResidentDbError)
 
     logActivity({
         rtId:       membership?.rt?.id,
