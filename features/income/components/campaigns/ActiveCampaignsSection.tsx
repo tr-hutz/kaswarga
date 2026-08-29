@@ -64,27 +64,29 @@ export default function ActiveCampaignsSection({ storageKey = 'active-campaigns-
                 />
             </button>
 
-            {/* Cards */}
-            {!collapsed && (
-                <div data-testid="campaigns-banner-content" className="px-4 pb-4 pt-1">
-                    {loading ? (
-                        <div className="flex justify-center py-6">
-                            <div className="w-5 h-5 border-2 border-divider border-t-primary rounded-full animate-spin" />
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {campaigns.map((c: any) => (
-                                <CampaignCard
-                                    key={c.id}
-                                    campaign={c}
-                                    onDonate={handleDonate}
-                                    onRefresh={reload}
-                                />
-                            ))}
-                        </div>
-                    )}
+            {/* Cards — animated collapse */}
+            <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${collapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'}`}>
+                <div className="overflow-hidden">
+                    <div data-testid="campaigns-banner-content" className="px-4 pb-4 pt-1">
+                        {loading ? (
+                            <div className="flex justify-center py-6">
+                                <div className="w-5 h-5 border-2 border-divider border-t-primary rounded-full animate-spin" />
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {campaigns.map((c: any) => (
+                                    <CampaignCard
+                                        key={c.id}
+                                        campaign={c}
+                                        onDonate={handleDonate}
+                                        onRefresh={reload}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
-            )}
+            </div>
 
             {formOpen && (
                 <IncomeForm

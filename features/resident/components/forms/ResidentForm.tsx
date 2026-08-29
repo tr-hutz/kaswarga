@@ -6,6 +6,7 @@ import type { FormEvent } from 'react'
 import { createResident, updateResident } from '@/lib/services/resident.service'
 import { useTranslations } from 'next-intl'
 import { useToast } from '@/components/ui/ToastProvider'
+import { useKeyDown } from '@/lib/hooks/useKeyDown'
 
 const EMPTY = { name: '', block: '', houseNumber: '', phone: '' }
 
@@ -64,6 +65,8 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
             setSaving(false)
         }
     }
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open) return null
 

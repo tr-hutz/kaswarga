@@ -8,6 +8,7 @@ import { useAuth }             from '@/lib/auth/useAuth'
 import { findResidents }       from '@/lib/repositories/resident.repository'
 import { MONTHS }              from '@/lib/constants/months'
 import Icon                    from '@/components/ui/Icon'
+import { useKeyDown }          from '@/lib/hooks/useKeyDown'
 
 const PAYMENT_METHODS = ['CASH', 'TRANSFER', 'QRIS'] as const
 
@@ -66,6 +67,8 @@ export default function PaymentForm({ open, onClose, onSubmit }: PaymentFormProp
             }))))
             .catch(() => {})
     }, [rtId])
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open) return null
 

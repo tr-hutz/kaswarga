@@ -9,6 +9,8 @@ import { supabase }            from '@/lib/supabase'
 import { findResidents }       from '@/lib/repositories/resident.repository'
 import { useActiveCampaigns }  from '../../hooks/useActiveCampaigns'
 import Icon                    from '@/components/ui/Icon'
+import CurrencyInput           from '@/components/ui/CurrencyInput'
+import { useKeyDown }          from '@/lib/hooks/useKeyDown'
 
 const CATEGORIES = [
     'DONATION', 'GOVERNMENT', 'EVENT', 'BAZAAR',
@@ -104,6 +106,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
             .then(rows => setResidents(rows.map(r => ({ id: r.id, name: r.name }))))
             .catch(() => {})
     }, [rtId])
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open) return null
 
@@ -308,11 +312,9 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                         <label className="block text-sm font-medium text-foreground mb-1">
                             {t('form.amount')} <span className="text-danger">*</span>
                         </label>
-                        <input
-                            type="number"
-                            min="1"
+                        <CurrencyInput
                             value={form.amount}
-                            onChange={e => set('amount', e.target.value)}
+                            onChange={raw => set('amount', raw)}
                             required
                             className={inputCls}
                         />

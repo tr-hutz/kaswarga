@@ -5,6 +5,8 @@ import { useState, useEffect } from 'react'
 import type { FormEvent }      from 'react'
 import { useTranslations }     from 'next-intl'
 import Icon                    from '@/components/ui/Icon'
+import CurrencyInput           from '@/components/ui/CurrencyInput'
+import { useKeyDown }          from '@/lib/hooks/useKeyDown'
 
 interface Props {
     open:        boolean
@@ -36,6 +38,8 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open) return null
 
@@ -126,11 +130,9 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
                     {/* Target amount */}
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">{t('targetAmount')}</label>
-                        <input
-                            type="number"
-                            min="0"
+                        <CurrencyInput
                             value={form.target_amount}
-                            onChange={e => set('target_amount', e.target.value)}
+                            onChange={raw => set('target_amount', raw)}
                             placeholder={t('targetAmountPlaceholder')}
                             className={inputCls}
                         />

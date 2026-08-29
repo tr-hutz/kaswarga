@@ -2,6 +2,7 @@
 
 import { type ReactNode, useEffect } from 'react'
 import Icon from '@/components/ui/Icon'
+import { useKeyDown } from '@/lib/hooks/useKeyDown'
 
 type ModalSize = 'sm' | 'md' | 'lg' | 'xl'
 
@@ -26,6 +27,8 @@ export default function Modal({ open, title, onClose, children, size = 'md', cla
         document.body.style.overflow = open ? 'hidden' : ''
         return () => { document.body.style.overflow = '' }
     }, [open])
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open) return null
 

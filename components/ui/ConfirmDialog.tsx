@@ -1,6 +1,7 @@
 'use client'
 
 import Icon from '@/components/ui/Icon'
+import { useKeyDown } from '@/lib/hooks/useKeyDown'
 
 interface Props {
     open: boolean
@@ -20,6 +21,8 @@ export default function ConfirmDialog({
     loading = false,
     onConfirm, onCancel,
 }: Props) {
+    useKeyDown(open, { Escape: onCancel, Enter: onConfirm })
+
     if (!open) return null
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

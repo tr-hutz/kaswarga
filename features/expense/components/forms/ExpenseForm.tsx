@@ -3,12 +3,14 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import Icon from '@/components/ui/Icon'
+import CurrencyInput from '@/components/ui/CurrencyInput'
 
 import FileUpload from '@/components/ui/FileUpload'
 import { useAuth } from '@/lib/auth/useAuth'
 import { generateNomorBukti } from '@/lib/services/expense.service'
 import { useExpenseCategories } from '../../hooks/useExpenseCategory'
 import { useTranslations } from 'next-intl'
+import { useKeyDown } from '@/lib/hooks/useKeyDown'
 
 interface ExpenseFormProps {
     open:         boolean
@@ -53,6 +55,8 @@ export default function ExpenseForm({
 
     const t = useTranslations('expenses')
     const tc = useTranslations('common')
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open) return null
 
@@ -165,12 +169,10 @@ export default function ExpenseForm({
                     <label className="text-sm font-medium text-muted block">
                         {t('form.amount')} <span className="text-danger">*</span>
                     </label>
-                    <input
-                        type="number"
+                    <CurrencyInput
                         required
-                        min={0}
                         value={form.amount}
-                        onChange={e => set('amount', e.target.value)}
+                        onChange={raw => set('amount', raw)}
                         placeholder="0"
                         className="w-full border border-divider rounded-lg px-4 py-2 text-sm"
                     />

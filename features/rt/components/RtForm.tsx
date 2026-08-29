@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslations } from 'next-intl'
+import { useKeyDown } from '@/lib/hooks/useKeyDown'
 
 const EMPTY = {
     name: '', code: '', address: '', city: '', province: '', postalCode: ''
@@ -56,6 +57,8 @@ export default function RtForm({ open, onClose, rt, onSubmit }: RtFormProps) {
 
     const t = useTranslations('rt')
     const tc = useTranslations('common')
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open) return null
 

@@ -43,9 +43,11 @@ export default function Pagination({
                         </select>
                     </>
                 )}
-                <span className="whitespace-nowrap">
-                    {t('showing')} {from}–{to} {t('of')} {total} {t('records')}
-                </span>
+                {total > 0 && (
+                    <span className="whitespace-nowrap">
+                        {t('showing')} {from}–{to} {t('of')} {total} {t('records')}
+                    </span>
+                )}
             </div>
 
             {/* Right — page navigation (only when more than 1 page) */}
