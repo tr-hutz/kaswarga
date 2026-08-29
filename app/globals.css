@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@layer utilities {
+    .scrollbar-hidden {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .scrollbar-hidden::-webkit-scrollbar {
+        display: none;
+    }
+}
+
 /* Class-based dark mode — ThemeProvider toggles .dark on <html> */
 @custom-variant dark (&:where(.dark, .dark *));
 

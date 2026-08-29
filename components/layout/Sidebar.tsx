@@ -4,10 +4,12 @@ import SidebarMenu from './SidebarMenu'
 
 export default function Sidebar({
     mobileOpen,
+    navOpen = true,
     onClose,
 }: {
     mobileOpen: boolean
-    onClose: () => void
+    navOpen?:   boolean
+    onClose:    () => void
 }) {
     return (
         <aside
@@ -17,7 +19,7 @@ export default function Sidebar({
                 z-50
                 transition-transform duration-300 ease-in-out
                 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
-                lg:translate-x-0
+                ${navOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full'}
             `}
         >
             <SidebarMenu onClose={onClose} />

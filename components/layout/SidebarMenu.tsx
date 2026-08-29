@@ -58,7 +58,7 @@ export default function SidebarMenu({ onClose }: { onClose?: () => void }) {
             </Link>
 
             {/* Navigation */}
-            <nav className="flex-1 overflow-y-auto p-4 space-y-1">
+            <nav className="flex-1 overflow-y-auto scrollbar-hidden p-4 space-y-1">
                 {filteredMenus.map(item => (
                     <SidebarMenuItem
                         key={item.href}

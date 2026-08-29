@@ -53,6 +53,18 @@ export default function AppShell({
   const tTopbar                 = useTranslations('topbar')
 
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [navOpen, setNavOpen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return true
+    return localStorage.getItem('nav-open') !== 'false'
+  })
+
+  function toggleNav() {
+    setNavOpen(prev => {
+      const next = !prev
+      localStorage.setItem('nav-open', String(next))
+      return next
+    })
+  }
 
   useEffect(() => {
     if (loading) return
@@ -163,6 +175,8 @@ export default function AppShell({
         <Topbar
             mobileOpen={mobileOpen}
             setMobileOpen={setMobileOpen}
+            navOpen={navOpen}
+            onNavToggle={toggleNav}
         />
 
         <MobileOverlay
@@ -172,17 +186,19 @@ export default function AppShell({
 
         <Sidebar
             mobileOpen={mobileOpen}
+            navOpen={navOpen}
             onClose={() => setMobileOpen(false)}
         />
 
         <main
             data-testid="shell-ready"
-            className="
-                lg:pl-72
+            className={`
+                ${navOpen ? 'lg:pl-72' : 'lg:pl-0'}
                 pt-16
                 min-h-screen
                 bg-canvas
-            "
+                transition-[padding] duration-300 ease-in-out
+            `}
         >
 
           <div className="p-4 md:p-6">

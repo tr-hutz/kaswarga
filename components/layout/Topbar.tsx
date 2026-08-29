@@ -17,11 +17,13 @@ const ROLE_LABELS: Record<string, string> = {
 }
 
 interface TopbarProps {
-    mobileOpen: boolean
+    mobileOpen:   boolean
     setMobileOpen: (open: boolean) => void
+    navOpen?:     boolean
+    onNavToggle?: () => void
 }
 
-export default function Topbar({ mobileOpen, setMobileOpen }: TopbarProps) {
+export default function Topbar({ mobileOpen, setMobileOpen, navOpen = true, onNavToggle }: TopbarProps) {
     const t = useTranslations('topbar')
     const { membership, role } = useAuth()
 
@@ -41,21 +43,35 @@ export default function Topbar({ mobileOpen, setMobileOpen }: TopbarProps) {
     }
 
     return (
-        <header className="fixed top-0 right-0 left-0 lg:left-72 z-40 h-16 bg-header border-b border-divider shadow-card-2 flex items-center px-4 md:px-6 justify-between">
+        <header className={`fixed top-0 right-0 z-40 h-16 bg-header border-b border-divider shadow-card-2 flex items-center px-4 md:px-6 justify-between transition-[left] duration-300 ease-in-out left-0 ${navOpen ? 'lg:left-72' : 'lg:left-0'}`}>
 
-            {/* LEFT — hamburger + mobile brand */}
-            <div className="flex items-center gap-3 lg:hidden">
-                <button
-                    onClick={() => setMobileOpen(!mobileOpen)}
-                    className="p-2 rounded-lg hover:bg-canvas transition-colors"
-                    aria-label="Toggle menu"
-                >
-                    {mobileOpen
-                        ? <Icon name="x" size={22} />
-                        : <Icon name="menu" size={22} />
-                    }
-                </button>
-                <span className="font-semibold text-sm text-foreground">{t('brand')}</span>
+            {/* LEFT — desktop nav toggle + mobile hamburger */}
+            <div className="flex items-center gap-2">
+                {/* Desktop nav toggle */}
+                {onNavToggle && (
+                    <button
+                        onClick={onNavToggle}
+                        className="hidden lg:flex p-2 rounded-lg hover:bg-canvas transition-colors text-muted hover:text-foreground"
+                        aria-label={t('navToggle')}
+                    >
+                        <Icon name={navOpen ? 'panel-left-close' : 'panel-left-open'} size={20} />
+                    </button>
+                )}
+
+                {/* Mobile hamburger */}
+                <div className="flex items-center gap-3 lg:hidden">
+                    <button
+                        onClick={() => setMobileOpen(!mobileOpen)}
+                        className="p-2 rounded-lg hover:bg-canvas transition-colors"
+                        aria-label="Toggle menu"
+                    >
+                        {mobileOpen
+                            ? <Icon name="x" size={22} />
+                            : <Icon name="menu" size={22} />
+                        }
+                    </button>
+                    <span className="font-semibold text-sm text-foreground">{t('brand')}</span>
+                </div>
             </div>
 
             {/* RIGHT */}
