@@ -138,18 +138,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             if (m?.status === 'active') {
                                 const perms = await getEffectivePermissions()
                                 setPermissions(new Set(perms))
-                                if (m.rt?.id) {
-                                    logActivity({
-                                        rtId:        m.rt.id,
-                                        actorId:     m.user?.id,
-                                        actorName:   m.user?.name,
-                                        action:      'LOGIN',
-                                        entityType:  'auth',
-                                        entityId:    m.user?.id,
-                                        description: `${m.user?.name} logged in`,
-                                        metadata:    { role: m.role }
-                                    })
-                                }
+                                logActivity({
+                                    rtId:        m.rt?.id ?? null,
+                                    actorId:     m.user?.id,
+                                    actorName:   m.user?.name,
+                                    action:      'LOGIN',
+                                    entityType:  'auth',
+                                    entityId:    m.user?.id,
+                                    description: `${m.user?.name} logged in`,
+                                    metadata:    { role: m.role }
+                                })
                             } else {
                                 setPermissions(new Set())
                             }

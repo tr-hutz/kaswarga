@@ -18,10 +18,13 @@ export interface ActivityStats {
     residentCount:      number
 }
 
+const SYSTEM_RT_ID = '00000000-0000-0000-0000-000000000001'
+
 export function useActivityData(query: QueryOptions) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { membership } = (useAuth() as any) ?? {}
-    const rtId = membership?.rt?.id as string | undefined
+    // Super admin has no RT — fall back to SYSTEM_RT_ID so their platform-level logs are visible
+    const rtId: string = membership?.rt?.id ?? SYSTEM_RT_ID
 
     const [result,  setResult]  = useState<PageResult<MappedActivity> | null>(null)
     const [stats,   setStats]   = useState<ActivityStats>({ total: 0, paymentApprovals: 0, paymentRejections: 0, expenseApprovals: 0, expenseRejections: 0, residentCount: 0 })
@@ -31,7 +34,7 @@ export function useActivityData(query: QueryOptions) {
     const queryKey = JSON.stringify(query)
 
     async function load() {
-        if (!rtId) return
+        if (!membership) return
         setLoading(true)
         setError(false)
         try {
