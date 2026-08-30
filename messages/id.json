@@ -1266,6 +1266,12 @@
           "export": "Ekspor Pembayaran",
           "arrears": "Tunggakan Pembayaran"
         },
+        "campaign": {
+          "activate": "Aktifkan Kampanye",
+          "create": "Buat Kampanye",
+          "delete": "Hapus Kampanye",
+          "update": "Edit Kampanye"
+        },
         "inspector": {
           "view": "Inspeksi"
         }
