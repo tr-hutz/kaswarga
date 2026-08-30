@@ -16,6 +16,19 @@ export const NAVIGATION: NavItem[] = [
 
     /*
      |-------------------------------------------------------------
+     | GENERAL — visible to all authenticated users
+     |-------------------------------------------------------------
+     */
+
+    {
+        label:      'home',
+        href:       '/',
+        icon:       'home',
+        permission: null,
+    },
+
+    /*
+     |-------------------------------------------------------------
      | SUPER ADMIN ONLY — platform-level pages, hidden from RT members
      |-------------------------------------------------------------
      */
@@ -46,17 +59,9 @@ export const NAVIGATION: NavItem[] = [
 
     /*
      |-------------------------------------------------------------
-     | GENERAL — RT members only (hidden from SUPER_ADMIN)
+     | RT MEMBERS ONLY — hidden from SUPER_ADMIN
      |-------------------------------------------------------------
      */
-
-    {
-        label:       'home',
-        href:        '/',
-        icon:        'home',
-        permission:  null,
-        requiresRt:  true,
-    },
 
     {
         label:       'dashboard',

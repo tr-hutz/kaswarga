@@ -28,7 +28,7 @@ export function useSuperAdminHome() {
         setError(false)
         try {
             const [rts, pendingRt, users, recentActivity] = await Promise.all([
-                findAllRt(''),
+                findAllRt(),
                 countPendingRtRegistrations(),
                 findAllUsersWithMemberships(),
                 findActivities({ rtId: SYSTEM_RT_ID, limit: 8 }),
