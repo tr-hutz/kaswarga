@@ -5,6 +5,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useTranslations } from 'next-intl'
 import { useToast } from '@/components/ui/ToastProvider'
+import Icon from '@/components/ui/Icon'
 
 // DB enum values that can be assigned (SUPER_ADMIN excluded)
 const ASSIGNABLE_ROLES = [
@@ -96,20 +97,21 @@ export default function ChangeRoleDialog({
                     </select>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-1">
+                <div className="flex gap-3 pt-2">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border border-divider rounded-lg px-4 py-2 text-sm hover:bg-canvas transition-colors"
+                        className="flex-1 border border-divider rounded-lg px-4 py-2.5 text-sm hover:bg-canvas transition-colors"
                     >
                         {tc('actions.cancel')}
                     </button>
                     <button
                         type="submit"
                         disabled={saving || selectedRole === currentRole}
-                        className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 transition-colors"
+                        className="flex-1 bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2.5 text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
                     >
-                        {saving ? tc('states.saving') : tc('actions.save')}
+                        {saving && <Icon name="loader2" size={14} className="animate-spin" />}
+                        {tc('actions.save')}
                     </button>
                 </div>
             </form>

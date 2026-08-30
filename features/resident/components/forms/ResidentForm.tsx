@@ -7,6 +7,7 @@ import { createResident, updateResident } from '@/lib/services/resident.service'
 import { useTranslations } from 'next-intl'
 import { useToast } from '@/components/ui/ToastProvider'
 import { useKeyDown } from '@/lib/hooks/useKeyDown'
+import Icon from '@/components/ui/Icon'
 
 const EMPTY = { name: '', block: '', houseNumber: '', phone: '' }
 
@@ -131,20 +132,21 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                     <p className="text-danger text-sm">{saveError}</p>
                 )}
 
-                <div className="flex justify-end gap-2 pt-1">
+                <div className="flex gap-3 pt-2">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border border-divider rounded-lg px-4 py-2 text-sm hover:bg-canvas transition-colors"
+                        className="flex-1 border border-divider rounded-lg px-4 py-2.5 text-sm hover:bg-canvas transition-colors"
                     >
                         {tc('actions.cancel')}
                     </button>
                     <button
                         type="submit"
                         disabled={saving}
-                        className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 transition-colors"
+                        className="flex-1 bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2.5 text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
                     >
-                        {saving ? tc('states.saving') : tc('actions.save')}
+                        {saving && <Icon name="loader2" size={14} className="animate-spin" />}
+                        {tc('actions.save')}
                     </button>
                 </div>
             </form>

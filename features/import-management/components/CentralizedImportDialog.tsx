@@ -207,12 +207,12 @@ function ModuleImportPanel({
                 <p className="text-xs text-danger">{error}</p>
             )}
 
-            <div className="flex items-center justify-end gap-2 pt-1">
+            <div className="flex gap-3 pt-2">
                 <button
                     type="button"
                     onClick={onClose}
                     disabled={importing}
-                    className="border border-divider rounded-lg px-4 py-2 text-sm text-muted hover:bg-canvas disabled:opacity-50"
+                    className="flex-1 border border-divider rounded-lg px-4 py-2.5 text-sm hover:bg-canvas disabled:opacity-50 transition-colors"
                 >
                     {tc('actions.cancel')}
                 </button>
@@ -220,7 +220,7 @@ function ModuleImportPanel({
                     type="button"
                     onClick={handleImport}
                     disabled={importing || validRows.length === 0}
-                    className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 flex items-center gap-2"
+                    className="flex-1 bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2.5 text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
                 >
                     {importing && (
                         <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />

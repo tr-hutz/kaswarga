@@ -103,11 +103,11 @@ export default function RoleForm({ open, target, saving, onSave, onClose }: Prop
                         {t('form.systemProtected')}
                     </p>
                 )}
-                <div className="flex justify-end gap-2 pt-2">
-                    <Button type="button" variant="outline" onClick={onClose} disabled={saving}>
+                <div className="flex gap-3 pt-2">
+                    <Button type="button" variant="outline" onClick={onClose} disabled={saving} className="flex-1">
                         {tc('actions.cancel')}
                     </Button>
-                    <Button type="submit" loading={saving} disabled={isEdit && !!target?.is_system}>
+                    <Button type="submit" loading={saving} disabled={isEdit && !!target?.is_system} className="flex-1">
                         {isEdit ? tc('actions.saveChanges') : tc('actions.save')}
                     </Button>
                 </div>
