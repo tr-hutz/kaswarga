@@ -313,6 +313,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             {t('form.amount')} <span className="text-danger">*</span>
                         </label>
                         <CurrencyInput
+                            data-testid="income-amount-input"
                             value={form.amount}
                             onChange={raw => set('amount', raw)}
                             required

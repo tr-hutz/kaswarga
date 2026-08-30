@@ -27,6 +27,11 @@ export class CampaignPage {
     async gotoHome() {
         await this.page.goto('/')
         await waitForShell(this.page, /\//)
+        // Wait for the campaigns banner to finish loading so that banner().count()
+        // reflects the real post-load state (not the transient loading-spinner state).
+        await this.page.locator('[data-testid="campaigns-banner"] .animate-spin')
+            .waitFor({ state: 'hidden', timeout: 8000 })
+            .catch(() => {})
     }
 
     async gotoDasbor() {
@@ -79,7 +84,7 @@ export class CampaignPage {
         await this.nameInput().fill(opts.name)
         await this.codeInput().fill(opts.code)
         if (opts.target !== undefined) {
-            await this.formModal().locator('input[type="number"]').fill(String(opts.target))
+            await this.formModal().locator('[data-testid="campaign-target-input"]').fill(String(opts.target))
         }
     }
 
@@ -145,7 +150,7 @@ export class CampaignPage {
     }
 
     donationAmountInput(): Locator {
-        return this.donationModal().locator('input[type="number"]')
+        return this.donationModal().locator('[data-testid="income-amount-input"]')
     }
 
     donationSaveButton(): Locator {

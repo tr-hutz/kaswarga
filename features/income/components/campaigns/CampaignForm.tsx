@@ -131,6 +131,7 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">{t('targetAmount')}</label>
                         <CurrencyInput
+                            data-testid="campaign-target-input"
                             value={form.target_amount}
                             onChange={raw => set('target_amount', raw)}
                             placeholder={t('targetAmountPlaceholder')}

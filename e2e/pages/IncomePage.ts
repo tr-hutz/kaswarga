@@ -36,7 +36,7 @@ export class IncomePage {
     }
 
     amountInput(): Locator {
-        return this.modal().locator('input[type="number"]')
+        return this.modal().locator('[data-testid="income-amount-input"]')
     }
 
     dateInput(): Locator {

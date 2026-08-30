@@ -170,6 +170,7 @@ export default function ExpenseForm({
                         {t('form.amount')} <span className="text-danger">*</span>
                     </label>
                     <CurrencyInput
+                        data-testid="expense-amount-input"
                         required
                         value={form.amount}
                         onChange={raw => set('amount', raw)}
