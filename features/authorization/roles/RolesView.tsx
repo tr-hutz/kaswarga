@@ -61,7 +61,7 @@ export default function RolesView({
         <div className="space-y-6">
 
             {/* Header */}
-            <div className="flex items-start justify-between">
+            <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">{t('title')}</h1>
                     <p className="text-sm text-muted mt-0.5">{t('subtitle')}</p>
