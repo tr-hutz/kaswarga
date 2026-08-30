@@ -30,10 +30,10 @@ function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
 }
 
-const SUPER_ADMIN_HOME = '/rt/registration'
+const SUPER_ADMIN_HOME = '/'
 
 // Paths that belong to RT members — SUPER_ADMIN must not access them.
-const RT_ONLY_PATHS = ['/', '/dashboard', '/residents', '/payments', '/expenses', '/ledger', '/rt-profile', '/settings/authorization']
+const RT_ONLY_PATHS = ['/dashboard', '/residents', '/payments', '/expenses', '/ledger', '/rt-profile', '/settings/authorization']
 
 function isRtOnlyPath(pathname: string) {
   return RT_ONLY_PATHS.some(p =>

@@ -263,6 +263,19 @@
       "clickUpload": "Klik untuk upload bukti",
       "format": "JPG, PNG · maks. 5 MB",
       "change": "Ganti"
+    },
+    "superAdmin": {
+      "stats": {
+        "totalRt": "Total RT",
+        "pendingRt": "Pendaftaran RT",
+        "totalUsers": "Total Pengguna"
+      },
+      "quickLinks": "Akses Cepat",
+      "recentActivity": "Aktivitas Terbaru",
+      "viewAll": "Lihat Semua",
+      "noActivity": "Belum ada aktivitas platform",
+      "loadError": "Gagal memuat data",
+      "retry": "Coba lagi"
     }
   },
   "notification": {
