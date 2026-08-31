@@ -216,15 +216,12 @@
       "balanceSubtitle": "saldo berjalan",
       "income": "Pemasukan",
       "incomeSubtitle": "tahun ini",
+      "incomeDues": "Iuran",
+      "incomeNonDues": "Non Iuran",
       "expense": "Pengeluaran",
       "expenseSubtitle": "tahun ini",
       "arrears": "Tunggakan",
-      "arrearsSubtitle": "perlu ditagih",
-      "incomeThisMonth": "Pemasukan Bulan Ini",
-      "incomeThisMonthSubtitle": "total pemasukan non-iuran bulan berjalan",
-      "incomeThisYear": "Pemasukan Tahun {year}",
-      "incomeThisYearSubtitle": "total pemasukan non-iuran tahun ini",
-      "incomeCategorySubtitle": "kategori terbesar"
+      "arrearsSubtitle": "perlu ditagih"
     },
     "incomeCategories": {
       "DONATION": "Donasi",
