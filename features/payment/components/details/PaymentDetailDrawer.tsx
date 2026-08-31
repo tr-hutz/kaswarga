@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import Icon       from '@/components/ui/Icon'
-import Ribbadge   from '@/components/ui/Ribbadge'
+import Ribbon   from '@/components/ui/Ribbon'
 import { MONTHS } from '@/lib/constants/months'
 
 import PaymentProofPreview from './PaymentProofPreview'
@@ -71,7 +71,7 @@ export default function PaymentDetailDrawer({
 
                 {/* Card */}
                 <div className="relative overflow-hidden rounded-xl border border-divider bg-canvas pt-8">
-                    <Ribbadge label={statusLabel} status={payment.status} variant="filled" />
+                    <Ribbon label={statusLabel} status={payment.status} variant="filled" />
 
                     <div className="p-5 space-y-5">
                         <div className="grid grid-cols-2 gap-4">

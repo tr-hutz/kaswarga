@@ -24,7 +24,7 @@ const ROUNDED: Record<string, string> = {
     inactive: 'bg-canvas     text-muted',
 }
 
-export default function Ribbadge({ label, status, variant }: Props) {
+export default function Ribbon({ label, status, variant }: Props) {
     if (variant === 'filled') {
         const color = FILLED[status] ?? FILLED.pending
         return (

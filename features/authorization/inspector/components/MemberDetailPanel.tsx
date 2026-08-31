@@ -3,7 +3,7 @@
 import { useState }                from 'react'
 import { useTranslations }          from 'next-intl'
 import Input                        from '@/components/ui/Input'
-import Ribbadge                     from '@/components/ui/Ribbadge'
+import Ribbon                     from '@/components/ui/Ribbon'
 import PermissionDetailTable        from '@/features/authorization/viewer/components/PermissionDetailTable'
 import type { MemberDetailData }    from '../hooks/usePermissionInspector'
 import type {
@@ -73,7 +73,7 @@ export default function MemberDetailPanel({ detail }: Props) {
                     </div>
                     <div>
                         <p className="text-xs text-muted uppercase tracking-wider">{t('member.status')}</p>
-                        <Ribbadge
+                        <Ribbon
                             label={detail.status === 'active' ? tc('status.active') : tc('status.inactive')}
                             status={detail.status === 'active' ? 'active' : 'inactive'}
                             variant="rounded"

@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import Input               from '@/components/ui/Input'
 import Button              from '@/components/ui/Button'
 import Icon                from '@/components/ui/Icon'
-import Ribbadge            from '@/components/ui/Ribbadge'
+import Ribbon            from '@/components/ui/Ribbon'
 import OverrideTable       from './components/OverrideTable'
 import type { MemberRow }  from '@/lib/repositories/member-override.repository'
 import type { MemberInfo, PermissionGroup, OverrideSummary, OverrideFilter, RoleGroup } from './hooks/useMemberOverrides'
@@ -218,7 +218,7 @@ export default function MemberOverridesView({
                                     </div>
                                     <div className="space-y-0.5">
                                         <p className="text-xs text-muted uppercase tracking-wider">{t('info.status')}</p>
-                                        <Ribbadge
+                                        <Ribbon
                                             label={memberInfo.status === 'active' ? tc('status.active') : tc('status.inactive')}
                                             status={memberInfo.status === 'active' ? 'active' : 'inactive'}
                                             variant="rounded"

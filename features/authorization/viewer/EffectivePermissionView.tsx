@@ -5,7 +5,7 @@ import Input                     from '@/components/ui/Input'
 import Button                    from '@/components/ui/Button'
 import Icon                      from '@/components/ui/Icon'
 import Select                    from '@/components/ui/Select'
-import Ribbadge                  from '@/components/ui/Ribbadge'
+import Ribbon                  from '@/components/ui/Ribbon'
 import PermissionDetailTable     from './components/PermissionDetailTable'
 import type { MemberRow }        from '@/lib/repositories/member-override.repository'
 import type {
@@ -152,7 +152,7 @@ export default function EffectivePermissionView({
                                         </div>
                                         <div className="space-y-0.5">
                                             <p className="text-xs text-muted uppercase tracking-wider">{t('summary.status')}</p>
-                                            <Ribbadge
+                                            <Ribbon
                                                 label={memberInfo.status === 'active' ? tc('status.active') : tc('status.inactive')}
                                                 status={memberInfo.status === 'active' ? 'active' : 'inactive'}
                                                 variant="rounded"
