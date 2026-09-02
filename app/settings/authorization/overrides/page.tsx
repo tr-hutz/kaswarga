@@ -8,27 +8,36 @@ import MemberOverridesContainer  from '@/features/authorization/overrides/Member
 type PageProps = { searchParams: Promise<{ role?: string }> }
 
 export default async function Page({ searchParams }: PageProps) {
+    const { role } = await searchParams
+
+    let forbidden = false
+    let canEdit   = false
+
     try {
-        const { role } = await searchParams
-        const ctx       = await getRequestContext()
-        const auth      = ctx.authorization
+        const ctx  = await getRequestContext()
+        const auth = ctx.authorization
 
         if (!auth.hasPermission(PERMISSION.PERMISSION_VIEW)) {
-            return <ForbiddenState />
+            forbidden = true
+        } else {
+            canEdit = auth.hasPermission(PERMISSION.PERMISSION_OVERRIDE)
         }
-
-        return (
-            <Suspense>
-                <MemberOverridesContainer
-                    canEdit={auth.hasPermission(PERMISSION.PERMISSION_OVERRIDE)}
-                    initialRole={role}
-                />
-            </Suspense>
-        )
     } catch (err) {
         if (err instanceof UnauthorizedError) {
-            return <ForbiddenState />
+            forbidden = true
+        } else {
+            throw err
         }
-        throw err
     }
+
+    if (forbidden) return <ForbiddenState />
+
+    return (
+        <Suspense>
+            <MemberOverridesContainer
+                canEdit={canEdit}
+                initialRole={role}
+            />
+        </Suspense>
+    )
 }

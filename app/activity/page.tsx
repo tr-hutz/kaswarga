@@ -2,21 +2,25 @@ import { Suspense }          from 'react'
 import { getRequestContext } from '@/lib/auth/server'
 import { UnauthorizedError } from '@/lib/auth/errors'
 import ForbiddenState        from '@/components/ui/ForbiddenState'
-import ActivityContainer     from '../../features/activity/ActivityContainer'
+import ActivityContainer     from '@/features/activity/ActivityContainer'
 
 export default async function Page() {
+    let forbidden = false
     try {
         await getRequestContext()
-
-        return (
-            <Suspense>
-                <ActivityContainer />
-            </Suspense>
-        )
     } catch (err) {
         if (err instanceof UnauthorizedError) {
-            return <ForbiddenState />
+            forbidden = true
+        } else {
+            throw err
         }
-        throw err
     }
+
+    if (forbidden) return <ForbiddenState />
+
+    return (
+        <Suspense>
+            <ActivityContainer />
+        </Suspense>
+    )
 }
