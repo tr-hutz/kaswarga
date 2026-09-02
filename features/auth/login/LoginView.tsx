@@ -6,6 +6,14 @@ import Icon from '@/components/ui/Icon'
 import PasswordInput from '@/components/ui/PasswordInput'
 import { useTranslations } from 'next-intl'
 
+const APP_ENV     = process.env.NEXT_PUBLIC_APP_ENV     ?? 'production'
+const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? ''
+const GIT_SHA     = process.env.NEXT_PUBLIC_GIT_SHA     ?? ''
+
+const buildLabel = APP_ENV === 'production'
+    ? (APP_VERSION ? `v${APP_VERSION}` : null)
+    : (GIT_SHA ? GIT_SHA.slice(0, 7) : null)
+
 interface LoginViewProps {
   loading:      boolean
   email:        string
@@ -266,6 +274,10 @@ export default function LoginView({
         </p>
 
       </div>
+
+      {buildLabel && (
+        <p className="text-center text-xs text-subtle font-mono mt-4">{buildLabel}</p>
+      )}
 
     </div>
   )
