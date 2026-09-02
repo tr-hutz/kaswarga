@@ -116,7 +116,7 @@ export default function IncomeDrawer({
                 <div className="p-6 space-y-5">
                     {/* Card */}
                     <div className="relative overflow-hidden rounded-xl border border-divider bg-canvas pt-8">
-                        <Ribbon label={statusLabel} status={row.status} variant="filled" />
+                        <Ribbon label={statusLabel} type={row.status} variant="filled" />
                         <div className="p-5 space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="col-span-2">

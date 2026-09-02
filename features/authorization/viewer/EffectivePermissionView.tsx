@@ -154,7 +154,7 @@ export default function EffectivePermissionView({
                                             <p className="text-xs text-muted uppercase tracking-wider">{t('summary.status')}</p>
                                             <Ribbon
                                                 label={memberInfo.status === 'active' ? tc('status.active') : tc('status.inactive')}
-                                                status={memberInfo.status === 'active' ? 'active' : 'inactive'}
+                                                type={memberInfo.status === 'active' ? 'active' : 'inactive'}
                                                 variant="rounded"
                                             />
                                         </div>

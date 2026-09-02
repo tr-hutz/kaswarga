@@ -72,7 +72,7 @@ export default function ExpenseDrawer({
                 <div className="p-6">
                     {/* Card */}
                     <div className="relative overflow-hidden rounded-xl border border-divider bg-canvas pt-8">
-                        <Ribbon label={statusLabel} status={row.status} variant="filled" />
+                        <Ribbon label={statusLabel} type={row.status} variant="filled" />
 
                         <div className="p-5 space-y-5">
                             {/* 2-col grid */}

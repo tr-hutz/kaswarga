@@ -75,7 +75,7 @@ export default function MemberDetailPanel({ detail }: Props) {
                         <p className="text-xs text-muted uppercase tracking-wider">{t('member.status')}</p>
                         <Ribbon
                             label={detail.status === 'active' ? tc('status.active') : tc('status.inactive')}
-                            status={detail.status === 'active' ? 'active' : 'inactive'}
+                            type={detail.status === 'active' ? 'active' : 'inactive'}
                             variant="rounded"
                         />
                     </div>

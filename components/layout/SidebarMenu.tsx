@@ -1,13 +1,18 @@
 'use client'
 
-import Link from 'next/link'
 import { useMemo }     from 'react'
 import { usePathname } from 'next/navigation'
 import SidebarMenuItem from './SidebarMenuItem'
-import { NAVIGATION } from '../../lib/navigation/navigation-config'
-import { PERMISSION }  from '../../lib/auth/types'
-import { useAuth }     from '../../lib/auth/useAuth'
-import { usePendingCounts } from './usePendingCounts'
+import Ribbon, { type RibbonType } from '@/components/ui/Ribbon'
+import { NAVIGATION }              from '@/lib/navigation/navigation-config'
+import { PERMISSION }              from '@/lib/auth/types'
+import { useAuth }                 from '@/lib/auth/useAuth'
+import { usePendingCounts }        from './usePendingCounts'
+
+const APP_ENV = process.env.NEXT_PUBLIC_APP_ENV ?? 'production'
+
+// Environments that show the diagonal ribbon — production shows none
+const RIBBON_ENVS = new Set<string>(['local', 'sit', 'uat', 'staging', 'preview'])
 
 const EMPTY_PERMISSIONS: ReadonlySet<string> = Object.freeze(new Set<string>())
 
@@ -38,24 +43,23 @@ export default function SidebarMenu({ onClose, compact = false }: { onClose?: ()
         return perms.has(item.permission)
     }), [isSuperAdmin, perms])
 
+    const showRibbon = RIBBON_ENVS.has(APP_ENV)
+
     return (
         <div className="flex flex-col h-full">
-            {/* Brand */}
-            <Link
-                href="/"
-                onClick={onClose}
-                className={`flex items-center h-16 shrink-0 transition-all duration-300 ${compact ? 'justify-center px-0' : 'gap-3 px-6'}`}
-            >
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary">
-                    <span className="text-white font-bold text-sm">KW</span>
-                </div>
-                <div className={`min-w-0 overflow-hidden transition-all duration-300 ${compact ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
-                    <div className="font-semibold text-white text-sm leading-tight whitespace-nowrap">KasWarga</div>
-                    {membership?.rt?.name && (
-                        <div className="text-xs text-white/60 truncate leading-tight">{membership.rt.name}</div>
-                    )}
-                </div>
-            </Link>
+            {/* Env header — replaces old brand link */}
+            <div className="relative overflow-hidden h-16 shrink-0">
+                {showRibbon ? (
+                    <Ribbon variant="diagonal" type={APP_ENV as RibbonType} />
+                ) : (
+                    /* Production: KW square centered */
+                    <div className="flex items-center justify-center h-full">
+                        <div className="h-9 w-9 flex items-center justify-center rounded-lg bg-primary">
+                            <span className="text-white font-bold text-sm">KW</span>
+                        </div>
+                    </div>
+                )}
+            </div>
 
             {/* Navigation */}
             <nav className="flex-1 overflow-y-auto scrollbar-hidden p-4 space-y-1">
@@ -74,6 +78,7 @@ export default function SidebarMenu({ onClose, compact = false }: { onClose?: ()
                     />
                 ))}
             </nav>
+
         </div>
     )
 }

@@ -65,7 +65,7 @@ export function buildRoleColumns({
             render: row => (
                 <Ribbon
                     label={row.is_active ? t('status.active') : t('status.inactive')}
-                    status={row.is_active ? 'active' : 'inactive'}
+                    type={row.is_active ? 'active' : 'inactive'}
                     variant="rounded"
                 />
             ),
