@@ -16,13 +16,13 @@ import Topbar          from './Topbar'
 import Sidebar         from './Sidebar'
 import MobileOverlay   from './MobileOverlay'
 import UserThemeSync   from './UserThemeSync'
-import type { NavState } from '../../lib/types/nav'
+import type { NavState } from '@/lib/types/nav'
 
-import { useAuth }  from '../../lib/auth/useAuth'
-import { logout }   from '../../lib/services/auth.service'
+import { useAuth }  from '@/lib/auth/useAuth'
+import { logout }   from '@/lib/services/auth.service'
 
-import { ImportNotificationProvider } from '../../components/import/ImportNotificationContext'
-import ImportNotifications            from '../../components/import/ImportNotifications'
+import { ImportNotificationProvider } from '@/components/import/ImportNotificationContext'
+import ImportNotifications            from '@/components/import/ImportNotifications'
 
 const PUBLIC_PATHS = ['/login', '/register', '/activation', '/test', '/maintenance']
 

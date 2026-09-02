@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth/useAuth'
 import { findActivitiesPaginated, findActivityStats } from '@/lib/repositories/activity.repository'
-import { transformActivity } from '../services/activity-transform'
+import { transformActivity } from '@/features/activity/services/activity-transform'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 export type MappedActivity = ReturnType<typeof transformActivity>[number]

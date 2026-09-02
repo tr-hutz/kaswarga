@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import SidebarMenu from './SidebarMenu'
-import type { NavState } from '../../lib/types/nav'
+import type { NavState } from '@/lib/types/nav'
 
 export default function Sidebar({
     mobileOpen,

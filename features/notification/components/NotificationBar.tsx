@@ -16,28 +16,28 @@ import NotificationDropdown
 
 import {
     useNotifications
-} from '../hooks/useNotifications'
+} from '@/features/notification/hooks/useNotifications'
 
 import {
     useNotificationRealtime
-} from '../hooks/useNotificationRealtime'
+} from '@/features/notification/hooks/useNotificationRealtime'
 
 import {
     useAuth
-} from '../../../lib/auth/useAuth'
+} from '@/lib/auth/useAuth'
 
 import {
     useToast
-} from '../../../components/ui/ToastProvider'
+} from '@/components/ui/ToastProvider'
 
 import {
     markNotificationRead,
     markAllNotificationsRead,
-} from '../services/notification.service'
+} from '@/features/notification/services/notification.service'
 
 import {
     getNotificationLink
-} from '../utils/getNotificationLink'
+} from '@/features/notification/utils/getNotificationLink'
 
 export default function NotificationBar() {
 

@@ -8,7 +8,7 @@ import CurrencyInput from '@/components/ui/CurrencyInput'
 import FileUpload from '@/components/ui/FileUpload'
 import { useAuth } from '@/lib/auth/useAuth'
 import { generateNomorBukti } from '@/lib/services/expense.service'
-import { useExpenseCategories } from '../../hooks/useExpenseCategory'
+import { useExpenseCategories } from '@/features/expense/hooks/useExpenseCategory'
 import { useTranslations } from 'next-intl'
 import { useKeyDown } from '@/lib/hooks/useKeyDown'
 

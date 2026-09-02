@@ -11,15 +11,15 @@ import {
 
     rejectPayment
 
-} from '../../../lib/services/payment.service'
+} from '@/lib/services/payment.service'
 
 import {
     useToast
-} from '../../../components/ui/ToastProvider'
+} from '@/components/ui/ToastProvider'
 
 import {
     getErrorMessage
-} from '../../../lib/errors/supabase-errors'
+} from '@/lib/errors/supabase-errors'
 
 export function useApprovalActions({
                                        onSuccess

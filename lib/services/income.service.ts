@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { supabase }              from '../supabase'
-import { getCurrentMembership }  from '../auth/getCurrentMembership'
+import { supabase }              from '@/lib/supabase'
+import { getCurrentMembership }  from '@/lib/auth/getCurrentMembership'
 import {
     insertIncome,
     updateIncome,
     softDeleteIncome,
-} from '../repositories/income.repository'
-import { findCampaignById } from '../repositories/incomeCampaign.repository'
+} from '@/lib/repositories/income.repository'
+import { findCampaignById } from '@/lib/repositories/incomeCampaign.repository'
 
 async function getMembershipContext() {
     const membership = await getCurrentMembership()

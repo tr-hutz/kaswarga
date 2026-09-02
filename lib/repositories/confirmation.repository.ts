@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { supabase } from '@/lib/supabase'
 
 export async function findPendingConfirmationDetails(residentId: string, year: number) {
     const { data, error } = await supabase

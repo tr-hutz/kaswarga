@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth }              from '@/lib/auth/useAuth'
 import { findIncomesPaginated } from '@/lib/repositories/income.repository'
-import { mapIncome }            from '../services/income-transform'
+import { mapIncome }            from '@/features/income/services/income-transform'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 export type MappedIncome = ReturnType<typeof mapIncome>[number]

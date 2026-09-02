@@ -1,8 +1,8 @@
 import { supabase }
-  from '../supabase'
+  from '@/lib/supabase'
 
 import { getCurrentMembership }
-  from '../auth/getCurrentMembership'
+  from '@/lib/auth/getCurrentMembership'
 
 export async function getHomeSummary(
   year: number

@@ -10,7 +10,7 @@ import type { ReactNode } from 'react'
 
 import {
     useKeyDown
-} from '../../lib/hooks/useKeyDown'
+} from '@/lib/hooks/useKeyDown'
 import { useTranslations } from 'next-intl'
 
 interface DialogContextType {

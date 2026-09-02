@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth/useAuth'
 import { findLedgerPaginated, findLedgerTotals } from '@/lib/repositories/ledger.repository'
-import { transformLedger } from '../services/ledger-transform'
+import { transformLedger } from '@/features/ledger/services/ledger-transform'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 export type LedgerRow = ReturnType<typeof transformLedger>[number]

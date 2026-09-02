@@ -1,6 +1,6 @@
-import { supabase } from '../supabase'
-import type { Database } from '../../types/database'
-import type { QueryOptions, PageResult } from '../types/query'
+import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 type ActivityLogRow = Database['public']['Tables']['activity_logs']['Row']
 type ActivityLogInsert = Database['public']['Tables']['activity_logs']['Insert']

@@ -22,20 +22,20 @@ import {
 
 } from './actions/getEffectivePermissions'
 
-import type { Membership } from '../../types'
+import type { Membership } from '@/types'
 import type { Permission } from './types'
 
 import {
 
     supabase
 
-} from '../supabase'
+} from '@/lib/supabase'
 
 import {
 
     logActivity
 
-} from '../services/activity-logger'
+} from '@/lib/services/activity-logger'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const AuthContext = createContext<any>(null)

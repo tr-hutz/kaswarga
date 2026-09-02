@@ -8,11 +8,11 @@ import {
 
 import {
     getResidentPaymentHistory
-} from '../../../lib/services/resident.service'
+} from '@/lib/services/resident.service'
 
 import {
     transformPaymentHistory
-} from '../services/resident-history-transform'
+} from '@/features/resident/services/resident-history-transform'
 
 export function usePaymentHistory(
     residentId: string | null | undefined,

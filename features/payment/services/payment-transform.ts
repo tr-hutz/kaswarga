@@ -1,1 +1,1 @@
-export { mapPayment as transformPayment, mapConfirmation as transformConfirmation } from '../../../lib/mappers/payment.mapper'
+export { mapPayment as transformPayment, mapConfirmation as transformConfirmation } from '@/lib/mappers/payment.mapper'

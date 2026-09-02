@@ -1,7 +1,7 @@
 'use client'
 
 import type { Column } from '@/lib/types/query'
-import type { LedgerRow } from '../hooks/useLedgerData'
+import type { LedgerRow } from '@/features/ledger/hooks/useLedgerData'
 
 interface Options {
     t: (key: string) => string

@@ -1,10 +1,10 @@
 import {
   supabase
-} from '../supabase'
+} from '@/lib/supabase'
 
 import {
   getCurrentMembership
-} from '../auth/getCurrentMembership'
+} from '@/lib/auth/getCurrentMembership'
 
 import {
   MONTHS
@@ -12,7 +12,7 @@ import {
 
 import {
   findApprovedIncomesByYear
-} from '../repositories/income-analytics.repository'
+} from '@/lib/repositories/income-analytics.repository'
 
 
 /*

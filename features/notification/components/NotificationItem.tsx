@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Icon from '@/components/ui/Icon'
-import { formatRelativeDate } from '../../../lib/utils'
+import { formatRelativeDate } from '@/lib/utils'
 
 interface NotificationItemProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

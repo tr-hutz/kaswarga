@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { Membership } from '../../types'
+import type { Membership } from '@/types'
 
 export async function getCurrentMembership(): Promise<Membership> {
 

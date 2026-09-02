@@ -5,7 +5,7 @@ import { useState }          from 'react'
 import { createIncome, updateIncomeById, deleteIncomeById } from '@/lib/services/income.service'
 import { useIncomeApproval } from './useIncomeApproval'
 import { useIncomeImport }   from './useIncomeImport'
-import { exportIncomeToCSV, exportIncomeToExcel } from '../services/income-export-transform'
+import { exportIncomeToCSV, exportIncomeToExcel } from '@/features/income/services/income-export-transform'
 import { useToast }          from '@/components/ui/ToastProvider'
 
 export function useIncomeActions({

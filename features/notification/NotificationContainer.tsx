@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useAuth }          from '../../lib/auth/useAuth'
+import { useAuth }          from '@/lib/auth/useAuth'
 import { useNotifications } from './hooks/useNotifications'
 import NotificationView     from './NotificationView'
 import { markNotificationRead, markAllNotificationsRead } from './services/notification.service'

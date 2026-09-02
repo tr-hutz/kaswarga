@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import Badge from '@/components/ui/Badge'
-import { getStatusClass } from '../../services/payment-status'
+import { getStatusClass } from '@/features/payment/services/payment-status'
 
 export default function PaymentStatusBadge({ status }: { status: string }) {
     const t = useTranslations('common')

@@ -6,8 +6,8 @@ import Ribbon   from '@/components/ui/Ribbon'
 import { MONTHS } from '@/lib/constants/months'
 
 import PaymentProofPreview from './PaymentProofPreview'
-import ApprovalActionBar   from '../approval/ApprovalActionBar'
-import { useKeyDown }      from '../../../../lib/hooks/useKeyDown'
+import ApprovalActionBar   from '@/features/payment/components/approval/ApprovalActionBar'
+import { useKeyDown }      from '@/lib/hooks/useKeyDown'
 
 interface PaymentDetailDrawerProps {
     open:        boolean

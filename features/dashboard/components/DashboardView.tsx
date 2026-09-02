@@ -4,19 +4,19 @@ import { useTranslations } from 'next-intl'
 import Can                 from '@/components/ui/Can'
 import { PERMISSION }      from '@/lib/auth/types'
 import InsightCard
-  from '../cards/InsightCard'
+  from '@/features/dashboard/cards/InsightCard'
 
 import CashFlowChart
-  from '../charts/CashFlowChart'
+  from '@/features/dashboard/charts/CashFlowChart'
 
 import MonthlyCollectionChart
-  from '../charts/MonthlyCollectionChart'
+  from '@/features/dashboard/charts/MonthlyCollectionChart'
 
 import ExpenseCategoryDonutChart
-  from '../charts/ExpenseCategoryDonutChart'
+  from '@/features/dashboard/charts/ExpenseCategoryDonutChart'
 
 import MonthlyExpenseByCategoryChart
-  from '../charts/MonthlyExpenseByCategoryChart'
+  from '@/features/dashboard/charts/MonthlyExpenseByCategoryChart'
 
 import ResidentArrearsSummary
   from '@/features/resident/components/analytics/ResidentArrearsSummary'

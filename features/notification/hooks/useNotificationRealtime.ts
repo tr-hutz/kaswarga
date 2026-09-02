@@ -9,7 +9,7 @@ import {
 
 import {
     supabase
-} from '../../../lib/supabase'
+} from '@/lib/supabase'
 
 export function useNotificationRealtime({
                                             user_id,

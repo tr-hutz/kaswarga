@@ -1,7 +1,7 @@
-import { supabase } from '../supabase'
-import { getCurrentMembership } from '../auth/getCurrentMembership'
+import { supabase } from '@/lib/supabase'
+import { getCurrentMembership } from '@/lib/auth/getCurrentMembership'
 import { logActivity } from './activity-logger'
-import { transformConfirmation, transformPayment } from '../../features/payment/services/payment-transform'
+import { transformConfirmation, transformPayment } from '@/features/payment/services/payment-transform'
 import { MONTHS } from '@/lib/constants/months'
 import {
     findApprovedPaymentDetails,
@@ -16,7 +16,7 @@ import {
     findPaymentConfirmations,
     insertConfirmation,
     insertConfirmationDetails,
-} from '../repositories/payment.repository'
+} from '@/lib/repositories/payment.repository'
 
 /*
 |--------------------------------------------------------------------------

@@ -1,7 +1,7 @@
-﻿import { supabase } from '../supabase'
-import type { Database } from '../../types/database'
-import { applyExpenseFilters } from '../helpers/filter-expense'
-import type { QueryOptions, PageResult } from '../types/query'
+﻿import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database'
+import { applyExpenseFilters } from '@/lib/helpers/filter-expense'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 type ExpenseInsert = Database['public']['Tables']['expenses']['Insert']
 type ExpenseUpdate = Database['public']['Tables']['expenses']['Update']

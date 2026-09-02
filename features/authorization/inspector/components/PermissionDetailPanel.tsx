@@ -2,7 +2,7 @@
 
 import { useTranslations }                       from 'next-intl'
 import Icon                                       from '@/components/ui/Icon'
-import type { PermissionDetails, RoleWithCount } from '../types'
+import type { PermissionDetails, RoleWithCount } from '@/features/authorization/inspector/types'
 
 const ROLE_LABELS: Record<string, string> = {
     RT_ADMIN:  'Administrator',

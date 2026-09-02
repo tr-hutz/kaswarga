@@ -8,7 +8,7 @@ import { PERMISSION }      from '@/lib/auth/types'
 import Icon                from '@/components/ui/Icon'
 import Ribbon            from '@/components/ui/Ribbon'
 import { formatRupiah }    from '@/lib/utils'
-import IncomeStatusBadge   from '../IncomeStatusBadge'
+import IncomeStatusBadge   from '@/features/income/components/IncomeStatusBadge'
 import { useAuth }         from '@/lib/auth/useAuth'
 import { useKeyDown }      from '@/lib/hooks/useKeyDown'
 

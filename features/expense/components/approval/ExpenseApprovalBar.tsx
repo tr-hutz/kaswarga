@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Icon from '@/components/ui/Icon'
-import { isPending } from '../../services/expense-status'
+import { isPending } from '@/features/expense/services/expense-status'
 import { useTranslations } from 'next-intl'
 
 interface ExpenseApprovalBarProps {

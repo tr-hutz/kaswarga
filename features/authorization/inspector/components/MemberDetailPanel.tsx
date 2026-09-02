@@ -5,7 +5,7 @@ import { useTranslations }          from 'next-intl'
 import Input                        from '@/components/ui/Input'
 import Ribbon                     from '@/components/ui/Ribbon'
 import PermissionDetailTable        from '@/features/authorization/viewer/components/PermissionDetailTable'
-import type { MemberDetailData }    from '../hooks/usePermissionInspector'
+import type { MemberDetailData }    from '@/features/authorization/inspector/hooks/usePermissionInspector'
 import type {
     ViewerFilter,
     ViewerSort,

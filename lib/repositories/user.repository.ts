@@ -1,5 +1,5 @@
-import { supabase } from '../supabase'
-import type { Database } from '../../types/database'
+import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database'
 
 type UserRole = Database['public']['Enums']['user_role']
 type MembershipRow = Database['public']['Tables']['memberships']['Row']

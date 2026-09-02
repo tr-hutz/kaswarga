@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
-import { AuthorizationContext } from '../authorization-context'
-import { PERMISSION }           from '../types'
+import { AuthorizationContext } from '@/lib/auth/authorization-context'
+import { PERMISSION }           from '@/lib/auth/types'
 import { makePermissionSet }    from './fixtures'
 
 function ctx(permissions: string[] = [], options = {}) {

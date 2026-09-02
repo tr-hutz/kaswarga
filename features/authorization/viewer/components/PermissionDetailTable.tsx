@@ -5,7 +5,7 @@ import { useTranslations }  from 'next-intl'
 import Icon                 from '@/components/ui/Icon'
 import type {
     PermissionViewRow, ViewerFilter, ViewerSort, PermissionSource,
-} from '../hooks/useEffectivePermission'
+} from '@/features/authorization/viewer/hooks/useEffectivePermission'
 
 interface Props {
     rows:           PermissionViewRow[]

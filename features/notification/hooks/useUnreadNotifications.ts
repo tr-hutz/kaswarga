@@ -12,7 +12,7 @@ import {
 
     getUnreadNotificationsCount
 
-} from '../services/notification-unread.service'
+} from '@/features/notification/services/notification-unread.service'
 
 export function useUnreadNotifications({
 

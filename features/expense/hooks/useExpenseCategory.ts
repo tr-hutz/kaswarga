@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState } from 'react'
-import { getExpenseCategories } from '../../../lib/services/expense-category.service'
+import { getExpenseCategories } from '@/lib/services/expense-category.service'
 
 export function useExpenseCategories() {
     const [categories, setCategories] = useState<any[]>([])

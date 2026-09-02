@@ -10,7 +10,7 @@ import {
     exportLedgerToCSV,
     exportLedgerToExcel
 
-} from '../services/ledger-export'
+} from '@/features/ledger/services/ledger-export'
 
 export function useLedgerActions() {
 

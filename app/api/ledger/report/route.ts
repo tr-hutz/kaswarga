@@ -1,7 +1,7 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse }       from 'next/server'
-import { supabaseAdmin }      from '../../../../lib/supabase-admin'
-import { monthList, formatMonths, formatAccounting } from '../../../../lib/utils'
+import { supabaseAdmin }      from '@/lib/supabase-admin'
+import { monthList, formatMonths, formatAccounting } from '@/lib/utils'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { getRequestContext }  from '@/lib/auth/server'
 import { requirePermission }  from '@/lib/auth/helpers'

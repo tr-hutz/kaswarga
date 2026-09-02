@@ -1,5 +1,5 @@
-import { supabase } from '../supabase'
-import type { QueryOptions, PageResult } from '../types/query'
+import { supabase } from '@/lib/supabase'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 export interface RepositoryConfig {
     table: string

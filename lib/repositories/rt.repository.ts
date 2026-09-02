@@ -1,5 +1,5 @@
-import { supabase } from '../supabase'
-import type { Database } from '../../types/database'
+import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database'
 
 type RtRow = Database['public']['Tables']['rt']['Row']
 type RtInsert = Database['public']['Tables']['rt']['Insert']

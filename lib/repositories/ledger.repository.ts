@@ -1,6 +1,6 @@
-import { supabase } from '../supabase'
-import type { Database } from '../../types/database'
-import type { QueryOptions, PageResult } from '../types/query'
+import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 type LedgerRow = Database['public']['Tables']['ledger']['Row']
 

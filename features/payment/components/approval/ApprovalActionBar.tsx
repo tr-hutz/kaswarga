@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations }  from 'next-intl'
-import { isPending }        from '../../services/payment-status'
+import { isPending }        from '@/features/payment/services/payment-status'
 import { usePermission }    from '@/lib/auth/usePermission'
 import { PERMISSION }       from '@/lib/auth/types'
 

@@ -8,7 +8,7 @@ import {
 
 import {
   loginWithPassword
-} from '../../../../lib/services/auth.service'
+} from '@/lib/services/auth.service'
 
 export function useLogin({
 

@@ -3,9 +3,9 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations }     from 'next-intl'
-import { useActiveCampaigns }  from '../../hooks/useActiveCampaigns'
+import { useActiveCampaigns }  from '@/features/income/hooks/useActiveCampaigns'
 import CampaignCard            from './CampaignCard'
-import IncomeForm              from '../forms/IncomeForm'
+import IncomeForm              from '@/features/income/components/forms/IncomeForm'
 import Icon                    from '@/components/ui/Icon'
 import { useToast }            from '@/components/ui/ToastProvider'
 

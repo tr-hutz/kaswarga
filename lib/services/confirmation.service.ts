@@ -3,7 +3,7 @@ import {
     findRejectedConfirmationDetails,
     callApproveConfirmation,
     callRejectConfirmation
-} from '../repositories/confirmation.repository'
+} from '@/lib/repositories/confirmation.repository'
 
 export async function getPendingPayments(
     residentId: string,

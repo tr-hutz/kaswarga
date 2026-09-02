@@ -4,7 +4,7 @@ import Link              from 'next/link'
 import { useTranslations } from 'next-intl'
 import Icon              from '@/components/ui/Icon'
 import type { IconName } from '@/components/ui/Icon'
-import type { SuperAdminStats } from '../hooks/useSuperAdminHome'
+import type { SuperAdminStats } from '@/features/home/hooks/useSuperAdminHome'
 import type { Database } from '@/types/database'
 
 type ActivityLog = Database['public']['Tables']['activity_logs']['Row']

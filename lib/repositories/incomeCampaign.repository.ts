@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { supabase }      from '../supabase'
-import type { QueryOptions, PageResult } from '../types/query'
+import { supabase }      from '@/lib/supabase'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 const TABLE = 'income_campaigns'
 
@@ -28,7 +28,7 @@ export async function findCampaignsPaginated(
     rtId: string,
     query: QueryOptions,
 ): Promise<PageResult<any>> {
-    const { supabaseAdmin } = await import('../supabase-admin')
+    const { supabaseAdmin } = await import('@/lib/supabase-admin')
     const from = (query.page - 1) * query.pageSize
     const to   = from + query.pageSize - 1
 
@@ -65,7 +65,7 @@ export async function findCampaignsPaginated(
 }
 
 export async function findActiveCampaigns(rtId: string): Promise<any[]> {
-    const { supabaseAdmin } = await import('../supabase-admin')
+    const { supabaseAdmin } = await import('@/lib/supabase-admin')
     const today = new Date().toISOString().slice(0, 10)
 
     const { data, error } = await (supabaseAdmin as any)
@@ -96,7 +96,7 @@ export async function findCampaignById(id: string): Promise<any | null> {
 }
 
 export async function getCampaignProgress(campaignId: string): Promise<{ approved_amount: number; pending_amount: number; donor_count: number }> {
-    const { supabaseAdmin } = await import('../supabase-admin')
+    const { supabaseAdmin } = await import('@/lib/supabase-admin')
     const { data, error } = await (supabaseAdmin as any)
         .from('income_transactions')
         .select('amount, status')
@@ -161,7 +161,7 @@ export async function softDeleteCampaign(id: string, userId: string): Promise<vo
 }
 
 export async function countCampaignContributions(campaignId: string): Promise<number> {
-    const { supabaseAdmin } = await import('../supabase-admin')
+    const { supabaseAdmin } = await import('@/lib/supabase-admin')
     const { count, error }  = await (supabaseAdmin as any)
         .from('income_transactions')
         .select('id', { count: 'exact', head: true })
@@ -173,7 +173,7 @@ export async function countCampaignContributions(campaignId: string): Promise<nu
 }
 
 export async function findCampaignContributions(campaignId: string): Promise<{ monetary: any[]; inKind: any[] }> {
-    const { supabaseAdmin } = await import('../supabase-admin')
+    const { supabaseAdmin } = await import('@/lib/supabase-admin')
     const { data, error } = await (supabaseAdmin as any)
         .from('income_transactions')
         .select(`

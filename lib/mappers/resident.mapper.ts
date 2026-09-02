@@ -1,5 +1,5 @@
-﻿import { getResidentStatus } from '../../features/resident/services/resident-status'
-import { transformPaymentHistory } from '../../features/resident/services/resident-history-transform'
+﻿import { getResidentStatus } from '@/features/resident/services/resident-status'
+import { transformPaymentHistory } from '@/features/resident/services/resident-history-transform'
 
 export function mapResident(rows: unknown[] = []) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

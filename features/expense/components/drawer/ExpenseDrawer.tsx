@@ -1,7 +1,7 @@
 'use client'
 
-import { formatRupiah }    from '../../../../lib/utils'
-import ExpenseApprovalBar  from '../approval/ExpenseApprovalBar'
+import { formatRupiah }    from '@/lib/utils'
+import ExpenseApprovalBar  from '@/features/expense/components/approval/ExpenseApprovalBar'
 import { useTranslations } from 'next-intl'
 import Can                 from '@/components/ui/Can'
 import { PERMISSION }      from '@/lib/auth/types'

@@ -2,7 +2,7 @@
 
 import { useRef, useEffect } from 'react'
 import { useTranslations }   from 'next-intl'
-import type { PermissionGroup } from '../hooks/usePermissionMatrix'
+import type { PermissionGroup } from '@/features/authorization/permissions/hooks/usePermissionMatrix'
 
 function ModuleCheckbox({
     allChecked,

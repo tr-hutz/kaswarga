@@ -10,27 +10,27 @@ import {
 
 import {
   getCurrentMembership
-} from '../../../lib/auth/getCurrentMembership'
+} from '@/lib/auth/getCurrentMembership'
 
 import {
   getApprovedPayments,
   submitPaymentConfirmation,
-} from '../../../lib/services/payment.service'
+} from '@/lib/services/payment.service'
 
 import {
   getPendingPayments,
   getRejectedPayments
-} from '../../../lib/services/confirmation.service'
+} from '@/lib/services/confirmation.service'
 
 import {
   buildStatusMap
-} from '../../../lib/helpers/payment-status'
+} from '@/lib/helpers/payment-status'
 
 import {
   calculateArrears,
   calculateUpcoming,
   calculatePaidMonths
-} from '../../../lib/helpers/payment-summary'
+} from '@/lib/helpers/payment-summary'
 
 export function useHome() {
 

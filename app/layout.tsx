@@ -3,11 +3,11 @@ import type { Metadata } from 'next'
 import { Outfit } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
-import { AuthProvider }  from '../lib/auth/AuthProvider'
+import { AuthProvider }  from '@/lib/auth/AuthProvider'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
-import AppShell          from '../components/layout/AppShell'
-import ToastProvider     from '../components/ui/ToastProvider'
-import DialogProvider    from '../components/ui/DialogProvider'
+import AppShell          from '@/components/layout/AppShell'
+import ToastProvider     from '@/components/ui/ToastProvider'
+import DialogProvider    from '@/components/ui/DialogProvider'
 
 export const metadata: Metadata = {
   title: {

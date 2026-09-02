@@ -1,7 +1,7 @@
-﻿import { supabase } from '../supabase'
-import type { Database } from '../../types/database'
-import type { QueryOptions, PageResult } from '../types/query'
-import { applyResidentFilters } from '../helpers/filter-resident'
+﻿import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
+import { applyResidentFilters } from '@/lib/helpers/filter-resident'
 
 type ResidentInsert = Database['public']['Tables']['residents']['Insert']
 type ResidentUpdate = Database['public']['Tables']['residents']['Update']

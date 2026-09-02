@@ -1,5 +1,5 @@
 import { PAYMENT_STATUS }
-  from '../constants/payment-status'
+  from '@/lib/constants/payment-status'
 
 type StatusItem = { month: number | string }
 type StatusMap = Record<string | number, string>

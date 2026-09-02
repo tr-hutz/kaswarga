@@ -4,7 +4,7 @@ import {
     insertNotification,
     updateNotificationRead,
     updateAllNotificationsRead,
-} from '../../../lib/repositories/notification.repository'
+} from '@/lib/repositories/notification.repository'
 
 export async function createNotification({
     rt_id,

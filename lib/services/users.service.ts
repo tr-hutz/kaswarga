@@ -1,12 +1,12 @@
 import { logActivity } from './activity-logger'
-import type { UserRole } from '../../types'
+import type { UserRole } from '@/types'
 import {
     findAllUsersWithMemberships,
     findMembershipById,
     updateMembershipRoleById,
     insertMembership,
     deleteMembershipById
-} from '../repositories/user.repository'
+} from '@/lib/repositories/user.repository'
 
 const SYSTEM_RT_ID = '00000000-0000-0000-0000-000000000001'
 

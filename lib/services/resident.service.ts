@@ -1,13 +1,13 @@
-import { getCurrentMembership } from '../auth/getCurrentMembership'
+import { getCurrentMembership } from '@/lib/auth/getCurrentMembership'
 import { logActivity } from './activity-logger'
-import { transformResident } from '../../features/resident/services/resident-transform'
+import { transformResident } from '@/features/resident/services/resident-transform'
 import {
     findResidents,
     findResidentSnapshot,
     findResidentPaymentHistory,
     insertResident,
     updateResidentById
-} from '../repositories/resident.repository'
+} from '@/lib/repositories/resident.repository'
 
 function handleResidentDbError(error: unknown): never {
     const e = error as { code?: string; message?: string }

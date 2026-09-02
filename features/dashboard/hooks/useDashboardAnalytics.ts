@@ -9,11 +9,11 @@ import {
 
 import {
   getDashboardData
-} from '../../../lib/services/dashboard.service'
+} from '@/lib/services/dashboard.service'
 
 import {
   buildPaymentHealth
-} from '../helpers/dashboard-analytics'
+} from '@/features/dashboard/helpers/dashboard-analytics'
 
 import { useAuth } from '@/lib/auth/useAuth'
 

@@ -12,7 +12,7 @@ import {
 
     getNotifications
 
-} from '../../../lib/services/notification.service'
+} from '@/lib/services/notification.service'
 
 export function useNotifications() {
 

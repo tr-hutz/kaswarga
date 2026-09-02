@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 
-import { PermissionService }         from '../permission-service'
-import { MembershipNotFoundError, RoleNotFoundError } from '../errors'
-import { PERMISSION }                from '../types'
+import { PermissionService }         from '@/lib/auth/permission-service'
+import { MembershipNotFoundError, RoleNotFoundError } from '@/lib/auth/errors'
+import { PERMISSION }                from '@/lib/auth/types'
 import { makeSupabaseClient }        from './fixtures'
 
 // Shorthand for role permission row shape returned by Supabase

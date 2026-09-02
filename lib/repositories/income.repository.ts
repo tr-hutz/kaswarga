@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { supabase }      from '../supabase'
-import type { QueryOptions, PageResult } from '../types/query'
+import { supabase }      from '@/lib/supabase'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 const TABLE = 'income_transactions'
 

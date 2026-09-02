@@ -1,7 +1,7 @@
 'use client'
 
 import type { Column } from '@/lib/types/query'
-import type { ConfirmationRow } from '../hooks/usePaymentData'
+import type { ConfirmationRow } from '@/features/payment/hooks/usePaymentData'
 import PaymentStatusBadge from './tables/PaymentStatusBadge'
 import { formatRupiah } from '@/lib/utils'
 

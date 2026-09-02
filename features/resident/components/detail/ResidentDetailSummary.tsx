@@ -1,7 +1,7 @@
 ﻿'use client'
 
 import { useTranslations } from 'next-intl'
-import ResidentStatusBadge from '../tables/ResidentStatusBadge'
+import ResidentStatusBadge from '@/features/resident/components/tables/ResidentStatusBadge'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ResidentDetailSummary({ resident }: { resident: any }) {
