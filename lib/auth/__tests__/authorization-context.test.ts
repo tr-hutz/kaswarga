@@ -6,7 +6,7 @@ import { makePermissionSet }    from './fixtures'
 
 function ctx(permissions: string[] = [], options = {}) {
   return new AuthorizationContext({
-    permissionSet: makePermissionSet(permissions as any[], options),
+    permissionSet: makePermissionSet(permissions, options),
   })
 }
 

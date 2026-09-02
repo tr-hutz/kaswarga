@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl'
 import Icon from '@/components/ui/Icon'
 import { useAuth } from '@/lib/auth/useAuth'
 import { NAVIGATION } from '@/lib/navigation/navigation-config'
-import { PERMISSION } from '@/lib/auth/types'
 
 interface Props {
     open:    boolean
@@ -19,13 +18,13 @@ export default function CommandPalette({ open, onClose }: Props) {
     const router = useRouter()
     const { permissions, membership } = useAuth()
     const isSuperAdmin = membership?.role === 'SUPER_ADMIN'
-    const perms = permissions ?? new Set<string>()
 
     const [query,    setQuery]    = useState('')
     const [selected, setSelected] = useState(0)
     const inputRef = useRef<HTMLInputElement>(null)
 
     const filteredItems = useMemo(() => {
+        const perms = permissions ?? new Set<string>()
         const q = query.trim().toLowerCase()
         return NAVIGATION.filter(item => {
             if (item.noRt      && !isSuperAdmin) return false
@@ -38,11 +37,12 @@ export default function CommandPalette({ open, onClose }: Props) {
             const label = t(item.label).toLowerCase()
             return label.includes(q) || item.href.toLowerCase().includes(q)
         })
-    }, [query, isSuperAdmin, perms, t])
+    }, [query, isSuperAdmin, permissions, t])
 
     // Reset state when opening
     useEffect(() => {
         if (open) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setQuery('')
             setSelected(0)
             setTimeout(() => inputRef.current?.focus(), 0)
@@ -50,6 +50,7 @@ export default function CommandPalette({ open, onClose }: Props) {
     }, [open])
 
     // Reset selected when results change
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { setSelected(0) }, [filteredItems.length])
 
     // Keyboard navigation

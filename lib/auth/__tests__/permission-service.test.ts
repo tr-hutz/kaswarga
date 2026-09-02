@@ -494,6 +494,7 @@ describe('PermissionService.buildContext', () => {
       // it calls the factory fresh on every invocation. Simulate per-request
       // isolation by replacing _getContextStore with a stable persistent Map.
       const persistentStore = new Map()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;(service as any)._getContextStore = () => persistentStore
 
       const ctx1 = await service.buildContext('u-1')

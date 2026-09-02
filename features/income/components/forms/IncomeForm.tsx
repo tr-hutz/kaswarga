@@ -94,6 +94,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                 base.source_type = 'RESIDENT'
                 base.resident_id = wargaId
             }
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setForm(base)
             setAttachmentFile(null)
         }

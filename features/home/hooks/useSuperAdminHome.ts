@@ -47,6 +47,7 @@ export function useSuperAdminHome() {
         }
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { load() }, [])
 
     return { stats, activity, loading, error, reload: load }

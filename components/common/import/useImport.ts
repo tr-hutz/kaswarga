@@ -90,7 +90,7 @@ export function useImport({
     batchSize?: number
     onSuccess?: (inserted: number, skipped?: number) => void
 }) {
-    const { toast, dismiss } = useToast()
+    const { toast } = useToast()
     const normalizeKey = makeNormalizer(columnAliases)
 
     const [open,          setOpen]          = useState(false)

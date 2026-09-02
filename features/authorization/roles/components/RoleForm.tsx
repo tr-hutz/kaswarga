@@ -30,6 +30,7 @@ export default function RoleForm({ open, target, saving, onSave, onClose }: Prop
 
     useEffect(() => {
         if (open) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setName(target?.name        ?? '')
             setCode(target?.code        ?? '')
             setDescription(target?.description ?? '')

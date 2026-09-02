@@ -61,6 +61,7 @@ export default function AppShell({
     if (!user?.id) return
     const saved = localStorage.getItem(`nav-state:${user.id}`)
     if (saved === 'full' || saved === 'mini' || saved === 'hidden') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setNavState(saved)
     }
   }, [user?.id])

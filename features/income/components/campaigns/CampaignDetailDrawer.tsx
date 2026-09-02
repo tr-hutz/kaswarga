@@ -28,6 +28,7 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
 
     useEffect(() => {
         if (!open || !campaign?.id) return
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDetail(null)
         setShowCancel(false)
         setCancelNote('')
