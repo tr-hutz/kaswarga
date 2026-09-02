@@ -106,7 +106,15 @@
   "topbar": {
     "brand": "Kas Warga",
     "logout": "Keluar",
-    "navToggle": "Toggle navigasi"
+    "navToggle": "Toggle navigasi",
+    "search": "Cari"
+  },
+  "commandPalette": {
+    "label": "Pencarian global",
+    "placeholder": "Cari menu...",
+    "noResults": "Tidak ada menu yang cocok",
+    "hintNavigate": "navigasi",
+    "hintOpen": "buka"
   },
   "auth": {
     "title": "Login Kas Warga",
