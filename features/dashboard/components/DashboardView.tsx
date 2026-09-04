@@ -21,8 +21,8 @@ import MonthlyExpenseByCategoryChart
 import ResidentArrearsSummary
   from '@/features/resident/components/analytics/ResidentArrearsSummary'
 
-import ActiveCampaignsSection
-  from '@/features/income/components/campaigns/ActiveCampaignsSection'
+import ActiveDonationsSection
+  from '@/features/income/components/donations/ActiveDonationsSection'
 
 import Icon       from '@/components/ui/Icon'
 import {
@@ -177,7 +177,7 @@ export default function DashboardView({
       </div>
 
       {/* KAMPANYE AKTIF */}
-      <ActiveCampaignsSection storageKey="dashboard-campaigns-banner" />
+      <ActiveDonationsSection storageKey="dashboard-donations-banner" />
 
       {/* STATUS IURAN WARGA */}
 

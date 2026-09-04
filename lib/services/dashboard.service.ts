@@ -533,7 +533,7 @@ export async function getDashboardData(
                 0
             )
 
-        // Approved income transactions (donations, campaigns, etc.) for this month
+        // Approved income transactions (donations, etc.) for this month
         const incomeTransactionTotal = incomeData
             .filter(i => new Date(i.received_at).getMonth() + 1 === monthId)
             .reduce((sum, i) => sum + Number(i.amount ?? 0), 0)

@@ -3,26 +3,26 @@
 
 import { useTranslations } from 'next-intl'
 import { formatRupiah }    from '@/lib/utils'
-import CampaignProgressBar from '@/components/common/CampaignProgressBar'
+import DonationProgressBar from '@/components/common/DonationProgressBar'
 import Icon                from '@/components/ui/Icon'
 
 interface Props {
-    campaign:   any
-    onDonate:   (campaign: any) => void
+    donation:   any
+    onDonate:   (donation: any) => void
     onRefresh?: () => void
 }
 
-export default function CampaignCard({ campaign, onDonate, onRefresh }: Props) {
-    const t = useTranslations('income.campaigns.card')
+export default function DonationCard({ donation, onDonate, onRefresh }: Props) {
+    const t = useTranslations('income.donations.card')
 
     return (
-        <div data-testid="campaign-card" className="bg-surface border border-divider rounded-xl p-4 space-y-3">
+        <div data-testid="donation-card" className="bg-surface border border-divider rounded-xl p-4 space-y-3">
             <div className="flex items-start justify-between gap-2">
-                <h3 className="text-sm font-semibold text-foreground leading-tight">{campaign.name}</h3>
+                <h3 className="text-sm font-semibold text-foreground leading-tight">{donation.name}</h3>
                 <div className="flex items-center gap-1.5 shrink-0">
-                    {campaign.ends_at ? (
+                    {donation.ends_at ? (
                         <span className="text-xs text-muted">
-                            {t('deadline', { date: new Date(campaign.ends_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) })}
+                            {t('deadline', { date: new Date(donation.ends_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) })}
                         </span>
                     ) : (
                         <span className="text-xs text-muted">{t('noDeadline')}</span>
@@ -40,22 +40,22 @@ export default function CampaignCard({ campaign, onDonate, onRefresh }: Props) {
                 </div>
             </div>
 
-            <CampaignProgressBar
-                approved={campaign.approved_amount ?? 0}
-                pending={campaign.pending_amount ?? 0}
-                target={campaign.target_amount ?? null}
+            <DonationProgressBar
+                approved={donation.approved_amount ?? 0}
+                pending={donation.pending_amount ?? 0}
+                target={donation.target_amount ?? null}
             />
 
-            {campaign.target_amount && (
+            {donation.target_amount && (
                 <div className="flex justify-between text-xs text-muted">
                     <span>Target</span>
-                    <span>{formatRupiah(campaign.target_amount)}</span>
+                    <span>{formatRupiah(donation.target_amount)}</span>
                 </div>
             )}
 
             <button
-                data-testid="campaign-donate-btn"
-                onClick={() => onDonate(campaign)}
+                data-testid="donation-donate-btn"
+                onClick={() => onDonate(donation)}
                 className="w-full bg-primary hover:bg-primary-dark text-white text-sm font-medium rounded-lg py-2 transition-colors"
             >
                 {t('donateButton')}

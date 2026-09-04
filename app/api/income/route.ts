@@ -18,13 +18,13 @@ export async function GET(req: Request) {
         const search   = url.searchParams.get('search') ?? ''
         const status   = url.searchParams.get('status') ?? 'all'
         const income_category = url.searchParams.get('income_category') ?? 'all'
-        const campaign_id     = url.searchParams.get('campaign_id') ?? ''
+        const donation_id     = url.searchParams.get('donation_id') ?? ''
 
         const result = await findIncomesPaginated(rtId, {
             page,
             pageSize,
             search,
-            filters: { status, income_category, campaign_id },
+            filters: { status, income_category, donation_id },
         })
 
         return NextResponse.json(result)

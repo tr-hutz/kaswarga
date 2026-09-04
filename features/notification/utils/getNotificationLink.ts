@@ -60,9 +60,9 @@ export function getNotificationLink(
                 ? '/income?status=approved'
                 : '/income?status=rejected'
 
-        case 'campaign_activated':
-        case 'campaign_completed':
-            return INCOME_MODULE_ROLES.has(role ?? '') ? '/income?tab=campaigns' : '/dashboard'
+        case 'donation_activated':
+        case 'donation_completed':
+            return INCOME_MODULE_ROLES.has(role ?? '') ? '/income?tab=donations' : '/dashboard'
 
         case 'income_import_staged':
         case 'income_import_pending_approval':

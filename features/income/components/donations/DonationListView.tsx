@@ -1,29 +1,29 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useMemo }            from 'react'
-import { useTranslations }    from 'next-intl'
-import { useDataTable }       from '@/lib/hooks/useDataTable'
-import { useCampaignData }    from '@/features/income/hooks/useCampaignData'
-import { useCampaignActions } from '@/features/income/hooks/useCampaignActions'
-import { DataTable }          from '@/components/common/data-table'
-import Can                    from '@/components/ui/Can'
-import Icon                   from '@/components/ui/Icon'
-import { PERMISSION }         from '@/lib/auth/types'
-import { usePermission }      from '@/lib/auth/usePermission'
-import { formatRupiah }       from '@/lib/utils'
-import CampaignDetailDrawer   from './CampaignDetailDrawer'
-import CampaignForm           from './CampaignForm'
+import { useMemo }             from 'react'
+import { useTranslations }     from 'next-intl'
+import { useDataTable }        from '@/lib/hooks/useDataTable'
+import { useDonationData }     from '@/features/income/hooks/useDonationData'
+import { useDonationActions }  from '@/features/income/hooks/useDonationActions'
+import { DataTable }           from '@/components/common/data-table'
+import Can                     from '@/components/ui/Can'
+import Icon                    from '@/components/ui/Icon'
+import { PERMISSION }          from '@/lib/auth/types'
+import { usePermission }       from '@/lib/auth/usePermission'
+import { formatRupiah }        from '@/lib/utils'
+import DonationDetailDrawer    from './DonationDetailDrawer'
+import DonationForm            from './DonationForm'
 
-export default function CampaignListView() {
-    const t = useTranslations('income.campaigns')
+export default function DonationListView() {
+    const t = useTranslations('income.donations')
 
     const { query, setPage, setPageSize, setSearch, setFilter } =
-        useDataTable({}, 'campaigns')
+        useDataTable({}, 'donations')
 
-    const { result, loading, error, reload } = useCampaignData(query)
+    const { result, loading, error, reload } = useDonationData(query)
 
-    const actions = useCampaignActions({ onReload: reload })
+    const actions = useDonationActions({ onReload: reload })
 
     const statusColors: Record<string, string> = {
         DRAFT:     'bg-muted/20 text-muted',
@@ -32,7 +32,7 @@ export default function CampaignListView() {
         CANCELLED: 'bg-danger/10 text-danger',
     }
 
-    const canEdit = usePermission(PERMISSION.INCOME_CAMPAIGN_UPDATE)
+    const canEdit = usePermission(PERMISSION.INCOME_DONATION_UPDATE)
 
     const columns = useMemo(() => [
         {
@@ -102,7 +102,7 @@ export default function CampaignListView() {
                     </select>
                 }
                 renderActions={
-                    <Can permission={PERMISSION.INCOME_CAMPAIGN_CREATE}>
+                    <Can permission={PERMISSION.INCOME_DONATION_CREATE}>
                         <button
                             onClick={actions.openCreateForm}
                             className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white text-sm rounded-lg px-4 py-2 transition-colors"
@@ -114,19 +114,19 @@ export default function CampaignListView() {
                 }
             />
 
-            <CampaignDetailDrawer
+            <DonationDetailDrawer
                 open={actions.drawerOpen}
-                campaign={actions.selectedCampaign}
+                donation={actions.selectedDonation}
                 onClose={actions.closeDrawer}
-                onActivate={actions.activateCampaign}
-                onCancel={actions.cancelCampaign}
+                onActivate={actions.activateDonation}
+                onCancel={actions.cancelDonation}
             />
 
-            <CampaignForm
+            <DonationForm
                 open={actions.formOpen}
                 onClose={actions.closeForm}
                 onSubmit={actions.submitForm}
-                initialData={actions.selectedCampaign}
+                initialData={actions.selectedDonation}
             />
         </div>
     )

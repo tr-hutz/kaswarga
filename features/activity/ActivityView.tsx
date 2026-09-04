@@ -102,7 +102,7 @@ export default function ActivityView({
                             <option value="expense">{t('entities.expense')}</option>
                             <option value="payment">{t('entities.payment')}</option>
                             <option value="residents">{t('entities.residents')}</option>
-                            <option value="campaign">{t('entities.campaign')}</option>
+                            <option value="donation">{t('entities.donation')}</option>
                             <option value="rt">{t('entities.rt')}</option>
                             <option value="auth">{t('entities.auth')}</option>
                             <option value="user">{t('entities.user')}</option>

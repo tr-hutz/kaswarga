@@ -15,39 +15,39 @@ export async function POST(req: Request, { params }: Params) {
         const { id } = await params
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: campaign } = await (supabaseAdmin as any)
-            .from('income_campaigns')
-            .select('id, name, status, rt_id, campaign_code, starts_at, ends_at')
+        const { data: donation } = await (supabaseAdmin as any)
+            .from('income_donations')
+            .select('id, name, status, rt_id, donation_code, starts_at, ends_at')
             .eq('id', id)
             .is('deleted_at', null)
             .maybeSingle()
 
-        if (!campaign || campaign.rt_id !== rtId) {
-            return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
+        if (!donation || donation.rt_id !== rtId) {
+            return NextResponse.json({ error: 'Donation not found' }, { status: 404 })
         }
-        if (campaign.status !== 'ACTIVE') {
-            return NextResponse.json({ error: 'Campaign is not active' }, { status: 409 })
+        if (donation.status !== 'ACTIVE') {
+            return NextResponse.json({ error: 'Donation is not active' }, { status: 409 })
         }
 
         const today = new Date().toISOString().slice(0, 10)
-        if (campaign.starts_at > today) {
-            return NextResponse.json({ error: 'Campaign has not started yet' }, { status: 409 })
+        if (donation.starts_at > today) {
+            return NextResponse.json({ error: 'Donation has not started yet' }, { status: 409 })
         }
-        if (campaign.ends_at && campaign.ends_at < today) {
-            return NextResponse.json({ error: 'Campaign has ended' }, { status: 409 })
+        if (donation.ends_at && donation.ends_at < today) {
+            return NextResponse.json({ error: 'Donation has ended' }, { status: 409 })
         }
 
         const body = await req.json()
 
-        const contribution_code = campaign.campaign_code as string
+        const contribution_code = donation.donation_code as string
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: row, error } = await (supabaseAdmin as any)
             .from('income_transactions')
             .insert({
                 rt_id:            rtId,
-                campaign_id:      id,
-                income_name:      body.income_name      ?? campaign.name,
+                donation_id:      id,
+                income_name:      body.income_name      ?? donation.name,
                 income_category:  'DONATION',
                 source_type:      body.source_type      ?? 'ANONYMOUS',
                 resident_id:      body.resident_id      || null,
@@ -69,7 +69,7 @@ export async function POST(req: Request, { params }: Params) {
 
         // Fire-and-forget: notify reviewer (Treasurer, or Chair if submitter is Treasurer)
         notifyIncomeReviewer({ incomeId: row.id, rtId, incomeName: row.income_name ?? null, createdBy: userId })
-            .catch(err => console.error('[campaign/donate notify]', err))
+            .catch(err => console.error('[donation/donate notify]', err))
 
         return NextResponse.json(row, { status: 201 })
 
@@ -77,7 +77,7 @@ export async function POST(req: Request, { params }: Params) {
         if (err instanceof UnauthorizedError) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
-        console.error('[campaign/donate]', err)
+        console.error('[donation/donate]', err)
         return NextResponse.json({ error: 'Failed to donate' }, { status: 500 })
     }
 }

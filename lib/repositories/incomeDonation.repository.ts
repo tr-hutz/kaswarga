@@ -2,13 +2,13 @@
 import { supabase }      from '@/lib/supabase'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
-const TABLE = 'income_campaigns'
+const TABLE = 'income_donations'
 
 const SELECT_FIELDS = `
     id,
     rt_id,
     name,
-    campaign_code,
+    donation_code,
     description,
     target_amount,
     starts_at,
@@ -22,9 +22,9 @@ const SELECT_FIELDS = `
 `
 
 // Server-side reads use supabaseAdmin (browser client has no JWT in API routes).
-// Client-side reads (findCampaignById) use the browser supabase client.
+// Client-side reads (findDonationById) use the browser supabase client.
 
-export async function findCampaignsPaginated(
+export async function findDonationsPaginated(
     rtId: string,
     query: QueryOptions,
 ): Promise<PageResult<any>> {
@@ -64,7 +64,7 @@ export async function findCampaignsPaginated(
     }
 }
 
-export async function findActiveCampaigns(rtId: string): Promise<any[]> {
+export async function findActiveDonations(rtId: string): Promise<any[]> {
     const { supabaseAdmin } = await import('@/lib/supabase-admin')
     const today = new Date().toISOString().slice(0, 10)
 
@@ -83,7 +83,7 @@ export async function findActiveCampaigns(rtId: string): Promise<any[]> {
 }
 
 // Used from income.service.ts which can run client-side — keep using browser client.
-export async function findCampaignById(id: string): Promise<any | null> {
+export async function findDonationById(id: string): Promise<any | null> {
     const { data, error } = await (supabase as any)
         .from(TABLE)
         .select(SELECT_FIELDS)
@@ -95,12 +95,12 @@ export async function findCampaignById(id: string): Promise<any | null> {
     return data
 }
 
-export async function getCampaignProgress(campaignId: string): Promise<{ approved_amount: number; pending_amount: number; donor_count: number }> {
+export async function getDonationProgress(donationId: string): Promise<{ approved_amount: number; pending_amount: number; donor_count: number }> {
     const { supabaseAdmin } = await import('@/lib/supabase-admin')
     const { data, error } = await (supabaseAdmin as any)
         .from('income_transactions')
         .select('amount, status')
-        .eq('campaign_id', campaignId)
+        .eq('donation_id', donationId)
         .eq('income_category', 'DONATION')
         .is('deleted_at', null)
 
@@ -122,7 +122,7 @@ export async function getCampaignProgress(campaignId: string): Promise<{ approve
     return { approved_amount, pending_amount, donor_count }
 }
 
-export async function insertCampaign(payload: Record<string, unknown>): Promise<any> {
+export async function insertDonation(payload: Record<string, unknown>): Promise<any> {
     const { data, error } = await (supabase as any)
         .from(TABLE)
         .insert(payload)
@@ -133,7 +133,7 @@ export async function insertCampaign(payload: Record<string, unknown>): Promise<
     return data
 }
 
-export async function updateCampaign(id: string, payload: Record<string, unknown>): Promise<any> {
+export async function updateDonation(id: string, payload: Record<string, unknown>): Promise<any> {
     const { data, error } = await (supabase as any)
         .from(TABLE)
         .update({ ...payload, updated_at: new Date().toISOString() })
@@ -146,7 +146,7 @@ export async function updateCampaign(id: string, payload: Record<string, unknown
     return data
 }
 
-export async function softDeleteCampaign(id: string, userId: string): Promise<void> {
+export async function softDeleteDonation(id: string, userId: string): Promise<void> {
     const { error } = await (supabase as any)
         .from(TABLE)
         .update({
@@ -160,19 +160,19 @@ export async function softDeleteCampaign(id: string, userId: string): Promise<vo
     if (error) throw error
 }
 
-export async function countCampaignContributions(campaignId: string): Promise<number> {
+export async function countDonationContributions(donationId: string): Promise<number> {
     const { supabaseAdmin } = await import('@/lib/supabase-admin')
     const { count, error }  = await (supabaseAdmin as any)
         .from('income_transactions')
         .select('id', { count: 'exact', head: true })
-        .eq('campaign_id', campaignId)
+        .eq('donation_id', donationId)
         .is('deleted_at', null)
 
     if (error) throw error
     return count ?? 0
 }
 
-export async function findCampaignContributions(campaignId: string): Promise<{ monetary: any[]; inKind: any[] }> {
+export async function findDonationContributions(donationId: string): Promise<{ monetary: any[]; inKind: any[] }> {
     const { supabaseAdmin } = await import('@/lib/supabase-admin')
     const { data, error } = await (supabaseAdmin as any)
         .from('income_transactions')
@@ -182,7 +182,7 @@ export async function findCampaignContributions(campaignId: string): Promise<{ m
             residents:residents(id, name),
             in_kind_description, in_kind_quantity, in_kind_unit
         `)
-        .eq('campaign_id', campaignId)
+        .eq('donation_id', donationId)
         .is('deleted_at', null)
         .order('received_at', { ascending: false })
 

@@ -18,7 +18,7 @@ interface Props {
 function emptyForm() {
     return {
         name:          '',
-        campaign_code: '',
+        donation_code: '',
         description:   '',
         target_amount: '',
         starts_at:     new Date().toISOString().slice(0, 10),
@@ -26,8 +26,8 @@ function emptyForm() {
     }
 }
 
-export default function CampaignForm({ open, onClose, onSubmit, initialData = null }: Props) {
-    const t = useTranslations('income.campaigns.form')
+export default function DonationForm({ open, onClose, onSubmit, initialData = null }: Props) {
+    const t = useTranslations('income.donations.form')
 
     const [form,    setForm]    = useState(emptyForm)
     const [saving,  setSaving]  = useState(false)
@@ -35,7 +35,7 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
     useEffect(() => {
         if (open) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
-            setForm(initialData ? { ...emptyForm(), ...initialData, campaign_code: initialData.campaign_code ?? '', description: initialData.description ?? '', target_amount: initialData.target_amount ?? '', ends_at: initialData.ends_at ?? '' } : emptyForm())
+            setForm(initialData ? { ...emptyForm(), ...initialData, donation_code: initialData.donation_code ?? '', description: initialData.description ?? '', target_amount: initialData.target_amount ?? '', ends_at: initialData.ends_at ?? '' } : emptyForm())
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open])
@@ -48,7 +48,7 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
         setForm((prev: any) => ({ ...prev, [field]: value }))
     }
 
-    const campaignCode = (form.campaign_code as string).toUpperCase().replace(/\s+/g, '')
+    const donationCode = (form.donation_code as string).toUpperCase().replace(/\s+/g, '')
     const isEdit       = Boolean(initialData?.id)
 
     async function handleSubmit(e: FormEvent) {
@@ -57,7 +57,7 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
         try {
             await onSubmit({
                 name:          form.name,
-                campaign_code: campaignCode,
+                donation_code: donationCode,
                 description:   form.description || null,
                 target_amount: form.target_amount ? Number(form.target_amount) : null,
                 starts_at:     form.starts_at,
@@ -72,7 +72,7 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
 
     return (
         <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4" onClick={onClose}>
-            <div data-testid="campaign-form-modal" className="bg-surface rounded-xl shadow-default w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div data-testid="donation-form-modal" className="bg-surface rounded-xl shadow-default w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                 <div className="px-6 py-4 border-b border-divider flex justify-between items-center">
                     <h2 className="text-lg font-semibold text-foreground">
                         {isEdit ? t('editTitle') : t('createTitle')}
@@ -98,22 +98,22 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
                         />
                     </div>
 
-                    {/* Campaign Code */}
+                    {/* Donation Code */}
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">
-                            {t('campaignCode')} <span className="text-danger">*</span>
+                            {t('donationCode')} <span className="text-danger">*</span>
                         </label>
                         <input
                             type="text"
-                            value={campaignCode}
-                            onChange={e => set('campaign_code', e.target.value)}
-                            placeholder={t('campaignCodePlaceholder')}
+                            value={donationCode}
+                            onChange={e => set('donation_code', e.target.value)}
+                            placeholder={t('donationCodePlaceholder')}
                             maxLength={20}
                             required
                             disabled={isEdit}
                             className={`${inputCls} uppercase font-mono ${isEdit ? 'opacity-60 cursor-not-allowed' : ''}`}
                         />
-                        <p className="text-xs text-muted mt-1">{t('campaignCodeHint')}</p>
+                        <p className="text-xs text-muted mt-1">{t('donationCodeHint')}</p>
                     </div>
 
                     {/* Description */}
@@ -132,7 +132,7 @@ export default function CampaignForm({ open, onClose, onSubmit, initialData = nu
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1">{t('targetAmount')}</label>
                         <CurrencyInput
-                            data-testid="campaign-target-input"
+                            data-testid="donation-target-input"
                             value={form.target_amount}
                             onChange={raw => set('target_amount', raw)}
                             placeholder={t('targetAmountPlaceholder')}

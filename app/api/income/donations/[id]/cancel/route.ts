@@ -9,7 +9,7 @@ type Params = { params: Promise<{ id: string }> }
 export async function POST(req: Request, { params }: Params) {
     try {
         const ctx    = await getRequestContext()
-        requirePermission(ctx.authorization, PERMISSION.INCOME_CAMPAIGN_ACTIVATE)
+        requirePermission(ctx.authorization, PERMISSION.INCOME_DONATION_ACTIVATE)
 
         const { id } = await params
         const userId = ctx.authorization.userId
@@ -17,22 +17,22 @@ export async function POST(req: Request, { params }: Params) {
         const body   = await req.json().catch(() => ({}))
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: campaign, error: fetchError } = await (supabaseAdmin as any)
-            .from('income_campaigns').select('id, rt_id, name, status').eq('id', id).is('deleted_at', null).maybeSingle()
+        const { data: donation, error: fetchError } = await (supabaseAdmin as any)
+            .from('income_donations').select('id, rt_id, name, status').eq('id', id).is('deleted_at', null).maybeSingle()
         if (fetchError) {
-            console.error('[campaigns/cancel] fetch error:', fetchError)
+            console.error('[donations/cancel] fetch error:', fetchError)
             throw fetchError
         }
-        if (!campaign) return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
-        if (campaign.rt_id !== rtId) return NextResponse.json({ error: 'Campaign not found' }, { status: 404 })
-        if (!['DRAFT', 'ACTIVE'].includes(campaign.status)) {
-            return NextResponse.json({ error: 'Only DRAFT or ACTIVE campaigns can be cancelled' }, { status: 409 })
+        if (!donation) return NextResponse.json({ error: 'Donation not found' }, { status: 404 })
+        if (donation.rt_id !== rtId) return NextResponse.json({ error: 'Donation not found' }, { status: 404 })
+        if (!['DRAFT', 'ACTIVE'].includes(donation.status)) {
+            return NextResponse.json({ error: 'Only DRAFT or ACTIVE donations can be cancelled' }, { status: 409 })
         }
 
         const now = new Date().toISOString()
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error } = await (supabaseAdmin as any)
-            .from('income_campaigns')
+            .from('income_donations')
             .update({
                 status:         'CANCELLED',
                 cancelled_note: body.cancelled_note || null,
@@ -50,10 +50,10 @@ export async function POST(req: Request, { params }: Params) {
                 rt_id:       rtId,
                 actor_id:    userId,
                 actor_name:  actor?.name ?? null,
-                action:      'campaign_cancel',
-                entity_type: 'campaign',
+                action:      'donation_cancel',
+                entity_type: 'donation',
                 entity_id:   id,
-                description: `Kampanye dibatalkan: ${campaign.name}`,
+                description: `Donasi dibatalkan: ${donation.name}`,
                 visibility:  'internal',
             })
         } catch { /* non-critical */ }
@@ -63,7 +63,7 @@ export async function POST(req: Request, { params }: Params) {
     } catch (err) {
         if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },    { status: 403 })
-        console.error('[campaigns/cancel]', err)
+        console.error('[donations/cancel]', err)
         return NextResponse.json({ error: 'Failed to cancel' }, { status: 500 })
     }
 }

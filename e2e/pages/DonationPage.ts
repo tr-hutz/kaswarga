@@ -1,7 +1,7 @@
 import { type Page, type Locator, expect } from '@playwright/test'
 import { waitForShell } from '../utils/waitForShell'
 
-export class CampaignPage {
+export class DonationPage {
     readonly page: Page
 
     constructor(page: Page) {
@@ -19,17 +19,17 @@ export class CampaignPage {
         await this.page.locator('[data-testid="dt-row"],[data-testid="dt-empty"]').first().waitFor({ timeout: 15000 })
     }
 
-    async switchToCampaignsTab() {
-        await this.page.locator('[data-testid="tab-campaigns"]').click()
+    async switchToDonationsTab() {
+        await this.page.locator('[data-testid="tab-donations"]').click()
         await this.page.locator('[data-testid="dt-row"],[data-testid="dt-empty"]').first().waitFor({ timeout: 15000 })
     }
 
     async gotoHome() {
         await this.page.goto('/')
         await waitForShell(this.page, /\//)
-        // Wait for the campaigns banner to finish loading so that banner().count()
+        // Wait for the donations banner to finish loading so that banner().count()
         // reflects the real post-load state (not the transient loading-spinner state).
-        await this.page.locator('[data-testid="campaigns-banner"] .animate-spin')
+        await this.page.locator('[data-testid="donations-banner"] .animate-spin')
             .waitFor({ state: 'hidden', timeout: 8000 })
             .catch(() => {})
     }
@@ -40,23 +40,23 @@ export class CampaignPage {
     }
 
     // -------------------------------------------------------------------------
-    // Campaign list (income tab → Kampanye)
+    // Donation list (income tab → Donasi)
     // -------------------------------------------------------------------------
 
     tableRows(): Locator {
         return this.page.locator('[data-testid="dt-row"]')
     }
 
-    addCampaignButton(): Locator {
-        return this.page.getByRole('button', { name: /Buat Kampanye/i })
+    addDonationButton(): Locator {
+        return this.page.getByRole('button', { name: /Buat Donasi/i })
     }
 
     // -------------------------------------------------------------------------
-    // Campaign form modal (create / edit)
+    // Donation form modal (create / edit)
     // -------------------------------------------------------------------------
 
     formModal(): Locator {
-        return this.page.locator('[data-testid="campaign-form-modal"]')
+        return this.page.locator('[data-testid="donation-form-modal"]')
     }
 
     nameInput(): Locator {
@@ -76,19 +76,19 @@ export class CampaignPage {
     }
 
     async openCreateForm() {
-        await this.addCampaignButton().click()
+        await this.addDonationButton().click()
         await expect(this.formModal()).toBeVisible()
     }
 
-    async fillCampaignForm(opts: { name: string; code: string; target?: number }) {
+    async fillDonationForm(opts: { name: string; code: string; target?: number }) {
         await this.nameInput().fill(opts.name)
         await this.codeInput().fill(opts.code)
         if (opts.target !== undefined) {
-            await this.formModal().locator('[data-testid="campaign-target-input"]').fill(String(opts.target))
+            await this.formModal().locator('[data-testid="donation-target-input"]').fill(String(opts.target))
         }
     }
 
-    async saveCampaign() {
+    async saveDonation() {
         await this.formSaveButton().click()
     }
 
@@ -102,15 +102,15 @@ export class CampaignPage {
     }
 
     // -------------------------------------------------------------------------
-    // Campaign detail drawer
+    // Donation detail drawer
     // -------------------------------------------------------------------------
 
     detailDrawer(): Locator {
-        return this.page.locator('[data-testid="campaign-detail-drawer"]')
+        return this.page.locator('[data-testid="donation-detail-drawer"]')
     }
 
     activateButton(): Locator {
-        return this.detailDrawer().locator('[data-testid="campaign-activate-btn"]')
+        return this.detailDrawer().locator('[data-testid="donation-activate-btn"]')
     }
 
     closeDetailDrawer() {
@@ -118,27 +118,27 @@ export class CampaignPage {
     }
 
     // -------------------------------------------------------------------------
-    // Active campaigns banner (Beranda / Dasbor)
+    // Active donations banner (Beranda / Dasbor)
     // -------------------------------------------------------------------------
 
     banner(): Locator {
-        return this.page.locator('[data-testid="campaigns-banner"]')
+        return this.page.locator('[data-testid="donations-banner"]')
     }
 
     bannerToggle(): Locator {
-        return this.page.locator('[data-testid="campaigns-banner-toggle"]')
+        return this.page.locator('[data-testid="donations-banner-toggle"]')
     }
 
     bannerContent(): Locator {
-        return this.page.locator('[data-testid="campaigns-banner-content"]')
+        return this.page.locator('[data-testid="donations-banner-content"]')
     }
 
-    campaignCards(): Locator {
-        return this.page.locator('[data-testid="campaign-card"]')
+    donationCards(): Locator {
+        return this.page.locator('[data-testid="donation-card"]')
     }
 
     donateBtnOnCard(index = 0): Locator {
-        return this.campaignCards().nth(index).locator('[data-testid="campaign-donate-btn"]')
+        return this.donationCards().nth(index).locator('[data-testid="donation-donate-btn"]')
     }
 
     // -------------------------------------------------------------------------

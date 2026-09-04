@@ -7,7 +7,7 @@ import { useTranslations }     from 'next-intl'
 import { useAuth }             from '@/lib/auth/useAuth'
 import { supabase }            from '@/lib/supabase'
 import { findResidents }       from '@/lib/repositories/resident.repository'
-import { useActiveCampaigns }  from '@/features/income/hooks/useActiveCampaigns'
+import { useActiveDonations }  from '@/features/income/hooks/useActiveDonations'
 import Icon                    from '@/components/ui/Icon'
 import CurrencyInput           from '@/components/ui/CurrencyInput'
 import { useKeyDown }          from '@/lib/hooks/useKeyDown'
@@ -42,17 +42,17 @@ interface IncomeFormProps {
     onClose:       () => void
     onSubmit:      (form: any) => Promise<void>
     initialData?:  any
-    // Pre-filled from campaign card (locked fields)
-    preFillCampaignId?:   string
-    preFillCampaignName?: string
+    // Pre-filled from donation card (locked fields)
+    preFillDonationId?:   string
+    preFillDonationName?: string
     preFillCategory?:     string
 }
 
-function emptyForm(campaignId = '', category = '', campaignName = '') {
+function emptyForm(donationId = '', category = '', donationName = '') {
     return {
-        income_name:      campaignName,
+        income_name:      donationName,
         income_category:  category,
-        campaign_id:      campaignId,
+        donation_id:      donationId,
         source_type:      'ANONYMOUS',
         resident_id:      '',
         payer_name:       '',
@@ -66,17 +66,17 @@ function emptyForm(campaignId = '', category = '', campaignName = '') {
     }
 }
 
-export default function IncomeForm({ open, onClose, onSubmit, initialData = null, preFillCampaignId = '', preFillCampaignName = '', preFillCategory = '' }: IncomeFormProps) {
+export default function IncomeForm({ open, onClose, onSubmit, initialData = null, preFillDonationId = '', preFillDonationName = '', preFillCategory = '' }: IncomeFormProps) {
     const t  = useTranslations('income')
     const tc = useTranslations('common')
 
     const { membership, wargaId } = useAuth()
     const rtId = (membership as any)?.rt?.id as string | undefined
 
-    const { campaigns: activeCampaigns } = useActiveCampaigns()
+    const { donations: activeDonations } = useActiveDonations()
 
     const [residents,          setResidents]          = useState<Array<{ id: string; name: string }>>([])
-    const [form,               setForm]               = useState(() => emptyForm(preFillCampaignId, preFillCategory, preFillCampaignName))
+    const [form,               setForm]               = useState(() => emptyForm(preFillDonationId, preFillCategory, preFillDonationName))
     const [saving,             setSaving]             = useState(false)
     const [submitError,        setSubmitError]        = useState<string | null>(null)
     const [attachmentFile,     setAttachmentFile]     = useState<File | null>(null)
@@ -85,12 +85,12 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     useEffect(() => {
         if (open) {
             const base = initialData
-                ? { ...emptyForm(preFillCampaignId, preFillCategory, preFillCampaignName), ...initialData }
-                : emptyForm(preFillCampaignId, preFillCategory, preFillCampaignName)
+                ? { ...emptyForm(preFillDonationId, preFillCategory, preFillDonationName), ...initialData }
+                : emptyForm(preFillDonationId, preFillCategory, preFillDonationName)
             base.payment_method = normalizePaymentMethod(base.payment_method)
-            // When entering from a campaign card and current user is a resident,
+            // When entering from a donation card and current user is a resident,
             // auto-fill source as the current resident so they don't have to select manually.
-            if (!initialData && preFillCampaignId && wargaId) {
+            if (!initialData && preFillDonationId && wargaId) {
                 base.source_type = 'RESIDENT'
                 base.resident_id = wargaId
             }
@@ -134,8 +134,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                 attachment_url:   form.attachment_url   || null,
             }
 
-            if ((form as any).campaign_id) {
-                payload.campaign_id = (form as any).campaign_id
+            if ((form as any).donation_id) {
+                payload.donation_id = (form as any).donation_id
             }
 
             if (form.source_type === 'RESIDENT') {
@@ -168,11 +168,11 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
         }
     }
 
-    const isResident     = form.source_type === 'RESIDENT'
-    const isAnonymous    = form.source_type === 'ANONYMOUS'
-    const isDonation     = (form as any).income_category === 'DONATION'
-    const campaignLocked = Boolean(preFillCampaignId)
-    const residentLocked = campaignLocked && Boolean(wargaId)
+    const isResident    = form.source_type === 'RESIDENT'
+    const isAnonymous   = form.source_type === 'ANONYMOUS'
+    const isDonation    = (form as any).income_category === 'DONATION'
+    const donationLocked = Boolean(preFillDonationId)
+    const residentLocked = donationLocked && Boolean(wargaId)
 
     const inputCls = 'w-full border border-divider rounded-lg px-3 py-2 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30'
 
@@ -208,8 +208,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             onChange={e => set('income_name', e.target.value)}
                             placeholder={t('form.incomeNamePlaceholder')}
                             required
-                            disabled={campaignLocked}
-                            className={`${inputCls} ${campaignLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
+                            disabled={donationLocked}
+                            className={`${inputCls} ${donationLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                         />
                     </div>
 
@@ -222,8 +222,8 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                             value={form.income_category}
                             onChange={e => set('income_category', e.target.value)}
                             required
-                            disabled={campaignLocked}
-                            className={`${inputCls} ${campaignLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
+                            disabled={donationLocked}
+                            className={`${inputCls} ${donationLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                         >
                             <option value="">{t('form.selectCategory')}</option>
                             {CATEGORIES.map(c => (
@@ -234,21 +234,21 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
                         </select>
                     </div>
 
-                    {/* Campaign selector — shown for DONATION when active campaigns exist */}
-                    {isDonation && activeCampaigns.length > 0 && (
+                    {/* Donation selector — shown for DONATION when active donations exist */}
+                    {isDonation && activeDonations.length > 0 && (
                         <div>
                             <label className="block text-sm font-medium text-foreground mb-1">
-                                {t('campaigns.selector.label' as any)}
+                                {t('donations.selector.label' as any)}
                             </label>
                             <select
-                                value={(form as any).campaign_id ?? ''}
-                                onChange={e => set('campaign_id', e.target.value)}
-                                disabled={campaignLocked}
-                                className={`${inputCls} ${campaignLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
+                                value={(form as any).donation_id ?? ''}
+                                onChange={e => set('donation_id', e.target.value)}
+                                disabled={donationLocked}
+                                className={`${inputCls} ${donationLocked ? 'opacity-60 cursor-not-allowed' : ''}`}
                             >
-                                <option value="">{t('campaigns.selector.placeholder' as any)}</option>
-                                {activeCampaigns.map((c: any) => (
-                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                <option value="">{t('donations.selector.placeholder' as any)}</option>
+                                {activeDonations.map((d: any) => (
+                                    <option key={d.id} value={d.id}>{d.name}</option>
                                 ))}
                             </select>
                         </div>

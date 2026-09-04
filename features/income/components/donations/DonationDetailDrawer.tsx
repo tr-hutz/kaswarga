@@ -7,18 +7,18 @@ import { formatRupiah }        from '@/lib/utils'
 import Icon                    from '@/components/ui/Icon'
 import Can                     from '@/components/ui/Can'
 import { PERMISSION }          from '@/lib/auth/types'
-import CampaignProgressBar     from '@/components/common/CampaignProgressBar'
+import DonationProgressBar     from '@/components/common/DonationProgressBar'
 
 interface Props {
     open:       boolean
-    campaign:   any
+    donation:   any
     onClose:    () => void
     onActivate: (id: string) => void
     onCancel:   (id: string, note?: string) => void
 }
 
-export default function CampaignDetailDrawer({ open, campaign, onClose, onActivate, onCancel }: Props) {
-    const t = useTranslations('income.campaigns')
+export default function DonationDetailDrawer({ open, donation, onClose, onActivate, onCancel }: Props) {
+    const t = useTranslations('income.donations')
 
     const [detail,       setDetail]      = useState<any>(null)
     const [loadingDetail, setLoadingDetail] = useState(false)
@@ -27,7 +27,7 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
     const [actionError,  setActionError] = useState<string | null>(null)
 
     useEffect(() => {
-        if (!open || !campaign?.id) return
+        if (!open || !donation?.id) return
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setDetail(null)
         setShowCancel(false)
@@ -35,17 +35,17 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
         setActionError(null)
 
         setLoadingDetail(true)
-        fetch(`/api/income/campaigns/${campaign.id}`)
+        fetch(`/api/income/donations/${donation.id}`)
             .then(r => r.json())
             .then(setDetail)
             .catch(() => {})
             .finally(() => setLoadingDetail(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, campaign?.id])
+    }, [open, donation?.id])
 
-    if (!open || !campaign) return null
+    if (!open || !donation) return null
 
-    const data = detail ?? campaign
+    const data = detail ?? donation
 
     const statusColors: Record<string, string> = {
         DRAFT:     'bg-muted/20 text-muted',
@@ -57,7 +57,7 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
     return (
         <div className="fixed inset-0 z-50 flex justify-end" onClick={onClose}>
             <div
-                data-testid="campaign-detail-drawer"
+                data-testid="donation-detail-drawer"
                 className="w-full max-w-md h-full bg-surface shadow-xl overflow-y-auto"
                 onClick={e => e.stopPropagation()}
             >
@@ -80,7 +80,7 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
 
                     {/* Progress */}
                     <div className="bg-canvas rounded-lg p-4">
-                        <CampaignProgressBar
+                        <DonationProgressBar
                             approved={data.approved_amount ?? 0}
                             pending={data.pending_amount  ?? 0}
                             target={data.target_amount    ?? null}
@@ -98,10 +98,10 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
                                 </span>
                             </div>
                         )}
-                        {data.campaign_code && (
+                        {data.donation_code && (
                             <div>
-                                <span className="text-muted">{t('columns.campaignCode')}: </span>
-                                <span className="font-mono text-foreground">{data.campaign_code}</span>
+                                <span className="text-muted">{t('columns.donationCode')}: </span>
+                                <span className="font-mono text-foreground">{data.donation_code}</span>
                             </div>
                         )}
                         <div>
@@ -183,12 +183,12 @@ export default function CampaignDetailDrawer({ open, campaign, onClose, onActiva
                     )}
 
                     {/* Actions for RT Chair: activate or cancel */}
-                    <Can permission={PERMISSION.INCOME_CAMPAIGN_ACTIVATE}>
+                    <Can permission={PERMISSION.INCOME_DONATION_ACTIVATE}>
                         {['DRAFT', 'ACTIVE'].includes(data.status) && (
                             <div className="flex gap-2 pt-2">
                                 {data.status === 'DRAFT' && (
                                     <button
-                                        data-testid="campaign-activate-btn"
+                                        data-testid="donation-activate-btn"
                                         onClick={async () => {
                                             setActionError(null)
                                             try { await onActivate(data.id) }

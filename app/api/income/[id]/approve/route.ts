@@ -23,7 +23,7 @@ export async function POST(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: income, error: fetchErr } = await (supabaseAdmin as any)
             .from('income_transactions')
-            .select('id, rt_id, income_name, amount, status, created_by, campaign_id, income_category')
+            .select('id, rt_id, income_name, amount, status, created_by, donation_id, income_category')
             .eq('id', id)
             .is('deleted_at', null)
             .single()
@@ -63,35 +63,35 @@ export async function POST(
 
         if (ledgerErr) throw ledgerErr
 
-        // 3b. Synchronous campaign completion check
-        if (income.campaign_id && income.income_category === 'DONATION') {
+        // 3b. Synchronous donation completion check
+        if (income.donation_id && income.income_category === 'DONATION') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data: campaign } = await (supabaseAdmin as any)
-                .from('income_campaigns')
+            const { data: donation } = await (supabaseAdmin as any)
+                .from('income_donations')
                 .select('id, name, target_amount, status')
-                .eq('id', income.campaign_id)
+                .eq('id', income.donation_id)
                 .single()
 
-            if (campaign && campaign.status === 'ACTIVE' && campaign.target_amount != null) {
+            if (donation && donation.status === 'ACTIVE' && donation.target_amount != null) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const { data: sumRows } = await (supabaseAdmin as any)
                     .from('income_transactions')
                     .select('amount')
-                    .eq('campaign_id', income.campaign_id)
+                    .eq('donation_id', income.donation_id)
                     .eq('income_category', 'DONATION')
                     .eq('status', 'approved')
                     .is('deleted_at', null)
 
                 const approvedTotal = (sumRows ?? []).reduce((sum: number, r: { amount: number }) => sum + (r.amount ?? 0), 0)
 
-                if (approvedTotal >= campaign.target_amount) {
+                if (approvedTotal >= donation.target_amount) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     await (supabaseAdmin as any)
-                        .from('income_campaigns')
+                        .from('income_donations')
                         .update({ status: 'COMPLETED', updated_at: now, updated_by: userId })
-                        .eq('id', income.campaign_id)
+                        .eq('id', income.donation_id)
 
-                    // Campaign completed activity log + notifications (non-blocking)
+                    // Donation completed activity log + notifications (non-blocking)
                     try {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const { data: actor } = await (supabaseAdmin as any).from('users').select('name').eq('id', userId).single()
@@ -99,10 +99,10 @@ export async function POST(
                             rt_id:       rtId,
                             actor_id:    userId,
                             actor_name:  actor?.name ?? null,
-                            action:      'campaign_completed',
-                            entity_type: 'campaign',
-                            entity_id:   income.campaign_id,
-                            description: `Kampanye selesai: ${campaign.name}`,
+                            action:      'donation_completed',
+                            entity_type: 'donation',
+                            entity_id:   income.donation_id,
+                            description: `Donasi selesai: ${donation.name}`,
                             visibility:  'internal',
                         })
 
@@ -116,11 +116,11 @@ export async function POST(
 
                         const notifs = (adminMembers ?? []).map((m: { user_id: string }) => ({
                             rt_id:          rtId,
-                            type:           'campaign_completed',
-                            title:          'Kampanye Selesai',
-                            message:        `Kampanye "${campaign.name}" telah mencapai target.`,
-                            entity_type:    'campaign',
-                            entity_id:      income.campaign_id,
+                            type:           'donation_completed',
+                            title:          'Donasi Selesai',
+                            message:        `Donasi "${donation.name}" telah mencapai target.`,
+                            entity_type:    'donation',
+                            entity_id:      income.donation_id,
                             target_user_id: m.user_id,
                         }))
 

@@ -9,8 +9,8 @@ interface Props {
     target:   number | null
 }
 
-export default function CampaignProgressBar({ approved, pending, target }: Props) {
-    const t = useTranslations('income.campaigns.progress')
+export default function DonationProgressBar({ approved, pending, target }: Props) {
+    const t = useTranslations('income.donations.progress')
 
     if (target == null) {
         return (

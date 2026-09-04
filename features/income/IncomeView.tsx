@@ -16,7 +16,7 @@ import IncomeImportModal     from './components/import/IncomeImportModal'
 import ImportApprovalBanner     from '@/components/import/ImportApprovalBanner'
 import ImportConfirmationBanner from '@/components/import/ImportConfirmationBanner'
 import { IMPORT_TYPE }          from '@/lib/import/types'
-import CampaignListView      from './components/campaigns/CampaignListView'
+import DonationListView      from './components/donations/DonationListView'
 import type { QueryOptions, PageResult, Column } from '@/lib/types/query'
 
 interface Props {
@@ -51,8 +51,8 @@ interface Props {
     approveIncome:   (id: string) => void
     rejectIncome:    (id: string, reason: string) => void
     // tabs
-    activeTab:       'transactions' | 'campaigns'
-    setActiveTab:    (tab: 'transactions' | 'campaigns') => void
+    activeTab:       'transactions' | 'donations'
+    setActiveTab:    (tab: 'transactions' | 'donations') => void
     // export
     exportCSV:       (rows: any[]) => void
     exportExcel:     (rows: any[]) => void
@@ -136,19 +136,19 @@ export default function IncomeView({
                     {t('tabTransactions')}
                 </button>
                 <button
-                    data-testid="tab-campaigns"
-                    onClick={() => setActiveTab('campaigns')}
+                    data-testid="tab-donations"
+                    onClick={() => setActiveTab('donations')}
                     className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
-                        activeTab === 'campaigns'
+                        activeTab === 'donations'
                             ? 'border-primary text-primary'
                             : 'border-transparent text-muted hover:text-foreground'
                     }`}
                 >
-                    {t('campaigns.tabLabel')}
+                    {t('donations.tabLabel')}
                 </button>
             </div>
 
-            {activeTab === 'campaigns' && <CampaignListView />}
+            {activeTab === 'donations' && <DonationListView />}
 
             {activeTab === 'transactions' && (
             <>

@@ -5,10 +5,10 @@ import { requirePermission } from '@/lib/auth/helpers'
 import { PERMISSION }        from '@/lib/auth/types'
 import { UnauthorizedError, ForbiddenError } from '@/lib/auth/errors'
 import {
-    getCampaignProgress,
-    countCampaignContributions,
-    findCampaignContributions,
-} from '@/lib/repositories/incomeCampaign.repository'
+    getDonationProgress,
+    countDonationContributions,
+    findDonationContributions,
+} from '@/lib/repositories/incomeDonation.repository'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -19,21 +19,21 @@ export async function GET(_req: Request, { params }: Params) {
 
         const { id } = await params
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: campaign } = await (supabaseAdmin as any)
-            .from('income_campaigns').select('id,rt_id,name,campaign_code,description,target_amount,starts_at,ends_at,status,cancelled_note,created_by,updated_by,created_at,updated_at').eq('id', id).is('deleted_at', null).maybeSingle()
-        if (!campaign) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+        const { data: donation } = await (supabaseAdmin as any)
+            .from('income_donations').select('id,rt_id,name,donation_code,description,target_amount,starts_at,ends_at,status,cancelled_note,created_by,updated_by,created_at,updated_at').eq('id', id).is('deleted_at', null).maybeSingle()
+        if (!donation) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
         const [progress, contributions] = await Promise.all([
-            getCampaignProgress(id),
-            findCampaignContributions(id),
+            getDonationProgress(id),
+            findDonationContributions(id),
         ])
 
-        return NextResponse.json({ ...campaign, ...progress, ...contributions })
+        return NextResponse.json({ ...donation, ...progress, ...contributions })
 
     } catch (err) {
         if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },    { status: 403 })
-        console.error('[campaigns/[id] GET]', err)
+        console.error('[donations/[id] GET]', err)
         return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 })
     }
 }
@@ -41,7 +41,7 @@ export async function GET(_req: Request, { params }: Params) {
 export async function PUT(req: Request, { params }: Params) {
     try {
         const ctx = await getRequestContext()
-        requirePermission(ctx.authorization, PERMISSION.INCOME_CAMPAIGN_UPDATE)
+        requirePermission(ctx.authorization, PERMISSION.INCOME_DONATION_UPDATE)
 
         const { id }   = await params
         const userId   = ctx.authorization.userId
@@ -49,18 +49,18 @@ export async function PUT(req: Request, { params }: Params) {
         const body     = await req.json()
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: campaign } = await (supabaseAdmin as any)
-            .from('income_campaigns').select('id, name, status').eq('id', id).is('deleted_at', null).maybeSingle()
-        if (!campaign) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-        if (!['DRAFT', 'ACTIVE'].includes(campaign.status)) {
-            return NextResponse.json({ error: 'Only DRAFT or ACTIVE campaigns can be updated' }, { status: 409 })
+        const { data: donation } = await (supabaseAdmin as any)
+            .from('income_donations').select('id, name, status').eq('id', id).is('deleted_at', null).maybeSingle()
+        if (!donation) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+        if (!['DRAFT', 'ACTIVE'].includes(donation.status)) {
+            return NextResponse.json({ error: 'Only DRAFT or ACTIVE donations can be updated' }, { status: 409 })
         }
 
         const { name, description, target_amount, starts_at, ends_at } = body
 
         // If trying to update prefix, check no contributions exist
-        if (body.campaign_code !== undefined) {
-            const count = await countCampaignContributions(id)
+        if (body.donation_code !== undefined) {
+            const count = await countDonationContributions(id)
             if (count > 0) {
                 return NextResponse.json({ error: 'Cannot change prefix after contributions exist' }, { status: 409 })
             }
@@ -68,7 +68,7 @@ export async function PUT(req: Request, { params }: Params) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: updated, error } = await (supabaseAdmin as any)
-            .from('income_campaigns')
+            .from('income_donations')
             .update({
                 ...(name          !== undefined && { name }),
                 ...(description   !== undefined && { description: description || null }),
@@ -91,10 +91,10 @@ export async function PUT(req: Request, { params }: Params) {
                 rt_id:       rtId,
                 actor_id:    userId,
                 actor_name:  actor?.name ?? null,
-                action:      'campaign_update',
-                entity_type: 'campaign',
+                action:      'donation_update',
+                entity_type: 'donation',
                 entity_id:   id,
-                description: `Kampanye diperbarui: ${updated.name}`,
+                description: `Donasi diperbarui: ${updated.name}`,
                 visibility:  'internal',
             })
         } catch { /* non-critical */ }
@@ -104,7 +104,7 @@ export async function PUT(req: Request, { params }: Params) {
     } catch (err) {
         if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },    { status: 403 })
-        console.error('[campaigns/[id] PUT]', err)
+        console.error('[donations/[id] PUT]', err)
         return NextResponse.json({ error: 'Failed to update' }, { status: 500 })
     }
 }
@@ -112,28 +112,28 @@ export async function PUT(req: Request, { params }: Params) {
 export async function DELETE(_req: Request, { params }: Params) {
     try {
         const ctx = await getRequestContext()
-        requirePermission(ctx.authorization, PERMISSION.INCOME_CAMPAIGN_DELETE)
+        requirePermission(ctx.authorization, PERMISSION.INCOME_DONATION_DELETE)
 
         const { id }   = await params
         const userId   = ctx.authorization.userId
         const rtId     = ctx.authorization.neighborhoodId
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data: campaign } = await (supabaseAdmin as any)
-            .from('income_campaigns').select('id, name, status').eq('id', id).is('deleted_at', null).maybeSingle()
-        if (!campaign) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-        if (!['DRAFT', 'CANCELLED'].includes(campaign.status)) {
-            return NextResponse.json({ error: 'Only DRAFT or CANCELLED campaigns can be deleted' }, { status: 409 })
+        const { data: donation } = await (supabaseAdmin as any)
+            .from('income_donations').select('id, name, status').eq('id', id).is('deleted_at', null).maybeSingle()
+        if (!donation) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+        if (!['DRAFT', 'CANCELLED'].includes(donation.status)) {
+            return NextResponse.json({ error: 'Only DRAFT or CANCELLED donations can be deleted' }, { status: 409 })
         }
 
-        const count = await countCampaignContributions(id)
+        const count = await countDonationContributions(id)
         if (count > 0) {
-            return NextResponse.json({ error: 'Cannot delete campaign with existing contributions' }, { status: 409 })
+            return NextResponse.json({ error: 'Cannot delete donation with existing contributions' }, { status: 409 })
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error } = await (supabaseAdmin as any)
-            .from('income_campaigns')
+            .from('income_donations')
             .update({ deleted_at: new Date().toISOString(), deleted_by: userId, updated_at: new Date().toISOString() })
             .eq('id', id)
 
@@ -146,10 +146,10 @@ export async function DELETE(_req: Request, { params }: Params) {
                 rt_id:       rtId,
                 actor_id:    userId,
                 actor_name:  actor?.name ?? null,
-                action:      'campaign_delete',
-                entity_type: 'campaign',
+                action:      'donation_delete',
+                entity_type: 'donation',
                 entity_id:   id,
-                description: `Kampanye dihapus: ${campaign.name}`,
+                description: `Donasi dihapus: ${donation.name}`,
                 visibility:  'internal',
             })
         } catch { /* non-critical */ }
@@ -159,7 +159,7 @@ export async function DELETE(_req: Request, { params }: Params) {
     } catch (err) {
         if (err instanceof UnauthorizedError) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         if (err instanceof ForbiddenError)    return NextResponse.json({ error: 'Forbidden' },    { status: 403 })
-        console.error('[campaigns/[id] DELETE]', err)
+        console.error('[donations/[id] DELETE]', err)
         return NextResponse.json({ error: 'Failed to delete' }, { status: 500 })
     }
 }

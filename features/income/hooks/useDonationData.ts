@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
-export function useCampaignData(query: QueryOptions) {
+export function useDonationData(query: QueryOptions) {
     const [result,  setResult]  = useState<PageResult<any> | null>(null)
     const [loading, setLoading] = useState(false)
     const [error,   setError]   = useState(false)
@@ -21,12 +21,12 @@ export function useCampaignData(query: QueryOptions) {
                 search:   query.search ?? '',
                 status:   (query.filters?.status as string) ?? 'all',
             })
-            const res  = await fetch(`/api/income/campaigns?${params}`)
+            const res  = await fetch(`/api/income/donations?${params}`)
             if (!res.ok) throw new Error(`API error ${res.status}`)
             const data = await res.json()
             setResult(data)
         } catch (err) {
-            console.error('[CAMPAIGNS]', err)
+            console.error('[DONATIONS]', err)
             setError(true)
         } finally {
             setLoading(false)

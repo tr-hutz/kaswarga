@@ -3,18 +3,18 @@
 
 import { useEffect, useState } from 'react'
 
-export function useActiveCampaigns() {
-    const [campaigns, setCampaigns] = useState<any[]>([])
+export function useActiveDonations() {
+    const [donations, setDonations] = useState<any[]>([])
     const [loading,   setLoading]   = useState(false)
 
     async function load() {
         setLoading(true)
         try {
-            const res  = await fetch('/api/income/campaigns/active')
+            const res  = await fetch('/api/income/donations/active')
             const data = await res.json()
-            setCampaigns(Array.isArray(data) ? data : [])
+            setDonations(Array.isArray(data) ? data : [])
         } catch {
-            setCampaigns([])
+            setDonations([])
         } finally {
             setLoading(false)
         }
@@ -23,5 +23,5 @@ export function useActiveCampaigns() {
     // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
     useEffect(() => { load() }, [])
 
-    return { campaigns, loading, reload: load }
+    return { donations, loading, reload: load }
 }

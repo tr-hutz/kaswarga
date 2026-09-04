@@ -3,8 +3,8 @@
 
 import { useState, useEffect } from 'react'
 import { useTranslations }     from 'next-intl'
-import { useActiveCampaigns }  from '@/features/income/hooks/useActiveCampaigns'
-import CampaignCard            from './CampaignCard'
+import { useActiveDonations }  from '@/features/income/hooks/useActiveDonations'
+import DonationCard            from './DonationCard'
 import IncomeForm              from '@/features/income/components/forms/IncomeForm'
 import Icon                    from '@/components/ui/Icon'
 import { useToast }            from '@/components/ui/ToastProvider'
@@ -13,13 +13,13 @@ interface Props {
     storageKey?: string
 }
 
-export default function ActiveCampaignsSection({ storageKey = 'active-campaigns-banner' }: Props) {
-    const t = useTranslations('income.campaigns.card')
+export default function ActiveDonationsSection({ storageKey = 'active-donations-banner' }: Props) {
+    const t = useTranslations('income.donations.card')
     const { toast } = (useToast() as any)
 
-    const { campaigns, loading, reload } = useActiveCampaigns()
+    const { donations, loading, reload } = useActiveDonations()
     const [formOpen,        setFormOpen]        = useState(false)
-    const [preFillCampaign, setPreFillCampaign] = useState<any>(null)
+    const [preFillDonation, setPreFillDonation] = useState<any>(null)
 
     // Collapsible state — independent per storageKey
     const [collapsed, setCollapsed] = useState<boolean>(() => {
@@ -31,29 +31,29 @@ export default function ActiveCampaignsSection({ storageKey = 'active-campaigns-
         localStorage.setItem(storageKey, collapsed ? 'collapsed' : 'expanded')
     }, [collapsed, storageKey])
 
-    function handleDonate(campaign: any) {
-        setPreFillCampaign(campaign)
+    function handleDonate(donation: any) {
+        setPreFillDonation(donation)
         setFormOpen(true)
     }
 
-    if (!loading && campaigns.length === 0) return null
+    if (!loading && donations.length === 0) return null
 
     return (
-        <div data-testid="campaigns-banner" className="rounded-xl border border-divider bg-surface shadow-card overflow-hidden">
+        <div data-testid="donations-banner" className="rounded-xl border border-divider bg-surface shadow-card overflow-hidden">
 
             {/* Banner header */}
             <button
                 type="button"
-                data-testid="campaigns-banner-toggle"
+                data-testid="donations-banner-toggle"
                 onClick={() => setCollapsed(c => !c)}
                 className="w-full flex items-center justify-between px-4 py-3 hover:bg-canvas transition-colors"
             >
                 <div className="flex items-center gap-2">
                     <Icon name="megaphone" size={16} className="text-primary" />
                     <span className="text-sm font-semibold text-foreground">{t('sectionTitle')}</span>
-                    {campaigns.length > 0 && (
+                    {donations.length > 0 && (
                         <span className="text-xs font-medium bg-primary/10 text-primary rounded-full px-2 py-0.5">
-                            {campaigns.length}
+                            {donations.length}
                         </span>
                     )}
                 </div>
@@ -67,17 +67,17 @@ export default function ActiveCampaignsSection({ storageKey = 'active-campaigns-
             {/* Cards — animated collapse */}
             <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${collapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'}`}>
                 <div className="overflow-hidden">
-                    <div data-testid="campaigns-banner-content" className="px-4 pb-4 pt-1">
+                    <div data-testid="donations-banner-content" className="px-4 pb-4 pt-1">
                         {loading ? (
                             <div className="flex justify-center py-6">
                                 <div className="w-5 h-5 border-2 border-divider border-t-primary rounded-full animate-spin" />
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                {campaigns.map((c: any) => (
-                                    <CampaignCard
-                                        key={c.id}
-                                        campaign={c}
+                                {donations.map((d: any) => (
+                                    <DonationCard
+                                        key={d.id}
+                                        donation={d}
                                         onDonate={handleDonate}
                                         onRefresh={reload}
                                     />
@@ -93,7 +93,7 @@ export default function ActiveCampaignsSection({ storageKey = 'active-campaigns-
                     open={formOpen}
                     onClose={() => setFormOpen(false)}
                     onSubmit={async (payload) => {
-                        const res = await fetch(`/api/income/campaigns/${preFillCampaign?.id}/donate`, {
+                        const res = await fetch(`/api/income/donations/${preFillDonation?.id}/donate`, {
                             method:  'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body:    JSON.stringify(payload),
@@ -105,8 +105,8 @@ export default function ActiveCampaignsSection({ storageKey = 'active-campaigns-
                         toast({ message: 'Donasi berhasil dicatat. Terima kasih!', type: 'success' })
                         reload()
                     }}
-                    preFillCampaignId={preFillCampaign?.id ?? ''}
-                    preFillCampaignName={preFillCampaign?.name ?? ''}
+                    preFillDonationId={preFillDonation?.id ?? ''}
+                    preFillDonationName={preFillDonation?.name ?? ''}
                     preFillCategory="DONATION"
                 />
             )}

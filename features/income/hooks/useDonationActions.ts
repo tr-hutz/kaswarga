@@ -7,42 +7,42 @@ interface Options {
     onReload: () => void
 }
 
-export function useCampaignActions({ onReload }: Options) {
-    const [selectedCampaign, setSelectedCampaign] = useState<any>(null)
+export function useDonationActions({ onReload }: Options) {
+    const [selectedDonation, setSelectedDonation] = useState<any>(null)
     const [drawerOpen,       setDrawerOpen]       = useState(false)
     const [formOpen,         setFormOpen]         = useState(false)
     const [submitting,       setSubmitting]       = useState(false)
 
     function openDrawer(row: any) {
-        setSelectedCampaign(row)
+        setSelectedDonation(row)
         setDrawerOpen(true)
     }
 
     function closeDrawer() {
         setDrawerOpen(false)
-        setSelectedCampaign(null)
+        setSelectedDonation(null)
     }
 
     function openCreateForm() {
-        setSelectedCampaign(null)
+        setSelectedDonation(null)
         setFormOpen(true)
     }
 
     function openEditForm(row: any) {
-        setSelectedCampaign(row)
+        setSelectedDonation(row)
         setFormOpen(true)
     }
 
     function closeForm() {
         setFormOpen(false)
-        setSelectedCampaign(null)
+        setSelectedDonation(null)
     }
 
     async function submitForm(payload: any) {
         setSubmitting(true)
         try {
-            const isEdit = Boolean(selectedCampaign?.id)
-            const url    = isEdit ? `/api/income/campaigns/${selectedCampaign.id}` : '/api/income/campaigns'
+            const isEdit = Boolean(selectedDonation?.id)
+            const url    = isEdit ? `/api/income/donations/${selectedDonation.id}` : '/api/income/donations'
             const method = isEdit ? 'PUT' : 'POST'
             const res    = await fetch(url, {
                 method,
@@ -60,42 +60,42 @@ export function useCampaignActions({ onReload }: Options) {
         }
     }
 
-    async function activateCampaign(id: string) {
-        const res = await fetch(`/api/income/campaigns/${id}/activate`, { method: 'POST' })
+    async function activateDonation(id: string) {
+        const res = await fetch(`/api/income/donations/${id}/activate`, { method: 'POST' })
         if (!res.ok) {
             const body = await res.json().catch(() => ({}))
-            throw new Error(body?.error ?? `Gagal mengaktifkan kampanye (${res.status})`)
+            throw new Error(body?.error ?? `Gagal mengaktifkan donasi (${res.status})`)
         }
         closeDrawer()
         onReload()
     }
 
-    async function cancelCampaign(id: string, note?: string) {
-        const res = await fetch(`/api/income/campaigns/${id}/cancel`, {
+    async function cancelDonation(id: string, note?: string) {
+        const res = await fetch(`/api/income/donations/${id}/cancel`, {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({ cancelled_note: note ?? null }),
         })
         if (!res.ok) {
             const body = await res.json().catch(() => ({}))
-            throw new Error(body?.error ?? `Gagal membatalkan kampanye (${res.status})`)
+            throw new Error(body?.error ?? `Gagal membatalkan donasi (${res.status})`)
         }
         closeDrawer()
         onReload()
     }
 
-    async function deleteCampaign(id: string) {
-        const res = await fetch(`/api/income/campaigns/${id}`, { method: 'DELETE' })
+    async function deleteDonation(id: string) {
+        const res = await fetch(`/api/income/donations/${id}`, { method: 'DELETE' })
         if (!res.ok) {
             const body = await res.json().catch(() => ({}))
-            throw new Error(body?.error ?? `Gagal menghapus kampanye (${res.status})`)
+            throw new Error(body?.error ?? `Gagal menghapus donasi (${res.status})`)
         }
         closeDrawer()
         onReload()
     }
 
     return {
-        selectedCampaign,
+        selectedDonation,
         drawerOpen,
         formOpen,
         submitting,
@@ -105,8 +105,8 @@ export function useCampaignActions({ onReload }: Options) {
         openEditForm,
         closeForm,
         submitForm,
-        activateCampaign,
-        cancelCampaign,
-        deleteCampaign,
+        activateDonation,
+        cancelDonation,
+        deleteDonation,
     }
 }

@@ -343,7 +343,7 @@
       "expense": "Pengeluaran",
       "payment": "Pembayaran",
       "residents": "Warga",
-      "campaign": "Kampanye",
+      "donation": "Kampanye",
       "rt": "RT",
       "auth": "Autentikasi",
       "user": "Pengguna"
@@ -943,12 +943,12 @@
       "rejectReasonPlaceholder": "Tuliskan alasan penolakan (opsional)...",
       "confirmReject": "Konfirmasi Tolak"
     },
-    "campaigns": {
-      "tabLabel": "Kampanye",
-      "title": "Kampanye Donasi",
-      "subtitle": "Kelola kampanye penggalangan dana RT",
-      "addButton": "Buat Kampanye",
-      "searchPlaceholder": "Cari nama kampanye...",
+    "donations": {
+      "tabLabel": "Donasi",
+      "title": "Donasi",
+      "subtitle": "Kelola penggalangan dana RT",
+      "addButton": "Buat Donasi",
+      "searchPlaceholder": "Cari nama donasi...",
       "filters": {
         "allStatuses": "Semua Status"
       },
@@ -959,9 +959,9 @@
         "CANCELLED": "Dibatalkan"
       },
       "columns": {
-        "name": "Nama Kampanye",
+        "name": "Nama Donasi",
         "status": "Status",
-        "campaignCode": "Kode Transfer",
+        "donationCode": "Kode Transfer",
         "target": "Target",
         "approved": "Disetujui",
         "pending": "Menunggu",
@@ -969,7 +969,7 @@
         "period": "Periode"
       },
       "detail": {
-        "title": "Detail Kampanye",
+        "title": "Detail Donasi",
         "approved": "Disetujui",
         "pending": "Menunggu",
         "remaining": "Sisa",
@@ -986,15 +986,15 @@
         "pendingLabel": "Menunggu Persetujuan"
       },
       "form": {
-        "createTitle": "Buat Kampanye",
-        "editTitle": "Edit Kampanye",
-        "name": "Nama Kampanye",
+        "createTitle": "Buat Donasi",
+        "editTitle": "Edit Donasi",
+        "name": "Nama Donasi",
         "namePlaceholder": "contoh: Renovasi Balai RT",
-        "campaignCode": "Kode Transfer",
-        "campaignCodeHint": "Kode yang diinput warga pada berita transfer bank, contoh: MAROENS8AGT26",
-        "campaignCodePlaceholder": "contoh: MAROENS8AGT26",
+        "donationCode": "Kode Transfer",
+        "donationCodeHint": "Kode yang diinput warga pada berita transfer bank, contoh: MAROENS8AGT26",
+        "donationCodePlaceholder": "contoh: MAROENS8AGT26",
         "description": "Deskripsi",
-        "descriptionPlaceholder": "Tujuan dan informasi kampanye...",
+        "descriptionPlaceholder": "Tujuan dan informasi donasi...",
         "targetAmount": "Target Dana",
         "targetAmountPlaceholder": "Kosongkan jika tidak ada target",
         "startsAt": "Tanggal Mulai",
@@ -1017,11 +1017,11 @@
         "edit": "Edit"
       },
       "selector": {
-        "label": "Kampanye",
-        "placeholder": "Pilih kampanye (opsional)"
+        "label": "Donasi",
+        "placeholder": "Pilih donasi (opsional)"
       },
       "card": {
-        "sectionTitle": "Kampanye Aktif",
+        "sectionTitle": "Donasi Aktif",
         "donateButton": "Donasi Sekarang",
         "noDeadline": "Tanpa batas waktu",
         "deadline": "Berakhir {date}",
@@ -1284,11 +1284,11 @@
           "export": "Ekspor Pembayaran",
           "arrears": "Tunggakan Pembayaran"
         },
-        "campaign": {
-          "activate": "Aktifkan Kampanye",
-          "create": "Buat Kampanye",
-          "delete": "Hapus Kampanye",
-          "update": "Edit Kampanye"
+        "donation": {
+          "activate": "Aktifkan Donasi",
+          "create": "Buat Donasi",
+          "delete": "Hapus Donasi",
+          "update": "Edit Donasi"
         },
         "inspector": {
           "view": "Inspeksi"

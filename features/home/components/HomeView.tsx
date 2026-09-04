@@ -3,7 +3,7 @@ import { useTranslations }       from 'next-intl'
 import PaymentSummary            from './PaymentSummary'
 import MonthCard                 from './MonthCard'
 import PaymentForm               from './PaymentForm'
-import ActiveCampaignsSection    from '@/features/income/components/campaigns/ActiveCampaignsSection'
+import ActiveDonationsSection    from '@/features/income/components/donations/ActiveDonationsSection'
 import { MONTHS }                from '@/lib/constants/months'
 
 interface HomeViewProps {
@@ -61,7 +61,7 @@ export default function HomeView({
       </h1>
 
       {/* KAMPANYE AKTIF */}
-      <ActiveCampaignsSection storageKey="home-campaigns-banner" />
+      <ActiveDonationsSection storageKey="home-donations-banner" />
 
       {/* RANGKUMAN STATUS PEMBAYARAN */}
 
