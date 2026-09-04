@@ -29,11 +29,11 @@ Sprint 5.9 introduces a first-class **Donation** entity that existing `DONATION`
 - Donation list tab within the Income module.
 - Donation detail drawer showing progress (approved + pending), donation list with contribution codes, and in-kind list.
 - `IncomeForm` extended: Donation selector when category = `DONATION`; contribution code shown in success state.
-- Donation cards on Beranda (resident home) and Dasbor (staff dashboard) for all RT members.
+- Donation cards on Home (resident home) and Dashboard (staff dashboard) for all RT members.
 - Resident donation flow: pre-filled form from Donation card.
 - Activity log entries for Donation lifecycle events.
 - Notification when Donation target is reached.
-- Income import template: optional `campaign_name` column.
+- Income import template: optional `donation_name` column.
 
 ### Out of scope
 - Public donation links, QR codes, or crowdfunding pages.
@@ -154,7 +154,7 @@ ALTER TABLE income_transactions
         -- optional physical quantity (e.g. 5 for "5 sak semen")
     ADD COLUMN in_kind_unit          text,
         -- optional unit of measure (e.g. 'sak', 'kg', 'pcs')
-    ADD CONSTRAINT income_transactions_campaign_fk
+    ADD CONSTRAINT income_transactions_donation_fk
         FOREIGN KEY (donation_id) REFERENCES income_donations(id) ON DELETE RESTRICT;
         -- RESTRICT prevents hard-deleting a Donation that has any income_transactions.
         -- Soft-delete (setting deleted_at) does NOT trigger this constraint.
@@ -315,10 +315,10 @@ SUPER_ADMIN is not assigned an rt_members membership and therefore has no RT-sco
 
 ```typescript
 // Income — Donations
-INCOME_CAMPAIGN_CREATE:   'income.donation.create',
-INCOME_CAMPAIGN_UPDATE:   'income.donation.update',
-INCOME_CAMPAIGN_DELETE:   'income.donation.delete',
-INCOME_CAMPAIGN_ACTIVATE: 'income.donation.activate',
+INCOME_DONATION_CREATE:   'income.donation.create',
+INCOME_DONATION_UPDATE:   'income.donation.update',
+INCOME_DONATION_DELETE:   'income.donation.delete',
+INCOME_DONATION_ACTIVATE: 'income.donation.activate',
 ```
 
 ---
@@ -330,7 +330,7 @@ Follows `docs/api/API_CONVENTION.md`.
 ### 6.1 Donation Endpoints
 
 #### `GET /api/income/Donations`
-Paginated Donation list. Query params: `page`, `pageSize`, `status` (`DRAFT|ACTIVE|COMPLETED|CANCELLED|all`), `search` (name ilike). Response: `PageResult<CampaignRow>` with computed `approved_amount`, `pending_amount`, `donor_count`. Permission: `income.view`.
+Paginated Donation list. Query params: `page`, `pageSize`, `status` (`DRAFT|ACTIVE|COMPLETED|CANCELLED|all`), `search` (name ilike). Response: `PageResult<DonationRow>` with computed `approved_amount`, `pending_amount`, `donor_count`. Permission: `income.view`.
 
 #### `POST /api/income/Donations`
 Creates a Donation (status defaults to `DRAFT`). Body:
@@ -350,9 +350,9 @@ Server validates:
 - `donation_code`: 3–20 characters; uppercased and whitespace-stripped.
 - Code must not exist in the RT, including soft-deleted or cancelled Donations (code retires permanently).
 
-Permission: `income.donation.create`. Activity log: `campaign_create`.
+Permission: `income.donation.create`. Activity log: `donation_create`.
 
-**Post-create notification:** All active ADMIN and TREASURER members receive a notification (`type: campaign_pending`) prompting them to review the Donation, so Treasurer can prepare before activation. RT_CHAIR receives a separate notification to activate.
+**Post-create notification:** All active ADMIN and TREASURER members receive a notification (`type: donation_pending`) prompting them to review the Donation, so Treasurer can prepare before activation. RT_CHAIR receives a separate notification to activate.
 
 #### `GET /api/income/Donations/active`
 Lightweight, unpaginated list of Donations that are currently accepting contributions:
@@ -369,16 +369,16 @@ Used by Beranda/Dasbor widget and `IncomeForm` selector. No explicit permission 
 Single Donation with `approved_amount`, `pending_amount`, monetary contribution list (each row includes `contribution_code`), and in-kind contribution list. Permission: `income.view` for staff; RT membership RLS for all.
 
 #### `PUT /api/income/Donations/[id]`
-Updates `name`, `description`, `target_amount`, `starts_at`, `ends_at` for `DRAFT` or `ACTIVE` Donations. `donation_code` is locked after creation and cannot be updated via this endpoint. Permission: `income.donation.update`. Activity log: `campaign_update`.
+Updates `name`, `description`, `target_amount`, `starts_at`, `ends_at` for `DRAFT` or `ACTIVE` Donations. `donation_code` is locked after creation and cannot be updated via this endpoint. Permission: `income.donation.update`. Activity log: `donation_update`.
 
 #### `POST /api/income/Donations/[id]/activate`
-`DRAFT` → `ACTIVE`. Permission: `income.donation.activate` (RT_CHAIR only). Activity log: `campaign_activate`.
+`DRAFT` → `ACTIVE`. Permission: `income.donation.activate` (RT_CHAIR only). Activity log: `donation_activate`.
 
 #### `POST /api/income/Donations/[id]/cancel`
-`ACTIVE` or `DRAFT` → `CANCELLED`. Body: `{ "cancelled_note": "..." }` (optional). Existing pending contributions continue through the approval flow unchanged. Permission: `income.donation.activate` (RT_CHAIR only — acts as rejection for DRAFT, cancellation for ACTIVE). Activity log: `campaign_cancel`.
+`ACTIVE` or `DRAFT` → `CANCELLED`. Body: `{ "cancelled_note": "..." }` (optional). Existing pending contributions continue through the approval flow unchanged. Permission: `income.donation.activate` (RT_CHAIR only — acts as rejection for DRAFT, cancellation for ACTIVE). Activity log: `donation_cancel`.
 
 #### `DELETE /api/income/Donations/[id]`
-Soft-deletes a `DRAFT` or `CANCELLED` Donation with zero contributions. Permission: `income.donation.delete`. Activity log: `campaign_delete`.
+Soft-deletes a `DRAFT` or `CANCELLED` Donation with zero contributions. Permission: `income.donation.delete`. Activity log: `donation_delete`.
 
 ### 6.2 New Endpoints
 
@@ -409,7 +409,7 @@ After approval (see `POST /api/income/[id]/approve` below), the Donation complet
 #### `POST /api/income/[id]/approve` (existing)
 After approving a transaction that has a `donation_id`:
 1. Recalculate `approved_amount = SUM(amount) WHERE donation_id = ? AND income_category = 'DONATION' AND status = 'approved'`.
-2. If `target_amount IS NOT NULL AND approved_amount >= target_amount`: transition Donation to `COMPLETED` in the same DB transaction; emit `campaign_completed` activity log; create notifications.
+2. If `target_amount IS NOT NULL AND approved_amount >= target_amount`: transition Donation to `COMPLETED` in the same DB transaction; emit `donation_completed` activity log; create notifications.
 
 This check is synchronous and requires no separate job or scheduler.
 
@@ -417,7 +417,7 @@ This check is synchronous and requires no separate job or scheduler.
 Accepts optional `donation_id` query param to filter transactions by Donation.
 
 #### Income import template (existing)
-Gains optional `campaign_name` column. See §10.
+Gains optional `donation_name` column. See §10.
 
 ### 6.4 API Contract: Contribution Code
 
@@ -465,7 +465,7 @@ SELECT SUM(amount) WHERE donation_id = X AND income_category = 'DONATION'
 approved_amount >= target_amount AND target_amount IS NOT NULL AND Donation.status = 'ACTIVE'?
          ↓
 YES → UPDATE income_donations SET status = 'COMPLETED' (same DB transaction)
-    → INSERT activity log: campaign_completed
+    → INSERT activity log: donation_completed
     → CREATE notifications: RT_ADMIN, RT_CHAIR
 ```
 
@@ -707,17 +707,17 @@ Resident can view contribution_code in transaction history at any time
 
 ## 10. Import Design
 
-The existing income import template gains one optional column: `campaign_name` (text).
+The existing income import template gains one optional column: `donation_name` (text).
 
-**Why `campaign_name`?**
+**Why `donation_name`?**
 
 | Option | Assessment |
 |---|---|
-| `campaign_name` | Human-readable, easy to fill in a spreadsheet. Chosen. |
+| `donation_name` | Human-readable, easy to fill in a spreadsheet. Chosen. |
 | `donation_code` | Identifies the bank transfer code, not necessarily the Donation name — less human-friendly for import. |
 | `donation_id` | UUID — not operator-friendly. |
 
-Server resolution: `campaign_name` → `donation_id` by case-insensitive exact match within the RT against `ACTIVE` Donations. An unresolvable or expired Donation name is a row-level validation error.
+Server resolution: `donation_name` → `donation_id` by case-insensitive exact match within the RT against `ACTIVE` Donations. An unresolvable or expired Donation name is a row-level validation error.
 Import Donation-linked contributions is intended for active Donations only.
 
 **Contribution code in import:**
@@ -732,12 +732,12 @@ Import Donation-linked contributions is intended for active Donations only.
 
 | Action | Trigger |
 |---|---|
-| `campaign_create` | New Donation created |
-| `campaign_activate` | `DRAFT` → `ACTIVE` |
-| `campaign_update` | Metadata edited |
-| `campaign_cancel` | Status → `CANCELLED` |
-| `campaign_delete` | Soft-deleted |
-| `campaign_completed` | `ACTIVE` → `COMPLETED` (target reached on approval) |
+| `donation_create` | New Donation created |
+| `donation_activate` | `DRAFT` → `ACTIVE` |
+| `donation_update` | Metadata edited |
+| `donation_cancel` | Status → `CANCELLED` |
+| `donation_delete` | Soft-deleted |
+| `donation_completed` | `ACTIVE` → `COMPLETED` (target reached on approval) |
 
 All entries: `entity_type: 'Donation'`, `entity_id: Donation.id`.
 
@@ -747,12 +747,12 @@ All entries: `entity_type: 'Donation'`, `entity_id: Donation.id`.
 
 | Trigger | Recipients | Type |
 |---|---|---|
-| Donation created (DRAFT) | All active ADMIN + TREASURER | `campaign_activated` (pending review) |
-| Donation activated (DRAFT → ACTIVE) | All active ADMIN + TREASURER | `campaign_activated` |
+| Donation created (DRAFT) | All active ADMIN + TREASURER | `donation_activated` (pending review) |
+| Donation activated (DRAFT → ACTIVE) | All active ADMIN + TREASURER | `donation_activated` |
 | Donation submitted (pending) | TREASURER (see maker-checker below) | `income_pending` |
 | Donation approved | Submitting resident | `income_approved` |
 | Donation rejected | Submitting resident | `income_rejected` |
-| Target reached (ACTIVE → COMPLETED) | All active ADMIN + CHAIR | `campaign_completed` |
+| Target reached (ACTIVE → COMPLETED) | All active ADMIN + CHAIR | `donation_completed` |
 
 **Maker-Checker rules:**
 
@@ -798,7 +798,7 @@ New namespace `income.Donations` in `messages/id.json`:
   "columns": {
     "name": "Nama Kampanye",
     "status": "Status",
-    "campaignCode": "Kode Transfer",
+    "donationCode": "Kode Transfer",
     "target": "Target",
     "approved": "Disetujui",
     "pending": "Menunggu",
@@ -827,9 +827,9 @@ New namespace `income.Donations` in `messages/id.json`:
     "editTitle": "Edit Kampanye",
     "name": "Nama Kampanye",
     "namePlaceholder": "contoh: Renovasi Balai RT",
-    "campaignCode": "Kode Transfer",
-    "campaignCodeHint": "Kode yang diinput warga pada berita transfer bank, contoh: MAROENS8AGT26",
-    "campaignCodePlaceholder": "contoh: MAROENS8AGT26",
+    "donationCode": "Kode Transfer",
+    "donationCodeHint": "Kode yang diinput warga pada berita transfer bank, contoh: MAROENS8AGT26",
+    "donationCodePlaceholder": "contoh: MAROENS8AGT26",
     "description": "Deskripsi",
     "descriptionPlaceholder": "Tujuan dan informasi kampanye...",
     "targetAmount": "Target Dana",
@@ -919,7 +919,7 @@ features/income/
     useActiveDonations.ts         — Unpaginated active list for selector + cards
     useDonationActions.ts         — activate, cancel, delete handlers
   services/
-    Donation-transform.ts         — mapCampaign(): adds progressPct, formattedTarget
+    Donation-transform.ts         — mapDonation(): adds progressPct, formattedTarget
 
 app/api/income/Donations/
   route.ts                        — GET (list) + POST (create)
@@ -950,7 +950,7 @@ app/api/income/route.ts                      — Accept donation_id filter param
 app/api/income/[id]/approve/route.ts         — Synchronous Donation completion check
 features/beranda/BerandaView.tsx             — Active Donation cards section
 features/dasbor/DasborView.tsx               — Active Donation cards section
-lib/auth/types.ts                            — Add INCOME_CAMPAIGN_* permissions
+lib/auth/types.ts                            — Add INCOME_DONATION_* permissions
 messages/id.json                             — Add income.Donations namespace
 ```
 
@@ -974,7 +974,7 @@ All confirmed by product owner (2026-08-22). Do not reopen during implementation
 | 10 | In-kind contributions | Recorded on `income_transactions`; do not increase monetary progress |
 | 11 | Donation ledger | No separate ledger; `income_transactions` is the sole authoritative financial record |
 | 12 | `income.donation.view` permission | Not introduced; visibility via RLS (RT membership); Income tab via `income.view` |
-| 13 | Import | `campaign_name` column (readable); `contribution_code` server-assigned, not importable |
+| 13 | Import | `donation_name` column (readable); `contribution_code` server-assigned, not importable |
 | 14 | Progress denominator | Approved monetary only; pending shown informational |
 | 15 | Progress model | `approved_amount / target_amount`; never includes pending |
 | 16 | Contribution acceptance window | `status = 'ACTIVE' AND starts_at <= today AND (ends_at IS NULL OR ends_at >= today)`; all three enforced server-side |
