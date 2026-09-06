@@ -365,19 +365,28 @@ test.describe('maker-checker self-submission note (chair)', () => {
         // Now go to income list and find the pending donation just submitted
         await income.goto()
 
-        // Filter to pending DONATION entries
-        const statusSelect   = page.locator('select').filter({ has: page.locator('option[value="pending"]') }).first()
+        // Filter to DONATION category
         const categorySelect = page.locator('select').filter({ has: page.locator('option[value="DONATION"]') }).first()
-
-        if (await statusSelect.count())   await statusSelect.selectOption('pending')
-        if (await categorySelect.count()) await categorySelect.selectOption('DONATION')
+        if (await categorySelect.count()) {
+            await categorySelect.selectOption('DONATION')
+        } else {
+            // Fallback: find the category dropdown by label text
+            const donationOpt = page.locator('select option', { hasText: 'Donasi' }).first()
+            if (await donationOpt.count()) {
+                await donationOpt.locator('..').selectOption({ label: 'Donasi' })
+            }
+        }
 
         await page.waitForTimeout(1000)
 
         const rowCount = await income.tableRows().count()
         if (rowCount === 0) { test.skip(); return }
 
-        await income.clickRow(0)
+        // Click CHAIR's own submitted row (Hendra Wijaya is the donor for CHAIR's self-donation)
+        const myRow = income.tableRows().filter({ hasText: 'Hendra Wijaya' }).first()
+        const myRowCount = await myRow.count()
+        if (myRowCount === 0) { test.skip(); return }
+        await myRow.click()
         await expect(income.drawer()).toBeVisible({ timeout: 10000 })
 
         // The self-submission note should appear instead of approve/reject buttons

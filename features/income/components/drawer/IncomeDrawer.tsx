@@ -82,8 +82,9 @@ export default function IncomeDrawer({
 }: IncomeDrawerProps) {
     const t  = useTranslations('income')
     const tc = useTranslations('common')
-    const { wargaId } = useAuth()
-    const isSelfSubmission = row?.created_by && wargaId && row.created_by === wargaId
+    const { membership } = useAuth()
+    const currentUserId   = membership?.user?.id
+    const isSelfSubmission = row?.created_by && currentUserId && row.created_by === currentUserId
 
     useKeyDown(open, { Escape: onClose })
 

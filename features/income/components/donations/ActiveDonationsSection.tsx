@@ -66,8 +66,8 @@ export default function ActiveDonationsSection({ storageKey = 'active-donations-
 
             {/* Cards — animated collapse */}
             <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${collapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'}`}>
-                <div className="overflow-hidden">
-                    <div data-testid="donations-banner-content" className="px-4 pb-4 pt-1">
+                <div data-testid="donations-banner-content" className="overflow-hidden">
+                    <div className="px-4 pb-4 pt-1">
                         {loading ? (
                             <div className="flex justify-center py-6">
                                 <div className="w-5 h-5 border-2 border-divider border-t-primary rounded-full animate-spin" />

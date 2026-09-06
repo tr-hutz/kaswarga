@@ -78,6 +78,6 @@ export async function POST(req: Request, { params }: Params) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
         console.error('[donation/donate]', err)
-        return NextResponse.json({ error: 'Failed to donate' }, { status: 500 })
+        return NextResponse.json({ error: (err as Error).message || 'Failed to donate' }, { status: 500 })
     }
 }
