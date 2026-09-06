@@ -71,7 +71,6 @@ AS $$
 $$;
 
 REVOKE ALL     ON FUNCTION user_has_permission(uuid, uuid, text) FROM PUBLIC;
-GRANT  EXECUTE ON FUNCTION user_has_permission(uuid, uuid, text) TO authenticated;
 GRANT  EXECUTE ON FUNCTION user_has_permission(uuid, uuid, text) TO service_role;
 
 
@@ -328,5 +327,5 @@ $$;
 
 REVOKE ALL     ON FUNCTION approve_confirmation(uuid, uuid)      FROM PUBLIC;
 REVOKE ALL     ON FUNCTION reject_confirmation(uuid, text, uuid) FROM PUBLIC;
-GRANT  EXECUTE ON FUNCTION approve_confirmation(uuid, uuid)      TO authenticated;
-GRANT  EXECUTE ON FUNCTION reject_confirmation(uuid, text, uuid) TO authenticated;
+GRANT  EXECUTE ON FUNCTION approve_confirmation(uuid, uuid)      TO service_role;
+GRANT  EXECUTE ON FUNCTION reject_confirmation(uuid, text, uuid) TO service_role;

@@ -150,7 +150,7 @@ END;
 $$;
 
 REVOKE ALL     ON FUNCTION approve_expense(uuid, uuid) FROM PUBLIC;
-GRANT  EXECUTE ON FUNCTION approve_expense(uuid, uuid) TO authenticated;
+REVOKE EXECUTE ON FUNCTION approve_expense(uuid, uuid) FROM authenticated;
 GRANT  EXECUTE ON FUNCTION approve_expense(uuid, uuid) TO service_role;
 
 
@@ -199,5 +199,5 @@ END;
 $$;
 
 REVOKE ALL     ON FUNCTION reject_expense(uuid, text, uuid) FROM PUBLIC;
-GRANT  EXECUTE ON FUNCTION reject_expense(uuid, text, uuid) TO authenticated;
+REVOKE EXECUTE ON FUNCTION reject_expense(uuid, text, uuid) FROM authenticated;
 GRANT  EXECUTE ON FUNCTION reject_expense(uuid, text, uuid) TO service_role;
