@@ -42,6 +42,8 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 const RT_ID     = '11111111-1111-1111-1111-111111111111'
 // dewi@example.com — TREASURER in RT 01, used in treasurer.json
 const TREASURER = 'cccccccc-cccc-cccc-cccc-cccccccccc12'
+// rudi@example.com — CHAIR in RT 01, used in chair.json
+const CHAIR     = 'cccccccc-cccc-cccc-cccc-cccccccccc11'
 
 // RT 01 residents (non-named test users — safe to use as payers)
 const R13 = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb13' // Agus Setiawan
@@ -191,6 +193,88 @@ const EXPENSES = [
 ]
 
 // ---------------------------------------------------------------------------
+// income_donations  (1 DRAFT + 1 ACTIVE)
+//
+// DRAFT  — treasurer/chair tests: row exists in donation list, drawer opens,
+//          chair sees Aktifkan button.  Upsert resets status back to DRAFT after
+//          each activation test so the next run starts clean.
+//
+// ACTIVE — banner tests (resident Beranda, treasurer Dasbor, chair maker-checker).
+//          A seeded ACTIVE donation guarantees the banner is always visible.
+// ---------------------------------------------------------------------------
+const INCOME_DONATIONS = [
+  {
+    id:            'e2eb0001-e2eb-e2eb-e2eb-e2eb00000001',
+    rt_id:         RT_ID,
+    name:          'E2E Donasi Draf',
+    donation_code: 'E2E-DRAF-001',
+    description:   'Data uji E2E — DRAFT donation for list/activation tests',
+    target_amount: 1000000,
+    starts_at:     '2026-07-01',
+    status:        'DRAFT',
+    created_by:    TREASURER,
+    created_at:    '2026-07-01T08:00:00Z',
+    updated_at:    '2026-07-01T08:00:00Z',
+  },
+  {
+    id:            'e2eb0001-e2eb-e2eb-e2eb-e2eb00000002',
+    rt_id:         RT_ID,
+    name:          'E2E Donasi Aktif',
+    donation_code: 'E2E-AKTIF-001',
+    description:   'Data uji E2E — ACTIVE donation for banner tests',
+    target_amount: 5000000,
+    starts_at:     '2026-07-01',
+    status:        'ACTIVE',
+    created_by:    TREASURER,
+    created_at:    '2026-07-01T08:00:00Z',
+    updated_at:    '2026-07-01T08:00:00Z',
+  },
+]
+
+// ---------------------------------------------------------------------------
+// income_transactions  (1 pending OTHER + 1 pending DONATION)
+//
+// pending OTHER   — chair income page test: rowCount > 0 → edit/delete buttons
+//                   must not appear for CHAIR role.
+//
+// pending DONATION (submitted by CHAIR) — treasurer checker test: TREASURER
+//                   opens the row and sees Setujui/Tolak because it was not
+//                   submitted by them.  Also satisfies maker-checker row check.
+// ---------------------------------------------------------------------------
+const INCOME_TXS = [
+  {
+    id:              'e2ef0001-e2ef-e2ef-e2ef-e2ef00000001',
+    rt_id:           RT_ID,
+    income_category: 'OTHER',
+    income_name:     'E2E Pemasukan Lainnya 1',
+    source_type:     'ANONYMOUS',
+    is_anonymous:    true,
+    amount:          500000,
+    received_at:     '2026-07-01',
+    status:          'pending',
+    created_by:      TREASURER,
+    created_at:      '2026-07-01T08:00:00Z',
+    updated_at:      '2026-07-01T08:00:00Z',
+  },
+  {
+    id:              'e2ef0001-e2ef-e2ef-e2ef-e2ef00000002',
+    rt_id:           RT_ID,
+    income_category: 'DONATION',
+    income_name:     'E2E Donasi Resident 1',
+    source_type:     'RESIDENT',
+    resident_id:     R13,
+    is_anonymous:    false,
+    amount:          50000,
+    received_at:     '2026-07-01',
+    status:          'pending',
+    donation_id:     'e2eb0001-e2eb-e2eb-e2eb-e2eb00000002',
+    created_by:      CHAIR,
+    created_at:      '2026-07-01T09:00:00Z',
+    updated_at:      '2026-07-01T09:00:00Z',
+  },
+]
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 async function upsert(table, rows) {
@@ -216,11 +300,25 @@ try {
   const pendingExp = EXPENSES.filter(e => e.status === 'pending').length
   console.log(`  ✓  ${EXPENSES.length} expenses  (${pendingExp} pending)`)
 
+  // income_donations must be upserted before income_transactions (FK dependency)
+  await upsert('income_donations', INCOME_DONATIONS)
+  const draftDon = INCOME_DONATIONS.filter(d => d.status === 'DRAFT').length
+  const activeDon = INCOME_DONATIONS.filter(d => d.status === 'ACTIVE').length
+  console.log(`  ✓  ${INCOME_DONATIONS.length} income_donations  (${draftDon} DRAFT, ${activeDon} ACTIVE)`)
+
+  await upsert('income_transactions', INCOME_TXS)
+  const pendingTx = INCOME_TXS.filter(t => t.status === 'pending').length
+  console.log(`  ✓  ${INCOME_TXS.length} income_transactions  (${pendingTx} pending)`)
+
   console.log('\nE2E seed complete.')
-  console.log('  → payment drawer tests  (session.json  / ADMIN)     will pass')
-  console.log('  → payment approval tests (treasurer.json / TREASURER) will pass')
-  console.log('  → expense drawer tests  (session.json  / ADMIN)     will pass')
-  console.log('  → expense approval tests skip: session.json is ADMIN; only CHAIR can approve expenses')
+  console.log('  → payment drawer tests    (session.json  / ADMIN)      will pass')
+  console.log('  → payment approval tests  (treasurer.json / TREASURER)  will pass')
+  console.log('  → expense drawer tests    (session.json  / ADMIN)      will pass')
+  console.log('  → income page tests       (chair.json    / CHAIR)       will pass')
+  console.log('  → donation list tests     (treasurer.json / TREASURER)  will pass')
+  console.log('  → donation activation     (chair.json    / CHAIR)       will pass')
+  console.log('  → donation banner tests   (resident.json / RESIDENT)    will pass')
+  console.log('  → expense approval tests  skip: ADMIN role; only CHAIR can approve expenses')
 } catch (err) {
   console.error('\nSeed failed:', err.message)
   process.exit(1)
