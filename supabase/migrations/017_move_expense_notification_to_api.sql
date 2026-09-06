@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 018_MOVE_EXPENSE_NOTIFICATION_TO_API
+ * 017_MOVE_EXPENSE_NOTIFICATION_TO_API
  *
  * The approve_expense / reject_expense functions previously inserted
  * notifications from inside the security-definer context (running as postgres).

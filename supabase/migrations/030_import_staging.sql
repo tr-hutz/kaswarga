@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 034_IMPORT_STAGING
+ * 030_IMPORT_STAGING
  *
  * Enhances the Shared Import Framework with a Treasurer Confirmation step
  * that separates validation from promotion.
@@ -20,7 +20,7 @@
  *   5. approve_expenses_by_import_job() RPC (batch ledger approval)
  *   6. reject_expenses_by_import_job()  RPC (batch rejection)
  *
- * Dependencies: 031_import_jobs, 019_fix_expense_approval_ledger
+ * Dependencies: 027_import_jobs, 018_fix_expense_approval_ledger
  * =============================================================================
  */
 

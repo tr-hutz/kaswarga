@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 026_STORAGE_TENANT_ISOLATION
+ * 022_STORAGE_TENANT_ISOLATION
  *
  * STATUS: DEFERRED — requires storage path audit before implementation.
  *

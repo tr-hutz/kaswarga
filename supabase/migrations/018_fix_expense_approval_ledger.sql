@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 019_FIX_EXPENSE_APPROVAL_LEDGER
+ * 018_FIX_EXPENSE_APPROVAL_LEDGER
  *
  * The same auth.uid()-in-security-definer problem that broke approve_confirmation
  * (fixed in 017) also affects approve_expense and reject_expense.
@@ -25,7 +25,7 @@
  * The notification INSERT is intentionally omitted here — that responsibility
  * was moved to the server-side API routes in migration 018.
  *
- * Dependencies : 005_functions, 014_rbac_rls, 018_move_expense_notification_to_api
+ * Dependencies : 005_functions, 014_rbac_rls, 017_move_expense_notification_to_api
  * =============================================================================
  */
 

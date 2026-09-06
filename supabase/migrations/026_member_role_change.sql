@@ -1,5 +1,5 @@
 /*
- * 030_member_role_change
+ * 026_member_role_change
  *
  * Adds the ability for RT_ADMIN to change the role of any member within their RT.
  *

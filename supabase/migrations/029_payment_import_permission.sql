@@ -1,5 +1,5 @@
 /*
- * 033_payment_import_permission
+ * 029_payment_import_permission
  *
  * Adds payment.import, payment.import_approve, and import.view permissions
  * for the shared import framework. (034 and 035 content merged here — all

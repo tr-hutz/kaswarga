@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 031_IMPORT_JOBS
+ * 027_IMPORT_JOBS
  *
  * Introduces the generic Import Job model for the Shared Import Framework.
  *
@@ -14,7 +14,7 @@
  *
  * Supported import types: RESIDENT, PAYMENT, INCOME
  *
- * Row-level results are stored in import_job_rows (032_import_job_rows.sql).
+ * Row-level results are stored in import_job_rows (028_import_job_rows.sql).
  *
  * Dependencies: 000_foundation, 007_rls, 013_rbac_functions
  * =============================================================================

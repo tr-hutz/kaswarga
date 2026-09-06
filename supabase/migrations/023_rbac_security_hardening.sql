@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 027_RBAC_SECURITY_HARDENING
+ * 023_RBAC_SECURITY_HARDENING
  *
  * Sprint 5.3 — Minimal security hardening identified during RLS validation.
  *
@@ -29,7 +29,7 @@
  *     these calls. Fix: add service_role grant for consistency with approve_expense
  *     / reject_expense (019).
  *
- * Dependencies : 005_functions, 013_rbac_functions, 017_rbac_fix_payment_approval
+ * Dependencies : 005_functions, 013_rbac_functions, 016_fix_payment_approval_rbac
  * =============================================================================
  */
 

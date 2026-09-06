@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 020_RBAC_TABLE_RLS
+ * 019_RBAC_TABLE_RLS
  *
  * Enables Row-Level Security on the four RBAC v2 tables created in
  * 011_rbac_tables.sql, which were left without RLS protection.

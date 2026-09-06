@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 017_FIX_PAYMENT_APPROVAL_RBAC
+ * 016_FIX_PAYMENT_APPROVAL_RBAC
  *
  * The original approve_confirmation / reject_confirmation functions hard-coded
  * a role check ("caller must be TREASURER"). RBAC v2 grants payment.approve

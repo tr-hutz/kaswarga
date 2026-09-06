@@ -1,5 +1,5 @@
 /*
- * 028_income_tables
+ * 024_income_tables
  *
  * Income Management — income_transactions table and supporting enums.
  *

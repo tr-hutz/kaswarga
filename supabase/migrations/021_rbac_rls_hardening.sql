@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 022_RBAC_SPRINT51_RLS_HARDENING
+ * 021_RBAC_RLS_HARDENING
  *
  * Consolidation of four single-statement Sprint 5.1 RLS assessment fixes:
  *
@@ -19,7 +19,7 @@
  *
  * Dependencies:
  *   007_rls (original policies), 013_rbac_functions (has_permission),
- *   019_fix_expense_approval_ledger (SECURITY DEFINER on insert_ledger)
+ *   018_fix_expense_approval_ledger (SECURITY DEFINER on insert_ledger)
  * =============================================================================
  */
 

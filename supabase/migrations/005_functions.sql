@@ -54,7 +54,18 @@ declare
     v_new_balance  bigint;
     v_id           uuid;
 begin
-    v_last_balance := get_last_balance(p_rt_id);
+    -- Lock the most recent ledger row to serialise concurrent inserts.
+    -- A plain get_last_balance() call has a TOCTOU race: two concurrent
+    -- calls can read the same balance_after and produce corrupt running totals.
+    SELECT balance_after
+    INTO   v_last_balance
+    FROM   ledger
+    WHERE  rt_id = p_rt_id
+    ORDER  BY date DESC
+    LIMIT  1
+    FOR UPDATE SKIP LOCKED;
+
+    v_last_balance := COALESCE(v_last_balance, 0);
 
     if p_type = 'pemasukan' then
         v_new_balance := v_last_balance + p_amount;
@@ -279,7 +290,8 @@ begin
 end;
 $$;
 
-grant execute on function generate_rt_code() to authenticated, anon;
+revoke all     on function generate_rt_code() from public;
+grant  execute on function generate_rt_code() to authenticated;
 
 
 /* ----------------------------------------------------------------------------
@@ -301,6 +313,9 @@ begin
     and    expires_at < now();
 end;
 $$;
+
+revoke all     on function cleanup_expired_registrations() from public;
+grant  execute on function cleanup_expired_registrations() to service_role;
 
 
 /* ----------------------------------------------------------------------------
@@ -561,8 +576,8 @@ $$;
 
 revoke all     on function approve_confirmation(uuid, uuid)      from public;
 revoke all     on function reject_confirmation(uuid, text, uuid) from public;
-grant  execute on function approve_confirmation(uuid, uuid)      to authenticated;
-grant  execute on function reject_confirmation(uuid, text, uuid) to authenticated;
+grant  execute on function approve_confirmation(uuid, uuid)      to service_role;
+grant  execute on function reject_confirmation(uuid, text, uuid) to service_role;
 
 
 /* ----------------------------------------------------------------------------

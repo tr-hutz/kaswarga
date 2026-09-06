@@ -1,5 +1,5 @@
 /*
- * 029_income_permissions
+ * 025_income_permissions
  *
  * RBAC permissions for the Income Management module.
  *

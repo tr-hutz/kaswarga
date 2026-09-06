@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 032_IMPORT_JOB_ROWS
+ * 028_IMPORT_JOB_ROWS
  *
  * Per-row result tracking for the Shared Import Framework.
  *
@@ -11,7 +11,7 @@
  * Error codes are short machine-readable identifiers (e.g. RESIDENT_NOT_FOUND,
  * DUPLICATE_PAYMENT, INVALID_AMOUNT). Error messages are human-readable.
  *
- * Dependencies: 031_import_jobs
+ * Dependencies: 027_import_jobs
  * =============================================================================
  */
 

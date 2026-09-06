@@ -1,6 +1,6 @@
 /*
  * =============================================================================
- * 021_MEMBERSHIP_POLICIES
+ * 020_MEMBERSHIP_POLICIES
  *
  * Adds SELECT / INSERT / UPDATE / DELETE policies to the memberships table
  * so that users with the appropriate RBAC v2 permissions can manage and read
