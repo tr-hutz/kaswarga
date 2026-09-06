@@ -138,7 +138,7 @@ ALTER TYPE income_category ADD VALUE 'IN_KIND';
 -- Must be the first statement in the migration that references IN_KIND.
 ```
 
-The existing `income_category` enum in `028_income_tables.sql` defines: `DONATION, GOVERNMENT, EVENT, BAZAAR, RENTAL, SALES, INTEREST, OTHER`. `IN_KIND` is not present and must be added before any `IN_KIND` rows can be inserted.
+The existing `income_category` enum in `024_income_tables.sql` defines: `DONATION, GOVERNMENT, EVENT, BAZAAR, RENTAL, SALES, INTEREST, OTHER`. `IN_KIND` is not present and must be added before any `IN_KIND` rows can be inserted.
 
 **Add new columns:**
 
@@ -209,10 +209,10 @@ rt
 
 ### 4.4 Migration Placement
 
-Migration: **`035_income_donations.sql`**
+Migration: **`031_income_donations.sql`**
 
 Contents (order matters — enum extension must be first):
-1. `ALTER TYPE income_category ADD VALUE 'IN_KIND'` — extends existing enum from `028_income_tables.sql`.
+1. `ALTER TYPE income_category ADD VALUE 'IN_KIND'` — extends existing enum from `024_income_tables.sql`.
 2. Creates `income_donations` table (with `donation_code` column).
 3. Alters `income_transactions` (adds `donation_id`, `contribution_code`, `in_kind_*` columns, FK, index).
 4. Alters `rt` table — adds `maker_checker_enabled boolean NOT NULL DEFAULT TRUE`.
@@ -934,7 +934,7 @@ lib/repositories/
   incomeDonation.repository.ts
 
 supabase/migrations/
-  035_income_donations.sql
+  031_income_donations.sql
 
 components/common/
   DonationProgressBar.tsx         — Props: approved, pending, target
@@ -997,7 +997,7 @@ All confirmed by product owner (2026-08-22). Do not reopen during implementation
 All implementation decisions have been resolved during the sprint:
 
 - **Donation code assignment**: `contribution_code = Donation.donation_code` copied at insert time. No sequence infrastructure needed.
-- **Migration number**: `035_income_donations.sql` — confirmed against repository.
+- **Migration number**: `031_income_donations.sql` — confirmed against repository.
 - **`income_category = 'IN_KIND'`**: Added via `ALTER TYPE income_category ADD VALUE 'IN_KIND'` in migration 035.
 - **Beranda/Dasbor slot**: `ActiveDonationsSection` component inserted into both pages.
 - **Maker-checker**: `rt.maker_checker_enabled` column added to `rt` table in migration 035 (`BOOLEAN NOT NULL DEFAULT TRUE`).
@@ -1023,7 +1023,7 @@ All implementation decisions have been resolved during the sprint:
 | Notification pattern | ✅ Live |
 | `DataTable` / `useDataTable` | ✅ Live |
 | `IncomeForm` extension | ✅ Implemented |
-| `035_income_donations.sql` migration | ✅ Implemented |
+| `031_income_donations.sql` migration | ✅ Implemented |
 | Beranda/Dasbor Donation card slot | ✅ Implemented |
 | `POST /api/income/Donations/[id]/donate` endpoint | ✅ Implemented |
 | Maker-checker (`rt.maker_checker_enabled`) | ✅ Implemented |

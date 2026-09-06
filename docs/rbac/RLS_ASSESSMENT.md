@@ -502,7 +502,7 @@ Add `rt_permission_overrides` tenant isolation: SELECT scoped to `has_permission
 **Risk:** Low. Enabling RLS on a table with no policies defaults to deny-all.
 Must add permissive SELECT policies immediately in the same migration.
 
-**Migration name:** `020_rbac_table_rls.sql`
+**Migration name:** `019_rbac_table_rls.sql`
 
 ---
 
@@ -520,7 +520,7 @@ The existing `super_admin insert/update/delete` policies remain unchanged (addit
 
 **Risk:** Low. New permissive policies alongside existing ones. `is_super_admin()` bypass preserved.
 
-**Migration name:** `021_rbac_membership_write_policies.sql`
+**Migration name:** `020_rbac_membership_write_policies.sql`
 
 ---
 
@@ -623,7 +623,7 @@ the RT ID from the object path.
 stored objects do not follow a consistent `{rt_id}/` prefix, the policy cannot correctly
 scope by RT. Requires a separate storage path audit before implementation.
 
-**Migration name:** `026_rbac_storage_tenant_isolation.sql` (requires path audit first)
+**Migration name:** `022_rbac_storage_tenant_isolation.sql` (requires path audit first)
 
 ---
 
