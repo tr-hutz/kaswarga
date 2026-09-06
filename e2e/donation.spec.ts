@@ -365,24 +365,19 @@ test.describe('maker-checker self-submission note (chair)', () => {
         // Now go to income list and find the pending donation just submitted
         await income.goto()
 
-        // Filter to DONATION category
+        // Filter to pending DONATION rows only
         const categorySelect = page.locator('select').filter({ has: page.locator('option[value="DONATION"]') }).first()
-        if (await categorySelect.count()) {
-            await categorySelect.selectOption('DONATION')
-        } else {
-            // Fallback: find the category dropdown by label text
-            const donationOpt = page.locator('select option', { hasText: 'Donasi' }).first()
-            if (await donationOpt.count()) {
-                await donationOpt.locator('..').selectOption({ label: 'Donasi' })
-            }
-        }
+        const statusSelect   = page.locator('select').filter({ has: page.locator('option[value="pending"]') }).first()
+        if (await categorySelect.count()) await categorySelect.selectOption('DONATION')
+        if (await statusSelect.count())   await statusSelect.selectOption('pending')
 
-        await page.waitForTimeout(1000)
+        // Wait for table to update after filtering
+        await page.locator('[data-testid="dt-row"],[data-testid="dt-empty"]').first().waitFor({ timeout: 10000 })
 
         const rowCount = await income.tableRows().count()
         if (rowCount === 0) { test.skip(); return }
 
-        // Click CHAIR's own submitted row (Hendra Wijaya is the donor for CHAIR's self-donation)
+        // Click CHAIR's own submitted row (pending DONATION; payer name matches CHAIR's resident name)
         const myRow = income.tableRows().filter({ hasText: 'Hendra Wijaya' }).first()
         const myRowCount = await myRow.count()
         if (myRowCount === 0) { test.skip(); return }
@@ -414,7 +409,7 @@ test.describe('treasurer sees approval buttons for donations submitted by others
         if (await statusSelect.count())   await statusSelect.selectOption('pending')
         if (await categorySelect.count()) await categorySelect.selectOption('DONATION')
 
-        await page.waitForTimeout(1000)
+        await page.locator('[data-testid="dt-row"],[data-testid="dt-empty"]').first().waitFor({ timeout: 10000 })
 
         const rowCount = await income.tableRows().count()
         if (rowCount === 0) { test.skip(); return }

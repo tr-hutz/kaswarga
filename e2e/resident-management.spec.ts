@@ -80,12 +80,13 @@ test.describe('create resident (admin)', () => {
     const residents = new ResidentsPage(page)
     await residents.goto()
 
+    const ts = Date.now()
     await residents.openAddModal()
     await residents.fillResidentForm(
-      'E2E Test Warga',
+      `E2E Warga Baru ${ts}`,
       'Blok E2E',
       '99',
-      '08100000099'
+      `081${ts.toString().slice(-9)}`,
     )
     await residents.saveResident()
 

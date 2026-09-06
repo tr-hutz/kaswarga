@@ -73,7 +73,9 @@ test.describe('create income (treasurer)', () => {
         await income.saveIncome()
 
         await expect(income.modal()).not.toBeVisible({ timeout: 30000 })
-        await expect(page.getByText('E2E Pemasukan Test').first()).toBeVisible({ timeout: 30000 })
+        // Search by name since older dates sort behind newer entries in a large dataset
+        await income.search('E2E Pemasukan Test')
+        await expect(page.getByText('E2E Pemasukan Test').first()).toBeVisible({ timeout: 10000 })
     })
 })
 

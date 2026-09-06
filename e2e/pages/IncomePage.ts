@@ -72,6 +72,11 @@ export class IncomePage {
         await this.cancelButton().click()
     }
 
+    async search(query: string) {
+        await this.page.getByPlaceholder(/cari pemasukan/i).fill(query)
+        await this.page.locator('[data-testid="dt-row"],[data-testid="dt-empty"]').first().waitFor({ timeout: 10000 })
+    }
+
     drawer(): Locator {
         return this.page.locator('[data-testid="income-drawer"]')
     }

@@ -37,6 +37,9 @@ export class DonationPage {
     async gotoDasbor() {
         await this.page.goto('/dashboard')
         await waitForShell(this.page, /\/dashboard/)
+        await this.page.locator('[data-testid="donations-banner"] .animate-spin')
+            .waitFor({ state: 'hidden', timeout: 8000 })
+            .catch(() => {})
     }
 
     // -------------------------------------------------------------------------
