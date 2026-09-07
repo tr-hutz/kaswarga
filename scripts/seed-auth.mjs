@@ -31,8 +31,8 @@ const HEADERS = {
 
 const SUPER_ADMIN = {
   id:       'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee',
-  email:    'superuser@nodomain.com',
-  password: 'superuser1234',
+  email:    'superadmin@example.com',
+  password: 'Password123!',
 }
 
 console.log(`Supabase: ${SUPABASE_URL}`)

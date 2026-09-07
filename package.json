@@ -19,6 +19,7 @@
     "seed:auth": "node scripts/seed-auth.mjs",
     "seed:dev": "node scripts/seed-dev.mjs",
     "seed:prod": "node scripts/seed-prod.mjs",
+    "seed:pvt": "node scripts/seed-pvt.mjs",
     "seed:e2e": "node scripts/seed-e2e.mjs",
     "seed:financial": "node scripts/seed-financial.mjs",
     "rbac:audit": "node scripts/rbac/analyze-coverage.mjs",
