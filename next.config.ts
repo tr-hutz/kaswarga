@@ -5,7 +5,7 @@ import { createRequire } from 'node:module'
 const require = createRequire(import.meta.url)
 const { version } = require('./package.json') as { version: string }
 
-const withNextIntl = createNextIntlPlugin('./i18n/request.ts')
+const withNextIntl = createNextIntlPlugin('./lib/internationalization.ts')
 
 const nextConfig: NextConfig = {
     env: {
