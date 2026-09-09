@@ -5,14 +5,7 @@ import Link from 'next/link'
 import Icon from '@/components/ui/Icon'
 import PasswordInput from '@/components/ui/PasswordInput'
 import { useTranslations } from 'next-intl'
-
-const APP_ENV     = process.env.NEXT_PUBLIC_APP_ENV     ?? 'production'
-const APP_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? ''
-const GIT_SHA     = process.env.NEXT_PUBLIC_GIT_SHA     ?? ''
-
-const buildLabel = APP_ENV === 'production'
-    ? (APP_VERSION ? `v${APP_VERSION}` : null)
-    : (GIT_SHA ? GIT_SHA.slice(0, 7) : null)
+import { versionLabel } from '@/lib/version'
 
 interface LoginViewProps {
   loading:      boolean
@@ -55,10 +48,11 @@ export default function LoginView({
       "
     >
 
+      <div className="flex flex-col items-center w-full max-w-md">
+
       <div
         className="
           w-full
-          max-w-md
           bg-surface
           rounded-xl
           shadow-card
@@ -275,9 +269,11 @@ export default function LoginView({
 
       </div>
 
-      {buildLabel && (
-        <p className="text-center text-xs text-subtle font-mono mt-4">{buildLabel}</p>
+      {versionLabel && (
+        <p className="text-center text-xs text-subtle font-mono mt-4">{versionLabel}</p>
       )}
+
+      </div>
 
     </div>
   )

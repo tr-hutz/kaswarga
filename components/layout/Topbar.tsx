@@ -11,6 +11,7 @@ import { logout } from '@/lib/services/auth.service'
 import { useTranslations } from 'next-intl'
 import type { NavState } from '@/lib/types/nav'
 import CommandPalette from './CommandPalette'
+import { APP_VERSION } from '@/lib/version'
 
 const ROLE_LABELS: Record<string, string> = {
     SUPER_ADMIN: 'Super Admin',
@@ -81,7 +82,12 @@ export default function Topbar({ mobileOpen, setMobileOpen, navState = 'full', o
                             <span className="text-white font-bold text-xs leading-none">KW</span>
                         </div>
                         <div className="flex flex-col leading-tight">
-                            <span className="font-semibold text-sm text-foreground">{t('brand')}</span>
+                            <span className="flex items-baseline gap-1.5">
+                                <span className="font-semibold text-sm text-foreground">{t('brand')}</span>
+                                {APP_VERSION && (
+                                    <span className="text-[10px] font-mono text-subtle leading-none">v{APP_VERSION}</span>
+                                )}
+                            </span>
                             {membership?.rt?.name && (
                                 <span className="text-xs text-muted truncate max-w-[140px]">{membership.rt.name}</span>
                             )}
