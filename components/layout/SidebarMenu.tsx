@@ -47,22 +47,15 @@ export default function SidebarMenu({ onClose, compact = false }: { onClose?: ()
 
     return (
         <div className="flex flex-col h-full">
-            {/* Env header — replaces old brand link */}
+            {/* Spacer matching Topbar height — shows env ribbon on non-production */}
             <div className="relative overflow-hidden h-16 shrink-0">
-                {showRibbon ? (
+                {showRibbon && (
                     <Ribbon variant="diagonal" type={APP_ENV as RibbonType} />
-                ) : (
-                    /* Production: KW square centered */
-                    <div className="flex items-center justify-center h-full">
-                        <div className="h-9 w-9 flex items-center justify-center rounded-lg bg-primary">
-                            <span className="text-white font-bold text-sm">KW</span>
-                        </div>
-                    </div>
                 )}
             </div>
 
             {/* Navigation */}
-            <nav className="flex-1 overflow-y-auto scrollbar-hidden p-4 space-y-1">
+            <nav className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-sidebar p-4 space-y-1">
                 {filteredMenus.map(item => (
                     <SidebarMenuItem
                         key={item.href}
