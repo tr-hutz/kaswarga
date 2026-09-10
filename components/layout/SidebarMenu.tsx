@@ -9,7 +9,7 @@ import { PERMISSION }              from '@/lib/auth/types'
 import { useAuth }                 from '@/lib/auth/useAuth'
 import { usePendingCounts }        from './usePendingCounts'
 
-const APP_ENV = process.env.NEXT_PUBLIC_APP_ENV ?? 'production'
+const APP_ENV = process.env.APP_ENV ?? 'production'
 
 // Environments that show the diagonal ribbon — production shows none
 const RIBBON_ENVS = new Set<string>(['local', 'sit', 'uat', 'staging', 'preview'])
