@@ -17,7 +17,7 @@
         overflow-x: hidden;
     }
     .scrollbar-sidebar::-webkit-scrollbar {
-        width: 4px;
+        width: 2px;
         height: 0;
     }
     .scrollbar-sidebar::-webkit-scrollbar-track {

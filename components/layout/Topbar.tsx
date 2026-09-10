@@ -6,20 +6,10 @@ import Icon from '@/components/ui/Icon'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 import { useAuth } from '@/lib/auth/useAuth'
 import NotificationBar from '@/features/notification/components/NotificationBar'
-import { logActivity } from '@/lib/services/activity-logger'
-import { logout } from '@/lib/services/auth.service'
 import { useTranslations } from 'next-intl'
 import type { NavState } from '@/lib/types/nav'
 import CommandPalette from './CommandPalette'
 import { APP_VERSION } from '@/lib/version'
-
-const ROLE_LABELS: Record<string, string> = {
-    SUPER_ADMIN: 'Super Admin',
-    CHAIR:       'Ketua',
-    TREASURER:   'Bendahara',
-    ADMIN:       'Admin',
-    RESIDENT:    'Warga',
-}
 
 interface TopbarProps {
     mobileOpen:   boolean
@@ -30,7 +20,7 @@ interface TopbarProps {
 
 export default function Topbar({ mobileOpen, setMobileOpen, navState = 'full', onNavToggle }: TopbarProps) {
     const t = useTranslations('topbar')
-    const { membership, role } = useAuth()
+    const { membership } = useAuth()
     const [paletteOpen, setPaletteOpen] = useState(false)
 
     // Global Ctrl+K / Cmd+K shortcut
@@ -44,21 +34,6 @@ export default function Topbar({ mobileOpen, setMobileOpen, navState = 'full', o
         window.addEventListener('keydown', onKey)
         return () => window.removeEventListener('keydown', onKey)
     }, [])
-
-    async function handleLogout() {
-        logActivity({
-            rtId:        membership?.rt?.id,
-            actorId:     membership?.user?.id,
-            actorName:   membership?.user?.name,
-            action:      'LOGOUT',
-            entityType:  'auth',
-            entityId:    membership?.user?.id,
-            description: `${membership?.user?.name} logged out`,
-            metadata:    { role }
-        })
-        await logout()
-        window.location.href = '/login'
-    }
 
     return (
         <>
@@ -127,20 +102,6 @@ export default function Topbar({ mobileOpen, setMobileOpen, navState = 'full', o
                 <NotificationBar />
 
                 <ThemeToggle />
-
-                <div className="hidden md:block text-right">
-                    <div className="text-sm font-medium text-foreground">{membership?.user?.name}</div>
-                    <div className="text-xs text-muted">{ROLE_LABELS[role as string] ?? role}</div>
-                </div>
-
-                <button
-                    onClick={handleLogout}
-                    data-testid="btn-logout"
-                    className="p-2 rounded-lg hover:bg-canvas transition-colors text-muted hover:text-foreground"
-                    aria-label={t('logout')}
-                >
-                    <Icon name="log-out" size={18} />
-                </button>
             </div>
         </header>
 
