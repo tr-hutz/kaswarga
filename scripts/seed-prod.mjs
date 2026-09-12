@@ -20,7 +20,6 @@ import readline from 'readline'
 import { loadEnv } from "./load-env.mjs"
 
 loadEnv('.env.production')
-loadEnv('.env.production.local')
 
 // ---------------------------------------------------------------------------
 // Interactive prompt helpers
