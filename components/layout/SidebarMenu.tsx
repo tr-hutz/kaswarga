@@ -35,7 +35,7 @@ export default function SidebarMenu({ onClose, compact = false }: { onClose?: ()
 
     const initials = membership?.user?.name
         ?.split(' ')
-        .map((w: never[]) => w[0])
+        .map((w: string) => w[0])
         .slice(0, 2)
         .join('')
         .toUpperCase() ?? '?'

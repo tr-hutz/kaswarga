@@ -70,7 +70,7 @@ export function useLogin({
     } catch (err) {
 
       setError(
-        (err as any).message ?? 'Login failed'
+        err instanceof Error ? err.message : 'Login failed'
       )
 
     } finally {

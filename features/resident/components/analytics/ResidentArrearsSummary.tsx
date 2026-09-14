@@ -28,8 +28,8 @@ export default function ResidentArrearsSummary({
 
     const t  = useTranslations('dashboard.arrearsSummary')
     const tp = useTranslations('payments')
-    const { prompt }  = (useDialog() as any)
-    const { toast }   = (useToast() as any)
+    const { prompt }  = useDialog()
+    const { toast }   = useToast()
 
     const [search,         setSearch        ] = useState('')
     const [queue,          setQueue         ] = useState<ConfirmationEntry[]>([])
@@ -80,7 +80,7 @@ export default function ResidentArrearsSummary({
             toast({ message: tp('approval.approveSuccess'), type: 'success' })
             advanceOrClose(queueIdx, queue.length)
         } catch (err) {
-            toast({ message: getErrorMessage(err as any), type: 'error' })
+            toast({ message: getErrorMessage(err), type: 'error' })
         } finally {
             setApprovalLoading(false)
         }
@@ -101,7 +101,7 @@ export default function ResidentArrearsSummary({
             toast({ message: tp('approval.rejectSuccess'), type: 'success' })
             advanceOrClose(queueIdx, queue.length)
         } catch (err) {
-            toast({ message: getErrorMessage(err as any), type: 'error' })
+            toast({ message: getErrorMessage(err), type: 'error' })
         } finally {
             setApprovalLoading(false)
         }

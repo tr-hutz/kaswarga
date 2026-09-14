@@ -10,7 +10,7 @@ import type { QueryOptions, PageResult } from '@/lib/types/query'
 export type MappedIncome = ReturnType<typeof mapIncome>[number]
 
 export function useIncomeData(query: QueryOptions) {
-    const { membership } = (useAuth() as any) ?? {}
+    const { membership } = useAuth()
     const rtId = membership?.rt?.id as string | undefined
 
     const [result,  setResult]  = useState<PageResult<MappedIncome> | null>(null)

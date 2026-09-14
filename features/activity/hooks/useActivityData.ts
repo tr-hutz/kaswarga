@@ -22,7 +22,7 @@ const SYSTEM_RT_ID = '00000000-0000-0000-0000-000000000001'
 
 export function useActivityData(query: QueryOptions) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { membership } = (useAuth() as any) ?? {}
+    const { membership } = useAuth()
     // Super admin has no RT — fall back to SYSTEM_RT_ID so their platform-level logs are visible
     const rtId: string = membership?.rt?.id ?? SYSTEM_RT_ID
 

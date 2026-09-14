@@ -7,7 +7,7 @@ import { useToast } from '@/components/ui/ToastProvider'
 
 export function useExpenseApproval({ onSuccess }: { onSuccess?: () => void } = {}) {
 
-    const { toast } = (useToast() as any)
+    const { toast } = useToast()
     const t = useTranslations('expenses.toast')
     const [loading, setLoading] = useState(false)
 
@@ -24,7 +24,7 @@ export function useExpenseApproval({ onSuccess }: { onSuccess?: () => void } = {
             toast({ message: t('approved'), type: 'success' })
             onSuccess?.()
         } catch (err) {
-            toast({ message: (err as any).message, type: 'error' })
+            toast({ message: err instanceof Error ? err.message : undefined, type: 'error' })
         } finally {
             setLoading(false)
         }
@@ -43,7 +43,7 @@ export function useExpenseApproval({ onSuccess }: { onSuccess?: () => void } = {
             toast({ message: t('rejected'), type: 'success' })
             onSuccess?.()
         } catch (err) {
-            toast({ message: (err as any).message, type: 'error' })
+            toast({ message: err instanceof Error ? err.message : undefined, type: 'error' })
         } finally {
             setLoading(false)
         }
@@ -61,7 +61,7 @@ export function useExpenseApproval({ onSuccess }: { onSuccess?: () => void } = {
             toast({ message: t('approvedAll', { count: body.approved ?? 0 }), type: 'success' })
             onSuccess?.()
         } catch (err) {
-            toast({ message: (err as any).message, type: 'error' })
+            toast({ message: err instanceof Error ? err.message : undefined, type: 'error' })
         } finally {
             setLoading(false)
         }

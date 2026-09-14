@@ -30,7 +30,7 @@ export default function ChangeRoleDialog({
 }: ChangeRoleDialogProps) {
     const t  = useTranslations('residents')
     const tc = useTranslations('common')
-    const { toast } = useToast() as any
+    const { toast } = useToast()
 
     const [selectedRole, setSelectedRole] = useState(currentRole)
     const [saving,       setSaving]       = useState(false)

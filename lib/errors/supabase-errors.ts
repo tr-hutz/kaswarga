@@ -9,14 +9,15 @@ const ERROR_MAP = {
 }
 
 export function getErrorMessage(
-    err: { code?: string; message?: string; details?: { code?: string } } | null | undefined,
+    err: unknown,
     fallback = 'An error occurred. Please try again.'
 ): string {
-    if (!err) return fallback
-    const code = err.code || err?.details?.code
+    if (!err || typeof err !== 'object') return fallback
+    const e = err as { code?: string; message?: string; details?: { code?: string } }
+    const code = e.code || e?.details?.code
 
     // KW codes come from our own DB validation — message is already descriptive
-    if (code?.startsWith('KW')) return err.message ?? fallback
+    if (code?.startsWith('KW')) return e.message ?? fallback
 
     return (code ? ERROR_MAP[code as keyof typeof ERROR_MAP] : undefined) || fallback
 }

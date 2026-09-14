@@ -8,7 +8,7 @@ import { useSuperAdminHome }    from './hooks/useSuperAdminHome'
 
 export default function HomeContainer() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { membership } = (useAuth() as any) ?? {}
+    const { membership } = useAuth()
     const isSuperAdmin   = membership?.role === 'SUPER_ADMIN'
 
     // Both hooks are always called (React rules of hooks).

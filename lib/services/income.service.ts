@@ -11,8 +11,8 @@ import { findDonationById } from '@/lib/repositories/incomeDonation.repository'
 async function getMembershipContext() {
     const membership = await getCurrentMembership()
     return {
-        userId: (membership as any)?.user?.id as string,
-        rtId:   (membership as any)?.rt?.id   as string,
+        userId: membership?.user?.id as string,
+        rtId:   membership?.rt?.id   as string,
     }
 }
 

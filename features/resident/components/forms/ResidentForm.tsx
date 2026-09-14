@@ -45,7 +45,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
     const t  = useTranslations('residents')
     const tc = useTranslations('common')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { toast } = useToast() as any
+    const { toast } = useToast()
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()

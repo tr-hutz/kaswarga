@@ -5,7 +5,7 @@ import { useState }   from 'react'
 import { useToast }   from '@/components/ui/ToastProvider'
 
 export function useIncomeApproval({ onSuccess }: { onSuccess?: () => void } = {}) {
-    const { toast } = (useToast() as any)
+    const { toast } = useToast()
     const [loading, setLoading] = useState(false)
 
     async function approve(id: string) {
@@ -20,7 +20,7 @@ export function useIncomeApproval({ onSuccess }: { onSuccess?: () => void } = {}
             toast({ message: 'Pemasukan disetujui.', type: 'success' })
             onSuccess?.()
         } catch (err) {
-            toast({ message: (err as any).message, type: 'error' })
+            toast({ message: err instanceof Error ? err.message : undefined, type: 'error' })
         } finally {
             setLoading(false)
         }
@@ -39,7 +39,7 @@ export function useIncomeApproval({ onSuccess }: { onSuccess?: () => void } = {}
             toast({ message: 'Pemasukan ditolak.', type: 'success' })
             onSuccess?.()
         } catch (err) {
-            toast({ message: (err as any).message, type: 'error' })
+            toast({ message: err instanceof Error ? err.message : undefined, type: 'error' })
         } finally {
             setLoading(false)
         }
@@ -57,7 +57,7 @@ export function useIncomeApproval({ onSuccess }: { onSuccess?: () => void } = {}
             toast({ message: `${pendingIds.length} pemasukan disetujui.`, type: 'success' })
             onSuccess?.()
         } catch (err) {
-            toast({ message: (err as any).message, type: 'error' })
+            toast({ message: err instanceof Error ? err.message : undefined, type: 'error' })
         } finally {
             setLoading(false)
         }

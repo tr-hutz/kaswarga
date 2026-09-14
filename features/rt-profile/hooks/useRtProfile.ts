@@ -7,7 +7,7 @@ import { getOwnRt, updateRt } from '@/lib/services/rt.service'
 
 export function useRtProfile() {
 
-    const { toast } = (useToast() as any)
+    const { toast } = useToast()
 
     const [rt,      setRt]      = useState<any>(null)
     const [loading, setLoading] = useState(true)
@@ -44,7 +44,7 @@ export function useRtProfile() {
             toast({ message: 'RT profile updated.', type: 'success' })
         } catch (err) {
             console.error(err)
-            toast({ message: (err as any).message || 'Failed to save changes.', type: 'error' })
+            toast({ message: err instanceof Error ? err.message : 'Failed to save changes.', type: 'error' })
         } finally {
             setSaving(false)
         }

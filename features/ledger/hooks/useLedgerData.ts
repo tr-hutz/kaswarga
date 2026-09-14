@@ -17,7 +17,7 @@ export interface LedgerTotals {
 
 export function useLedgerData(query: QueryOptions) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { membership } = (useAuth() as any) ?? {}
+    const { membership } = useAuth()
     const rtId = membership?.rt?.id as string | undefined
 
     const [result,  setResult]  = useState<PageResult<LedgerRow> | null>(null)

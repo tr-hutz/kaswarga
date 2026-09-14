@@ -26,7 +26,7 @@ export function useDashboardAnalytics() {
    |--------------------------------------------------------------------------
    */
 
-  const { loading: authLoading, rtId } = (useAuth() as any) ?? {}
+  const { loading: authLoading, rtId } = useAuth()
 
   /*
    |--------------------------------------------------------------------------

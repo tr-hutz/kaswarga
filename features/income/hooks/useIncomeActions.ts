@@ -16,7 +16,7 @@ export function useIncomeActions({
     onApprovalSuccess?: () => void
 } = {}) {
 
-    const { toast } = (useToast() as any)
+    const { toast } = useToast()
 
     const [selectedRow,  setSelectedRow]  = useState<any>(null)
     const [drawerOpen,   setDrawerOpen]   = useState(false)

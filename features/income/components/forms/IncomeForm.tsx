@@ -71,7 +71,7 @@ export default function IncomeForm({ open, onClose, onSubmit, initialData = null
     const tc = useTranslations('common')
 
     const { membership, wargaId } = useAuth()
-    const rtId = (membership as any)?.rt?.id as string | undefined
+    const rtId = membership?.rt?.id
 
     const { donations: activeDonations } = useActiveDonations()
 

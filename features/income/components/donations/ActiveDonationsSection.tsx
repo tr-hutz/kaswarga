@@ -15,7 +15,7 @@ interface Props {
 
 export default function ActiveDonationsSection({ storageKey = 'active-donations-banner' }: Props) {
     const t = useTranslations('income.donations.card')
-    const { toast } = (useToast() as any)
+    const { toast } = useToast()
 
     const { donations, loading, reload } = useActiveDonations()
     const [formOpen,        setFormOpen]        = useState(false)
