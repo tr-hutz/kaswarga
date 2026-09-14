@@ -147,8 +147,7 @@ export async function getCurrentMembership(): Promise<Membership> {
    | ACTIVE MEMBERSHIP
    |--------------------------------------------------------------------------
    |
-   | TODO:
-   | future multi-RT selector
+   | multi-RT selector
    |--------------------------------------------------------------------------
    */
 

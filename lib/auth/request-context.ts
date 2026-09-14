@@ -117,13 +117,12 @@ export async function createRequestContext(
 /**
  * Returns a pre-populated RequestContext for use in unit tests.
  * Allows overriding individual fields without constructing a real context.
- *
- * TODO(Task 2.6): implement with sensible defaults and per-field overrides.
+ * Not yet implemented — use makeRequestContext() from __tests__/fixtures.ts instead.
  */
 export function createMockRequestContext(
   _overrides?: Partial<RequestContextParams>
 ): RequestContext {
-  throw new Error('createMockRequestContext — not yet implemented (Task 2.6)')
+  throw new Error('createMockRequestContext is not implemented — use makeRequestContext() from test fixtures')
 }
 
 /* -------------------------------------------------------------------------- */

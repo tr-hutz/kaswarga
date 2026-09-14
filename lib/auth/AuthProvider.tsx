@@ -22,8 +22,18 @@ import {
 
 } from './actions/getEffectivePermissions'
 
-import type { Membership } from '@/types'
+import type { Membership, MembershipUser, UserRole } from '@/types'
 import type { Permission } from './types'
+
+export interface AuthContextType {
+    membership:  Membership | null
+    loading:     boolean
+    role:        UserRole | null | undefined
+    permissions: ReadonlySet<Permission>
+    rtId:        string | undefined
+    wargaId:     string | undefined
+    user:        MembershipUser | null | undefined
+}
 
 import {
 
@@ -37,8 +47,7 @@ import {
 
 } from '@/lib/services/activity-logger'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const AuthContext = createContext<any>(null)
+export const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 
