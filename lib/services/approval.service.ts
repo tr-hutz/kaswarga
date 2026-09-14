@@ -42,8 +42,8 @@ async function sendInvite({
 */
 
 interface Actor {
-    user?: { id?: string; name?: string; email?: string } | null
-    email?: string
+    user?: { id?: string | null; name?: string | null; email?: string | null } | null
+    email?: string | null
 }
 
 export async function approveRtRegistration(requestId: string, actor: Actor | null) {

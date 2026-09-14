@@ -24,14 +24,13 @@ export default function CommandPalette({ open, onClose }: Props) {
     const inputRef = useRef<HTMLInputElement>(null)
 
     const filteredItems = useMemo(() => {
-        const perms = permissions ?? new Set<string>()
         const q = query.trim().toLowerCase()
         return NAVIGATION.filter(item => {
             if (item.noRt      && !isSuperAdmin) return false
             if (item.requiresRt &&  isSuperAdmin) return false
             if (!item.permission) return true
             if (isSuperAdmin) return true
-            return perms.has(item.permission as string)
+            return permissions.has(item.permission)
         }).filter(item => {
             if (!q) return true
             const label = t(item.label).toLowerCase()
