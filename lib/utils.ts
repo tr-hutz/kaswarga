@@ -32,10 +32,15 @@ export function formatRelativeDate(value: string | null | undefined): string {
   return formatDistanceToNow(date, { addSuffix: true })
 }
 
-export const formatString = (template: string, ...args: unknown[]): string =>
-  template.replace(/{(\d+)}/g, (match, number) =>
-    typeof args[number] !== 'undefined' ? String(args[number]) : match
-  )
+export const maskPhone = (
+  phone: string | null | undefined,
+  options: { visibleDigits?: number; maskChar?: string } = {}
+): string => {
+  if (!phone) return '-'
+  const { visibleDigits = 4, maskChar = '*' } = options
+  if (phone.length <= visibleDigits) return phone
+  return maskChar.repeat(phone.length - visibleDigits) + phone.slice(-visibleDigits)
+}
 
 export const monthList = [
   { id: 1,  name: 'Jan' },

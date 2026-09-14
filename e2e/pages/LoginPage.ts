@@ -23,6 +23,7 @@ export class LoginPage {
   async expectRedirectAfterLogin() {
     await this.page.waitForURL(url => !url.pathname.includes('/login'), {
       timeout: 60000,
+      waitUntil: 'commit',
     })
   }
 }

@@ -7,9 +7,9 @@ import {
   requirePermission,
   requireAnyPermission,
   requireAllPermissions,
-} from '../helpers'
-import { ForbiddenError }   from '../errors'
-import { PERMISSION }       from '../types'
+} from '@/lib/auth/helpers'
+import { ForbiddenError }   from '@/lib/auth/errors'
+import { PERMISSION }       from '@/lib/auth/types'
 import { makeAuthContext }  from './fixtures'
 
 describe('Authorization Helpers', () => {

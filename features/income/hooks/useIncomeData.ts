@@ -4,13 +4,13 @@
 import { useEffect, useState } from 'react'
 import { useAuth }              from '@/lib/auth/useAuth'
 import { findIncomesPaginated } from '@/lib/repositories/income.repository'
-import { mapIncome }            from '../services/income-transform'
+import { mapIncome }            from '@/features/income/services/income-transform'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 export type MappedIncome = ReturnType<typeof mapIncome>[number]
 
 export function useIncomeData(query: QueryOptions) {
-    const { membership } = (useAuth() as any) ?? {}
+    const { membership } = useAuth()
     const rtId = membership?.rt?.id as string | undefined
 
     const [result,  setResult]  = useState<PageResult<MappedIncome> | null>(null)
@@ -35,7 +35,7 @@ export function useIncomeData(query: QueryOptions) {
         }
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
     useEffect(() => { load() }, [rtId, queryKey])
 
     return { result, loading, error, reload: load }

@@ -7,7 +7,7 @@ import { createRt, updateRt, deleteRt } from '@/lib/services/rt.service'
 
 export function useRtActions(refresh: () => void) {
 
-    const { toast } = (useToast() as any)
+    const { toast } = useToast()
 
     const [selected,  setSelected]  = useState<any>(null)
     const [formOpen,  setFormOpen]  = useState(false)
@@ -43,7 +43,7 @@ export function useRtActions(refresh: () => void) {
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: (err as any).message || 'Failed to save RT.', type: 'error' })
+            toast({ message: err instanceof Error ? err.message : 'Failed to save RT.', type: 'error' })
         }
     }
 
@@ -60,7 +60,7 @@ export function useRtActions(refresh: () => void) {
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: (err as any).message || 'Failed to delete RT.', type: 'error' })
+            toast({ message: err instanceof Error ? err.message : 'Failed to delete RT.', type: 'error' })
         } finally {
             setDeleting(false)
         }

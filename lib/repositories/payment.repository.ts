@@ -1,7 +1,7 @@
-﻿import { supabase } from '../supabase'
-import { applyPaymentFilters } from '../helpers/filter-payment'
-import { applyConfirmationFilters } from '../helpers/filter-confirmation'
-import type { QueryOptions, PageResult } from '../types/query'
+﻿import { supabase } from '@/lib/supabase'
+import { applyPaymentFilters } from '@/lib/helpers/filter-payment'
+import { applyConfirmationFilters } from '@/lib/helpers/filter-confirmation'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 export async function findApprovedPaymentDetails(options: {
     rtId?: string | null

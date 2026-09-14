@@ -1,6 +1,6 @@
-import { supabase } from '../supabase'
-import type { Database } from '../../types/database'
-import type { QueryOptions, PageResult } from '../types/query'
+import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 type ActivityLogRow = Database['public']['Tables']['activity_logs']['Row']
 type ActivityLogInsert = Database['public']['Tables']['activity_logs']['Insert']
@@ -38,6 +38,14 @@ export async function findActivitiesPaginated(
     const term = query.search?.trim()
     if (term) {
         q = q.or(`description.ilike.%${term}%,actor_name.ilike.%${term}%`)
+    }
+
+    if (query.filters?.action && query.filters.action !== 'all') {
+        q = q.ilike('action', `${query.filters.action}%`)
+    }
+
+    if (query.filters?.entity_type && query.filters.entity_type !== 'all') {
+        q = q.eq('entity_type', query.filters.entity_type)
     }
 
     q = q.range(from, to)

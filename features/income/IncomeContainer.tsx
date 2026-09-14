@@ -14,7 +14,7 @@ export default function IncomeContainer() {
     const t  = useTranslations('income')
     const tc = useTranslations('common')
 
-    const [activeTab, setActiveTab] = useState<'transactions' | 'campaigns'>('transactions')
+    const [activeTab, setActiveTab] = useState<'transactions' | 'donations'>('transactions')
 
     const { query, setPage, setPageSize, setSearch, setFilter } =
         useDataTable({}, 'income')

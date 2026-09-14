@@ -16,12 +16,13 @@ import Topbar          from './Topbar'
 import Sidebar         from './Sidebar'
 import MobileOverlay   from './MobileOverlay'
 import UserThemeSync   from './UserThemeSync'
+import type { NavState } from '@/lib/types/nav'
 
-import { useAuth }  from '../../lib/auth/useAuth'
-import { logout }   from '../../lib/services/auth.service'
+import { useAuth }  from '@/lib/auth/useAuth'
+import { logout }   from '@/lib/services/auth.service'
 
-import { ImportNotificationProvider } from '../../components/import/ImportNotificationContext'
-import ImportNotifications            from '../../components/import/ImportNotifications'
+import { ImportNotificationProvider } from '@/components/import/ImportNotificationContext'
+import ImportNotifications            from '@/components/import/ImportNotifications'
 
 const PUBLIC_PATHS = ['/login', '/register', '/activation', '/test', '/maintenance']
 
@@ -29,10 +30,10 @@ function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
 }
 
-const SUPER_ADMIN_HOME = '/rt/registration'
+const SUPER_ADMIN_HOME = '/'
 
 // Paths that belong to RT members — SUPER_ADMIN must not access them.
-const RT_ONLY_PATHS = ['/', '/dashboard', '/residents', '/payments', '/expenses', '/ledger', '/rt-profile', '/settings/authorization']
+const RT_ONLY_PATHS = ['/dashboard', '/residents', '/payments', '/expenses', '/ledger', '/rt-profile', '/settings/authorization']
 
 function isRtOnlyPath(pathname: string) {
   return RT_ONLY_PATHS.some(p =>
@@ -53,6 +54,25 @@ export default function AppShell({
   const tTopbar                 = useTranslations('topbar')
 
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [navState, setNavState] = useState<NavState>('full')
+
+  // Load the per-user nav preference once the authenticated user is known.
+  useEffect(() => {
+    if (!user?.id) return
+    const saved = localStorage.getItem(`nav-state:${user.id}`)
+    if (saved === 'full' || saved === 'mini' || saved === 'hidden') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setNavState(saved)
+    }
+  }, [user?.id])
+
+  function cycleNav() {
+    setNavState(prev => {
+      const next: NavState = prev === 'full' ? 'mini' : prev === 'mini' ? 'hidden' : 'full'
+      if (user?.id) localStorage.setItem(`nav-state:${user.id}`, next)
+      return next
+    })
+  }
 
   useEffect(() => {
     if (loading) return
@@ -163,6 +183,8 @@ export default function AppShell({
         <Topbar
             mobileOpen={mobileOpen}
             setMobileOpen={setMobileOpen}
+            navState={navState}
+            onNavToggle={cycleNav}
         />
 
         <MobileOverlay
@@ -172,17 +194,19 @@ export default function AppShell({
 
         <Sidebar
             mobileOpen={mobileOpen}
+            navState={navState}
             onClose={() => setMobileOpen(false)}
         />
 
         <main
             data-testid="shell-ready"
-            className="
-                lg:pl-72
+            className={`
+                ${navState === 'full' ? 'lg:pl-72' : navState === 'mini' ? 'lg:pl-14' : 'lg:pl-0'}
                 pt-16
                 min-h-screen
                 bg-canvas
-            "
+                transition-[padding] duration-300 ease-in-out
+            `}
         >
 
           <div className="p-4 md:p-6">

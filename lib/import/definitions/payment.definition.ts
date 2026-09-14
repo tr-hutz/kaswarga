@@ -18,12 +18,12 @@ import {
     type RowValidationResult,
     type PersistResult,
     type ImportContext,
-} from '../types'
+} from '@/lib/import/types'
 import type {
     ImportDefinition,
     ImportColumn,
     ImportTemplate,
-} from '../contract'
+} from '@/lib/import/contract'
 
 /* -------------------------------------------------------------------------- */
 /* Domain payload types                                                        */

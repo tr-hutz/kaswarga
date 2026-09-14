@@ -1,6 +1,6 @@
-import { supabase } from '../supabase'
-import { transformNotifications } from '../../features/notification/services/notification-transform'
-import { findNotificationsByUser, updateNotificationRead } from '../repositories/notification.repository'
+import { supabase } from '@/lib/supabase'
+import { transformNotifications } from '@/features/notification/services/notification-transform'
+import { findNotificationsByUser, updateNotificationRead } from '@/lib/repositories/notification.repository'
 
 export async function getNotifications() {
 

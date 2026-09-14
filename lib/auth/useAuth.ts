@@ -6,16 +6,10 @@ import {
 
 } from 'react'
 
-import {
+import { AuthContext, type AuthContextType } from './AuthProvider'
 
-    AuthContext
-
-} from './AuthProvider'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useAuth(): any {
-
-    return useContext(
-        AuthContext
-    )
+export function useAuth(): AuthContextType {
+    const ctx = useContext(AuthContext)
+    if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
+    return ctx
 }

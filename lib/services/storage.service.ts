@@ -1,6 +1,6 @@
 'use client'
 
-import { supabase } from '../supabase'
+import { supabase } from '@/lib/supabase'
 
 export async function uploadRtAsset(storagePath: string, file: File): Promise<string> {
     const ext  = file.name.split('.').pop()?.toLowerCase() ?? 'bin'

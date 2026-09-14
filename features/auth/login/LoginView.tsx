@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Icon from '@/components/ui/Icon'
 import PasswordInput from '@/components/ui/PasswordInput'
 import { useTranslations } from 'next-intl'
+import { versionLabel } from '@/lib/version'
 
 interface LoginViewProps {
   loading:      boolean
@@ -47,10 +48,11 @@ export default function LoginView({
       "
     >
 
+      <div className="flex flex-col items-center w-full max-w-md">
+
       <div
         className="
           w-full
-          max-w-md
           bg-surface
           rounded-xl
           shadow-card
@@ -264,6 +266,12 @@ export default function LoginView({
             {t('requestNewLink')}
           </Link>
         </p>
+
+      </div>
+
+      {versionLabel && (
+        <p className="text-center text-xs text-subtle font-mono mt-4">{versionLabel}</p>
+      )}
 
       </div>
 

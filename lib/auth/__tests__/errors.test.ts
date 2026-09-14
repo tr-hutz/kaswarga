@@ -8,7 +8,7 @@ import {
   UnknownUserError,
   MembershipNotFoundError,
   RoleNotFoundError,
-} from '../errors'
+} from '@/lib/auth/errors'
 
 describe('Authorization Error Classes', () => {
 

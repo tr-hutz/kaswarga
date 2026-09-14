@@ -3,6 +3,7 @@
 
 import type { Column } from '@/lib/types/query'
 import type { Database } from '@/types/database'
+import { maskPhone } from '@/lib/utils'
 import ResidentStatusBadge from './tables/ResidentStatusBadge'
 
 export type ResidentRow = Database['public']['Tables']['residents']['Row']
@@ -70,7 +71,7 @@ export function buildResidentColumns(opts: Options): Column<ResidentRow>[] {
         {
             key:    'phone',
             title:  t('table.phone'),
-            render: (row) => (row as any).phone ?? '-',
+            render: (row) => maskPhone((row as any).phone),
         },
         {
             key:    'active',

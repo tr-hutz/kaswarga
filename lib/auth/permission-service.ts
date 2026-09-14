@@ -31,7 +31,7 @@
 import { cache }                        from 'react'
 import type { SupabaseClient }          from '@supabase/supabase-js'
 
-import { supabaseAdmin }                from '../supabase-admin'
+import { supabaseAdmin }                from '@/lib/supabase-admin'
 import { AuthorizationContext }         from './authorization-context'
 import { MembershipNotFoundError, RoleNotFoundError } from './errors'
 import { PERMISSION, type Permission }  from './types'

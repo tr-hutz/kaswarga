@@ -7,7 +7,7 @@ import { useActivityRealtime } from './hooks/useActivityRealtime'
 import { useAuth }             from '@/lib/auth/useAuth'
 
 export default function ActivityContainer() {
-    const { query, setPage, setPageSize, setSearch } = useDataTable({}, 'activity')
+    const { query, setPage, setPageSize, setSearch, setFilter } = useDataTable({}, 'activity')
     const { membership } = useAuth()
     const isSuperAdmin = membership?.role === 'SUPER_ADMIN'
 
@@ -25,6 +25,7 @@ export default function ActivityContainer() {
             setPage={setPage}
             setPageSize={setPageSize}
             setSearch={setSearch}
+            setFilter={setFilter}
             isSuperAdmin={isSuperAdmin}
         />
     )

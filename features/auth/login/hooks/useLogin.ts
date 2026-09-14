@@ -8,7 +8,7 @@ import {
 
 import {
   loginWithPassword
-} from '../../../../lib/services/auth.service'
+} from '@/lib/services/auth.service'
 
 export function useLogin({
 
@@ -70,7 +70,7 @@ export function useLogin({
     } catch (err) {
 
       setError(
-        (err as any).message ?? 'Login failed'
+        err instanceof Error ? err.message : 'Login failed'
       )
 
     } finally {

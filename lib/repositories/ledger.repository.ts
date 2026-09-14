@@ -1,6 +1,6 @@
-import { supabase } from '../supabase'
-import type { Database } from '../../types/database'
-import type { QueryOptions, PageResult } from '../types/query'
+import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 type LedgerRow = Database['public']['Tables']['ledger']['Row']
 
@@ -39,6 +39,10 @@ export async function findLedgerPaginated(
     const term = query.search?.trim()
     if (term) {
         q = q.ilike('description', `%${term}%`)
+    }
+
+    if (query.filters?.type && query.filters.type !== 'all') {
+        q = q.eq('type', query.filters.type)
     }
 
     q = q.range(from, to)

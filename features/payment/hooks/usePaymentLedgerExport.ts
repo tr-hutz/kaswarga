@@ -7,7 +7,7 @@ import { findResidentsWithPaymentsForLedger } from '@/lib/repositories/resident.
 import { exportPaymentLedger }               from '@/lib/export/payment-ledger-excel'
 
 export function usePaymentLedgerExport() {
-    const { membership } = (useAuth() as any) ?? {}
+    const { membership } = useAuth()
     const rtId       = membership?.rt?.id          as string | undefined
     const rtName     = membership?.rt?.name        as string | undefined
     const monthlyFee = membership?.rt?.monthly_fee as number | undefined

@@ -6,23 +6,27 @@ import ForbiddenState                  from '@/components/ui/ForbiddenState'
 import PermissionInspectorContainer    from '@/features/authorization/inspector/PermissionInspectorContainer'
 
 export default async function Page() {
+    let forbidden = false
     try {
         const ctx  = await getRequestContext()
         const auth = ctx.authorization
 
         if (!auth.hasPermission(PERMISSION.INSPECTOR_VIEW)) {
-            return <ForbiddenState />
+            forbidden = true
         }
-
-        return (
-            <Suspense>
-                <PermissionInspectorContainer />
-            </Suspense>
-        )
     } catch (err) {
         if (err instanceof UnauthorizedError) {
-            return <ForbiddenState />
+            forbidden = true
+        } else {
+            throw err
         }
-        throw err
     }
+
+    if (forbidden) return <ForbiddenState />
+
+    return (
+        <Suspense>
+            <PermissionInspectorContainer />
+        </Suspense>
+    )
 }

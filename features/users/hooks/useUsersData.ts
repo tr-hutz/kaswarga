@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { getAllUsers } from '@/lib/services/users.service'
 import type { PageResult, QueryOptions } from '@/lib/types/query'
-import type { UserRow } from '../components/UserColumns'
+import type { UserRow } from '@/features/users/components/UserColumns'
 
 export function useUsersData(query: QueryOptions) {
 

@@ -34,7 +34,7 @@ export class ExpensesPage {
   }
 
   amountInput(): Locator {
-    return this.modal().locator('input[type="number"]')
+    return this.modal().locator('[data-testid="expense-amount-input"]')
   }
 
   recipientInput(): Locator {

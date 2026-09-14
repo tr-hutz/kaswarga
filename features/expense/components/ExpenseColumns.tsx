@@ -1,7 +1,7 @@
 'use client'
 
 import type { Column } from '@/lib/types/query'
-import type { MappedExpense } from '../hooks/useExpenseData'
+import type { MappedExpense } from '@/features/expense/hooks/useExpenseData'
 import ExpenseStatusBadge from './tables/ExpenseStatusBadge'
 import { formatRupiah } from '@/lib/utils'
 

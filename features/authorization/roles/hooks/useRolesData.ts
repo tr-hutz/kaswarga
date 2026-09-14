@@ -44,6 +44,7 @@ export function useRolesData() {
 
     const refresh = useCallback(() => load(query), [load, query])
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { load(query) }, [load, query])
 
     function onSearch(search: string) {

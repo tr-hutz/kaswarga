@@ -18,7 +18,7 @@ import PaymentView            from './PaymentView'
 export default function PaymentContainer() {
     const t  = useTranslations('payments')
     const tc = useTranslations('common')
-    const { toast } = (useToast() as any)
+    const { toast } = useToast()
 
     const { query, setPage, setPageSize, setSearch, setSort, setFilter } =
         useDataTable({ filters: { status: 'pending' } }, 'payments')
@@ -26,7 +26,7 @@ export default function PaymentContainer() {
     const { result, loading, error, reload } = usePaymentData(query)
 
     const { open, selectedPayment, openDetail, closeDetail } = usePaymentDetail()
-    const { prompt } = (useDialog() as any)
+    const { prompt } = useDialog()
 
     const { loading: approvalLoading, approve, reject } = (useApprovalActions({
         onSuccess: () => { closeDetail(); reload() },

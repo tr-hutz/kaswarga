@@ -1,9 +1,10 @@
 'use client'
 
 import {
-    Activity, AlertCircle, AlertTriangle, ArrowLeft,
+    Activity, AlertCircle, AlertTriangle, ArrowLeft, ArrowRight,
     Bell, Building2, Check, CheckCheck, CheckCircle,
     ChevronDown, ChevronLeft, ChevronRight, ChevronUp,
+    PanelLeft, PanelLeftClose, PanelLeftOpen,
     ClipboardList, Clock, Copy, Download, Eye, EyeOff,
     File, FileText, Funnel, Home, ImageIcon, ImageOff,
     KeyRound, LayoutDashboard, Link2, Loader2, LogIn, LogOut, Mail,
@@ -19,6 +20,7 @@ const ICONS = {
     'alert-circle':     AlertCircle,
     'alert-triangle':   AlertTriangle,
     'arrow-left':       ArrowLeft,
+    'arrow-right':      ArrowRight,
     bell:               Bell,
     building2:          Building2,
     check:              Check,
@@ -52,6 +54,9 @@ const ICONS = {
     monitor:            Monitor,
     moon:               Moon,
     paperclip:          Paperclip,
+    'panel-left':       PanelLeft,
+    'panel-left-close': PanelLeftClose,
+    'panel-left-open':  PanelLeftOpen,
     pencil:             Pencil,
     properties:         TableProperties,
     plus:               Plus,

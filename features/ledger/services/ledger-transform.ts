@@ -3,7 +3,7 @@ import {
 
     formatRupiah
 
-} from '../../../lib/utils'
+} from '@/lib/utils'
 
 export function transformLedger(
 

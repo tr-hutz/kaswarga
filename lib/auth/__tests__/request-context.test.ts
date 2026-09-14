@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
-import { RequestContext }    from '../request-context'
-import { PERMISSION }        from '../types'
+import { RequestContext }    from '@/lib/auth/request-context'
+import { PERMISSION }        from '@/lib/auth/types'
 import { makeRequestContext, makeAuthContext } from './fixtures'
 
 describe('RequestContext', () => {

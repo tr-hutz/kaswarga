@@ -8,7 +8,7 @@ import { getCurrentMembership } from '@/lib/auth/getCurrentMembership'
 
 export function useUsersActions(refresh: () => void) {
 
-    const { toast } = (useToast() as any)
+    const { toast } = useToast()
 
     const [editTarget, setEditTarget] = useState<any>(null) // { user, membership }
     const [delTarget,  setDelTarget]  = useState<any>(null) // membership object
@@ -26,7 +26,7 @@ export function useUsersActions(refresh: () => void) {
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: (err as any).message || 'Failed to update role.', type: 'error' })
+            toast({ message: err instanceof Error ? err.message : 'Failed to update role.', type: 'error' })
         } finally {
             setSaving(false)
         }
@@ -46,7 +46,7 @@ export function useUsersActions(refresh: () => void) {
             refresh()
         } catch (err) {
             console.error(err)
-            toast({ message: (err as any).message || 'Failed to remove membership.', type: 'error' })
+            toast({ message: err instanceof Error ? err.message : 'Failed to remove membership.', type: 'error' })
         } finally {
             setSaving(false)
         }

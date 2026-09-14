@@ -1,6 +1,6 @@
-import { getCurrentMembership } from '../auth/getCurrentMembership'
-import { transformLedger } from '../../features/ledger/services/ledger-transform'
-import { findLedger } from '../repositories/ledger.repository'
+import { getCurrentMembership } from '@/lib/auth/getCurrentMembership'
+import { transformLedger } from '@/features/ledger/services/ledger-transform'
+import { findLedger } from '@/lib/repositories/ledger.repository'
 
 export async function getLedger({ search = '' }: { search?: string } = {}) {
 

@@ -1,30 +1,26 @@
 'use client'
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useEffect }  from 'react'
-import { useRouter }  from 'next/navigation'
-import { useAuth }    from '@/lib/auth/useAuth'
-import HomeView       from './components/HomeView'
-import { useHome }    from './hooks/useHome'
+import { useAuth }              from '@/lib/auth/useAuth'
+import HomeView                 from './components/HomeView'
+import SuperAdminHomeView       from './components/SuperAdminHomeView'
+import { useHome }              from './hooks/useHome'
+import { useSuperAdminHome }    from './hooks/useSuperAdminHome'
 
 export default function HomeContainer() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { membership } = useAuth()
+    const isSuperAdmin   = membership?.role === 'SUPER_ADMIN'
 
-  const { rtId, loading } = useAuth()
-  const router            = useRouter()
-  const home              = useHome()
+    // Both hooks are always called (React rules of hooks).
+    // useHome bails gracefully when there is no resident/RT.
+    const home           = useHome()
+    const superAdminHome = useSuperAdminHome()
 
-  // SUPER_ADMIN has no RT — redirect to the RT management page
-  useEffect(() => {
-    if (!loading && !rtId) {
-      router.replace('/rt/registration')
+    if (isSuperAdmin) {
+        return <SuperAdminHomeView {...superAdminHome} />
     }
-  }, [loading, rtId, router])
 
-  if (!rtId) return null
+    if (!membership?.rt?.id) return null
 
-  return (
-    <HomeView
-      {...home}
-    />
-  )
+    return <HomeView {...home} />
 }

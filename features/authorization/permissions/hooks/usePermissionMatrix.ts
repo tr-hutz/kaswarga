@@ -14,10 +14,10 @@ export interface PermissionGroup {
 function groupPermissions(permissions: PermissionRow[]): PermissionGroup[] {
     const map = new Map<string, PermissionRow[]>()
     for (const p of permissions) {
-        const module = p.code.split('.')[0] ?? 'other'
-        const list   = map.get(module) ?? []
+        const moduleName = p.code.split('.')[0] ?? 'other'
+        const list       = map.get(moduleName) ?? []
         list.push(p)
-        map.set(module, list)
+        map.set(moduleName, list)
     }
     return Array.from(map.entries()).map(([module, perms]) => ({ module, permissions: perms }))
 }
@@ -114,6 +114,7 @@ export function usePermissionMatrix(canEdit: boolean) {
     // Filter groups by search
     useEffect(() => {
         if (!search.trim()) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setFilteredGroups(groups)
             return
         }

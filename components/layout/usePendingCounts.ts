@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase }            from '../../lib/supabase'
+import { supabase }            from '@/lib/supabase'
 import {
     countPendingRtRegistrations,
     countPendingResidentRegistrations,
-} from '../../lib/repositories/registration.repository'
+} from '@/lib/repositories/registration.repository'
 
 export function usePendingCounts(rtId: string | undefined, canApproveResidents: boolean) {
 

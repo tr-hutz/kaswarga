@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations }                       from 'next-intl'
 import type { PermissionViewRow }                from '@/features/authorization/viewer/hooks/useEffectivePermission'
-import type { InspectorTab, PermissionDetails }  from '../types'
+import type { InspectorTab, PermissionDetails }  from '@/features/authorization/inspector/types'
 
 interface ApiPermissionRow {
     id:          string

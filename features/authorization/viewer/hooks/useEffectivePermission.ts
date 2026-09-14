@@ -117,11 +117,11 @@ export function useEffectivePermission() {
                 const rows: PermissionViewRow[] = data.permissions.map(p => {
                     const source    = computeSource(p.roleAllow, p.overrideAllow)
                     const effective = p.overrideAllow !== null ? p.overrideAllow : (p.roleAllow === true)
-                    const module    = p.code.split('.')[0] ?? 'other'
+                    const moduleName = p.code.split('.')[0] ?? 'other'
                     const reason    = t(`reason.${source}` as Parameters<typeof t>[0])
                     return {
                         id: p.id, code: p.code, name: p.name, description: p.description,
-                        module, roleAllow: p.roleAllow, overrideAllow: p.overrideAllow,
+                        module: moduleName, roleAllow: p.roleAllow, overrideAllow: p.overrideAllow,
                         effective, source, reason,
                     }
                 })

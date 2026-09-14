@@ -4,8 +4,8 @@
  *
  * Seeds the complete RBAC v2 default data in execution order:
  *   1. Roles           — 6 system roles
- *   2. Permissions     — 46 system permissions (module.action catalog)
- *   3. Role-Permission assignments — 95 default grants
+ *   2. Permissions     — 47 system permissions (module.action catalog)
+ *   3. Role-Permission assignments — 96 default grants
  *
  * SUPER_ADMIN intentionally has no role_permissions rows.
  * It bypasses the permission system unconditionally via has_permission().
@@ -108,7 +108,10 @@ VALUES
     ('permission.override', 'Manage Permission Overrides', 'Manage RT permission overrides',    true),
 
     -- Audit
-    ('audit.view', 'View Audit Logs',                   'View audit logs',                       true)
+    ('audit.view', 'View Audit Logs',                   'View audit logs',                       true),
+
+    -- RBAC Inspector
+    ('rbac.inspector.view', 'View Permission Inspector', 'Access the permission inspector panel', true)
 
 ON CONFLICT (code) DO NOTHING;
 
@@ -119,7 +122,7 @@ ON CONFLICT (code) DO NOTHING;
  * SUPER_ADMIN: intentionally excluded — bypasses the permission system
  *              unconditionally via the has_permission() SUPER_ADMIN guard.
  *
- *   RT_ADMIN   36 grants  (view-only for expenses; no payment.create)
+ *   RT_ADMIN   37 grants  (view-only for expenses; no payment.create)
  *   RT_CHAIR   23 grants  (leadership; approves/rejects expenses; no financial write)
  *   TREASURER  20 grants  (financial operations only)
  *   SECRETARY  10 grants  (administration and documentation)
@@ -169,6 +172,7 @@ WITH assignments (role_code, permission_code) AS (
     ('RT_ADMIN', 'permission.update'),
     ('RT_ADMIN', 'permission.override'),
     ('RT_ADMIN', 'audit.view'),
+    ('RT_ADMIN', 'rbac.inspector.view'),
 
     -- -------------------------------------------------------------------------
     -- RT_CHAIR (Ketua) — 23 grants

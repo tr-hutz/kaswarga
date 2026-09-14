@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import Icon                from '@/components/ui/Icon'
-import type { PermissionGroup, OverrideFilter } from '../hooks/useMemberOverrides'
+import type { PermissionGroup, OverrideFilter } from '@/features/authorization/overrides/hooks/useMemberOverrides'
 
 interface Props {
     groups:         PermissionGroup[]

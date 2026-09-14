@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { Membership } from '../../types'
+import type { Membership } from '@/types'
 
 export async function getCurrentMembership(): Promise<Membership> {
 
@@ -147,8 +147,7 @@ export async function getCurrentMembership(): Promise<Membership> {
    | ACTIVE MEMBERSHIP
    |--------------------------------------------------------------------------
    |
-   | TODO:
-   | future multi-RT selector
+   | multi-RT selector
    |--------------------------------------------------------------------------
    */
 

@@ -22,23 +22,32 @@ import {
 
 } from './actions/getEffectivePermissions'
 
-import type { Membership } from '../../types'
+import type { Membership, MembershipUser, UserRole } from '@/types'
 import type { Permission } from './types'
+
+export interface AuthContextType {
+    membership:  Membership | null
+    loading:     boolean
+    role:        UserRole | null | undefined
+    permissions: ReadonlySet<Permission>
+    rtId:        string | undefined
+    wargaId:     string | undefined
+    user:        MembershipUser | null | undefined
+}
 
 import {
 
     supabase
 
-} from '../supabase'
+} from '@/lib/supabase'
 
 import {
 
     logActivity
 
-} from '../services/activity-logger'
+} from '@/lib/services/activity-logger'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const AuthContext = createContext<any>(null)
+export const AuthContext = createContext<AuthContextType | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 
@@ -138,18 +147,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             if (m?.status === 'active') {
                                 const perms = await getEffectivePermissions()
                                 setPermissions(new Set(perms))
-                                if (m.rt?.id) {
-                                    logActivity({
-                                        rtId:        m.rt.id,
-                                        actorId:     m.user?.id,
-                                        actorName:   m.user?.name,
-                                        action:      'LOGIN',
-                                        entityType:  'auth',
-                                        entityId:    m.user?.id,
-                                        description: `${m.user?.name} logged in`,
-                                        metadata:    { role: m.role }
-                                    })
-                                }
+                                logActivity({
+                                    rtId:        m.rt?.id ?? null,
+                                    actorId:     m.user?.id,
+                                    actorName:   m.user?.name,
+                                    action:      'LOGIN',
+                                    entityType:  'auth',
+                                    entityId:    m.user?.id,
+                                    description: `${m.user?.name} logged in`,
+                                    metadata:    { role: m.role }
+                                })
                             } else {
                                 setPermissions(new Set())
                             }

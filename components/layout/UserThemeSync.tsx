@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { useAuth } from '../../lib/auth/useAuth'
+import { useAuth } from '@/lib/auth/useAuth'
 import { useTheme } from '@/lib/hooks/useTheme'
 
 /**

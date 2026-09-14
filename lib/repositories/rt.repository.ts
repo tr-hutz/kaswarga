@@ -1,17 +1,20 @@
-import { supabase } from '../supabase'
-import type { Database } from '../../types/database'
+import { supabase } from '@/lib/supabase'
+import type { Database } from '@/types/database'
 
 type RtRow = Database['public']['Tables']['rt']['Row']
 type RtInsert = Database['public']['Tables']['rt']['Insert']
 type RtUpdate = Database['public']['Tables']['rt']['Update']
 
-export async function findAllRt(excludeId: string) {
-    const { data, error } = await supabase
+export async function findAllRt(excludeId?: string) {
+    let query = supabase
         .from('rt')
         .select('id, name, code, address, city, province, postal_code, email, phone, monthly_fee, active, created_at')
-        .neq('id', excludeId)
         .is('deleted_at', null)
         .order('created_at', { ascending: false })
+
+    if (excludeId) query = query.neq('id', excludeId)
+
+    const { data, error } = await query
 
     if (error) throw error
     return data ?? []

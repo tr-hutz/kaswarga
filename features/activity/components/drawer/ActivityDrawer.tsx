@@ -2,12 +2,26 @@
 
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
+import { useKeyDown } from '@/lib/hooks/useKeyDown'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ActivityDrawer({ open, row, onClose }: { open: boolean; row: any | null; onClose: () => void }) {
     const t = useTranslations('activity')
 
+    useKeyDown(open, { Escape: onClose })
+
     if (!open || !row) return null
+
+    const createdAtLabel = row.createdAt
+        ? new Date(row.createdAt).toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day:     'numeric',
+            month:   'long',
+            year:    'numeric',
+            hour:    '2-digit',
+            minute:  '2-digit',
+          })
+        : '—'
 
     return (
         <div
@@ -33,6 +47,11 @@ export default function ActivityDrawer({ open, row, onClose }: { open: boolean; 
                 </div>
 
                 <div className="p-6 space-y-4 text-sm">
+
+                    <div>
+                        <p className="text-muted">{t('drawer.createdAt')}</p>
+                        <p className="font-medium">{createdAtLabel}</p>
+                    </div>
 
                     <div>
                         <p className="text-muted">{t('drawer.actor')}</p>

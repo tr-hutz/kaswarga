@@ -10,7 +10,7 @@ import {
   getRtOverrideMap,
   upsertRtOverrides,
   getOverrideCountForRole,
-} from '../member-override.repository'
+} from '@/lib/repositories/member-override.repository'
 
 /* -------------------------------------------------------------------------- */
 /* Mock chain builder                                                          */

@@ -41,7 +41,6 @@ export async function PUT(req: Request, { params }: Params) {
         if (!membershipId) return NextResponse.json({ error: 'Missing membershipId' }, { status: 400 })
 
         const ctx  = await getRequestContext()
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const body = await req.json() as { roleId?: unknown; overrides?: unknown }
 
         if (typeof body.roleId !== 'string') {
@@ -52,10 +51,9 @@ export async function PUT(req: Request, { params }: Params) {
         }
 
         const overrides = (body.overrides as unknown[])
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             .filter((o): o is { permissionId: string; allow: boolean } =>
-                typeof (o as any)?.permissionId === 'string' &&
-                typeof (o as any)?.allow === 'boolean'
+                typeof (o as Record<string, unknown>)?.permissionId === 'string' &&
+                typeof (o as Record<string, unknown>)?.allow === 'boolean'
             )
 
         await saveMemberOverrides(membershipId, body.roleId, overrides, ctx.authorization)

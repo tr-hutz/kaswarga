@@ -2,7 +2,7 @@
 
 import { useTranslations }                       from 'next-intl'
 import Icon                                       from '@/components/ui/Icon'
-import type { PermissionDetails, RoleWithCount } from '../types'
+import type { PermissionDetails, RoleWithCount } from '@/features/authorization/inspector/types'
 
 const ROLE_LABELS: Record<string, string> = {
     RT_ADMIN:  'Administrator',
@@ -41,7 +41,7 @@ interface Props {
 
 export default function PermissionDetailPanel({ permission, detail }: Props) {
     const t      = useTranslations('inspector')
-    const module = permission.code.split('.')[0] ?? 'other'
+    const moduleName = permission.code.split('.')[0] ?? 'other'
 
     return (
         <div className="space-y-5">
@@ -58,7 +58,7 @@ export default function PermissionDetailPanel({ permission, detail }: Props) {
                             <p className="text-sm text-muted mt-1">{permission.description}</p>
                         )}
                         <span className="inline-block mt-2 px-2 py-0.5 text-xs rounded-full bg-canvas border border-divider text-muted font-medium">
-                            {module}
+                            {moduleName}
                         </span>
                     </div>
                 </div>

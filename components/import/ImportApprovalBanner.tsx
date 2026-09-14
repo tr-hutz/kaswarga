@@ -32,6 +32,7 @@ export default function ImportApprovalBanner({ importType, onApproved }: Props) 
     }, [rtId, importType])
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         loadPendingJobs()
     }, [loadPendingJobs])
 

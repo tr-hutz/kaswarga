@@ -1,6 +1,7 @@
 'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { useState }          from 'react'
 import type { RefObject }    from 'react'
 import { useTranslations }   from 'next-intl'
 import Can                   from '@/components/ui/Can'
@@ -15,7 +16,7 @@ import IncomeImportModal     from './components/import/IncomeImportModal'
 import ImportApprovalBanner     from '@/components/import/ImportApprovalBanner'
 import ImportConfirmationBanner from '@/components/import/ImportConfirmationBanner'
 import { IMPORT_TYPE }          from '@/lib/import/types'
-import CampaignListView      from './components/campaigns/CampaignListView'
+import DonationListView      from './components/donations/DonationListView'
 import type { QueryOptions, PageResult, Column } from '@/lib/types/query'
 
 interface Props {
@@ -50,8 +51,8 @@ interface Props {
     approveIncome:   (id: string) => void
     rejectIncome:    (id: string, reason: string) => void
     // tabs
-    activeTab:       'transactions' | 'campaigns'
-    setActiveTab:    (tab: 'transactions' | 'campaigns') => void
+    activeTab:       'transactions' | 'donations'
+    setActiveTab:    (tab: 'transactions' | 'donations') => void
     // export
     exportCSV:       (rows: any[]) => void
     exportExcel:     (rows: any[]) => void
@@ -88,6 +89,15 @@ export default function IncomeView({
     const tc = useTranslations('common')
 
     const data = result?.data ?? []
+
+    const [filtersOpen, setFiltersOpen] = useState(false)
+
+    const activeFilterCount = [
+        query.filters?.income_category,
+        query.filters?.source_type,
+        query.filters?.status,
+        query.filters?.payment_method,
+    ].filter((v): v is string => !!v && v !== 'all').length
 
     return (
         <div className="space-y-6">
@@ -126,19 +136,19 @@ export default function IncomeView({
                     {t('tabTransactions')}
                 </button>
                 <button
-                    data-testid="tab-campaigns"
-                    onClick={() => setActiveTab('campaigns')}
+                    data-testid="tab-donations"
+                    onClick={() => setActiveTab('donations')}
                     className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
-                        activeTab === 'campaigns'
+                        activeTab === 'donations'
                             ? 'border-primary text-primary'
                             : 'border-transparent text-muted hover:text-foreground'
                     }`}
                 >
-                    {t('campaigns.tabLabel')}
+                    {t('donations.tabLabel')}
                 </button>
             </div>
 
-            {activeTab === 'campaigns' && <CampaignListView />}
+            {activeTab === 'donations' && <DonationListView />}
 
             {activeTab === 'transactions' && (
             <>
@@ -164,7 +174,25 @@ export default function IncomeView({
                 searchPlaceholder={t('searchPlaceholder')}
                 onSearch={setSearch}
                 renderFilters={
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                        type="button"
+                        onClick={() => setFiltersOpen(o => !o)}
+                        className="flex items-center gap-2 h-9 px-3 rounded-lg border border-divider text-sm bg-surface hover:bg-canvas text-foreground transition-colors"
+                    >
+                        <Icon name="funnel" size={15} />
+                        {tc('filter.placeholder')}
+                        {activeFilterCount > 0 && (
+                            <span className="flex items-center justify-center w-5 h-5 rounded-full bg-primary text-white text-xs font-medium">
+                                {activeFilterCount}
+                            </span>
+                        )}
+                        <Icon name={filtersOpen ? 'chevron-up' : 'chevron-down'} size={14} className="text-muted" />
+                    </button>
+                }
+                renderBelowToolbar={
+                    <div className={`grid transition-[grid-template-rows] duration-300 ease-in-out ${filtersOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                    <div className="overflow-hidden">
+                    <div className="flex items-center gap-2 flex-wrap p-3 bg-canvas rounded-lg border border-divider">
                         <select
                             value={String(query.filters?.income_category ?? 'all')}
                             onChange={(e) => setFilter('income_category', e.target.value)}
@@ -212,6 +240,8 @@ export default function IncomeView({
                             <option value="TRANSFER">{t('paymentMethods.TRANSFER')}</option>
                             <option value="QRIS">{t('paymentMethods.QRIS')}</option>
                         </select>
+                    </div>
+                    </div>
                     </div>
                 }
                 renderActions={

@@ -1,8 +1,8 @@
 'use client'
 
-import { getCurrentMembership } from '../auth/getCurrentMembership'
-import { transformActivity } from '../../features/activity/services/activity-transform'
-import { findActivities } from '../repositories/activity.repository'
+import { getCurrentMembership } from '@/lib/auth/getCurrentMembership'
+import { transformActivity } from '@/features/activity/services/activity-transform'
+import { findActivities } from '@/lib/repositories/activity.repository'
 
 /*
  |-------------------------------------------------------------

@@ -1,7 +1,8 @@
 ﻿'use client'
 
 import { useTranslations } from 'next-intl'
-import ResidentStatusBadge from '../tables/ResidentStatusBadge'
+import { maskPhone } from '@/lib/utils'
+import ResidentStatusBadge from '@/features/resident/components/tables/ResidentStatusBadge'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function ResidentDetailSummary({ resident }: { resident: any }) {
@@ -66,7 +67,7 @@ export default function ResidentDetailSummary({ resident }: { resident: any }) {
                             font-medium
                         "
                     >
-                        {resident.phone || '-'}
+                        {maskPhone(resident.phone)}
                     </p>
 
                 </div>

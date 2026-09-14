@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 
-import { PermissionService }         from '../permission-service'
-import { MembershipNotFoundError, RoleNotFoundError } from '../errors'
-import { PERMISSION }                from '../types'
+import { PermissionService }         from '@/lib/auth/permission-service'
+import { MembershipNotFoundError, RoleNotFoundError } from '@/lib/auth/errors'
+import { PERMISSION }                from '@/lib/auth/types'
 import { makeSupabaseClient }        from './fixtures'
 
 // Shorthand for role permission row shape returned by Supabase
@@ -494,6 +494,7 @@ describe('PermissionService.buildContext', () => {
       // it calls the factory fresh on every invocation. Simulate per-request
       // isolation by replacing _getContextStore with a stable persistent Map.
       const persistentStore = new Map()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;(service as any)._getContextStore = () => persistentStore
 
       const ctx1 = await service.buildContext('u-1')

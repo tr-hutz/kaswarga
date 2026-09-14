@@ -4,25 +4,25 @@ import { useTranslations } from 'next-intl'
 import Can                 from '@/components/ui/Can'
 import { PERMISSION }      from '@/lib/auth/types'
 import InsightCard
-  from '../cards/InsightCard'
+  from '@/features/dashboard/cards/InsightCard'
 
 import CashFlowChart
-  from '../charts/CashFlowChart'
+  from '@/features/dashboard/charts/CashFlowChart'
 
 import MonthlyCollectionChart
-  from '../charts/MonthlyCollectionChart'
+  from '@/features/dashboard/charts/MonthlyCollectionChart'
 
 import ExpenseCategoryDonutChart
-  from '../charts/ExpenseCategoryDonutChart'
+  from '@/features/dashboard/charts/ExpenseCategoryDonutChart'
 
 import MonthlyExpenseByCategoryChart
-  from '../charts/MonthlyExpenseByCategoryChart'
+  from '@/features/dashboard/charts/MonthlyExpenseByCategoryChart'
 
 import ResidentArrearsSummary
   from '@/features/resident/components/analytics/ResidentArrearsSummary'
 
-import ActiveCampaignsSection
-  from '@/features/income/components/campaigns/ActiveCampaignsSection'
+import ActiveDonationsSection
+  from '@/features/income/components/donations/ActiveDonationsSection'
 
 import Icon       from '@/components/ui/Icon'
 import {
@@ -177,7 +177,7 @@ export default function DashboardView({
       </div>
 
       {/* KAMPANYE AKTIF */}
-      <ActiveCampaignsSection storageKey="dashboard-campaigns-banner" />
+      <ActiveDonationsSection storageKey="dashboard-donations-banner" />
 
       {/* STATUS IURAN WARGA */}
 
@@ -284,9 +284,13 @@ export default function DashboardView({
 
           <InsightCard
             title={t('cards.income')}
-            value={formatRupiah(financialInsight.income)}
+            value={formatRupiah(financialInsight.income + (incomeInsight?.incomeThisYear ?? 0))}
             subtitle={t('cards.incomeSubtitle')}
             valueColor="text-success"
+            breakdown={incomeInsight ? [
+              { label: t('cards.incomeDues'),    value: formatRupiah(financialInsight.income) },
+              { label: t('cards.incomeNonDues'), value: formatRupiah(incomeInsight.incomeThisYear) },
+            ] : undefined}
           />
 
           <InsightCard
@@ -306,48 +310,6 @@ export default function DashboardView({
         </div>
 
       </div>
-
-      {/* PEMASUKAN RT */}
-
-      <Can permission={PERMISSION.INCOME_VIEW}>
-        {incomeInsight && (
-          <div className="space-y-3">
-
-            <SectionLabel
-              title={t('sections.incomeTitle')}
-              subtitle={t('sections.incomeSubtitle', { year })}
-            />
-
-            <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-
-              <InsightCard
-                title={t('cards.incomeThisMonth')}
-                value={formatRupiah(incomeInsight.incomeThisMonth)}
-                subtitle={t('cards.incomeThisMonthSubtitle')}
-                valueColor="text-success"
-              />
-
-              <InsightCard
-                title={t('cards.incomeThisYear', { year })}
-                value={formatRupiah(incomeInsight.incomeThisYear)}
-                subtitle={t('cards.incomeThisYearSubtitle', { year })}
-                valueColor="text-success"
-              />
-
-              {incomeInsight.incomeByCategory.slice(0, 2).map((item: { category: string; total: number }) => (
-                <InsightCard
-                  key={item.category}
-                  title={t(`incomeCategories.${item.category}` as Parameters<typeof t>[0])}
-                  value={formatRupiah(item.total)}
-                  subtitle={t('cards.incomeCategorySubtitle')}
-                />
-              ))}
-
-            </div>
-
-          </div>
-        )}
-      </Can>
 
       {/* CHARTS ROW 1 — Income */}
 

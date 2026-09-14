@@ -6,10 +6,10 @@
 import { vi }                    from 'vitest'
 import type { SupabaseClient }   from '@supabase/supabase-js'
 
-import { AuthorizationContext }  from '../authorization-context'
-import { RequestContext }        from '../request-context'
-import type { PermissionSet }    from '../permission-service'
-import type { Permission }       from '../types'
+import { AuthorizationContext }  from '@/lib/auth/authorization-context'
+import { RequestContext }        from '@/lib/auth/request-context'
+import type { PermissionSet }    from '@/lib/auth/permission-service'
+import type { Permission }       from '@/lib/auth/types'
 
 /* -------------------------------------------------------------------------- */
 /* PermissionSet fixture                                                       */

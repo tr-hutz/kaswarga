@@ -250,9 +250,9 @@ create policy "notifications: read own"
     on notifications for select to authenticated
     using (target_user_id = auth.uid());
 
-create policy "notifications: authenticated can insert"
-    on notifications for insert to authenticated
-    with check (true);
+-- notifications INSERT: intentionally omitted.
+-- All notification writes use supabaseAdmin (service_role) which bypasses RLS.
+-- An authenticated INSERT policy is unnecessary and allows notification spoofing.
 
 create policy "notifications: update own"
     on notifications for update to authenticated
@@ -397,8 +397,8 @@ create policy "rt-assets: authenticated delete"
  * payment-proof
  */
 
-create policy "payment-proof: public read"
-    on storage.objects for select to public
+create policy "payment-proof: authenticated read"
+    on storage.objects for select to authenticated
     using (bucket_id = 'payment-proof');
 
 create policy "payment-proof: authenticated upload"
@@ -418,8 +418,8 @@ create policy "payment-proof: authenticated delete"
  * expense-receipts
 */
 
-create policy "expense-receipts: public read"
-    on storage.objects for select to public
+create policy "expense-receipts: authenticated read"
+    on storage.objects for select to authenticated
     using (bucket_id = 'expense-receipts');
 
 create policy "expense-receipts: authenticated upload"

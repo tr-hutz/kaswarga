@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { supabase }      from '../supabase'
-import type { QueryOptions, PageResult } from '../types/query'
+import { supabase }      from '@/lib/supabase'
+import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 const TABLE = 'income_transactions'
 
@@ -21,7 +21,7 @@ const SELECT_FIELDS = `
     status,
     notes,
     attachment_url,
-    campaign_id,
+    donation_id,
     contribution_code,
     in_kind_description,
     in_kind_quantity,
@@ -74,9 +74,9 @@ export async function findIncomesPaginated(
         q = q.eq('payment_method', paymentMethod)
     }
 
-    const campaignId = query.filters?.campaign_id
-    if (campaignId) {
-        q = q.eq('campaign_id', campaignId)
+    const donationId = query.filters?.donation_id
+    if (donationId) {
+        q = q.eq('donation_id', donationId)
     }
 
     q = q.range(from, to)

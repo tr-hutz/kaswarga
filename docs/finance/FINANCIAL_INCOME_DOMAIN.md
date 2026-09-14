@@ -1,4 +1,4 @@
-# Financial Income Domain Model
+﻿# Financial Income Domain Model
 
 > Project: KasWarga
 >
@@ -176,7 +176,7 @@ RT-level overrides apply as with all other modules.
 ## Out of Scope (Sprint 5.9)
 
 - Recurring income schedules
-- Campaign or fund management
+- Donation or fund management
 - Bank SDK integration
 - Automatic reconciliation
 - Accounting journal / double-entry

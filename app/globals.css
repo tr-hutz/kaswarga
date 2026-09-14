@@ -1,5 +1,38 @@
 @import "tailwindcss";
 
+@layer utilities {
+    .scrollbar-hidden {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .scrollbar-hidden::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Thin scrollbar for the sidebar — semi-transparent white works on both
+       the light (#313D4A) and dark (#1C2434) sidebar shades automatically. */
+    .scrollbar-sidebar {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,0.18) rgba(255,255,255,0.04);
+        overflow-x: hidden;
+    }
+    .scrollbar-sidebar::-webkit-scrollbar {
+        width: 2px;
+        height: 0;
+    }
+    .scrollbar-sidebar::-webkit-scrollbar-track {
+        background: rgba(255,255,255,0.04);
+        border-radius: 999px;
+    }
+    .scrollbar-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.18);
+        border-radius: 999px;
+    }
+    .scrollbar-sidebar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255,255,255,0.30);
+    }
+}
+
 /* Class-based dark mode — ThemeProvider toggles .dark on <html> */
 @custom-variant dark (&:where(.dark, .dark *));
 

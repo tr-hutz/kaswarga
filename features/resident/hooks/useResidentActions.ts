@@ -10,7 +10,7 @@ import {
     exportResidentsToExcel,
     exportResidentsToCSV
 
-} from '../services/resident-export-transform'
+} from '@/features/resident/services/resident-export-transform'
 
 import { useResidentImport } from './useResidentImport'
 

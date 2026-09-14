@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { supabase }              from '../supabase'
-import { getCurrentMembership }  from '../auth/getCurrentMembership'
+import { supabase }              from '@/lib/supabase'
+import { getCurrentMembership }  from '@/lib/auth/getCurrentMembership'
 import {
     insertIncome,
     updateIncome,
     softDeleteIncome,
-} from '../repositories/income.repository'
-import { findCampaignById } from '../repositories/incomeCampaign.repository'
+} from '@/lib/repositories/income.repository'
+import { findDonationById } from '@/lib/repositories/incomeDonation.repository'
 
 async function getMembershipContext() {
     const membership = await getCurrentMembership()
     return {
-        userId: (membership as any)?.user?.id as string,
-        rtId:   (membership as any)?.rt?.id   as string,
+        userId: membership?.user?.id as string,
+        rtId:   membership?.rt?.id   as string,
     }
 }
 
@@ -29,30 +29,30 @@ export async function createIncome(payload: Record<string, unknown>) {
     }
     delete insertPayload['contribution_code']
 
-    // Campaign validation + contribution code generation
-    if (insertPayload['campaign_id']) {
-        const campaignId = insertPayload['campaign_id'] as string
-        const campaign   = await findCampaignById(campaignId)
+    // Donation validation + contribution code generation
+    if (insertPayload['donation_id']) {
+        const donationId = insertPayload['donation_id'] as string
+        const donation   = await findDonationById(donationId)
 
-        if (!campaign || campaign.rt_id !== rtId) {
-            throw new Error('Campaign not found')
+        if (!donation || donation.rt_id !== rtId) {
+            throw new Error('Donation not found')
         }
-        if (campaign.status !== 'ACTIVE') {
-            throw new Error('Campaign is not active')
+        if (donation.status !== 'ACTIVE') {
+            throw new Error('Donation is not active')
         }
 
         const today = new Date().toISOString().slice(0, 10)
-        if (campaign.starts_at > today) {
-            throw new Error('Campaign has not started yet')
+        if (donation.starts_at > today) {
+            throw new Error('Donation has not started yet')
         }
-        if (campaign.ends_at && campaign.ends_at < today) {
-            throw new Error('Campaign has ended')
+        if (donation.ends_at && donation.ends_at < today) {
+            throw new Error('Donation has ended')
         }
         if (insertPayload['income_category'] !== 'DONATION') {
-            throw new Error('Only DONATION category can be linked to a campaign')
+            throw new Error('Only DONATION category can be linked to a donation')
         }
 
-        insertPayload['contribution_code'] = campaign.campaign_code
+        insertPayload['contribution_code'] = donation.donation_code
     }
 
     const row = await insertIncome(insertPayload)

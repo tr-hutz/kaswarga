@@ -24,6 +24,8 @@ interface NotificationViewProps {
     onMarkAllRead:          () => void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onNotificationClick?:   (n: any) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getLink?:               (n: any) => string | null
 }
 
 export default function NotificationView({
@@ -34,6 +36,7 @@ export default function NotificationView({
                                              onRetry,
                                              onMarkAllRead,
                                              onNotificationClick,
+                                             getLink,
 
                                          }: NotificationViewProps) {
 
@@ -136,6 +139,7 @@ export default function NotificationView({
 
                 notifications={filtered}
                 onNotificationClick={onNotificationClick}
+                getLink={getLink}
 
             />
 

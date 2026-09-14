@@ -1,5 +1,5 @@
 import HomeContainer
-  from '../features/home/HomeContainer'
+  from '@/features/home/HomeContainer'
 
 export default function Page() {
 

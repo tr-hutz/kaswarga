@@ -11,7 +11,7 @@ import {
 
     supabase
 
-} from '../../../lib/supabase'
+} from '@/lib/supabase'
 
 export function useActivityRealtime({
 

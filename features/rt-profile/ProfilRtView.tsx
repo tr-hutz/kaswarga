@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import Icon from '@/components/ui/Icon'
+import CurrencyInput from '@/components/ui/CurrencyInput'
 import { generateRtCode } from '@/lib/services/registration.service'
 import ImageUpload from './components/ImageUpload'
 import { useTranslations } from 'next-intl'
@@ -153,10 +154,9 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                     </Field>
 
                     <Field label={t('fields.monthlyFee')}>
-                        <input
-                            type="number"
+                        <CurrencyInput
                             value={form.monthlyFee}
-                            onChange={e => set('monthlyFee', e.target.value)}
+                            onChange={raw => set('monthlyFee', raw)}
                             className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
                         />
                     </Field>

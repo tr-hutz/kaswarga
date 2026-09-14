@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth/useAuth'
 import { findLedgerPaginated, findLedgerTotals } from '@/lib/repositories/ledger.repository'
-import { transformLedger } from '../services/ledger-transform'
+import { transformLedger } from '@/features/ledger/services/ledger-transform'
 import type { QueryOptions, PageResult } from '@/lib/types/query'
 
 export type LedgerRow = ReturnType<typeof transformLedger>[number]
@@ -17,7 +17,7 @@ export interface LedgerTotals {
 
 export function useLedgerData(query: QueryOptions) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { membership } = (useAuth() as any) ?? {}
+    const { membership } = useAuth()
     const rtId = membership?.rt?.id as string | undefined
 
     const [result,  setResult]  = useState<PageResult<LedgerRow> | null>(null)

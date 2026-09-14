@@ -36,7 +36,7 @@ export class IncomePage {
     }
 
     amountInput(): Locator {
-        return this.modal().locator('input[type="number"]')
+        return this.modal().locator('[data-testid="income-amount-input"]')
     }
 
     dateInput(): Locator {
@@ -70,6 +70,11 @@ export class IncomePage {
 
     async cancelForm() {
         await this.cancelButton().click()
+    }
+
+    async search(query: string) {
+        await this.page.getByPlaceholder(/cari pemasukan/i).fill(query)
+        await this.page.locator('[data-testid="dt-row"],[data-testid="dt-empty"]').first().waitFor({ timeout: 10000 })
     }
 
     drawer(): Locator {

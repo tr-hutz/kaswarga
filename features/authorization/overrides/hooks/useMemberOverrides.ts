@@ -46,10 +46,10 @@ type OverrideMap = Map<string, boolean | null>
 function groupPermissions(perms: PermissionDetail[]): PermissionGroup[] {
     const map = new Map<string, PermissionDetail[]>()
     for (const p of perms) {
-        const module = p.code.split('.')[0] ?? 'other'
-        const list   = map.get(module) ?? []
+        const moduleName = p.code.split('.')[0] ?? 'other'
+        const list       = map.get(moduleName) ?? []
         list.push(p)
-        map.set(module, list)
+        map.set(moduleName, list)
     }
     return Array.from(map.entries()).map(([module, permissions]) => ({ module, permissions }))
 }
@@ -213,6 +213,7 @@ export function useMemberOverrides({ canEdit, singleMembershipId, initialRole }:
                 }
             })
             .filter(g => g.permissions.length > 0)
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFilteredGroups(filtered)
     }, [search, groups, filter, localOverrides, t])
 

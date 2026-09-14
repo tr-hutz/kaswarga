@@ -11,7 +11,7 @@ export type ConfirmationRow = ReturnType<typeof mapConfirmation>[number]
 
 export function usePaymentData(query: QueryOptions, year?: number) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { role, membership } = (useAuth() as any) ?? {}
+    const { role, membership } = useAuth()
     const rtId      = membership?.rt?.id       as string | undefined
     const residentId = role === 'RESIDENT'
         ? membership?.resident?.id as string | undefined

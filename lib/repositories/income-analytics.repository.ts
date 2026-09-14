@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { supabase } from '../supabase'
+import { supabase } from '@/lib/supabase'
 
 export async function findApprovedIncomesByYear(rtId: string, year: number) {
     const { data, error } = await (supabase as any)

@@ -2,7 +2,7 @@
 
 import {
     formatRupiah
-} from '../../../../lib/utils'
+} from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

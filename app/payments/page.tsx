@@ -1,5 +1,5 @@
 ﻿import PaymentContainer
-  from '../../features/payment/PaymentContainer'
+  from '@/features/payment/PaymentContainer'
 
 export default function Page() {
 

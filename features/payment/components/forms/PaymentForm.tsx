@@ -8,6 +8,7 @@ import { useAuth }             from '@/lib/auth/useAuth'
 import { findResidents }       from '@/lib/repositories/resident.repository'
 import { MONTHS }              from '@/lib/constants/months'
 import Icon                    from '@/components/ui/Icon'
+import { useKeyDown }          from '@/lib/hooks/useKeyDown'
 
 const PAYMENT_METHODS = ['CASH', 'TRANSFER', 'QRIS'] as const
 
@@ -40,8 +41,8 @@ export default function PaymentForm({ open, onClose, onSubmit }: PaymentFormProp
     const tc = useTranslations('common')
 
     const { membership } = useAuth()
-    const rtId       = (membership as any)?.rt?.id as string | undefined
-    const monthlyFee = (membership as any)?.rt?.monthly_fee as number | undefined
+    const rtId       = membership?.rt?.id
+    const monthlyFee = membership?.rt?.monthly_fee
 
     const [residents, setResidents] = useState<Array<{ id: string; name: string; block?: string; house_number?: string }>>([])
     const [form,      setForm]      = useState(emptyForm)
@@ -66,6 +67,8 @@ export default function PaymentForm({ open, onClose, onSubmit }: PaymentFormProp
             }))))
             .catch(() => {})
     }, [rtId])
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open) return null
 

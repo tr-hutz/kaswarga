@@ -4,9 +4,10 @@ import { useState } from 'react'
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
 
-import ResidentDetailSummary from '../detail/ResidentDetailSummary'
+import ResidentDetailSummary from '@/features/resident/components/detail/ResidentDetailSummary'
 import ResidentPaymentHistory from './ResidentPaymentHistory'
-import { usePaymentHistory } from '../../hooks/usePaymentHistory'
+import { usePaymentHistory } from '@/features/resident/hooks/usePaymentHistory'
+import { useKeyDown } from '@/lib/hooks/useKeyDown'
 
 interface ResidentDetailDrawerProps {
     open:               boolean
@@ -28,6 +29,8 @@ export default function ResidentDetailDrawer({
     const t = useTranslations('residents')
     const currentYear = new Date().getFullYear()
     const [year, setYear] = useState(currentYear)
+
+    useKeyDown(open, { Escape: onClose })
 
     const canViewPaymentHistory =
         role !== 'RESIDENT' || resident?.id === currentResidentId

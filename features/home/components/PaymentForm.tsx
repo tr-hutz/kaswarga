@@ -117,7 +117,7 @@ export default function PaymentForm({
 }: PaymentFormProps) {
 
     const t = useTranslations('home')
-    const { toast } = useToast() as any
+    const { toast } = useToast()
 
     const ALL_MONTHS    = MONTHS.map(m => m.id)
     const PAYABLE_MONTHS = ALL_MONTHS.filter(id => {

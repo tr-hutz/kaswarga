@@ -47,6 +47,7 @@ export default function ImportConfirmationBanner({ importType, onConfirmed }: Pr
         setJobs((data ?? []) as ImportJob[])
     }, [rtId, importType, user?.id])
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => { loadStagedJobs() }, [loadStagedJobs])
 
     // Realtime — keep list fresh

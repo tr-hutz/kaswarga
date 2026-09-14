@@ -1,6 +1,6 @@
 import {
   MONTHS
-} from '../constants/home.constants'
+} from '@/features/home/constants/home.constants'
 
 export function buildMonthCards(
   statusMap: Record<number, string> = {}

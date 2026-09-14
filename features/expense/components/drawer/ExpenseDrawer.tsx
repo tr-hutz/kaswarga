@@ -1,12 +1,13 @@
 'use client'
 
-import { formatRupiah }    from '../../../../lib/utils'
-import ExpenseApprovalBar  from '../approval/ExpenseApprovalBar'
+import { formatRupiah }    from '@/lib/utils'
+import ExpenseApprovalBar  from '@/features/expense/components/approval/ExpenseApprovalBar'
 import { useTranslations } from 'next-intl'
 import Can                 from '@/components/ui/Can'
 import { PERMISSION }      from '@/lib/auth/types'
 import Icon                from '@/components/ui/Icon'
-import Ribbadge            from '@/components/ui/Ribbadge'
+import Ribbon            from '@/components/ui/Ribbon'
+import { useKeyDown }      from '@/lib/hooks/useKeyDown'
 
 interface ExpenseDrawerProps {
     open:            boolean
@@ -31,6 +32,8 @@ export default function ExpenseDrawer({
 
     const t  = useTranslations('expenses')
     const tc = useTranslations('common')
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open || !row) return null
 
@@ -69,7 +72,7 @@ export default function ExpenseDrawer({
                 <div className="p-6">
                     {/* Card */}
                     <div className="relative overflow-hidden rounded-xl border border-divider bg-canvas pt-8">
-                        <Ribbadge label={statusLabel} status={row.status} variant="filled" />
+                        <Ribbon label={statusLabel} type={row.status} variant="filled" />
 
                         <div className="p-5 space-y-5">
                             {/* 2-col grid */}

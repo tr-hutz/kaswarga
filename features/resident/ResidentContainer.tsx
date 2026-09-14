@@ -24,7 +24,7 @@ function toFormShape(row: ResidentRow) {
 
 export default function ResidentContainer() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { membership, role } = (useAuth() as any) ?? {}
+    const { membership, role } = useAuth()
     const rtId = membership?.rt?.id as string | undefined
     const currentResidentId = membership?.resident?.id as string | undefined
     const canManage      = usePermission(PERMISSION.RESIDENT_CREATE)
@@ -86,7 +86,7 @@ export default function ResidentContainer() {
 
     // Drawer / form / export / import
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { toast } = (useToast() as any) ?? {}
+    const { toast } = useToast()
     const { error: importError, ...actions } = useResidentActions(() => {
         toast({ message: t('import.jobCreated'), type: 'info', duration: 4000 })
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import Badge from '@/components/ui/Badge'
-import { getResidentStatusClasses } from '../../services/resident-status'
+import { getResidentStatusClasses } from '@/features/resident/services/resident-status'
 
 export default function ResidentStatusBadge({ status }: { status: string }) {
     const tc = useTranslations('common')

@@ -23,8 +23,9 @@ interface DataTableProps<T> {
     onRetry?:             () => void
     onRowClick?:      (row: T) => void
     // slots
-    renderFilters?:   React.ReactNode
-    renderActions?:   React.ReactNode
+    renderFilters?:        React.ReactNode
+    renderActions?:        React.ReactNode
+    renderBelowToolbar?:   React.ReactNode
 }
 
 export default function DataTable<T>({
@@ -42,6 +43,7 @@ export default function DataTable<T>({
     onRowClick,
     renderFilters,
     renderActions,
+    renderBelowToolbar,
 }: DataTableProps<T>) {
     const showPagination =
         !loading && !error && result && (onPageChange || onPageSizeChange)
@@ -58,6 +60,9 @@ export default function DataTable<T>({
                     renderActions={renderActions}
                 />
             )}
+
+            {/* Below-toolbar slot — full-width panel (e.g. expanded filter row) */}
+            {renderBelowToolbar}
 
             {/* Table */}
             <div className="bg-surface rounded-lg shadow-card overflow-x-auto">

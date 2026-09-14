@@ -2,7 +2,7 @@
 
 import Icon from '@/components/ui/Icon'
 import { useTranslations } from 'next-intl'
-import { useKeyDown } from '../../../../lib/hooks/useKeyDown'
+import { useKeyDown } from '@/lib/hooks/useKeyDown'
 
 interface LedgerDrawerProps {
     open:    boolean

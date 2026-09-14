@@ -1,10 +1,6 @@
 ﻿'use client'
 
 import {
-  useRouter
-} from 'next/navigation'
-
-import {
   useLogin
 } from './hooks/useLogin'
 
@@ -13,15 +9,12 @@ import LoginView
 
 export default function LoginContainer() {
 
-  const router =
-    useRouter()
-
   const login =
     useLogin({
 
       onSuccess() {
 
-        router.push('/')
+        window.location.href = '/'
       }
 
     })

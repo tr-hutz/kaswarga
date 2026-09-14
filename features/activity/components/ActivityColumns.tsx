@@ -1,7 +1,7 @@
 'use client'
 
 import type { Column } from '@/lib/types/query'
-import type { MappedActivity } from '../hooks/useActivityData'
+import type { MappedActivity } from '@/features/activity/hooks/useActivityData'
 
 interface Options {
     t: (key: string) => string

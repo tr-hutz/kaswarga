@@ -11,14 +11,14 @@ import {
     updateExpense,
     deleteExpense
 
-} from '../../../lib/services/expense.service'
+} from '@/lib/services/expense.service'
 
 import {
 
     exportExpenseToCSV,
     exportExpenseToExcel
 
-} from '../services/expense-export-transform'
+} from '@/features/expense/services/expense-export-transform'
 
 import { useExpenseImport }    from './useExpenseImport'
 import { useExpenseApproval } from './useExpenseApproval'

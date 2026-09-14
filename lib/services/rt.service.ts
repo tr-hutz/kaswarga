@@ -1,4 +1,4 @@
-import { getCurrentMembership } from '../auth/getCurrentMembership'
+import { getCurrentMembership } from '@/lib/auth/getCurrentMembership'
 import { logActivity } from './activity-logger'
 import {
     findAllRt,
@@ -6,7 +6,7 @@ import {
     findRtSnapshot,
     insertRt,
     updateRtById
-} from '../repositories/rt.repository'
+} from '@/lib/repositories/rt.repository'
 
 const SYSTEM_RT_ID = '00000000-0000-0000-0000-000000000001'
 

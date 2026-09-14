@@ -416,7 +416,7 @@ queried alongside their parent, so the EXISTS subquery overhead is acceptable.
 
 # 8. Security Hardening Applied
 
-Migration 027 (`027_rbac_security_hardening.sql`) applied three changes:
+Migration 027 (`023_rbac_security_hardening.sql`) applied three changes:
 
 ## 8.1 Restrict `approve_all_pending_expenses` to service_role
 
@@ -552,7 +552,7 @@ Ordered by priority:
 | Artifact | Path |
 |---|---|
 | Validation SQL suite | `supabase/tests/rls_validation.sql` |
-| Security hardening migration | `supabase/migrations/027_rbac_security_hardening.sql` |
+| Security hardening migration | `supabase/migrations/023_rbac_security_hardening.sql` |
 | Sprint 5.1 Assessment | `docs/rbac/RLS_ASSESSMENT.md` |
 | Sprint 5.2 Migration Summary | `docs/rbac/RLS_MIGRATION_SUMMARY.md` |
 | RLS Policy Reference | `docs/database/RLS_POLICY.md` |

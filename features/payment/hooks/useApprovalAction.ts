@@ -11,21 +11,21 @@ import {
 
     rejectPayment
 
-} from '../../../lib/services/payment.service'
+} from '@/lib/services/payment.service'
 
 import {
     useToast
-} from '../../../components/ui/ToastProvider'
+} from '@/components/ui/ToastProvider'
 
 import {
     getErrorMessage
-} from '../../../lib/errors/supabase-errors'
+} from '@/lib/errors/supabase-errors'
 
 export function useApprovalActions({
                                        onSuccess
                                    }: { onSuccess?: () => void } = {}) {
 
-    const { toast } = (useToast() as any)
+    const { toast } = useToast()
 
     /*
      |-------------------------------------------------------------
@@ -71,7 +71,7 @@ export function useApprovalActions({
             console.error(err)
 
             toast({
-                message: getErrorMessage(err as any),
+                message: getErrorMessage(err),
                 type: 'error'
             })
 
@@ -116,7 +116,7 @@ export function useApprovalActions({
             console.error(err)
 
             toast({
-                message: getErrorMessage(err as any),
+                message: getErrorMessage(err),
                 type: 'error'
             })
 

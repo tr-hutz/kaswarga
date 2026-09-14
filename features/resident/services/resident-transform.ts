@@ -1,1 +1,1 @@
-export { mapResident as transformResident } from '../../../lib/mappers/resident.mapper'
+export { mapResident as transformResident } from '@/lib/mappers/resident.mapper'

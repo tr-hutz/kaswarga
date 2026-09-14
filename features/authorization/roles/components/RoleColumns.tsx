@@ -3,7 +3,7 @@
 import Link             from 'next/link'
 import type { Column }  from '@/lib/types/query'
 import type { RoleRow } from '@/lib/repositories/role.repository'
-import Ribbadge         from '@/components/ui/Ribbadge'
+import Ribbon         from '@/components/ui/Ribbon'
 import Button           from '@/components/ui/Button'
 import Icon             from '@/components/ui/Icon'
 
@@ -63,9 +63,9 @@ export function buildRoleColumns({
             title:    t('columns.status'),
             sortable: true,
             render: row => (
-                <Ribbadge
+                <Ribbon
                     label={row.is_active ? t('status.active') : t('status.inactive')}
-                    status={row.is_active ? 'active' : 'inactive'}
+                    type={row.is_active ? 'active' : 'inactive'}
                     variant="rounded"
                 />
             ),

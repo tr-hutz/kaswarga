@@ -7,7 +7,7 @@ import { supabase }   from '@/lib/supabase'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useIncomeRealtime({ onReload }: { onReload: () => void }) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { membership } = (useAuth() as any) ?? {}
+    const { membership } = useAuth()
     const rtId = membership?.rt?.id as string | undefined
 
     useEffect(() => {

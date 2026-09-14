@@ -5,8 +5,8 @@ import { useMemo, useState }  from 'react'
 import { useTranslations }    from 'next-intl'
 import { useDialog }          from '@/components/ui/DialogProvider'
 import { useToast }           from '@/components/ui/ToastProvider'
-import { buildArrearRows }    from '../../services/tunggakan-transform'
-import type { ConfirmationEntry } from '../../services/tunggakan-transform'
+import { buildArrearRows }    from '@/features/resident/services/tunggakan-transform'
+import type { ConfirmationEntry } from '@/features/resident/services/tunggakan-transform'
 import PaymentDetailDrawer    from '@/features/payment/components/details/PaymentDetailDrawer'
 import { approvePayment, rejectPayment } from '@/lib/services/payment.service'
 import { getErrorMessage }    from '@/lib/errors/supabase-errors'
@@ -28,8 +28,8 @@ export default function ResidentArrearsSummary({
 
     const t  = useTranslations('dashboard.arrearsSummary')
     const tp = useTranslations('payments')
-    const { prompt }  = (useDialog() as any)
-    const { toast }   = (useToast() as any)
+    const { prompt }  = useDialog()
+    const { toast }   = useToast()
 
     const [search,         setSearch        ] = useState('')
     const [queue,          setQueue         ] = useState<ConfirmationEntry[]>([])
@@ -80,7 +80,7 @@ export default function ResidentArrearsSummary({
             toast({ message: tp('approval.approveSuccess'), type: 'success' })
             advanceOrClose(queueIdx, queue.length)
         } catch (err) {
-            toast({ message: getErrorMessage(err as any), type: 'error' })
+            toast({ message: getErrorMessage(err), type: 'error' })
         } finally {
             setApprovalLoading(false)
         }
@@ -101,7 +101,7 @@ export default function ResidentArrearsSummary({
             toast({ message: tp('approval.rejectSuccess'), type: 'success' })
             advanceOrClose(queueIdx, queue.length)
         } catch (err) {
-            toast({ message: getErrorMessage(err as any), type: 'error' })
+            toast({ message: getErrorMessage(err), type: 'error' })
         } finally {
             setApprovalLoading(false)
         }

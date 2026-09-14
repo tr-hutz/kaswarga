@@ -7,7 +7,7 @@ import DashboardView                from './components/DashboardView'
 
 export default function DashboardContainer() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { toast } = (useToast() as any)
+    const { toast } = useToast()
 
     const dashboard = useDashboardAnalytics()
     const { exportLoading, handleExportLedger } = usePaymentLedgerExport()

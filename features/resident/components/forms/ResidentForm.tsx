@@ -6,6 +6,8 @@ import type { FormEvent } from 'react'
 import { createResident, updateResident } from '@/lib/services/resident.service'
 import { useTranslations } from 'next-intl'
 import { useToast } from '@/components/ui/ToastProvider'
+import { useKeyDown } from '@/lib/hooks/useKeyDown'
+import Icon from '@/components/ui/Icon'
 
 const EMPTY = { name: '', block: '', houseNumber: '', phone: '' }
 
@@ -43,7 +45,7 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
     const t  = useTranslations('residents')
     const tc = useTranslations('common')
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { toast } = useToast() as any
+    const { toast } = useToast()
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
@@ -58,12 +60,16 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
             toast({ message: t('form.saveSuccess'), type: 'success' })
             onSuccess()
         } catch (err) {
-            console.error(err)
-            setSaveError(t('form.saveFailed'))
+            const msg = (err as Error).message
+            if (msg === 'DUPLICATE_NAME')  setSaveError(t('form.duplicateName'))
+            else if (msg === 'DUPLICATE_PHONE') setSaveError(t('form.duplicatePhone'))
+            else setSaveError(t('form.saveFailed'))
         } finally {
             setSaving(false)
         }
     }
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open) return null
 
@@ -126,20 +132,21 @@ export default function ResidentForm({ open, onClose, resident, onSuccess }: Res
                     <p className="text-danger text-sm">{saveError}</p>
                 )}
 
-                <div className="flex justify-end gap-2 pt-1">
+                <div className="flex gap-3 pt-2">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border border-divider rounded-lg px-4 py-2 text-sm hover:bg-canvas transition-colors"
+                        className="flex-1 border border-divider rounded-lg px-4 py-2.5 text-sm hover:bg-canvas transition-colors"
                     >
                         {tc('actions.cancel')}
                     </button>
                     <button
                         type="submit"
                         disabled={saving}
-                        className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 transition-colors"
+                        className="flex-1 bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2.5 text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
                     >
-                        {saving ? tc('states.saving') : tc('actions.save')}
+                        {saving && <Icon name="loader2" size={14} className="animate-spin" />}
+                        {tc('actions.save')}
                     </button>
                 </div>
             </form>

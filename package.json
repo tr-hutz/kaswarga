@@ -1,6 +1,6 @@
 {
   "name": "kaswarga",
-  "version": "2.0.0",
+  "version": "3.0.0-rc1",
   "private": true,
   "engines": {
     "node": ">=20.0.0"
@@ -18,6 +18,8 @@
     "test:e2e:report": "playwright show-report",
     "seed:auth": "node scripts/seed-auth.mjs",
     "seed:dev": "node scripts/seed-dev.mjs",
+    "seed:prod": "node scripts/seed-prod.mjs",
+    "seed:pvt": "node scripts/seed-pvt.mjs",
     "seed:e2e": "node scripts/seed-e2e.mjs",
     "seed:financial": "node scripts/seed-financial.mjs",
     "rbac:audit": "node scripts/rbac/analyze-coverage.mjs",
@@ -33,7 +35,7 @@
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "lucide-react": "^1.14.0",
-    "next": "16.2.4",
+    "next": "16.3.4",
     "next-intl": "^4.13.1",
     "pdf-lib": "^1.17.1",
     "react": "19.2.4",
@@ -52,6 +54,7 @@
     "dotenv": "^16.4.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "release-it": "^21.0.2",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.10"

@@ -3,12 +3,14 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import Icon from '@/components/ui/Icon'
+import CurrencyInput from '@/components/ui/CurrencyInput'
 
 import FileUpload from '@/components/ui/FileUpload'
 import { useAuth } from '@/lib/auth/useAuth'
 import { generateNomorBukti } from '@/lib/services/expense.service'
-import { useExpenseCategories } from '../../hooks/useExpenseCategory'
+import { useExpenseCategories } from '@/features/expense/hooks/useExpenseCategory'
 import { useTranslations } from 'next-intl'
+import { useKeyDown } from '@/lib/hooks/useKeyDown'
 
 interface ExpenseFormProps {
     open:         boolean
@@ -53,6 +55,8 @@ export default function ExpenseForm({
 
     const t = useTranslations('expenses')
     const tc = useTranslations('common')
+
+    useKeyDown(open, { Escape: onClose })
 
     if (!open) return null
 
@@ -165,12 +169,11 @@ export default function ExpenseForm({
                     <label className="text-sm font-medium text-muted block">
                         {t('form.amount')} <span className="text-danger">*</span>
                     </label>
-                    <input
-                        type="number"
+                    <CurrencyInput
+                        data-testid="expense-amount-input"
                         required
-                        min={0}
                         value={form.amount}
-                        onChange={e => set('amount', e.target.value)}
+                        onChange={raw => set('amount', raw)}
                         placeholder="0"
                         className="w-full border border-divider rounded-lg px-4 py-2 text-sm"
                     />
@@ -212,12 +215,12 @@ export default function ExpenseForm({
                     onUploaded={url => set('receiptUrl', url)}
                 />
 
-                <div className="flex justify-end gap-3 pt-2">
+                <div className="flex gap-3 pt-2">
 
                     <button
                         type="button"
                         onClick={onClose}
-                        className="border border-divider rounded-lg px-4 py-2 text-sm hover:bg-canvas transition-colors"
+                        className="flex-1 border border-divider rounded-lg px-4 py-2.5 text-sm hover:bg-canvas transition-colors"
                     >
                         {tc('actions.cancel')}
                     </button>
@@ -225,7 +228,7 @@ export default function ExpenseForm({
                     <button
                         type="submit"
                         disabled={saving}
-                        className="bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2 text-sm disabled:opacity-50 flex items-center gap-2 transition-colors"
+                        className="flex-1 bg-primary hover:bg-primary-dark text-white rounded-lg px-4 py-2.5 text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2 transition-colors"
                     >
                         {saving && <Icon name="loader2" size={14} className="animate-spin" />}
                         {tc('actions.save')}

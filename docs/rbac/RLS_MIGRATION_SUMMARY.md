@@ -21,7 +21,7 @@ outcome of each approved migration step.
 
 ## 020 — Enable RLS on RBAC v2 Tables
 
-**File:** `supabase/migrations/020_rbac_table_rls.sql`
+**File:** `supabase/migrations/019_rbac_table_rls.sql`
 
 **Tables:** `roles`, `permissions`, `role_permissions`, `rt_permission_overrides`
 
@@ -46,7 +46,7 @@ No existing behavior changed — there were no prior RLS policies on these table
 
 ## 021 — Extend Membership Write Policies
 
-**File:** `supabase/migrations/021_rbac_membership_write_policies.sql`
+**File:** `supabase/migrations/020_rbac_membership_write_policies.sql`
 
 **Table:** `memberships`
 
@@ -176,7 +176,7 @@ use supabaseAdmin or SECURITY DEFINER functions. Verify before applying.
 
 ## 026 — Storage Tenant Isolation (DEFERRED)
 
-**File:** `supabase/migrations/026_rbac_storage_tenant_isolation.sql`
+**File:** `supabase/migrations/022_rbac_storage_tenant_isolation.sql`
 
 **Status:** No-op placeholder. Implementation deferred.
 
