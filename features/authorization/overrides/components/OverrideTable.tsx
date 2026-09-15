@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import Icon                from '@/components/ui/Icon'
 import type { PermissionGroup, OverrideFilter } from '@/features/authorization/overrides/hooks/useMemberOverrides'
+import { MODULE_LABELS, PERMISSION_LABELS } from '@/features/authorization/inspector/labels'
 
 interface Props {
     groups:         PermissionGroup[]
@@ -148,7 +149,7 @@ export default function OverrideTable({ groups, localOverrides, savedOverrides, 
                                         colSpan={colSpan}
                                         className="px-4 py-2 text-xs font-semibold text-muted uppercase tracking-wider"
                                     >
-                                        {t(`modules.${g.module}` as Parameters<typeof t>[0])}
+                                        {MODULE_LABELS[g.module] ?? g.module}
                                     </td>
                                 </tr>,
                                 ...g.permissions.map(p => {
@@ -168,7 +169,7 @@ export default function OverrideTable({ groups, localOverrides, savedOverrides, 
                                                         <span className="mt-1 w-1.5 h-1.5 rounded-full bg-warning shrink-0" title="Belum disimpan" />
                                                     )}
                                                     <div>
-                                                        <p className="font-medium text-foreground">{p.name}</p>
+                                                        <p className="font-medium text-foreground">{PERMISSION_LABELS[p.code] ?? p.name}</p>
                                                         <p className="text-xs text-muted font-mono">{p.code}</p>
                                                     </div>
                                                 </div>

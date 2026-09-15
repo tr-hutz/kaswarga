@@ -6,6 +6,7 @@ import Icon                from '@/components/ui/Icon'
 import MembersTab          from './components/MembersTab'
 import type { RoleDetailData, RoleDetailTab } from './hooks/useRoleDetail'
 import type { MemberRow }  from '@/lib/repositories/member-override.repository'
+import { ROLE_LABELS }     from '@/features/authorization/inspector/labels'
 
 interface Props {
     role:           RoleDetailData
@@ -48,7 +49,7 @@ export default function RoleDetailView({
 
                 <div className="flex items-start justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl font-bold text-foreground">{role.name}</h1>
+                        <h1 className="text-2xl font-bold text-foreground">{ROLE_LABELS[role.code] ?? role.name}</h1>
                         <p className="text-sm text-muted font-mono">{role.code}</p>
                         {role.description && (
                             <p className="text-sm text-muted mt-1">{role.description}</p>

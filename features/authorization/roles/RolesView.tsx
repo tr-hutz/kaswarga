@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { ROLE_LABELS }     from '@/features/authorization/inspector/labels'
 import DataTable           from '@/components/common/data-table/DataTable'
 import ConfirmDialog       from '@/components/ui/ConfirmDialog'
 import Button              from '@/components/ui/Button'
@@ -104,13 +105,16 @@ export default function RolesView({
                     open
                     title={confirmTarget.is_active ? t('confirm.deactivateTitle') : t('confirm.activateTitle')}
                     message={
-                        confirmTarget.is_system
-                            ? (confirmTarget.is_active
-                                ? t('confirm.deactivateSystemMessage', { name: confirmTarget.name })
-                                : t('confirm.activateMessage', { name: confirmTarget.name }))
-                            : (confirmTarget.is_active
-                                ? t('confirm.deactivateMessage', { name: confirmTarget.name })
-                                : t('confirm.activateMessage', { name: confirmTarget.name }))
+                        (() => {
+                            const displayName = ROLE_LABELS[confirmTarget.code] ?? confirmTarget.name
+                            return confirmTarget.is_system
+                                ? (confirmTarget.is_active
+                                    ? t('confirm.deactivateSystemMessage', { name: displayName })
+                                    : t('confirm.activateMessage', { name: displayName }))
+                                : (confirmTarget.is_active
+                                    ? t('confirm.deactivateMessage', { name: displayName })
+                                    : t('confirm.activateMessage', { name: displayName }))
+                        })()
                     }
                     confirmLabel={saving
                         ? tc('states.saving')

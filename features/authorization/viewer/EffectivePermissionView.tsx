@@ -12,14 +12,7 @@ import type {
     ViewerMemberInfo, ViewerSummary, PermissionViewRow,
     ViewerFilter, ViewerSort, RoleGroup,
 } from './hooks/useEffectivePermission'
-
-const ROLE_LABELS: Record<string, string> = {
-    ADMIN:     'Administrator',
-    CHAIR:     'Ketua',
-    TREASURER: 'Bendahara',
-    SECRETARY: 'Sekretaris',
-    RESIDENT:  'Warga',
-}
+import { ROLE_LABELS }           from '@/features/authorization/inspector/labels'
 
 interface Props {
     roleGroups:      RoleGroup[]
