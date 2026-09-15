@@ -11,39 +11,13 @@ import type {
     InspectorMemberRow,
     MemberDetailData,
 } from './hooks/usePermissionInspector'
+import { ROLE_LABELS, MODULE_LABELS, PERMISSION_LABELS } from './labels'
 
 interface PermRow {
     id:          string
     code:        string
     name:        string
     description: string | null
-}
-
-const ROLE_LABELS: Record<string, string> = {
-    ADMIN:     'Administrator',
-    CHAIR:     'Ketua',
-    TREASURER: 'Bendahara',
-    SECRETARY: 'Sekretaris',
-    RESIDENT:  'Warga',
-}
-
-const MODULE_LABELS: Record<string, string> = {
-    resident:   'Warga',
-    membership: 'Keanggotaan',
-    payment:    'Pembayaran',
-    expense:    'Pengeluaran',
-    ledger:     'Buku Kas',
-    report:     'Laporan',
-    announcement: 'Pengumuman',
-    event:      'Acara',
-    document:   'Dokumen',
-    settings:   'Pengaturan',
-    user:       'Pengguna',
-    role:       'Role',
-    permission: 'Izin',
-    rbac:       'Otorisasi',
-    audit:      'Audit',
-    other:      'Lainnya',
 }
 
 interface Props {
@@ -171,7 +145,7 @@ export default function PermissionInspectorView({
                                             selectedPermId === p.id ? 'bg-primary/5 border-l-2 border-l-primary' : ''
                                         }`}
                                     >
-                                        <p className="font-medium text-foreground text-sm">{p.name}</p>
+                                        <p className="font-medium text-foreground text-sm">{PERMISSION_LABELS[p.code] ?? p.name}</p>
                                         <p className="text-xs text-muted font-mono">{p.code}</p>
                                     </button>
                                 ))}
