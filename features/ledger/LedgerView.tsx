@@ -27,7 +27,6 @@ interface Props {
     drawerOpen:      boolean
     openDrawer:      (r: LedgerRow) => void
     closeDrawer:     () => void
-    exportCSV:       (rows: LedgerRow[]) => void
     exportExcel:     (rows: LedgerRow[]) => void
 }
 
@@ -35,7 +34,7 @@ export default function LedgerView({
     result, totals, loading, error, onRetry,
     query, setPage, setPageSize, setSearch, setSort, setFilter,
     selectedRow, drawerOpen, openDrawer, closeDrawer,
-    exportCSV, exportExcel,
+    exportExcel,
 }: Props) {
     const t  = useTranslations('ledger')
     const tc = useTranslations('common')
@@ -89,7 +88,6 @@ export default function LedgerView({
                 renderActions={
                     <ExportDropdown
                         onExportExcel={() => exportExcel(data)}
-                        onExportCSV={() => exportCSV(data)}
                     />
                 }
             />

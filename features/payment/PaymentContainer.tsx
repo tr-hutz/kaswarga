@@ -10,7 +10,9 @@ import { useApprovalActions } from './hooks/useApprovalAction'
 import { usePaymentImport }   from './hooks/usePaymentImport'
 import { useDialog }          from '@/components/ui/DialogProvider'
 import { useToast }           from '@/components/ui/ToastProvider'
-import { exportToCSV, exportToExcel } from '@/lib/export/export-utils'
+import { useAuth }            from '@/lib/auth/useAuth'
+import { exportToExcel, exportFileName } from '@/lib/export/export-utils'
+import { logActivity }        from '@/lib/services/activity-logger'
 import { buildPaymentColumns } from './components/PaymentColumns'
 import PaymentView            from './PaymentView'
 
@@ -18,7 +20,8 @@ import PaymentView            from './PaymentView'
 export default function PaymentContainer() {
     const t  = useTranslations('payments')
     const tc = useTranslations('common')
-    const { toast } = useToast()
+    const { toast }      = useToast()
+    const { membership } = useAuth()
 
     const { query, setPage, setPageSize, setSearch, setSort, setFilter } =
         useDataTable({ filters: { status: 'pending' } }, 'payments')
@@ -115,8 +118,21 @@ export default function PaymentContainer() {
             onApprove={handleApprove}
             onReject={handleReject}
             approvalLoading={approvalLoading}
-            onExportCSV={() => exportToCSV({ data, fileName: 'payments.csv' })}
-            onExportExcel={() => exportToExcel({ data, fileName: 'payments.xlsx' })}
+            onExportExcel={async () => {
+                const rtCode = membership?.rt?.code ?? undefined
+                await exportToExcel({ data, fileName: exportFileName(membership?.rt?.name ?? 'RT', 'iuran'), password: rtCode })
+                logActivity({
+                    rtId:        membership?.rt?.id,
+                    actorId:     membership?.user?.id,
+                    actorName:   membership?.user?.name,
+                    action:      'EXPORT',
+                    entityType:  'payment_confirmations',
+                    description: `${membership?.user?.name ?? 'Pengguna'} mengekspor data pembayaran`,
+                })
+                if (process.env.NODE_ENV === 'production' && rtCode) {
+                    toast({ message: 'File dilindungi password. Gunakan kode RT untuk membuka.', type: 'success' })
+                }
+            }}
             // import
             importOpen={importOpen}
             openImport={openImport}

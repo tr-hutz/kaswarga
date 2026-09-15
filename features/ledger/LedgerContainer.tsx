@@ -13,7 +13,7 @@ export default function LedgerContainer() {
     const { result, totals, loading, error, reload } = useLedgerData(query)
     useLedgerRealtime({ onReload: reload })
 
-    const { selectedRow, drawerOpen, openDrawer, closeDrawer, exportCSV, exportExcel } =
+    const { selectedRow, drawerOpen, openDrawer, closeDrawer, exportExcel } =
         useLedgerActions()
 
     return (
@@ -33,7 +33,6 @@ export default function LedgerContainer() {
             drawerOpen={drawerOpen}
             openDrawer={openDrawer}
             closeDrawer={closeDrawer}
-            exportCSV={exportCSV}
             exportExcel={exportExcel}
         />
     )

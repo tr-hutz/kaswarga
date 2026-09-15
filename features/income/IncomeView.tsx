@@ -54,7 +54,6 @@ interface Props {
     activeTab:       'transactions' | 'donations'
     setActiveTab:    (tab: 'transactions' | 'donations') => void
     // export
-    exportCSV:       (rows: any[]) => void
     exportExcel:     (rows: any[]) => void
     // import
     importOpen:      boolean
@@ -80,7 +79,7 @@ export default function IncomeView({
     openCreateForm, openEditForm, closeForm, submitForm,
     removeRow, confirmDelete, cancelDelete,
     approvalLoading, approveIncome, rejectIncome,
-    exportCSV, exportExcel,
+    exportExcel,
     importOpen, openImport, closeImport,
     importRows, fileName: importFileName, fileRef: importFileRef,
     importing, handleFile, handleImport, downloadTemplate, resetImport,
@@ -249,7 +248,6 @@ export default function IncomeView({
                         <Can permission={PERMISSION.INCOME_EXPORT}>
                             <ExportDropdown
                                 onExportExcel={() => exportExcel(data)}
-                                onExportCSV={() => exportCSV(data)}
                             />
                         </Can>
                         <Can permission={PERMISSION.INCOME_IMPORT}>

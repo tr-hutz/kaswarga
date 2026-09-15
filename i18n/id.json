@@ -14,7 +14,7 @@
       "import": "Impor",
       "export": "Ekspor",
       "exportExcel": "Ekspor Excel",
-      "exportCsv": "Ekspor CSV",
+      "exportPasswordHint": "File dilindungi password. Gunakan kode RT untuk membuka.",
       "generate": "Generate",
       "search": "Cari",
       "confirm": "Konfirmasi",

@@ -1,20 +1,18 @@
-﻿'use client'
+'use client'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import {
-    useState
-} from 'react'
-
-import {
-
-    exportResidentsToExcel,
-    exportResidentsToCSV
-
-} from '@/features/resident/services/resident-export-transform'
-
+import { useState }      from 'react'
+import { useAuth }       from '@/lib/auth/useAuth'
+import { useToast }      from '@/components/ui/ToastProvider'
+import { logActivity }   from '@/lib/services/activity-logger'
+import { exportResidentsToExcel } from '@/features/resident/services/resident-export-transform'
+import { exportFileName }         from '@/lib/export/export-utils'
 import { useResidentImport } from './useResidentImport'
 
 export function useResidentActions(onJobCreated?: (jobId: string) => void) {
+
+    const { membership } = useAuth()
+    const { toast }      = useToast()
 
     /*
      |------------------------------------------------------------------
@@ -22,26 +20,9 @@ export function useResidentActions(onJobCreated?: (jobId: string) => void) {
      |------------------------------------------------------------------
      */
 
-    const [
-
-        selectedResident,
-        setSelectedResident
-
-    ] = useState<any>(null)
-
-    const [
-
-        drawerOpen,
-        setDrawerOpen
-
-    ] = useState(false)
-
-    const [
-
-        formOpen,
-        setFormOpen
-
-    ] = useState(false)
+    const [selectedResident, setSelectedResident] = useState<any>(null)
+    const [drawerOpen,       setDrawerOpen]       = useState(false)
+    const [formOpen,         setFormOpen]         = useState(false)
 
     /*
      |------------------------------------------------------------------
@@ -49,21 +30,13 @@ export function useResidentActions(onJobCreated?: (jobId: string) => void) {
      |------------------------------------------------------------------
      */
 
-    function openDrawer(
-        resident: any
-    ) {
-
-        setSelectedResident(
-            resident
-        )
-
+    function openDrawer(resident: any) {
+        setSelectedResident(resident)
         setDrawerOpen(true)
     }
 
     function closeDrawer() {
-
         setDrawerOpen(false)
-
         setSelectedResident(null)
     }
 
@@ -74,25 +47,16 @@ export function useResidentActions(onJobCreated?: (jobId: string) => void) {
      */
 
     function openCreateForm() {
-
         setSelectedResident(null)
-
         setFormOpen(true)
     }
 
-    function openEditForm(
-        resident: any
-    ) {
-
-        setSelectedResident(
-            resident
-        )
-
+    function openEditForm(resident: any) {
+        setSelectedResident(resident)
         setFormOpen(true)
     }
 
     function closeForm() {
-
         setFormOpen(false)
     }
 
@@ -103,11 +67,20 @@ export function useResidentActions(onJobCreated?: (jobId: string) => void) {
      */
 
     async function exportExcel(data: any[]) {
-        await exportResidentsToExcel(data as any)
-    }
-
-    async function exportCSV(data: any[]) {
-        await exportResidentsToCSV(data as any)
+        const rtCode   = membership?.rt?.code ?? undefined
+        const fileName = exportFileName(membership?.rt?.name ?? 'RT', 'warga')
+        await exportResidentsToExcel(data as any, rtCode, fileName)
+        logActivity({
+            rtId:        membership?.rt?.id,
+            actorId:     membership?.user?.id,
+            actorName:   membership?.user?.name,
+            action:      'EXPORT',
+            entityType:  'residents',
+            description: `${membership?.user?.name ?? 'Pengguna'} mengekspor data penghuni`,
+        })
+        if (process.env.NODE_ENV === 'production' && rtCode) {
+            toast({ message: 'File dilindungi password. Gunakan kode RT untuk membuka.', type: 'success' })
+        }
     }
 
     /*
@@ -125,21 +98,15 @@ export function useResidentActions(onJobCreated?: (jobId: string) => void) {
      */
 
     return {
-
         selectedResident,
-
         drawerOpen,
         openDrawer,
         closeDrawer,
-
         formOpen,
         openCreateForm,
         openEditForm,
         closeForm,
-
         exportExcel,
-        exportCSV,
-
         ...importState,
     }
 }

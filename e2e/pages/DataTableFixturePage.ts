@@ -32,12 +32,8 @@ export class DataTableFixturePage {
         return this.page.getByTestId('dt-status-filter')
     }
 
-    exportCSVButton(): Locator {
-        return this.page.getByRole('button', { name: /Export CSV/i })
-    }
-
     exportExcelButton(): Locator {
-        return this.page.getByRole('button', { name: /Export Excel/i })
+        return this.page.getByRole('button', { name: /Ekspor Excel/i })
     }
 
     // ─── Column headers ───────────────────────────────────────────────────────

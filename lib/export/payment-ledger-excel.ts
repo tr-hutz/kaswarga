@@ -1,5 +1,6 @@
 import ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
+import { exportFileName } from './export-utils'
 import { MONTHS } from '@/lib/constants/months'
 
 export interface ResidentLedgerRow {
@@ -15,6 +16,7 @@ interface LedgerOptions {
     year:       number
     residents:  ResidentLedgerRow[]
     monthlyFee: number
+    password?:  string
 }
 
 const C = {
@@ -51,7 +53,7 @@ function solidFill(argb: string): ExcelJS.Fill {
     return { type: 'pattern', pattern: 'solid', fgColor: { argb } }
 }
 
-export async function exportPaymentLedger({ rtName, year, residents, monthlyFee }: LedgerOptions) {
+export async function exportPaymentLedger({ rtName, year, residents, monthlyFee, password }: LedgerOptions) {
     const wb = new ExcelJS.Workbook()
     wb.creator = 'KasWarga'
     wb.created = new Date()
@@ -233,9 +235,12 @@ export async function exportPaymentLedger({ rtName, year, residents, monthlyFee 
         }
     })
 
-    const buffer = await wb.xlsx.writeBuffer()
-    const blob   = new Blob([buffer], {
+    const protect = process.env.NODE_ENV === 'production' && !!password
+    // ExcelJS types don't declare `password` yet, but the runtime supports it
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const buffer  = await wb.xlsx.writeBuffer(protect ? { password } as any : undefined)
+    const blob    = new Blob([buffer], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
     })
-    saveAs(blob, `KAS-${rtName.replace(/\s+/g, '-')}-${year}.xlsx`)
+    saveAs(blob, exportFileName(rtName, `catatan-iuran-${year}`))
 }

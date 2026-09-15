@@ -37,7 +37,6 @@ interface Props {
     onApprove:       (payment: ConfirmationRow) => void
     onReject:        (payment: ConfirmationRow) => void
     approvalLoading: boolean
-    onExportCSV:     () => void
     onExportExcel:   () => void
     // import
     importOpen:      boolean
@@ -72,7 +71,7 @@ export default function PaymentView({
     columns, t, tc,
     drawerOpen, selectedPayment, onRowClick, onCloseDetail,
     onApprove, onReject, approvalLoading,
-    onExportCSV, onExportExcel,
+    onExportExcel,
     importOpen, openImport, closeImport,
     importRows, importFileName, importFileRef,
     importing, importError, handleFile, handleImport, downloadTemplate, resetImport,
@@ -138,7 +137,6 @@ export default function PaymentView({
                         {canExport && (
                             <ExportDropdown
                                 onExportExcel={onExportExcel}
-                                onExportCSV={onExportCSV}
                             />
                         )}
                         <Can permission={PERMISSION.PAYMENT_IMPORT}>
