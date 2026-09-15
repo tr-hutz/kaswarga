@@ -39,18 +39,25 @@ const RT_IDS = [
 
 const year = parseInt(process.argv[2] ?? '2026', 10)
 
-console.log(`Seeding financial data for year ${year}…`)
+console.log(`Supabase: ${SUPABASE_URL}`)
+console.log(`Seeding financial data for year ${year}…\n`)
 
+let successCount = 0
 for (const rtId of RT_IDS) {
-  const { error } = await supabase.rpc('seed_dev_data', {
+  const { data, error } = await supabase.rpc('seed_dev_data', {
     p_rt_id: rtId,
     p_tahun: year,
   })
   if (error) {
     console.error(`  ✗ RT ${rtId}:`, error.message)
   } else {
-    console.log(`  ✓ RT ${rtId}`)
+    successCount++
+    // seed_dev_data returns a human-readable summary string
+    const summary = (data ?? '').split('\n').map(l => '    ' + l).join('\n')
+    console.log(`  ✓ RT ${rtId}\n${summary}\n`)
   }
 }
 
-console.log('Done.')
+console.log(`\nDone — ${successCount}/${RT_IDS.length} RTs seeded.`)
+console.log('Tip: re-run with a year argument to seed a different year, e.g.:')
+console.log(`  npm run seed:financial 2027`)
