@@ -496,6 +496,8 @@
       "identity": "Identitas RT",
       "address": "Alamat",
       "bank": "Rekening Bank",
+      "showBank": "Tampilkan",
+      "hideBank": "Sembunyikan",
       "media": "Aset Media"
     },
     "fields": {
