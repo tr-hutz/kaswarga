@@ -204,23 +204,3 @@ All three buckets (`rt-assets`, `payment-proof`, `expense-receipts`) allow publi
 
 **pg_cron** — A commented-out `cron.schedule` call configures a nightly job (`0 2 * * *`) to run `cleanup_expired_registrations()`. Requires the `pg_cron` extension to be enabled in the Supabase dashboard before uncommenting.
 
----
-
-## 010_dev_seed
-
-**Purpose** — Development and QA seeding utilities (depends on 000–009). Supersedes `populate_cashflow()` from 005.
-
-| Function | Access | Description |
-|---|---|---|
-| `rollback_dev_data(rt_id?)` | `service_role` | Deletes all financial and communication data for one RT or all non-system RTs. Preserves `rt`, `residents`, `users`, `memberships`, `registration_requests`. |
-| `seed_dev_data(rt_id?, year?, payments?, confirmations?, expenses?)` | `service_role` | Generates realistic sample data for one RT: approved payments with ledger entries, pending confirmations, rejected confirmations, and expenses — each with matching notifications and activity logs. Returns a human-readable summary. |
-
-**Quick start** (run as `service_role` or `postgres` in Supabase SQL editor):
-
-```sql
--- Populate with defaults (2025, 40 payments, 10 confirmations, 24 expenses)
-select seed_dev_data();
-
--- Wipe and start over
-select rollback_dev_data();
-```
