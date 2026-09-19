@@ -532,8 +532,8 @@ for (const expId of EXPENSES_TO_APPROVE) {
   const { data } = await supabase.from('expenses').select('status').eq('id', expId).single()
   if (data?.status === 'approved') { expApproved++; continue }
   const { error } = await supabase.rpc('approve_expense', {
-    p_expense_id: expId,
-    p_user_id:    U_CHAIR,
+    p_id:      expId,
+    p_user_id: U_CHAIR,
   })
   if (error) throw new Error(`[approve_expense ${expId}] ${error.message}`)
   expApproved++
