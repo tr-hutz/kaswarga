@@ -3,7 +3,7 @@ import path from 'path'
 import fs from 'fs'
 
 const SESSION_FILE = path.join(__dirname, '../.auth/admin.json')
-const BASE_URL     = process.env.E2E_BASE_URL ?? 'http://localhost:3000'
+const BASE_URL     = process.env.E2E_BASE_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 
 /**
  * Log in as the admin test user and save a fresh storage state to session.json.
