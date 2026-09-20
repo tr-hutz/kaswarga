@@ -6,13 +6,13 @@ const SESSION_FILE = path.join(__dirname, '../.auth/admin.json')
 const BASE_URL     = process.env.E2E_BASE_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
 
 /**
- * Log in as the admin test user and save a fresh storage state to session.json.
+ * Log in as the admin test user and save a fresh storage state to admin.json.
  *
  * Why always fresh-login instead of reusing the existing session:
  *  The existing session's access token may be near expiry. When a browser context
  *  loads it, Supabase's autoRefreshToken fires a background refresh — rotating the
  *  refresh token. If the beforeAll hook times out before context.storageState() is
- *  called, session.json keeps the NOW-INVALID token, and every subsequent test that
+ *  called, admin.json keeps the NOW-INVALID token, and every subsequent test that
  *  loads it is redirected to /login.
  *
  *  A clean login always produces a brand-new token pair with no rotation risk.
@@ -23,7 +23,7 @@ export async function refreshAdminSession(browser: Browser): Promise<void> {
 
     if (!email || !password) {
         throw new Error(
-            'E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD must be set in .env.test.local'
+            'E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD must be set in .env.production.e2e (or .env.test.local for dev)'
         )
     }
 

@@ -11,7 +11,7 @@ setup('authenticate admin', async ({ page }) => {
 
   if (!email || !password) {
     throw new Error(
-      'E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD must be set in .env.test.local'
+      'E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD must be set in .env.production.e2e (or .env.test.local for dev)'
     )
   }
 
