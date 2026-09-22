@@ -56,7 +56,6 @@ interface Props {
     openEditForm:     (r: unknown) => void
     closeForm:        () => void
     // export
-    exportCSV:        (data: unknown[]) => void
     exportExcel:      (data: unknown[]) => void
     // import
     importOpen:       boolean
@@ -81,7 +80,7 @@ export default function ResidentView({
     onRowClick, onEdit, onDelete, onChangeRole, refresh,
     selectedResident, drawerOpen, closeDrawer,
     formOpen, openCreateForm, closeForm,
-    exportCSV, exportExcel,
+    exportExcel,
     importOpen, openImport, closeImport,
     rows: importRows, fileName: importFileName, fileRef: importFileRef,
     importing, importError,
@@ -170,7 +169,6 @@ export default function ResidentView({
                         <Can permission={PERMISSION.RESIDENT_EXPORT}>
                             <ExportDropdown
                                 onExportExcel={() => exportExcel(data)}
-                                onExportCSV={() => exportCSV(data)}
                             />
                         </Can>
                         <Can permission={PERMISSION.RESIDENT_IMPORT}>

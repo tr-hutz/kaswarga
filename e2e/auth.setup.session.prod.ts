@@ -3,16 +3,17 @@ import { LoginPage } from './pages/LoginPage'
 import path from 'path'
 import fs from 'fs'
 
-const sessionFile = path.join(__dirname, '.auth/admin.json')
+const sessionFile = path.join(__dirname, '.auth/session.json')
 
-setup('authenticate admin', async ({ page }) => {
+// Production variant: reuses the E2E admin account to create session.json.
+// The dev equivalent (auth.setup.ts) uses E2E_TEST_EMAIL which does not exist
+// in production environments.
+setup('authenticate session (prod)', async ({ page }) => {
   const email    = process.env.E2E_ADMIN_EMAIL
   const password = process.env.E2E_ADMIN_PASSWORD
 
   if (!email || !password) {
-    throw new Error(
-      'E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD must be set in .env.production.e2e (or .env.test.local for dev)'
-    )
+    throw new Error('E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD must be set in .env.production.e2e')
   }
 
   const loginPage = new LoginPage(page)

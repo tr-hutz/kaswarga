@@ -23,7 +23,6 @@ interface PageToolbarProps {
     setFilterValue?: (v: string) => void
     filterOptions?: { value: string; label: string }[]
     filterPlaceholder?: string
-    onExportCSV?: () => void
     onExportExcel?: () => void
     onImport?: () => void
 }
@@ -42,7 +41,6 @@ export default function PageToolbar({
                                         filterOptions = [],
                                         filterPlaceholder =
                                         'Filter',
-                                        onExportCSV,
                                         onExportExcel,
                                         onImport
 
@@ -207,10 +205,7 @@ export default function PageToolbar({
                 )}
 
                 <ToolbarExport
-
-                    onExportCSV={onExportCSV}
                     onExportExcel={onExportExcel}
-
                 />
 
             </div>

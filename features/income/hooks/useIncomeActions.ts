@@ -5,8 +5,11 @@ import { useState }          from 'react'
 import { createIncome, updateIncomeById, deleteIncomeById } from '@/lib/services/income.service'
 import { useIncomeApproval } from './useIncomeApproval'
 import { useIncomeImport }   from './useIncomeImport'
-import { exportIncomeToCSV, exportIncomeToExcel } from '@/features/income/services/income-export-transform'
+import { exportIncomeToExcel } from '@/features/income/services/income-export-transform'
+import { exportFileName }      from '@/lib/export/export-utils'
 import { useToast }          from '@/components/ui/ToastProvider'
+import { useAuth }           from '@/lib/auth/useAuth'
+import { logActivity }       from '@/lib/services/activity-logger'
 
 export function useIncomeActions({
     onReload,
@@ -16,7 +19,8 @@ export function useIncomeActions({
     onApprovalSuccess?: () => void
 } = {}) {
 
-    const { toast } = useToast()
+    const { toast }      = useToast()
+    const { membership } = useAuth()
 
     const [selectedRow,  setSelectedRow]  = useState<any>(null)
     const [drawerOpen,   setDrawerOpen]   = useState(false)
@@ -112,12 +116,21 @@ export function useIncomeActions({
     /* Export                                                               */
     /* ------------------------------------------------------------------ */
 
-    async function exportCSV(rows: any[]) {
-        await exportIncomeToCSV(rows)
-    }
-
     async function exportExcel(rows: any[]) {
-        await exportIncomeToExcel(rows)
+        const rtCode   = membership?.rt?.code ?? undefined
+        const fileName = exportFileName(membership?.rt?.name ?? 'RT', 'pemasukan')
+        await exportIncomeToExcel(rows, rtCode, fileName)
+        logActivity({
+            rtId:        membership?.rt?.id,
+            actorId:     membership?.user?.id,
+            actorName:   membership?.user?.name,
+            action:      'EXPORT',
+            entityType:  'income_transactions',
+            description: `${membership?.user?.name ?? 'Pengguna'} mengekspor data pemasukan`,
+        })
+        if (process.env.NODE_ENV === 'production' && rtCode) {
+            toast({ message: 'File dilindungi password. Gunakan kode RT untuk membuka.', type: 'success' })
+        }
     }
 
     /* ------------------------------------------------------------------ */
@@ -159,7 +172,6 @@ export function useIncomeActions({
         removeRow,
         confirmDelete,
         cancelDelete,
-        exportCSV,
         exportExcel,
         importRows,
         ...restImport,

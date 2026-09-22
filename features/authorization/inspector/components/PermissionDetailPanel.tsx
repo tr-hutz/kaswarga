@@ -3,14 +3,7 @@
 import { useTranslations }                       from 'next-intl'
 import Icon                                       from '@/components/ui/Icon'
 import type { PermissionDetails, RoleWithCount } from '@/features/authorization/inspector/types'
-
-const ROLE_LABELS: Record<string, string> = {
-    RT_ADMIN:  'Administrator',
-    RT_CHAIR:  'Ketua',
-    TREASURER: 'Bendahara',
-    SECRETARY: 'Sekretaris',
-    RESIDENT:  'Warga',
-}
+import { ROLE_LABELS, MODULE_LABELS, PERMISSION_LABELS } from '@/features/authorization/inspector/labels'
 
 function RoleCard({ role, variant }: { role: RoleWithCount; variant: 'granted' | 'grant' | 'revoke' }) {
     const colorMap = {
@@ -52,13 +45,13 @@ export default function PermissionDetailPanel({ permission, detail }: Props) {
                         <Icon name="key-round" size={20} />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <h2 className="text-lg font-bold text-foreground">{permission.name}</h2>
+                        <h2 className="text-lg font-bold text-foreground">{PERMISSION_LABELS[permission.code] ?? permission.name}</h2>
                         <p className="text-sm font-mono text-muted mt-0.5">{permission.code}</p>
                         {permission.description && (
                             <p className="text-sm text-muted mt-1">{permission.description}</p>
                         )}
                         <span className="inline-block mt-2 px-2 py-0.5 text-xs rounded-full bg-canvas border border-divider text-muted font-medium">
-                            {moduleName}
+                            {MODULE_LABELS[moduleName] ?? moduleName}
                         </span>
                     </div>
                 </div>

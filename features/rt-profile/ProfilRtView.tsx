@@ -43,9 +43,11 @@ interface RtProfileViewProps {
 
 export default function RtProfileView({ rt, loading, saving, onSave }: RtProfileViewProps) {
 
-    const [form,       setForm]       = useState(EMPTY)
-    const [dirty,      setDirty]      = useState(false)
-    const [generating, setGenerating] = useState(false)
+    const [form,            setForm]           = useState(EMPTY)
+    const [dirty,           setDirty]          = useState(false)
+    const [generating,      setGenerating]     = useState(false)
+    const [showBankDetails, setShowBankDetails] = useState(false)
+    const [showCode,        setShowCode]        = useState(false)
 
     useEffect(() => {
 
@@ -135,11 +137,22 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
 
                     <Field label={t('fields.code')}>
                         <div className="flex gap-2">
-                            <input
-                                value={form.code}
-                                onChange={e => set('code', e.target.value.toUpperCase())}
-                                className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
-                            />
+                            <div className="relative flex-1">
+                                <input
+                                    type={showCode ? 'text' : 'password'}
+                                    value={form.code}
+                                    onChange={e => set('code', e.target.value.toUpperCase())}
+                                    className="w-full border border-divider rounded-lg px-4 py-2.5 pr-10 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCode(v => !v)}
+                                    title={showCode ? t('sections.hideBank') : t('sections.showBank')}
+                                    className="absolute inset-y-0 right-3 flex items-center text-muted hover:text-foreground transition"
+                                >
+                                    <Icon name={showCode ? 'eye-off' : 'eye'} size={15} />
+                                </button>
+                            </div>
                             <button
                                 type="button"
                                 onClick={handleGenerateCode}
@@ -203,7 +216,18 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
 
                 </div>
 
-                <SectionTitle>{t('sections.bank')}</SectionTitle>
+                <div className="flex items-center justify-between pt-2">
+                    <SectionTitle>{t('sections.bank')}</SectionTitle>
+                    <button
+                        type="button"
+                        onClick={() => setShowBankDetails(v => !v)}
+                        className="flex items-center gap-1 text-xs text-muted hover:text-foreground transition"
+                        title={showBankDetails ? t('sections.hideBank') : t('sections.showBank')}
+                    >
+                        <Icon name={showBankDetails ? 'eye-off' : 'eye'} size={14} />
+                        {showBankDetails ? t('sections.hideBank') : t('sections.showBank')}
+                    </button>
+                </div>
 
                 <div className="grid grid-cols-2 gap-4">
 
@@ -217,6 +241,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
 
                     <Field label={t('fields.accountNumber')}>
                         <input
+                            type={showBankDetails ? 'text' : 'password'}
                             value={form.accountNumber}
                             onChange={e => set('accountNumber', e.target.value)}
                             className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"
@@ -226,6 +251,7 @@ export default function RtProfileView({ rt, loading, saving, onSave }: RtProfile
                     <div className="col-span-2">
                         <Field label={t('fields.accountHolder')}>
                             <input
+                                type={showBankDetails ? 'text' : 'password'}
                                 value={form.accountHolder}
                                 onChange={e => set('accountHolder', e.target.value)}
                                 className="w-full border border-divider rounded-lg px-4 py-2.5 text-sm bg-input text-foreground outline-none focus:ring-2 focus:ring-primary/30"

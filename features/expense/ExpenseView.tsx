@@ -45,7 +45,6 @@ interface Props {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     submitForm:      (payload: any) => Promise<void>
     removeRow:       (r: MappedExpense) => void
-    exportCSV:       (rows: MappedExpense[]) => void
     exportExcel:     (rows: MappedExpense[]) => void
     importOpen:      boolean
     openImport:      () => void
@@ -75,7 +74,7 @@ export default function ExpenseView({
     selectedRow, drawerOpen, formOpen,
     openDrawer, closeDrawer,
     openCreateForm, openEditForm, closeForm, submitForm,
-    removeRow, exportCSV, exportExcel,
+    removeRow, exportExcel,
     importOpen, openImport, closeImport,
     importRows, fileName: importFileName, fileRef: importFileRef,
     importing, handleFile, handleImport, downloadTemplate, resetImport,
@@ -171,7 +170,6 @@ export default function ExpenseView({
                         <Can permission={PERMISSION.EXPENSE_EXPORT}>
                             <ExportDropdown
                                 onExportExcel={() => exportExcel(data)}
-                                onExportCSV={() => exportCSV(data)}
                             />
                         </Can>
                         <Can permission={PERMISSION.EXPENSE_IMPORT}>

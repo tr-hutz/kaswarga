@@ -31,7 +31,7 @@ const HEADERS = {
 
 const SUPER_ADMIN = {
   id:       'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee',
-  email:    'superadmin@example.com',
+  email:    'superadmin@dev.com',
   password: 'Password123!',
 }
 

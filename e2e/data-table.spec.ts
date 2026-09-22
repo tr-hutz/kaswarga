@@ -271,18 +271,7 @@ test.describe('DataTable — contract tests', () => {
     // ─── Export ───────────────────────────────────────────────────────────────
 
     test.describe('export', () => {
-        test('Export CSV triggers a download with .csv extension', async ({ page }) => {
-            const dt = new DataTableFixturePage(page)
-            await dt.goto()
-
-            const downloadPromise = page.waitForEvent('download')
-            await dt.exportCSVButton().click()
-            const download = await downloadPromise
-
-            expect(download.suggestedFilename()).toMatch(/\.csv$/i)
-        })
-
-        test('Export Excel triggers a download with .xlsx extension', async ({ page }) => {
+        test('Ekspor Excel triggers a download with .xlsx extension', async ({ page }) => {
             const dt = new DataTableFixturePage(page)
             await dt.goto()
 

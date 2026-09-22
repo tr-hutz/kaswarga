@@ -6,6 +6,7 @@ import type { RoleRow } from '@/lib/repositories/role.repository'
 import Ribbon         from '@/components/ui/Ribbon'
 import Button           from '@/components/ui/Button'
 import Icon             from '@/components/ui/Icon'
+import { ROLE_LABELS }  from '@/features/authorization/inspector/labels'
 
 const CODE_TO_ENUM: Record<string, string> = {
     RT_CHAIR:  'CHAIR',
@@ -37,7 +38,7 @@ export function buildRoleColumns({
             sortable: true,
             render: row => (
                 <div>
-                    <p className="font-medium text-foreground">{row.name}</p>
+                    <p className="font-medium text-foreground">{ROLE_LABELS[row.code] ?? row.name}</p>
                     <p className="text-xs text-muted font-mono">{row.code}</p>
                 </div>
             ),

@@ -13,15 +13,13 @@ import {
 
 } from '@/lib/services/expense.service'
 
-import {
-
-    exportExpenseToCSV,
-    exportExpenseToExcel
-
-} from '@/features/expense/services/expense-export-transform'
-
-import { useExpenseImport }    from './useExpenseImport'
-import { useExpenseApproval } from './useExpenseApproval'
+import { exportExpenseToExcel } from '@/features/expense/services/expense-export-transform'
+import { exportFileName }       from '@/lib/export/export-utils'
+import { useExpenseImport }     from './useExpenseImport'
+import { useExpenseApproval }  from './useExpenseApproval'
+import { useAuth }             from '@/lib/auth/useAuth'
+import { useToast }            from '@/components/ui/ToastProvider'
+import { logActivity }         from '@/lib/services/activity-logger'
 
 export function useExpenseActions({
 
@@ -32,6 +30,9 @@ export function useExpenseActions({
     onReload?:          () => void
     onApprovalSuccess?: () => void
 } = {}) {
+
+    const { membership } = useAuth()
+    const { toast }      = useToast()
 
     /*
      |-------------------------------------------------------------
@@ -208,22 +209,21 @@ export function useExpenseActions({
      |-------------------------------------------------------------
      */
 
-    async function exportCSV(
-        rows: any[]
-    ) {
-
-        await exportExpenseToCSV(
-            rows as any
-        )
-    }
-
-    async function exportExcel(
-        rows: any[]
-    ) {
-
-        await exportExpenseToExcel(
-            rows as any
-        )
+    async function exportExcel(rows: any[]) {
+        const rtCode   = membership?.rt?.code ?? undefined
+        const fileName = exportFileName(membership?.rt?.name ?? 'RT', 'pengeluaran')
+        await exportExpenseToExcel(rows as any, rtCode, fileName)
+        logActivity({
+            rtId:        membership?.rt?.id,
+            actorId:     membership?.user?.id,
+            actorName:   membership?.user?.name,
+            action:      'EXPORT',
+            entityType:  'expenses',
+            description: `${membership?.user?.name ?? 'Pengguna'} mengekspor data pengeluaran`,
+        })
+        if (process.env.NODE_ENV === 'production' && rtCode) {
+            toast({ message: 'File dilindungi password. Gunakan kode RT untuk membuka.', type: 'success' })
+        }
     }
 
     /*
@@ -308,8 +308,6 @@ export function useExpenseActions({
         /*
          * export
          */
-
-        exportCSV,
 
         exportExcel,
 

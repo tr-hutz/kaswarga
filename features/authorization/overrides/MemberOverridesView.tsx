@@ -8,14 +8,7 @@ import Ribbon            from '@/components/ui/Ribbon'
 import OverrideTable       from './components/OverrideTable'
 import type { MemberRow }  from '@/lib/repositories/member-override.repository'
 import type { MemberInfo, PermissionGroup, OverrideSummary, OverrideFilter, RoleGroup } from './hooks/useMemberOverrides'
-
-const ROLE_LABELS: Record<string, string> = {
-    ADMIN:     'Administrator',
-    CHAIR:     'Ketua',
-    TREASURER: 'Bendahara',
-    SECRETARY: 'Sekretaris',
-    RESIDENT:  'Warga',
-}
+import { ROLE_LABELS } from '@/features/authorization/inspector/labels'
 
 interface Props {
     singleMode:     boolean

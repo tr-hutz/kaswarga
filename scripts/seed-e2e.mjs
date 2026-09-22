@@ -2,25 +2,32 @@
  * seed-e2e.mjs
  *
  * Seeds minimal test data for E2E payment and expense tests.
- * Uses fixed UUIDs and upserts so it is safe to re-run between test sessions.
+ * Uses fixed UUIDs so it is safe to re-run between test sessions.
  *
  * What it seeds (all in RT 01 — the RT used by every E2E session):
  *   - 5 payment_confirmations  (3 pending, 1 approved, 1 rejected)
  *   - 5 confirmation_details   (one per confirmation)
  *   - 5 expenses               (3 pending, 1 approved, 1 rejected)
+ *   - 2 income_donations       (1 DRAFT, 1 ACTIVE)
+ *   - 2 income_transactions    (1 pending OTHER, 1 pending DONATION)
  *
- * After running approval/rejection E2E tests the pending records get consumed.
- * Re-running this script resets them back to 'pending' so the next test run
- * starts clean.
+ * Before inserting, it removes stale payments and ledger entries that were
+ * created during previous E2E test runs (approve/reject actions).
+ * Status is then reset to its seed state via upsert so each test run starts
+ * from a known baseline.
  *
  * Usage:
- *   npm run seed:e2e
+ *   npm run seed:e2e                   # targets .env.local  (default)
+ *   APP_ENV=preview npm run seed:e2e   # targets .env.preview (staging/CI)
+ *
+ * Do NOT run against production — this script inserts test data.
  */
 
 import { createClient } from '@supabase/supabase-js'
 import { loadEnv } from './load-env.mjs'
 
-loadEnv('.env.local')
+const envFile = process.env.APP_ENV === 'preview' ? '.env.preview' : '.env.local'
+loadEnv(envFile)
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -285,10 +292,42 @@ async function upsert(table, rows) {
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
-console.log(`Supabase: ${SUPABASE_URL}`)
-console.log('=== E2E seed: inserting / resetting test data ===\n')
+console.log(`Supabase: ${SUPABASE_URL}  [${envFile}]`)
+console.log('=== E2E seed: cleaning up stale test data ===\n')
 
 try {
+  // Remove stale payment_details + ledger + payments created when E2E tests
+  // approved e2e confirmations in a previous run.  The e2e residents are R13–R17;
+  // only payments for those residents (in RT_ID, year 2026) are removed so that
+  // the rest of the dev-seed financial data is preserved.
+  const { data: stalePayments } = await supabase
+    .from('payments').select('id')
+    .eq('rt_id', RT_ID)
+    .in('resident_id', [R13, R14, R15, R16, R17])
+  if (stalePayments?.length) {
+    const ids = stalePayments.map(p => p.id)
+    await supabase.from('payment_details').delete().in('payment_id', ids)
+    await supabase.from('ledger').delete().in('reference_id', ids)
+    await supabase.from('payments').delete().in('id', ids)
+    console.log(`  ✓  removed ${stalePayments.length} stale payment(s) + ledger entries`)
+  } else {
+    console.log('  -  no stale payments found')
+  }
+
+  // Remove any ledger entries created when E2E tests approved expenses or
+  // income_transactions (approve_expense / income approve writes ledger rows).
+  const e2eRefIds = [
+    ...EXPENSES.map(e => e.id),
+    ...INCOME_TXS.map(t => t.id),
+  ]
+  const { count: ledgerDeleted } = await supabase
+    .from('ledger').delete().in('reference_id', e2eRefIds)
+  if (ledgerDeleted) {
+    console.log(`  ✓  removed ${ledgerDeleted} stale ledger entry/entries for expenses/income`)
+  }
+
+  console.log('\n=== E2E seed: inserting / resetting test data ===\n')
+
   await upsert('payment_confirmations', CONFIRMATIONS)
   const pendingConf = CONFIRMATIONS.filter(r => r.status === 'pending').length
   console.log(`  ✓  ${CONFIRMATIONS.length} payment_confirmations  (${pendingConf} pending)`)
@@ -311,13 +350,14 @@ try {
   console.log(`  ✓  ${INCOME_TXS.length} income_transactions  (${pendingTx} pending)`)
 
   console.log('\nE2E seed complete.')
-  console.log('  → payment drawer tests    (session.json  / ADMIN)      will pass')
+  console.log(`  target env : ${envFile}`)
+  console.log('  → payment drawer tests    (session.json   / ADMIN)      will pass')
   console.log('  → payment approval tests  (treasurer.json / TREASURER)  will pass')
-  console.log('  → expense drawer tests    (session.json  / ADMIN)      will pass')
-  console.log('  → income page tests       (chair.json    / CHAIR)       will pass')
+  console.log('  → expense drawer tests    (session.json   / ADMIN)      will pass')
+  console.log('  → income page tests       (chair.json     / CHAIR)       will pass')
   console.log('  → donation list tests     (treasurer.json / TREASURER)  will pass')
-  console.log('  → donation activation     (chair.json    / CHAIR)       will pass')
-  console.log('  → donation banner tests   (resident.json / RESIDENT)    will pass')
+  console.log('  → donation activation     (chair.json     / CHAIR)       will pass')
+  console.log('  → donation banner tests   (resident.json  / RESIDENT)    will pass')
   console.log('  → expense approval tests  skip: ADMIN role; only CHAIR can approve expenses')
 } catch (err) {
   console.error('\nSeed failed:', err.message)

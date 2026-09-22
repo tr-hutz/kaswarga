@@ -6,6 +6,7 @@ import Icon                 from '@/components/ui/Icon'
 import type {
     PermissionViewRow, ViewerFilter, ViewerSort, PermissionSource,
 } from '@/features/authorization/viewer/hooks/useEffectivePermission'
+import { MODULE_LABELS, PERMISSION_LABELS } from '@/features/authorization/inspector/labels'
 
 interface Props {
     rows:           PermissionViewRow[]
@@ -15,23 +16,6 @@ interface Props {
     onToggleExpand: (id: string) => void
     onFilterChange: (f: ViewerFilter) => void
     onSortChange:   (s: ViewerSort) => void
-}
-
-const MODULE_LABELS: Record<string, string> = {
-    resident:   'Warga',
-    membership: 'Keanggotaan',
-    payment:    'Pembayaran',
-    expense:    'Pengeluaran',
-    ledger:     'Buku Kas',
-    report:     'Laporan',
-    document:   'Dokumen',
-    settings:   'Pengaturan',
-    user:       'Pengguna',
-    role:       'Role',
-    permission: 'Izin',
-    rbac:       'Otorisasi',
-    audit:      'Audit',
-    other:      'Lainnya',
 }
 
 function SourceBadge({ source }: { source: PermissionSource }) {
@@ -155,7 +139,7 @@ export default function PermissionDetailTable({
                                             <Icon name={isExpanded ? 'chevron-down' : 'chevron-right'} size={14} />
                                         </td>
                                         <td className="px-4 py-3">
-                                            <p className="font-medium text-foreground">{row.name}</p>
+                                            <p className="font-medium text-foreground">{PERMISSION_LABELS[row.code] ?? row.name}</p>
                                             <p className="text-xs text-muted font-mono">{row.code}</p>
                                         </td>
                                         <td className="px-4 py-3">
