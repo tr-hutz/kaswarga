@@ -404,8 +404,8 @@
       "system": "System"
     },
     "roles": {
-      "CHAIR": "Ketua",
-      "ADMIN": "Admin",
+      "CHAIR": "Ketua RT",
+      "ADMIN": "Admin RT",
       "TREASURER": "Bendahara",
       "RESIDENT": "Warga",
       "SUPER_ADMIN": "Super Admin"
