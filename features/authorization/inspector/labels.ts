@@ -1,10 +1,14 @@
 export const ROLE_LABELS: Record<string, string> = {
+    // Membership enum values (memberships.role)
     SUPER_ADMIN: 'Super Admin',
     ADMIN:       'Admin RT',
     CHAIR:       'Ketua RT',
     TREASURER:   'Bendahara',
     SECRETARY:   'Sekretaris',
     RESIDENT:    'Warga',
+    // Role code aliases (roles.code) — same labels, different key format
+    RT_ADMIN:    'Admin RT',
+    RT_CHAIR:    'Ketua RT',
 }
 
 export const MODULE_LABELS: Record<string, string> = {
