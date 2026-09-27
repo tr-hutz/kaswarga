@@ -109,7 +109,8 @@
     "brand": "Kas Warga",
     "logout": "Keluar",
     "navToggle": "Toggle navigasi",
-    "search": "Cari"
+    "search": "Cari",
+    "help": "Panduan"
   },
   "commandPalette": {
     "label": "Pencarian global",

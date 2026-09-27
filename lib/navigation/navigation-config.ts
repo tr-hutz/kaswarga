@@ -194,13 +194,6 @@ export const NAVIGATION: NavItem[] = [
      */
 
     {
-        label:      'help',
-        href:       '/help',
-        icon:       'book-open',
-        permission: null,
-    },
-
-    {
         label:      'changePassword',
         href:       '/change-password',
         icon:       'key-round',
