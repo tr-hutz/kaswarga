@@ -10,7 +10,7 @@
 
 INSERT INTO guide_sections (id, title, body, category, position, is_published) VALUES
 (
-    'gs000001-0000-0000-0000-000000000001',
+    '00000001-0000-0000-0000-000000000001',
     'Selamat Datang di KasWarga',
     'KasWarga adalah aplikasi manajemen keuangan dan administrasi untuk Rukun Tetangga (RT). Aplikasi ini membantu pengurus RT mengelola data warga, pencatatan iuran bulanan, pengeluaran RT, serta laporan keuangan secara digital dan transparan.
 
@@ -22,7 +22,7 @@ Panduan ini akan membantu Anda memahami fitur-fitur utama aplikasi dan cara meng
     true
 ),
 (
-    'gs000001-0000-0000-0000-000000000002',
+    '00000001-0000-0000-0000-000000000002',
     'Cara Login',
     'Untuk masuk ke aplikasi KasWarga, buka halaman login di browser Anda. Masukkan alamat email yang telah didaftarkan oleh pengurus RT Anda, lalu masukkan kata sandi Anda.
 
@@ -34,7 +34,7 @@ Jika Anda lupa kata sandi, klik tautan "Lupa kata sandi?" di halaman login dan i
     true
 ),
 (
-    'gs000001-0000-0000-0000-000000000003',
+    '00000001-0000-0000-0000-000000000003',
     'Navigasi Dasar',
     'Setelah login, Anda akan melihat sidebar di sisi kiri layar yang berisi menu navigasi utama. Setiap menu membawa Anda ke bagian fitur yang berbeda.
 
@@ -46,7 +46,7 @@ Menu "Pembayaran" digunakan untuk mengelola konfirmasi iuran warga. Menu "Pengel
     true
 ),
 (
-    'gs000001-0000-0000-0000-000000000004',
+    '00000001-0000-0000-0000-000000000004',
     'Ubah Kata Sandi',
     'Untuk mengubah kata sandi, klik ikon profil atau nama Anda di bagian atas halaman (topbar). Pilih "Pengaturan" atau "Profil" dari menu yang muncul.
 
@@ -64,7 +64,7 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO guide_sections (id, title, body, category, position, is_published) VALUES
 (
-    'gs000002-0000-0000-0000-000000000001',
+    '00000002-0000-0000-0000-000000000001',
     'Kelola Data Warga',
     'Menu "Warga" menampilkan daftar seluruh warga yang terdaftar di RT Anda beserta informasi seperti nama, alamat, blok dan nomor rumah, serta status keanggotaan.
 
@@ -76,7 +76,7 @@ Untuk mengedit data warga, klik baris warga yang ingin diubah atau klik ikon edi
     true
 ),
 (
-    'gs000002-0000-0000-0000-000000000002',
+    '00000002-0000-0000-0000-000000000002',
     'Pencatatan Iuran',
     'Fitur pembayaran iuran digunakan untuk mencatat pembayaran bulanan dari warga. Warga atau pengurus dapat mengunggah bukti transfer pembayaran sebagai konfirmasi.
 
@@ -88,7 +88,7 @@ Untuk menyetujui konfirmasi, klik tombol "Setujui". Sistem secara otomatis akan 
     true
 ),
 (
-    'gs000002-0000-0000-0000-000000000003',
+    '00000002-0000-0000-0000-000000000003',
     'Pencatatan Pengeluaran',
     'Menu "Pengeluaran" digunakan untuk mencatat semua pengeluaran yang dilakukan oleh RT, seperti biaya kebersihan, keamanan, pemeliharaan fasilitas, dan operasional lainnya.
 
@@ -100,7 +100,7 @@ Ketua RT bertugas meninjau dan menyetujui pengeluaran. Setelah disetujui, saldo 
     true
 ),
 (
-    'gs000002-0000-0000-0000-000000000004',
+    '00000002-0000-0000-0000-000000000004',
     'Laporan Keuangan',
     'Menu "Laporan" menampilkan ringkasan kondisi keuangan RT secara keseluruhan, termasuk total pemasukan dari iuran, total pengeluaran, dan saldo saat ini.
 
@@ -112,7 +112,7 @@ Laporan juga menampilkan daftar warga yang masih memiliki tunggakan iuran, beser
     true
 ),
 (
-    'gs000002-0000-0000-0000-000000000005',
+    '00000002-0000-0000-0000-000000000005',
     'Pengumuman',
     'Fitur pengumuman memungkinkan pengurus RT untuk menyebarkan informasi penting kepada seluruh anggota RT yang terdaftar di aplikasi.
 
@@ -124,7 +124,7 @@ Pengumuman yang sudah diterbitkan dapat dilihat oleh seluruh anggota RT yang log
     true
 ),
 (
-    'gs000002-0000-0000-0000-000000000006',
+    '00000002-0000-0000-0000-000000000006',
     'Manajemen Anggota',
     'Menu "Keanggotaan" atau "Pengguna" memungkinkan pengurus untuk mengelola siapa saja yang memiliki akses ke aplikasi dan dengan peran apa.
 
@@ -142,7 +142,7 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO guide_sections (id, title, body, category, position, is_published) VALUES
 (
-    'gs000003-0000-0000-0000-000000000001',
+    '00000003-0000-0000-0000-000000000001',
     'Lupa Kata Sandi?',
     'Jika Anda lupa kata sandi, jangan khawatir. Di halaman login, klik tautan "Lupa kata sandi?" yang terletak di bawah formulir login.
 
@@ -154,7 +154,7 @@ Klik tautan di email tersebut dan ikuti instruksi untuk membuat kata sandi baru.
     true
 ),
 (
-    'gs000003-0000-0000-0000-000000000002',
+    '00000003-0000-0000-0000-000000000002',
     'Bagaimana Cara Mendaftarkan RT Baru?',
     'Pendaftaran RT baru di KasWarga dilakukan melalui proses registrasi yang dikelola oleh Super Admin sistem. RT yang ingin bergabung perlu menghubungi pengelola platform KasWarga untuk memulai proses pendaftaran.
 
@@ -166,7 +166,7 @@ Setelah pengajuan disetujui, ketua RT akan menerima undangan melalui email untuk
     true
 ),
 (
-    'gs000003-0000-0000-0000-000000000003',
+    '00000003-0000-0000-0000-000000000003',
     'Apakah Data Saya Aman?',
     'Ya, keamanan data adalah prioritas utama KasWarga. Semua data disimpan di infrastruktur cloud yang aman dengan enkripsi data baik saat disimpan maupun saat dikirimkan melalui jaringan.
 
@@ -178,7 +178,7 @@ Akses ke aplikasi dilindungi dengan autentikasi berbasis email dan kata sandi. K
     true
 ),
 (
-    'gs000003-0000-0000-0000-000000000004',
+    '00000003-0000-0000-0000-000000000004',
     'Siapa yang Bisa Melihat Data Keuangan?',
     'Akses ke data keuangan RT dibatasi berdasarkan peran pengguna. Tidak semua anggota RT dapat melihat seluruh informasi keuangan.
 
@@ -190,7 +190,7 @@ Warga biasa hanya dapat melihat riwayat pembayaran iuran mereka sendiri dan tida
     true
 ),
 (
-    'gs000003-0000-0000-0000-000000000005',
+    '00000003-0000-0000-0000-000000000005',
     'Bagaimana Cara Mengekspor Laporan?',
     'KasWarga menyediakan fitur ekspor laporan untuk memudahkan pengurus dalam berbagi data keuangan dengan warga atau untuk keperluan dokumentasi.
 
