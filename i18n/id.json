@@ -1633,7 +1633,9 @@
       "published": "Terbitkan",
       "save": "Simpan",
       "cancel": "Batal",
-      "titleRequired": "Judul wajib diisi"
+      "titleRequired": "Judul wajib diisi",
+      "bodyPlaceholder": "Tulis konten panduan di sini...",
+      "bodyHint": "Mendukung format Markdown dasar (tebal, miring, judul, daftar)"
     }
   }
 }
