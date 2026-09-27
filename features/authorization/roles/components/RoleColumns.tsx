@@ -37,7 +37,10 @@ export function buildRoleColumns({
             title:    t('columns.name'),
             sortable: true,
             render: row => (
-                <p className="font-medium text-foreground">{ROLE_LABELS[row.code] ?? row.name}</p>
+                <div>
+                    <p className="font-medium text-foreground">{ROLE_LABELS[row.code] ?? row.name}</p>
+                    <p className="text-xs text-muted font-mono">{row.code}</p>
+                </div>
             ),
         },
         {
