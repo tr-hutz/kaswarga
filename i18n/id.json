@@ -101,7 +101,9 @@
     "permissionMatrix": "Matriks Akses",
     "memberOverrides": "Override Akses",
     "effectivePermissions": "Lihat Izin Efektif",
-    "permissionInspector": "Inspeksi Izin"
+    "permissionInspector": "Inspeksi Izin",
+    "help": "Panduan",
+    "guideManage": "Kelola Panduan"
   },
   "topbar": {
     "brand": "Kas Warga",
@@ -1598,6 +1600,40 @@
       "override_grant": "Diberikan oleh Override",
       "override_revoke": "Dicabut oleh Override",
       "none": "Izin tidak ditetapkan"
+    }
+  },
+  "guide": {
+    "public": {
+      "title": "Panduan Pengguna",
+      "subtitle": "Pelajari cara menggunakan aplikasi KasWarga",
+      "empty": "Belum ada panduan yang tersedia.",
+      "selectSection": "Pilih bagian dari menu di kiri."
+    },
+    "admin": {
+      "title": "Kelola Panduan",
+      "subtitle": "Tambah, ubah, atau hapus bagian panduan pengguna",
+      "addSection": "Tambah Bagian",
+      "editSection": "Ubah Bagian",
+      "newSection": "Bagian Baru",
+      "empty": "Belum ada bagian panduan.",
+      "draft": "Draft",
+      "positionLabel": "Urutan: {position}"
+    },
+    "categories": {
+      "quick_start": "Mulai Cepat",
+      "feature": "Fitur",
+      "faq": "FAQ",
+      "general": "Umum"
+    },
+    "form": {
+      "title": "Judul",
+      "body": "Konten",
+      "category": "Kategori",
+      "position": "Urutan",
+      "published": "Terbitkan",
+      "save": "Simpan",
+      "cancel": "Batal",
+      "titleRequired": "Judul wajib diisi"
     }
   }
 }

@@ -1460,6 +1460,45 @@ export type Database = {
         }
         Relationships: []
       }
+      guide_sections: {
+        Row: {
+          id:           string
+          title:        string
+          body:         string
+          category:     string
+          position:     number
+          is_published: boolean
+          created_at:   string
+          created_by:   string | null
+          updated_at:   string
+          updated_by:   string | null
+        }
+        Insert: {
+          id?:          string
+          title:        string
+          body?:        string
+          category?:    string
+          position?:    number
+          is_published?: boolean
+          created_at?:  string
+          created_by?:  string | null
+          updated_at?:  string
+          updated_by?:  string | null
+        }
+        Update: {
+          id?:          string
+          title?:       string
+          body?:        string
+          category?:    string
+          position?:    number
+          is_published?: boolean
+          created_at?:  string
+          created_by?:  string | null
+          updated_at?:  string
+          updated_by?:  string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

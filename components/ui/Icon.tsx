@@ -2,7 +2,7 @@
 
 import {
     Activity, AlertCircle, AlertTriangle, ArrowLeft, ArrowRight,
-    Bell, Building2, Check, CheckCheck, CheckCircle,
+    Bell, BookOpen, Building2, Check, CheckCheck, CheckCircle,
     ChevronDown, ChevronLeft, ChevronRight, ChevronUp,
     PanelLeft, PanelLeftClose, PanelLeftOpen,
     ClipboardList, Clock, Copy, Download, Eye, EyeOff,
@@ -17,6 +17,7 @@ import type { LucideProps } from 'lucide-react'
 
 const ICONS = {
     activity:           Activity,
+    'book-open':        BookOpen,
     'alert-circle':     AlertCircle,
     'alert-triangle':   AlertTriangle,
     'arrow-left':       ArrowLeft,

@@ -24,7 +24,7 @@ import { logout }   from '@/lib/services/auth.service'
 import { ImportNotificationProvider } from '@/components/import/ImportNotificationContext'
 import ImportNotifications            from '@/components/import/ImportNotifications'
 
-const PUBLIC_PATHS = ['/login', '/register', '/activation', '/test', '/maintenance']
+const PUBLIC_PATHS = ['/login', '/register', '/activation', '/test', '/maintenance', '/help']
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
