@@ -17,8 +17,7 @@ INSERT INTO guide_sections (id, category, position, is_published) VALUES
     ('00000002-0000-0000-0000-000000000002', 'feature',     2, true),
     ('00000002-0000-0000-0000-000000000003', 'feature',     3, true),
     ('00000002-0000-0000-0000-000000000004', 'feature',     4, true),
-    ('00000002-0000-0000-0000-000000000005', 'feature',     5, true),
-    ('00000002-0000-0000-0000-000000000006', 'feature',     6, true),
+    ('00000002-0000-0000-0000-000000000006', 'feature',     5, true),
     ('00000003-0000-0000-0000-000000000001', 'faq',         1, true),
     ('00000003-0000-0000-0000-000000000002', 'faq',         2, true),
     ('00000003-0000-0000-0000-000000000003', 'faq',         3, true),
@@ -101,15 +100,6 @@ Ketua RT bertugas meninjau dan menyetujui pengeluaran. Setelah disetujui, saldo 
 Buku kas menampilkan seluruh riwayat transaksi secara kronologis, baik pemasukan maupun pengeluaran, lengkap dengan tanggal dan keterangan. Anda dapat memfilter berdasarkan periode bulan dan tahun untuk melihat laporan dalam rentang waktu tertentu.
 
 Laporan juga menampilkan daftar warga yang masih memiliki tunggakan iuran, beserta jumlah bulan yang belum dibayar dan total nominal tunggakan. Fitur ekspor tersedia untuk mengunduh laporan dalam format yang dapat dibagikan kepada pengurus RT.'
-),
-(
-    '00000002-0000-0000-0000-000000000005', 'id',
-    'Pengumuman',
-    'Fitur pengumuman memungkinkan pengurus RT untuk menyebarkan informasi penting kepada seluruh anggota RT yang terdaftar di aplikasi.
-
-Untuk membuat pengumuman baru, buka menu "Pengumuman" dan klik tombol "Tambah Pengumuman". Isi judul dan isi pengumuman, lalu pilih apakah ingin menerbitkannya segera atau menyimpannya sebagai draft terlebih dahulu.
-
-Pengumuman yang sudah diterbitkan dapat dilihat oleh seluruh anggota RT yang login ke aplikasi. Pengurus dapat mengedit atau menghapus pengumuman kapan saja melalui menu aksi yang tersedia di daftar pengumuman.'
 ),
 (
     '00000002-0000-0000-0000-000000000006', 'id',
