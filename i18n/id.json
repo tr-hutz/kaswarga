@@ -1608,7 +1608,8 @@
       "title": "Panduan Pengguna",
       "subtitle": "Pelajari cara menggunakan aplikasi KasWarga",
       "empty": "Belum ada panduan yang tersedia.",
-      "selectSection": "Pilih bagian dari menu di kiri."
+      "selectSection": "Pilih bagian dari menu di kiri.",
+      "loading": "Memuat panduan..."
     },
     "admin": {
       "title": "Kelola Panduan",
@@ -1618,13 +1619,18 @@
       "newSection": "Bagian Baru",
       "empty": "Belum ada bagian panduan.",
       "draft": "Draft",
-      "positionLabel": "Urutan: {position}"
+      "positionLabel": "Urutan: {position}",
+      "translations": "Terjemahan"
     },
     "categories": {
       "quick_start": "Mulai Cepat",
       "feature": "Fitur",
       "faq": "FAQ",
       "general": "Umum"
+    },
+    "locales": {
+      "id": "Bahasa Indonesia",
+      "en": "English"
     },
     "form": {
       "title": "Judul",
@@ -1636,7 +1642,10 @@
       "cancel": "Batal",
       "titleRequired": "Judul wajib diisi",
       "bodyPlaceholder": "Tulis konten panduan di sini...",
-      "bodyHint": "Mendukung format Markdown dasar (tebal, miring, judul, daftar)"
+      "bodyHint": "Mendukung format Markdown dasar (tebal, miring, judul, daftar)",
+      "locale": "Bahasa",
+      "targetRoles": "Target Peran",
+      "targetRolesAll": "Semua Peran"
     }
   }
 }

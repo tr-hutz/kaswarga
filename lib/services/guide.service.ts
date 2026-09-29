@@ -1,77 +1,78 @@
-import { ForbiddenError }    from '@/lib/auth/errors'
-import type { AuthorizationContext } from '@/lib/auth/authorization-context'
 import {
-    listPublishedSections,
-    listAllSections,
-    findSectionById,
-    insertSection,
-    updateSectionById,
-    deleteSectionById,
+    findPublishedSections,
+    findAllSectionsWithTranslations,
+    createSection,
+    updateSection,
+    deleteSection,
+    upsertTranslation,
     type GuideRow,
+    type GuideAdminRow,
+    type GuideTranslation,
 } from '@/lib/repositories/guide.repository'
+import type { AuthorizationContext } from '@/lib/auth/authorization-context'
 
-export type { GuideRow }
+export type { GuideRow, GuideAdminRow, GuideTranslation }
 
-export interface GuideSectionPayload {
-    title:        string
-    body:         string
-    category:     string
-    position:     number
-    is_published: boolean
-}
+const SUPER_ADMIN_CODE = 'SUPER_ADMIN'
 
 function requireSuperAdmin(auth: AuthorizationContext) {
-    if (auth.roleCode !== 'SUPER_ADMIN') {
-        throw new ForbiddenError('Super Admin only')
-    }
+    if (auth.roleCode !== SUPER_ADMIN_CODE) throw new Error('Forbidden')
 }
 
-export async function getPublishedSections(): Promise<GuideRow[]> {
-    return listPublishedSections()
+export async function getPublishedSections(locale: string, auth: AuthorizationContext): Promise<GuideRow[]> {
+    return findPublishedSections(locale, auth.roleCode)
 }
 
-export async function getAllSections(auth: AuthorizationContext): Promise<GuideRow[]> {
+export async function getAllSections(auth: AuthorizationContext): Promise<GuideAdminRow[]> {
     requireSuperAdmin(auth)
-    return listAllSections()
+    return findAllSectionsWithTranslations()
 }
 
-export async function createSection(
-    payload: GuideSectionPayload,
-    auth: AuthorizationContext,
-): Promise<GuideRow> {
+export async function addSection(
+    payload: {
+        category:     string
+        position:     number
+        is_published: boolean
+        target_roles: string[] | null
+        locale:       string
+        title:        string
+        body:         string
+    },
+    auth: AuthorizationContext
+): Promise<GuideAdminRow> {
     requireSuperAdmin(auth)
-    return insertSection({
-        title:        payload.title.trim(),
-        body:         payload.body,
-        category:     payload.category,
-        position:     payload.position,
-        is_published: payload.is_published,
-        created_by:   auth.userId,
-        updated_by:   auth.userId,
-    })
+    return createSection({ ...payload, created_by: auth.userId })
 }
 
-export async function updateSection(
-    id: string,
-    payload: Partial<GuideSectionPayload>,
-    auth: AuthorizationContext,
-): Promise<GuideRow> {
+export async function editSection(
+    id:      string,
+    payload: {
+        category?:     string
+        position?:     number
+        is_published?: boolean
+        target_roles?: string[] | null
+        locale:        string
+        title?:        string
+        body?:         string
+    },
+    auth: AuthorizationContext
+): Promise<GuideAdminRow> {
     requireSuperAdmin(auth)
-    const existing = await findSectionById(id)
-    if (!existing) throw new Error('Guide section not found')
-    return updateSectionById(id, {
-        ...payload,
-        title:      payload.title?.trim() ?? existing.title,
-        updated_by: auth.userId,
-    })
+    return updateSection(id, { ...payload, updated_by: auth.userId })
 }
 
-export async function deleteSection(
-    id: string,
-    auth: AuthorizationContext,
-): Promise<void> {
+export async function addTranslation(
+    sectionId: string,
+    locale:    string,
+    title:     string,
+    body:      string,
+    auth:      AuthorizationContext
+): Promise<GuideTranslation> {
     requireSuperAdmin(auth)
-    const existing = await findSectionById(id)
-    if (!existing) throw new Error('Guide section not found')
-    return deleteSectionById(id)
+    return upsertTranslation(sectionId, locale, title, body)
+}
+
+export async function removeSection(id: string, auth: AuthorizationContext): Promise<void> {
+    requireSuperAdmin(auth)
+    return deleteSection(id)
 }

@@ -1,12 +1,13 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
-import Button               from '@/components/ui/Button'
-import Icon                 from '@/components/ui/Icon'
-import Ribbon               from '@/components/ui/Ribbon'
-import GuideSectionForm     from './components/GuideSectionForm'
-import { useGuideAdmin }    from './hooks/useGuideAdmin'
-import type { GuideRow }    from '@/lib/repositories/guide.repository'
+import { useState }           from 'react'
+import { useTranslations }    from 'next-intl'
+import Button                 from '@/components/ui/Button'
+import Icon                   from '@/components/ui/Icon'
+import Ribbon                 from '@/components/ui/Ribbon'
+import GuideSectionForm       from './components/GuideSectionForm'
+import { useGuideAdmin }      from './hooks/useGuideAdmin'
+import type { GuideAdminRow } from '@/lib/repositories/guide.repository'
 
 const CATEGORY_COLORS: Record<string, 'active' | 'inactive' | 'pending' | 'approved'> = {
     quick_start: 'active',
@@ -15,8 +16,10 @@ const CATEGORY_COLORS: Record<string, 'active' | 'inactive' | 'pending' | 'appro
     general:     'inactive',
 }
 
+const LOCALE_LABELS: Record<string, string> = { id: 'ID', en: 'EN' }
+
 export default function GuideAdminView() {
-    const t = useTranslations('guide')
+    const t  = useTranslations('guide')
     const tc = useTranslations('common')
     const {
         sections, loading, saving, error,
@@ -24,6 +27,7 @@ export default function GuideAdminView() {
         startCreate, startEdit, cancelForm, save, remove,
     } = useGuideAdmin()
 
+    const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
     const showForm = creating || editing !== null
 
     return (
@@ -71,24 +75,43 @@ export default function GuideAdminView() {
                 </div>
             ) : (
                 <div className="space-y-2">
-                    {sections.map((row: GuideRow) => (
+                    {sections.map((row: GuideAdminRow) => (
                         <div
                             key={row.id}
                             className="flex items-start gap-4 rounded-xl border border-divider bg-surface p-4"
                         >
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1 min-w-0 space-y-1.5">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                    <p className="font-medium text-foreground">{row.title}</p>
                                     <Ribbon
                                         label={t(`categories.${row.category}`)}
-                                        type={CATEGORY_COLORS[row.category] ?? 'inactive' as const}
+                                        type={CATEGORY_COLORS[row.category] ?? 'inactive'}
                                         variant="rounded"
                                     />
                                     {!row.is_published && (
                                         <Ribbon label={t('admin.draft')} type="inactive" variant="rounded" />
                                     )}
+                                    {/* Translation badges */}
+                                    {row.translations.map(tr => (
+                                        <span
+                                            key={tr.locale}
+                                            className="px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-primary/10 text-primary"
+                                        >
+                                            {LOCALE_LABELS[tr.locale] ?? tr.locale.toUpperCase()}
+                                        </span>
+                                    ))}
                                 </div>
-                                <p className="text-xs text-muted mt-1">{t('admin.positionLabel', { position: row.position })}</p>
+                                {/* Show Indonesian title as label, or fallback */}
+                                <p className="font-medium text-foreground text-sm">
+                                    {row.translations.find(tr => tr.locale === 'id')?.title
+                                     ?? row.translations[0]?.title
+                                     ?? '—'}
+                                </p>
+                                <p className="text-xs text-muted">{t('admin.positionLabel', { position: row.position })}</p>
+                                {row.target_roles && row.target_roles.length > 0 && (
+                                    <p className="text-xs text-muted">
+                                        {t('form.targetRoles')}: {row.target_roles.join(', ')}
+                                    </p>
+                                )}
                             </div>
                             <div className="flex items-center gap-1 shrink-0">
                                 <Button
@@ -100,15 +123,37 @@ export default function GuideAdminView() {
                                 >
                                     <Icon name="pencil" size={14} />
                                 </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    title={tc('actions.delete')}
-                                    onClick={() => remove(row.id)}
-                                    disabled={saving}
-                                >
-                                    <Icon name="trash2" size={14} />
-                                </Button>
+                                {deleteConfirm === row.id ? (
+                                    <div className="flex items-center gap-1">
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => { remove(row.id); setDeleteConfirm(null) }}
+                                            disabled={saving}
+                                            className="text-danger"
+                                        >
+                                            <Icon name="check" size={14} />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => setDeleteConfirm(null)}
+                                            disabled={saving}
+                                        >
+                                            <Icon name="x" size={14} />
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        title={tc('actions.delete')}
+                                        onClick={() => setDeleteConfirm(row.id)}
+                                        disabled={saving}
+                                    >
+                                        <Icon name="trash2" size={14} />
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     ))}
