@@ -169,6 +169,17 @@ export async function deleteSection(id: string): Promise<void> {
     if (error) throw new Error(error.message)
 }
 
+/** Returns the distinct locales that have at least one published translation. */
+export async function findAvailableLocales(): Promise<string[]> {
+    const { data, error } = await supabaseAdmin
+        .from('guide_section_translations')
+        .select('locale, guide_sections!inner(is_published)')
+        .eq('guide_sections.is_published', true)
+    if (error) throw new Error(error.message)
+    const locales = [...new Set((data ?? []).map((r: { locale: string }) => r.locale))]
+    return locales.sort()
+}
+
 export async function upsertTranslation(
     sectionId: string,
     locale:    string,

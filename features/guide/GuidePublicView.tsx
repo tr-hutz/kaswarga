@@ -4,18 +4,19 @@ import { useState }          from 'react'
 import { useTranslations }   from 'next-intl'
 import type { GuideRow }     from '@/lib/repositories/guide.repository'
 
-const LOCALES = [
-    { code: 'id', label: 'Bahasa Indonesia' },
-    { code: 'en', label: 'English' },
-] as const
+const LOCALE_LABELS: Record<string, string> = {
+    id: 'Bahasa Indonesia',
+    en: 'English',
+}
 
 const CATEGORY_ORDER = ['quick_start', 'feature', 'faq', 'general']
 
 interface Props {
-    initialSections: GuideRow[]
+    initialSections:  GuideRow[]
+    availableLocales: string[]
 }
 
-export default function GuidePublicView({ initialSections }: Props) {
+export default function GuidePublicView({ initialSections, availableLocales }: Props) {
     const t = useTranslations('guide')
 
     const [sections,     setSections]     = useState<GuideRow[]>(initialSections)
@@ -52,23 +53,25 @@ export default function GuidePublicView({ initialSections }: Props) {
 
     return (
         <div className="space-y-4">
-            {/* Language switcher */}
-            <div className="flex items-center gap-1 p-1 rounded-lg bg-canvas border border-divider w-fit">
-                {LOCALES.map(loc => (
-                    <button
-                        key={loc.code}
-                        onClick={() => switchLocale(loc.code)}
-                        disabled={loadingLang}
-                        className={`px-3 py-1 rounded text-sm font-medium transition-colors disabled:opacity-50 ${
-                            locale === loc.code
-                                ? 'bg-primary text-white'
-                                : 'text-muted hover:text-foreground'
-                        }`}
-                    >
-                        {loc.label}
-                    </button>
-                ))}
-            </div>
+            {/* Language switcher — only shown when multiple locales have translations */}
+            {availableLocales.length > 1 && (
+                <div className="flex items-center gap-1 p-1 rounded-lg bg-canvas border border-divider w-fit">
+                    {availableLocales.map(code => (
+                        <button
+                            key={code}
+                            onClick={() => switchLocale(code as 'id' | 'en')}
+                            disabled={loadingLang}
+                            className={`px-3 py-1 rounded text-sm font-medium transition-colors disabled:opacity-50 ${
+                                locale === code
+                                    ? 'bg-primary text-white'
+                                    : 'text-muted hover:text-foreground'
+                            }`}
+                        >
+                            {LOCALE_LABELS[code] ?? code}
+                        </button>
+                    ))}
+                </div>
+            )}
 
             <div className="flex gap-6 min-h-[60vh]">
                 {/* Sidebar TOC */}

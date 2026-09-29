@@ -1,6 +1,7 @@
 import {
     findPublishedSections,
     findAllSectionsWithTranslations,
+    findAvailableLocales,
     createSection,
     updateSection,
     deleteSection,
@@ -17,6 +18,10 @@ const SUPER_ADMIN_CODE = 'SUPER_ADMIN'
 
 function requireSuperAdmin(auth: AuthorizationContext) {
     if (auth.roleCode !== SUPER_ADMIN_CODE) throw new Error('Forbidden')
+}
+
+export async function getAvailableLocales(): Promise<string[]> {
+    return findAvailableLocales()
 }
 
 export async function getPublishedSections(locale: string, auth: AuthorizationContext): Promise<GuideRow[]> {
