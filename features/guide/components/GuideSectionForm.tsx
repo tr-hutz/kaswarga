@@ -1,13 +1,13 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useTranslations }              from 'next-intl'
-import Input                            from '@/components/ui/Input'
-import Select                           from '@/components/ui/Select'
-import Checkbox                         from '@/components/ui/Checkbox'
-import Button                           from '@/components/ui/Button'
-import Icon                             from '@/components/ui/Icon'
-import type { GuideAdminRow }           from '@/lib/repositories/guide.repository'
+import { useTranslations }                           from 'next-intl'
+import Input                                         from '@/components/ui/Input'
+import Select                                        from '@/components/ui/Select'
+import Checkbox                                      from '@/components/ui/Checkbox'
+import Button                                        from '@/components/ui/Button'
+import Icon                                          from '@/components/ui/Icon'
+import type { GuideAdminRow }                        from '@/lib/repositories/guide.repository'
 
 const LOCALES = [
     { code: 'id', label: 'Bahasa Indonesia' },
@@ -117,7 +117,36 @@ export default function GuideSectionForm({ initial, saving, onSave, onCancel }: 
     const [activeLocale, setActiveLocale] = useState<'id' | 'en'>('id')
     const [errors,       setErrors]       = useState<Partial<Record<'title', string>>>({})
 
-    const taRef = useRef<HTMLTextAreaElement>(null)
+    const taRef      = useRef<HTMLTextAreaElement>(null)
+    const fileRef    = useRef<HTMLInputElement>(null)
+    const [uploading, setUploading] = useState(false)
+
+    async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+        const file = e.target.files?.[0]
+        if (!file) return
+        e.target.value = ''
+
+        setUploading(true)
+        try {
+            const form = new FormData()
+            form.append('file', file)
+            const res = await fetch('/api/guide/upload', { method: 'POST', body: form })
+            if (!res.ok) throw new Error(await res.text())
+            const { url } = await res.json() as { url: string }
+            const alt = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ')
+            const ta  = taRef.current
+            if (!ta) return
+            // Read current value from the DOM (controlled textarea — always matches state)
+            const current = ta.value
+            const pos     = ta.selectionStart ?? current.length
+            const needsNL = pos > 0 && current[pos - 1] !== '\n'
+            setCurrentBody(current.slice(0, pos) + (needsNL ? '\n' : '') + `![${alt}](${url})\n` + current.slice(pos))
+        } catch (err) {
+            console.error('[image upload]', err)
+        } finally {
+            setUploading(false)
+        }
+    }
 
     // Reset when initial changes (form reopened for a different row)
     useEffect(() => {
@@ -227,7 +256,7 @@ export default function GuideSectionForm({ initial, saving, onSave, onCancel }: 
                                     key={item.title}
                                     type="button"
                                     title={item.title}
-                                    disabled={saving}
+                                    disabled={saving || uploading}
                                     onClick={() => cmd(item.action)}
                                     className="p-1.5 rounded text-muted hover:text-foreground hover:bg-canvas transition-colors disabled:opacity-40"
                                 >
@@ -235,6 +264,27 @@ export default function GuideSectionForm({ initial, saving, onSave, onCancel }: 
                                 </button>
                             )
                         )}
+                        {/* Image upload */}
+                        <div className="w-px h-4 bg-divider mx-0.5" />
+                        <button
+                            type="button"
+                            title={t('form.uploadImage')}
+                            disabled={saving || uploading}
+                            onClick={() => fileRef.current?.click()}
+                            className="p-1.5 rounded text-muted hover:text-foreground hover:bg-canvas transition-colors disabled:opacity-40"
+                        >
+                            {uploading
+                                ? <Icon name="loader2" size={14} className="animate-spin" />
+                                : <Icon name="image" size={14} />
+                            }
+                        </button>
+                        <input
+                            ref={fileRef}
+                            type="file"
+                            accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml"
+                            className="hidden"
+                            onChange={handleImageUpload}
+                        />
                     </div>
                     <textarea
                         ref={taRef}
@@ -246,7 +296,7 @@ export default function GuideSectionForm({ initial, saving, onSave, onCancel }: 
                         className="w-full p-3 font-mono text-sm bg-surface text-foreground placeholder:text-muted resize-none outline-none disabled:opacity-60"
                     />
                 </div>
-                <p className="text-xs text-muted mt-1">{t('form.bodyHint')}</p>
+                <p className="text-xs text-muted mt-1">{t('form.bodyHint')} {t('form.bodyHintImage')}</p>
             </div>
 
             {/* Metadata row */}
