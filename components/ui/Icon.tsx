@@ -10,7 +10,7 @@ import {
     Italic, KeyRound, LayoutDashboard, Link, Link2, List, ListOrdered,
     Loader2, LogIn, LogOut, Mail,
     Megaphone, Menu, Minus, Monitor, Moon, Paperclip, Pencil, Plus, Receipt, RefreshCw, Search,
-    Settings, ShelvingUnit, Shield, Sun, ToggleLeft, ToggleRight,
+    Settings, ShelvingUnit, Shield, Sun, ThumbsDown, ThumbsUp, ToggleLeft, ToggleRight,
     Trash2, TrendingUp, Upload, UserCog, UserPlus, Users,
     Table2, Vibrate, Wallet, X, XCircle, TableProperties,
 } from 'lucide-react'
@@ -77,6 +77,8 @@ const ICONS = {
     'shelving-unit':    ShelvingUnit,
     shield:             Shield,
     sun:                Sun,
+    'thumbs-up':        ThumbsUp,
+    'thumbs-down':      ThumbsDown,
     'toggle-left':      ToggleLeft,
     'toggle-right':     ToggleRight,
     trash2:             Trash2,
