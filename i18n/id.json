@@ -1609,7 +1609,16 @@
       "subtitle": "Pelajari cara menggunakan aplikasi KasWarga",
       "empty": "Belum ada panduan yang tersedia.",
       "selectSection": "Pilih bagian dari menu di kiri.",
-      "loading": "Memuat panduan..."
+      "loading": "Memuat panduan...",
+      "searchPlaceholder": "Cari panduan...",
+      "searchEmpty": "Tidak ada hasil untuk pencarian ini.",
+      "updatedAt": "Diperbarui: {date}",
+      "feedback": {
+        "question": "Apakah halaman ini membantu?",
+        "yes": "Ya",
+        "no": "Tidak",
+        "thanks": "Terima kasih atas masukan Anda!"
+      }
     },
     "admin": {
       "title": "Kelola Panduan",
@@ -1620,7 +1629,11 @@
       "empty": "Belum ada bagian panduan.",
       "draft": "Draft",
       "positionLabel": "Urutan: {position}",
-      "translations": "Terjemahan"
+      "translations": "Terjemahan",
+      "searchPlaceholder": "Cari judul atau kategori...",
+      "searchEmpty": "Tidak ada bagian yang sesuai dengan pencarian.",
+      "feedbackHelpful": "membantu",
+      "feedbackNotHelpful": "tidak membantu"
     },
     "categories": {
       "quick_start": "Mulai Cepat",
@@ -1642,7 +1655,9 @@
       "cancel": "Batal",
       "titleRequired": "Judul wajib diisi",
       "bodyPlaceholder": "Tulis konten panduan di sini...",
-      "bodyHint": "Mendukung format Markdown dasar (tebal, miring, judul, daftar)",
+      "bodyHint": "Mendukung Markdown: tebal, miring, judul, daftar, tabel, tautan.",
+      "bodyHintImage": "Klik ikon gambar di toolbar untuk mengunggah foto.",
+      "uploadImage": "Unggah Gambar",
       "locale": "Bahasa",
       "targetRoles": "Target Peran",
       "targetRolesAll": "Semua Peran"
