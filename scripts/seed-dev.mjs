@@ -70,6 +70,7 @@ const SUPER_ADMIN_AUTH = {
   id:       'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee',
   email:    'superadmin@dev.com',
   password: 'Password123!',
+  name:     'Super Admin',
 }
 
 const SAMPLE_PASSWORD = 'Password123!'
@@ -449,6 +450,36 @@ for (const user of [SUPER_ADMIN_AUTH, ...SAMPLE_AUTH_USERS]) {
 
 console.log(`\nAuth users: ${created} created, ${skipped} already existed, ${failed} failed`)
 if (failed > 0) process.exit(1)
+
+console.log('\n=== Dev seed: activating Super Admin ===\n')
+
+// public.users row
+const { error: saUserErr } = await supabase
+  .from('users')
+  .upsert(
+    { id: SUPER_ADMIN_AUTH.id, name: SUPER_ADMIN_AUTH.name, email: SUPER_ADMIN_AUTH.email },
+    { onConflict: 'id', ignoreDuplicates: true }
+  )
+if (saUserErr) { console.error(`  ✗  public.users: ${saUserErr.message}`); process.exit(1) }
+console.log('  ✓  public.users row upserted')
+
+// membership (rt_id = null) — NULL is distinct in unique constraints, so check then insert
+const { data: existingMem } = await supabase
+  .from('memberships')
+  .select('id')
+  .eq('user_id', SUPER_ADMIN_AUTH.id)
+  .eq('role', 'SUPER_ADMIN')
+  .maybeSingle()
+
+if (existingMem) {
+  console.log('  -  SUPER_ADMIN membership already exists')
+} else {
+  const { error: memErr } = await supabase
+    .from('memberships')
+    .insert({ user_id: SUPER_ADMIN_AUTH.id, rt_id: null, role: 'SUPER_ADMIN', status: 'active' })
+  if (memErr) { console.error(`  ✗  memberships: ${memErr.message}`); process.exit(1) }
+  console.log('  ✓  SUPER_ADMIN membership created')
+}
 
 console.log('\n=== Dev seed: inserting sample data ===\n')
 
