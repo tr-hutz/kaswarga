@@ -18,6 +18,11 @@ export interface GuideTranslation {
     body:       string
 }
 
+export interface GuideFeedback {
+    helpful:     number
+    not_helpful: number
+}
+
 export interface GuideRow extends GuideSection {
     title:  string
     body:   string
@@ -26,9 +31,75 @@ export interface GuideRow extends GuideSection {
 
 export interface GuideAdminRow extends GuideSection {
     translations: GuideTranslation[]
+    feedback:     GuideFeedback
 }
 
-/** Published sections for authenticated users — filtered by role, with locale fallback to 'id' */
+// ---------------------------------------------------------------------------
+// Internal helpers
+// ---------------------------------------------------------------------------
+
+const GUIDE_ASSETS_BUCKET = 'guide-assets'
+
+/** Extract Storage file paths from markdown image tags that belong to guide-assets. */
+function extractStoragePaths(body: string): string[] {
+    const re     = /!\[[^\]]*\]\(([^)]+)\)/g
+    const marker = `/object/public/${GUIDE_ASSETS_BUCKET}/`
+    const paths: string[] = []
+    let m: RegExpExecArray | null
+    while ((m = re.exec(body)) !== null) {
+        const idx = m[1].indexOf(marker)
+        if (idx !== -1) paths.push(m[1].slice(idx + marker.length))
+    }
+    return paths
+}
+
+/**
+ * Before saving a new body, compare old body from DB and delete any guide-assets
+ * Storage files that are no longer referenced in the new body.
+ */
+async function purgeRemovedImages(sectionId: string, locale: string, newBody: string) {
+    const { data: existing } = await supabaseAdmin
+        .from('guide_section_translations')
+        .select('body')
+        .eq('section_id', sectionId)
+        .eq('locale', locale)
+        .maybeSingle()
+    if (!existing?.body) return
+
+    const oldPaths  = extractStoragePaths(existing.body)
+    const newPaths  = new Set(extractStoragePaths(newBody))
+    const toDelete  = oldPaths.filter(p => !newPaths.has(p))
+
+    if (toDelete.length > 0) {
+        const { error } = await supabaseAdmin.storage.from(GUIDE_ASSETS_BUCKET).remove(toDelete)
+        if (error) console.error('[guide] storage cleanup error:', error.message)
+    }
+}
+
+/** Aggregate helpful / not_helpful counts from guide_section_feedback per section. */
+async function fetchFeedbackMap(): Promise<Map<string, GuideFeedback>> {
+    // guide_section_feedback is migration 034 — not in generated types yet
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data } = await (supabaseAdmin as any)
+        .from('guide_section_feedback')
+        .select('section_id, is_helpful')
+
+    const map = new Map<string, GuideFeedback>()
+    for (const row of (data ?? []) as { section_id: string; is_helpful: boolean }[]) {
+        const c = map.get(row.section_id) ?? { helpful: 0, not_helpful: 0 }
+        if (row.is_helpful) { c.helpful++ } else { c.not_helpful++ }
+        map.set(row.section_id, c)
+    }
+    return map
+}
+
+const ZERO_FEEDBACK: GuideFeedback = { helpful: 0, not_helpful: 0 }
+
+// ---------------------------------------------------------------------------
+// Public read functions
+// ---------------------------------------------------------------------------
+
+/** Published sections for authenticated users — filtered by role, with locale fallback to 'id'. */
 export async function findPublishedSections(locale: string, roleCode: string): Promise<GuideRow[]> {
     const { data: sections, error: secErr } = await supabaseAdmin
         .from('guide_sections')
@@ -71,7 +142,7 @@ export async function findPublishedSections(locale: string, roleCode: string): P
         .filter((r): r is GuideRow => r !== null)
 }
 
-/** All sections with all translations — Super Admin only */
+/** All sections with all translations and feedback counts — Super Admin only. */
 export async function findAllSectionsWithTranslations(): Promise<GuideAdminRow[]> {
     const { data: sections, error: secErr } = await supabaseAdmin
         .from('guide_sections')
@@ -84,10 +155,14 @@ export async function findAllSectionsWithTranslations(): Promise<GuideAdminRow[]
     if (allSections.length === 0) return []
 
     const ids = allSections.map(s => s.id)
-    const { data: translations, error: transErr } = await supabaseAdmin
-        .from('guide_section_translations')
-        .select('id, section_id, locale, title, body')
-        .in('section_id', ids)
+
+    const [{ data: translations, error: transErr }, feedbackMap] = await Promise.all([
+        supabaseAdmin
+            .from('guide_section_translations')
+            .select('id, section_id, locale, title, body')
+            .in('section_id', ids),
+        fetchFeedbackMap(),
+    ])
     if (transErr) throw new Error(transErr.message)
 
     const transMap = new Map<string, GuideTranslation[]>()
@@ -97,8 +172,27 @@ export async function findAllSectionsWithTranslations(): Promise<GuideAdminRow[]
         transMap.set(t.section_id, arr)
     }
 
-    return allSections.map(s => ({ ...s, translations: transMap.get(s.id) ?? [] }))
+    return allSections.map(s => ({
+        ...s,
+        translations: transMap.get(s.id) ?? [],
+        feedback:     feedbackMap.get(s.id) ?? ZERO_FEEDBACK,
+    }))
 }
+
+/** Returns the distinct locales that have at least one published translation. */
+export async function findAvailableLocales(): Promise<string[]> {
+    const { data, error } = await supabaseAdmin
+        .from('guide_section_translations')
+        .select('locale, guide_sections!inner(is_published)')
+        .eq('guide_sections.is_published', true)
+    if (error) throw new Error(error.message)
+    const locales = [...new Set((data ?? []).map((r: { locale: string }) => r.locale))]
+    return locales.sort()
+}
+
+// ---------------------------------------------------------------------------
+// Mutation functions
+// ---------------------------------------------------------------------------
 
 export async function createSection(payload: {
     category:     string
@@ -126,7 +220,7 @@ export async function createSection(payload: {
         .single()
     if (transErr) throw new Error(transErr.message)
 
-    return { ...section, translations: [trans as GuideTranslation] }
+    return { ...section, translations: [trans as GuideTranslation], feedback: ZERO_FEEDBACK }
 }
 
 export async function updateSection(id: string, payload: {
@@ -149,6 +243,9 @@ export async function updateSection(id: string, payload: {
     if (secErr) throw new Error(secErr.message)
 
     if (title !== undefined || body !== undefined) {
+        // Cleanup Storage images removed from the body before overwriting
+        if (body !== undefined) await purgeRemovedImages(id, locale, body)
+
         const { error: transErr } = await supabaseAdmin
             .from('guide_section_translations')
             .upsert(
@@ -165,19 +262,19 @@ export async function updateSection(id: string, payload: {
 }
 
 export async function deleteSection(id: string): Promise<void> {
+    // Delete all guide-assets Storage images referenced by any translation of this section
+    const { data: translations } = await supabaseAdmin
+        .from('guide_section_translations')
+        .select('body')
+        .eq('section_id', id)
+
+    const allPaths = (translations ?? []).flatMap((t: { body: string }) => extractStoragePaths(t.body))
+    if (allPaths.length > 0) {
+        await supabaseAdmin.storage.from(GUIDE_ASSETS_BUCKET).remove(allPaths)
+    }
+
     const { error } = await supabaseAdmin.from('guide_sections').delete().eq('id', id)
     if (error) throw new Error(error.message)
-}
-
-/** Returns the distinct locales that have at least one published translation. */
-export async function findAvailableLocales(): Promise<string[]> {
-    const { data, error } = await supabaseAdmin
-        .from('guide_section_translations')
-        .select('locale, guide_sections!inner(is_published)')
-        .eq('guide_sections.is_published', true)
-    if (error) throw new Error(error.message)
-    const locales = [...new Set((data ?? []).map((r: { locale: string }) => r.locale))]
-    return locales.sort()
 }
 
 export async function upsertTranslation(
@@ -186,6 +283,9 @@ export async function upsertTranslation(
     title:     string,
     body:      string
 ): Promise<GuideTranslation> {
+    // Cleanup Storage images removed from the body before overwriting
+    await purgeRemovedImages(sectionId, locale, body)
+
     const { data, error } = await supabaseAdmin
         .from('guide_section_translations')
         .upsert(
