@@ -1,5 +1,4 @@
 ﻿'use client'
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth/useAuth'
@@ -16,7 +15,6 @@ export interface LedgerTotals {
 }
 
 export function useLedgerData(query: QueryOptions) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { membership } = useAuth()
     const rtId = membership?.rt?.id as string | undefined
 
