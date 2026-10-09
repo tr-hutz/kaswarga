@@ -101,13 +101,16 @@
     "permissionMatrix": "Matriks Akses",
     "memberOverrides": "Override Akses",
     "effectivePermissions": "Lihat Izin Efektif",
-    "permissionInspector": "Inspeksi Izin"
+    "permissionInspector": "Inspeksi Izin",
+    "help": "Panduan",
+    "guideManage": "Kelola Panduan"
   },
   "topbar": {
     "brand": "Kas Warga",
     "logout": "Keluar",
     "navToggle": "Toggle navigasi",
-    "search": "Cari"
+    "search": "Cari",
+    "help": "Panduan"
   },
   "commandPalette": {
     "label": "Pencarian global",
@@ -404,8 +407,8 @@
       "system": "System"
     },
     "roles": {
-      "CHAIR": "Ketua",
-      "ADMIN": "Admin",
+      "CHAIR": "Ketua RT",
+      "ADMIN": "Admin RT",
       "TREASURER": "Bendahara",
       "RESIDENT": "Warga",
       "SUPER_ADMIN": "Super Admin"
@@ -1598,6 +1601,66 @@
       "override_grant": "Diberikan oleh Override",
       "override_revoke": "Dicabut oleh Override",
       "none": "Izin tidak ditetapkan"
+    }
+  },
+  "guide": {
+    "public": {
+      "title": "Panduan Pengguna",
+      "subtitle": "Pelajari cara menggunakan aplikasi KasWarga",
+      "empty": "Belum ada panduan yang tersedia.",
+      "selectSection": "Pilih bagian dari menu di kiri.",
+      "loading": "Memuat panduan...",
+      "searchPlaceholder": "Cari panduan...",
+      "searchEmpty": "Tidak ada hasil untuk pencarian ini.",
+      "updatedAt": "Diperbarui: {date}",
+      "feedback": {
+        "question": "Apakah halaman ini membantu?",
+        "yes": "Ya",
+        "no": "Tidak",
+        "thanks": "Terima kasih atas masukan Anda!"
+      }
+    },
+    "admin": {
+      "title": "Kelola Panduan",
+      "subtitle": "Tambah, ubah, atau hapus bagian panduan pengguna",
+      "addSection": "Tambah Bagian",
+      "editSection": "Ubah Bagian",
+      "newSection": "Bagian Baru",
+      "empty": "Belum ada bagian panduan.",
+      "draft": "Draft",
+      "positionLabel": "Urutan: {position}",
+      "translations": "Terjemahan",
+      "searchPlaceholder": "Cari judul atau kategori...",
+      "searchEmpty": "Tidak ada bagian yang sesuai dengan pencarian.",
+      "feedbackHelpful": "membantu",
+      "feedbackNotHelpful": "tidak membantu"
+    },
+    "categories": {
+      "quick_start": "Mulai Cepat",
+      "feature": "Fitur",
+      "faq": "FAQ",
+      "general": "Umum"
+    },
+    "locales": {
+      "id": "Bahasa Indonesia",
+      "en": "English"
+    },
+    "form": {
+      "title": "Judul",
+      "body": "Konten",
+      "category": "Kategori",
+      "position": "Urutan",
+      "published": "Terbitkan",
+      "save": "Simpan",
+      "cancel": "Batal",
+      "titleRequired": "Judul wajib diisi",
+      "bodyPlaceholder": "Tulis konten panduan di sini...",
+      "bodyHint": "Mendukung Markdown: tebal, miring, judul, daftar, tabel, tautan.",
+      "bodyHintImage": "Klik ikon gambar di toolbar untuk mengunggah foto.",
+      "uploadImage": "Unggah Gambar",
+      "locale": "Bahasa",
+      "targetRoles": "Target Peran",
+      "targetRolesAll": "Semua Peran"
     }
   }
 }

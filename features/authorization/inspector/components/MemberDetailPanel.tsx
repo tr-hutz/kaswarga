@@ -10,14 +10,7 @@ import type {
     ViewerFilter,
     ViewerSort,
 } from '@/features/authorization/viewer/hooks/useEffectivePermission'
-
-const ROLE_LABELS: Record<string, string> = {
-    ADMIN:     'Administrator',
-    CHAIR:     'Ketua',
-    TREASURER: 'Bendahara',
-    SECRETARY: 'Sekretaris',
-    RESIDENT:  'Warga',
-}
+import { ROLE_LABELS } from '@/features/authorization/inspector/labels'
 
 interface Props { detail: MemberDetailData }
 

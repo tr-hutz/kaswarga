@@ -1,6 +1,6 @@
 {
   "name": "kaswarga",
-  "version": "3.0.0-rc3",
+  "version": "3.0.0-rc4",
   "private": true,
   "engines": {
     "node": ">=20.0.0"
@@ -21,6 +21,8 @@
     "test:e2e:prod:retry": "playwright test --config=playwright.config.prod.ts --no-deps --pass-with-no-tests",
     "seed:auth": "node scripts/seed-auth.mjs",
     "seed:dev": "node scripts/seed-dev.mjs",
+    "seed:guide-assets": "node scripts/seed-guide-assets.mjs",
+    "capture:guide": "node scripts/capture-guide-screenshots.mjs",
     "seed:prod": "node scripts/seed-prod.mjs",
     "seed:pvt": "node scripts/seed-pvt.mjs",
     "seed:e2e": "node scripts/seed-e2e.mjs",
@@ -44,7 +46,9 @@
     "pdf-lib": "^1.17.1",
     "react": "19.2.4",
     "react-apexcharts": "^2.1.1",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.15",

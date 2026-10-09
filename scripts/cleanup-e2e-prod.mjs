@@ -20,9 +20,10 @@ import { createClient } from '@supabase/supabase-js'
 import { loadEnv } from './load-env.mjs'
 import readline from 'readline'
 
-loadEnv('.env.production')
+// Load the specific env first so its values win over the base file
 const envFile = process.env.APP_ENV === 'preview' ? '.env.preview' : '.env.production.e2e'
 loadEnv(envFile)
+loadEnv('.env.production')
 
 const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL
 const SERVICE_ROLE_KEY  = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -56,6 +57,11 @@ async function confirm() {
   })
 }
 
+async function checkConnection() {
+  const { error } = await supabase.from('rt').select('id').limit(1)
+  if (error) throw new Error(`Cannot reach Supabase (${SUPABASE_URL}): ${error.message}`)
+}
+
 async function del(table, column, value) {
   const { error, count } = await supabase.from(table).delete({ count: 'exact' }).eq(column, value)
   if (error) throw new Error(`[delete ${table}] ${error.message}`)
@@ -72,7 +78,11 @@ console.log('=== E2E prod full teardown ===')
 try {
   await confirm()
 
-  console.log('\nDeleting in FK order...\n')
+  console.log('\nChecking Supabase connectivity...')
+  await checkConnection()
+  console.log('  ✓  connected\n')
+
+  console.log('Deleting in FK order...\n')
 
   // Resolve test staff user IDs via email — independent of memberships existing
   const e2eEmails = [
