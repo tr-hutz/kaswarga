@@ -52,3 +52,8 @@ next-env.d.ts
 
 # Database
 /supabase/.temp
+
+# Guide screenshot captures (generated, uploaded to Supabase Storage)
+/scripts/guide-assets/*.png
+/scripts/guide-assets/*.jpg
+/scripts/guide-assets/*.webp

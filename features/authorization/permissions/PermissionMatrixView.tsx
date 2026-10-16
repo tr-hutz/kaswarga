@@ -8,6 +8,7 @@ import Select              from '@/components/ui/Select'
 import PermissionGrid      from './components/PermissionGrid'
 import type { RoleRow }    from '@/lib/repositories/role.repository'
 import type { PermissionGroup } from './hooks/usePermissionMatrix'
+import { ROLE_LABELS }    from '@/features/authorization/inspector/labels'
 
 interface Props {
     roles:          RoleRow[]
@@ -72,7 +73,7 @@ export default function PermissionMatrixView({
         )
     }
 
-    const roleOptions = roles.map(r => ({ value: r.id, label: r.name }))
+    const roleOptions = roles.map(r => ({ value: r.id, label: ROLE_LABELS[r.code] ?? r.name }))
 
     return (
         <div className="space-y-6">

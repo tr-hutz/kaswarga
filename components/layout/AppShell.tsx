@@ -30,6 +30,13 @@ function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
 }
 
+// Paths that make no sense for an authenticated user — redirect them away.
+const AUTH_INCOMPATIBLE_PATHS = ['/login', '/register']
+
+function isAuthIncompatiblePath(pathname: string) {
+  return AUTH_INCOMPATIBLE_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'))
+}
+
 const SUPER_ADMIN_HOME = '/'
 
 // Paths that belong to RT members — SUPER_ADMIN must not access them.
@@ -77,8 +84,8 @@ export default function AppShell({
   useEffect(() => {
     if (loading) return
 
-    // Redirect authenticated users away from /login
-    if (membership && pathname === '/login') {
+    // Redirect authenticated users away from login / registration pages
+    if (membership && isAuthIncompatiblePath(pathname)) {
       router.replace(membership.role === 'SUPER_ADMIN' ? SUPER_ADMIN_HOME : '/')
       return
     }
@@ -158,7 +165,7 @@ export default function AppShell({
    |-------------------------------------------------------------
    */
 
-  if (pathname === '/login') {
+  if (isAuthIncompatiblePath(pathname)) {
     return (
       <div data-testid="shell-spinner" className="min-h-screen flex items-center justify-center bg-canvas">
         <div className="w-6 h-6 border-2 border-divider border-t-foreground rounded-full animate-spin" />

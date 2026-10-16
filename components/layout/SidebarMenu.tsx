@@ -11,19 +11,12 @@ import { useAuth }                 from '@/lib/auth/useAuth'
 import { usePendingCounts }        from './usePendingCounts'
 import { logActivity }             from '@/lib/services/activity-logger'
 import { logout }                  from '@/lib/services/auth.service'
+import { ROLE_LABELS }             from '@/features/authorization/inspector/labels'
 
 const APP_ENV = process.env.APP_ENV ?? 'production'
 
 // Environments that show the diagonal ribbon — production shows none
 const RIBBON_ENVS = new Set<string>(['local', 'sit', 'uat', 'staging', 'preview'])
-
-const ROLE_LABELS: Record<string, string> = {
-    SUPER_ADMIN: 'Super Admin',
-    CHAIR:       'Ketua',
-    TREASURER:   'Bendahara',
-    ADMIN:       'Admin',
-    RESIDENT:    'Warga',
-}
 
 const EMPTY_PERMISSIONS: ReadonlySet<string> = Object.freeze(new Set<string>())
 

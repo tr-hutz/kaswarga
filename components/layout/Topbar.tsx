@@ -102,6 +102,15 @@ export default function Topbar({ mobileOpen, setMobileOpen, navState = 'full', o
                 <NotificationBar />
 
                 <ThemeToggle />
+
+                <Link
+                    href="/help"
+                    className="p-2 rounded-lg hover:bg-canvas transition-colors text-muted hover:text-foreground"
+                    title={t('help')}
+                    aria-label={t('help')}
+                >
+                    <Icon name="book-open" size={18} />
+                </Link>
             </div>
         </header>
 

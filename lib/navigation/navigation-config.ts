@@ -199,4 +199,12 @@ export const NAVIGATION: NavItem[] = [
         icon:       'key-round',
         permission: null,
     },
+
+    {
+        label:      'guideManage',
+        href:       '/settings/guide',
+        icon:       'book-open',
+        permission: null,
+        noRt:       true,
+    },
 ]
